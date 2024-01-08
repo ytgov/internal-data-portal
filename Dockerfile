@@ -59,8 +59,8 @@ COPY --from=api-build-stage --chown=node:node /usr/src/api/dist/src ./dist
 COPY --from=api-build-stage --chown=node:node /usr/src/api/src/web ./dist/web
 # COPY --from=web-build-stage --chown=node:node /usr/src/web/dist ./dist/web
 
-RUN echo "RELEASE_TAG=${RELEASE_TAG:-2024.01.8.1}" >> VERSION
-RUN echo "GIT_COMMIT_HASH=${GIT_COMMIT_HASH:-532bd759c301ddc3352a1cee41ceac8061bfa3f7}" >> VERSION
+RUN echo "RELEASE_TAG=${RELEASE_TAG}" >> VERSION
+RUN echo "GIT_COMMIT_HASH=${GIT_COMMIT_HASH}" >> VERSION
 
 EXPOSE 3000
 
