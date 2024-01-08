@@ -227,11 +227,13 @@ Files:
 1. Create a `.env` file in top level directory with the appropriate values.
 
    ```bash
-   DB_HOST="db"
-   DB_PORT="1433"
-   DB_USER="sa"
-   DB_PASS="DevPwd99!"
-   DB_NAME="idp_production"
+   APPLICATION_NAME=Internal Data Portal
+
+   DB_HOST=db
+   DB_PORT=1433
+   DB_USER=sa
+   DB_PASS=DevPwd99!
+   DB_NAME=idp_production
    ```
 
 2. (optional) If testing build arguments do
