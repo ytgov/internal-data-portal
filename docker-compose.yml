@@ -1,0 +1,33 @@
+version: "3"
+services:
+  app:
+    # replace `build` line with `image` line, if you want to pull a build generated via github workflow
+    # Note you must use the appropriate build tag
+    # image: ghcr.io/icefoganalytics/internal-data-portal:v2024.01.8.1
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+    volumes:
+      - ./.env:/home/node/app/.env.production
+    depends_on:
+      - db
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    user: root
+    environment:
+      # default user is `sa`
+      MSSQL_SA_PASSWORD: "${DB_PASS}"
+      TZ: "America/Whitehorse"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - db_data:/var/opt/mssql/data
+
+volumes:
+  db_data:
