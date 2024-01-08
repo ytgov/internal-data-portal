@@ -1,34 +1,23 @@
 import type { SeedMigration } from "@/db/umzug"
 
-export const up: SeedMigration = async ({ context: { Centre } }) => {
-  await Centre.findOrCreate({
-    where: {
-      name: "Grow with Joy 2nd",
-    },
-    defaults: {
-      name: "Grow with Joy 2nd",
-      license: "123",
-      community: "Whitehorse",
-      status: "Up to date",
-      hotMeal: true,
-      licensedFor: 19,
-      lastSubmission: new Date("2019-01-01"),
-    },
-  })
-  await Centre.findOrCreate({
-    where: {
-      name: "Happy Hearts Preschool",
-    },
-    defaults: {
-      name: "Grow with Joy 2nd",
-      license: "456",
-      community: "Whitehorse",
-      status: "Up to date",
-      hotMeal: true,
-      licensedFor: 25,
-      lastSubmission: new Date("2019-01-01"),
-    },
-  })
+export const up: SeedMigration = async () => {
+// export const up: SeedMigration = async ({ context: { User } }) => {
+  // await User.findOrCreate({
+  //   where: {
+  //     email: "example.user@yukon.ca",
+  //   },
+  //   defaults: {
+  //     email: "example.user@yukon.ca",
+  //     firstName: "Example",
+  //     lastName: "User",
+  //     auth0Subject: "auth0|example123",
+  //     department: "Finance",
+  //     division: "Accounting",
+  //     branch: "Revenue",
+  //     unit: "Tax",
+  //     position: "Data Analyst",
+  //   },
+  // })
 }
 
 export const down: SeedMigration = async () => {
