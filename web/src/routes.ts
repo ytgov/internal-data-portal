@@ -1,21 +1,21 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
 
 const routes: RouteRecordRaw[] = [
-  // {
-  //   name: "Dashboard",
-  //   path: "/",
-  //   component: () => import("@/pages/Dashboard.vue"),
-  // },
-  // {
-  //   name: "StatusPage",
-  //   path: "/status",
-  //   component: () => import("@/pages/StatusPage.vue"),
-  // },
-  // {
-  //   name: "NotFound",
-  //   path: "*",
-  //   component: () => import("@/pages/NotFound.vue"),
-  // },
+  {
+    name: "SplashPage",
+    path: "/",
+    component: () => import("@/pages/SplashPage.vue"),
+  },
+  {
+    name: "StatusPage",
+    path: "/status",
+    component: () => import("@/pages/StatusPage.vue"),
+  },
+  {
+    name: "NotFoundPage",
+    path: "*",
+    component: () => import("@/pages/NotFoundPage.vue"),
+  },
 ]
 
 export const router = createRouter({
