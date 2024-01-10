@@ -13,12 +13,12 @@ const routes: RouteRecordRaw[] = [
   },
   {
     name: "NotFoundPage",
-    path: "*",
+    path: "/:pathMatch(.*)*",
     component: () => import("@/pages/NotFoundPage.vue"),
   },
 ]
 
-export const router = createRouter({
+export default createRouter({
   history: createWebHistory(),
   routes,
 })
