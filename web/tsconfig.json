@@ -15,7 +15,6 @@
     "noEmit": true,
     "paths": {
       "@/*": ["./src/*", "./dist/*"],
-      "@models": ["../api/src/data/models"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.js"],
