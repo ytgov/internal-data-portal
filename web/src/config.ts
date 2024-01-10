@@ -8,7 +8,7 @@ export const environment = import.meta.env.MODE
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ""
 
-export const applicationName = "Internal Data Porta"
-export const applicationIcon = "mdi-cable-data"
+export const APPLICATION_NAME = "Internal Data Porta"
+export const APPLICATION_ICON = "mdi-cable-data"
 export const hasSidebar = true
 export const hasSidebarClosable = false
