@@ -19,18 +19,18 @@ COPY api ./
 RUN npm run build
 
 # Stage 2 - web build - requires development environment to install vue-cli-service
-# FROM base-node as web-build-stage
+FROM base-node as web-build-stage
 
-# ENV NODE_ENV=development
+ENV NODE_ENV=development
 
-# WORKDIR /usr/src/web
+WORKDIR /usr/src/web
 
-# COPY web/package*.json ./
-# COPY web/tsconfig*.json ./
-# COPY web/babel.config.js ./
-# RUN npm install
+COPY web/package*.json ./
+COPY web/tsconfig*.json ./
+COPY web/babel.config.js ./
+RUN npm install
 
-# COPY web ./
+COPY web ./
 
 # Switching to production mode for build environment.
 ENV NODE_ENV=production
@@ -55,9 +55,7 @@ COPY --from=api-build-stage --chown=node:node /usr/src/api/package*.json ./
 RUN npm install && npm cache clean --force --loglevel=error
 
 COPY --from=api-build-stage --chown=node:node /usr/src/api/dist/src ./dist
-# Replace with web build once it's ready
-COPY --from=api-build-stage --chown=node:node /usr/src/api/src/web ./dist/web
-# COPY --from=web-build-stage --chown=node:node /usr/src/web/dist ./dist/web
+COPY --from=web-build-stage --chown=node:node /usr/src/web/dist ./dist/web
 
 RUN echo "RELEASE_TAG=${RELEASE_TAG}" >> VERSION
 RUN echo "GIT_COMMIT_HASH=${GIT_COMMIT_HASH}" >> VERSION
