@@ -1,5 +1,6 @@
 {
   "name": "internal-data-portal",
+  "private": true,
   "version": "0.1.0",
   "description": "DataPortal is envisioned as a comprehensive data management system, designed to facilitate easy access, manipulation, and visualization of datasets.",
   "main": "src/server.js",

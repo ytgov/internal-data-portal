@@ -3,7 +3,7 @@ import cors from "cors"
 import path from "path"
 import helmet from "helmet"
 
-import { VUE_APP_FRONTEND_URL } from "@/config"
+import { FRONTEND_URL } from "@/config"
 import router from "@/router"
 
 export const app = express()
@@ -31,7 +31,7 @@ app.use(
 // very basic CORS setup
 app.use(
   cors({
-    origin: VUE_APP_FRONTEND_URL,
+    origin: FRONTEND_URL,
     optionsSuccessStatus: 200,
     credentials: true,
   })
@@ -44,7 +44,7 @@ app.use(express.static(path.join(__dirname, "web")))
 
 // if no other routes match, just send the front-end
 app.use((req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, "web/index.html"))
+  res.status(404).sendFile(path.join(__dirname, "web/index.html"))
 })
 
 export default app
