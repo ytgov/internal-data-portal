@@ -6,6 +6,8 @@ import { template } from "lodash"
 
 import { APPLICATION_NAME, GIT_COMMIT_HASH, RELEASE_TAG } from "@/config"
 
+import jwtMiddleware from "@/middlewares/jwt-middleware"
+
 export const router = Router()
 
 // some routes
@@ -15,6 +17,8 @@ router.route("/_status").get((req: Request, res: Response) => {
     GIT_COMMIT_HASH,
   })
 })
+
+router.use("/api", jwtMiddleware)
 
 // if no other api routes match, send the 404 page
 router.use("/api", (req: Request, res: Response) => {
