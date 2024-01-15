@@ -1,6 +1,7 @@
 version: "3"
 
 x-default-environment: &default-environment
+  TZ: "UTC"
   NODE_ENV: development
   DB_HOST: db
   DB_USER: sa
