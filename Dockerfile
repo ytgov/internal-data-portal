@@ -27,7 +27,7 @@ WORKDIR /usr/src/web
 
 COPY web/package*.json ./
 COPY web/tsconfig*.json ./
-COPY web/babel.config.js ./
+COPY web/vite.config.js ./
 RUN npm install
 
 COPY web ./
