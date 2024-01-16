@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
+import { authGuard } from "@auth0/auth0-vue"
 
 const routes: RouteRecordRaw[] = [
   {
@@ -14,11 +15,13 @@ const routes: RouteRecordRaw[] = [
     name: "SignInPage",
     path: "/sign-in",
     component: () => import("@/pages/SignInPage.vue"),
+    meta: { requiresAuth: false },
   },
   {
     name: "StatusPage",
     path: "/status",
     component: () => import("@/pages/StatusPage.vue"),
+    meta: { requiresAuth: false },
   },
   {
     name: "NotFoundPage",
@@ -27,7 +30,15 @@ const routes: RouteRecordRaw[] = [
   },
 ]
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
+router.beforeEach((to) => {
+  if (to.meta.requiresAuth === false) return true
+
+  return authGuard(to)
+})
+
+export default router
