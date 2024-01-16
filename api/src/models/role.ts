@@ -1,14 +1,20 @@
 import {
+  Association,
+  BelongsToCreateAssociationMixin,
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
   CreationOptional,
   DataTypes,
+  ForeignKey,
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
 
-// import User from "@/models/user"
+import User from "@/models/user"
 
 export enum RoleTypes {
   DATA_OWNER = "data_owner",
@@ -18,21 +24,31 @@ export enum RoleTypes {
 }
 
 export class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
+  static readonly RoleTypes = RoleTypes
+
   declare id: CreationOptional<number>
-  declare name: string
+  declare userId: ForeignKey<User["id"]>
+  declare role: string
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>
 
-  // declare users?: NonAttribute<User>
+  // https://sequelize.org/docs/v6/other-topics/typescript/#usage
+  // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
+  // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
+  declare getUser: BelongsToGetAssociationMixin<User>
+  declare setUser: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createUser: BelongsToCreateAssociationMixin<User>
 
-  // declare static associations: {
-  //   users: Association<Role, User>
-  // }
+  declare user?: NonAttribute<User>
 
-  // static establishAssociations() {
-  //   this.hasMany(User)
-  // }
+  declare static associations: {
+    user: Association<Role, User>
+  }
+
+  static establishAssociations() {
+    this.belongsTo(User)
+  }
 }
 
 Role.init(
@@ -43,7 +59,15 @@ Role.init(
       allowNull: false,
       autoIncrement: true,
     },
-    name: {
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+    role: {
       type: DataTypes.STRING(100),
       allowNull: false,
       validate: {
@@ -67,6 +91,16 @@ Role.init(
   },
   {
     sequelize,
+    indexes: [
+      {
+        unique: true,
+        fields: ["user_id", "role"],
+        name: "unique_roles_user_id_name",
+        where: {
+          deleted_at: null,
+        },
+      },
+    ],
   }
 )
 
