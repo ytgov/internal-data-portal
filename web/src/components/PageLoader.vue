@@ -1,10 +1,13 @@
 <template>
-  <div class="mt-16 text-center">
-    <v-progress-circular
-      indeterminate
-      size="64"
-      class="mb-5"
-    ></v-progress-circular>
-    <h1 class="title">Loading</h1>
+  <div class="d-flex justify-center align-center h-screen">
+    <div class="d-flex flex-column align-center">
+      <v-progress-circular
+        indeterminate
+        size="64"
+        class="mb-5"
+        color="yg-blue"
+      ></v-progress-circular>
+      <h1>Loading ...</h1>
+    </div>
   </div>
 </template>
