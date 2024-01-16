@@ -35,11 +35,21 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   if (to.meta.requiresAuth === false) return true
-
   // TODO: consider whether I should redirect to /sign-in instead of the auth0 login page?
-  return authGuard(to)
+  const isAuthenticated = await authGuard(to)
+  if (isAuthenticated) return true
+
+  // TODO: consider loading user in route guard?
+  // check if current user exists
+  // attempt to load current user, unless it's already been loaded?
+  // if current user does not exist, attempt to create a new user
+  // if current user still does exist, throw some kind of error?
+  // if meta.requiresRoleAdmin (or whatever) does not match or exceed current user role
+  // return false
+
+  return false
 })
 
 export default router
