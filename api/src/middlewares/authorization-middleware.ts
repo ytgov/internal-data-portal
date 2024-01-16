@@ -51,7 +51,10 @@ export async function ensureAndAuthorizeCurrentUser(
   res: Response,
   next: NextFunction
 ) {
-  const user = await User.findOne({ where: { auth0Subject: req.auth?.sub } }) // req.auth from express-jwt
+  const user = await User.findOne({
+    where: { auth0Subject: req.auth?.sub }, // req.auth from express-jwt
+    include: ["roles"],
+  })
   if (user !== null) {
     req.currentUser = user
     return next()
