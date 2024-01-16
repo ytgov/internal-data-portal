@@ -1,29 +1,48 @@
 <template>
   <v-app>
-    <router-view />
+    <router-view v-if="isUnauthenticatedRoute"></router-view>
+    <!--
+      NOTE: current user will always be defined when the authenticated router view loads.
+    -->
+    <router-view v-else-if="isReady" />
+    <PageLoader v-else />
   </v-app>
 </template>
 
 <script lang="ts" setup>
-// import { useAuth0 } from "@auth0/auth0-vue"
-// import { watch } from "vue"
-// import { useRouter } from "vue-router"
+import { computed, watch } from "vue"
+import { useAuth0 } from "@auth0/auth0-vue"
+import { useRoute } from "vue-router"
 
-// const router = useRouter()
-// const { isLoading, isAuthenticated } = useAuth0()
+import useCurrentUser from "@/use/use-current-user"
+import PageLoader from "@/components/PageLoader.vue"
 
-// TODO: this is hacked-together, it should reworked before final usage
-// watch(
-//   () => [isLoading.value, isAuthenticated.value],
-//   ([newIsLoading, newIsAuthenticated], _) => {
-//     if (newIsLoading === false && newIsAuthenticated === true) {
-//       router.push("/dashboard")
-//     } else if (!newIsLoading && !isAuthenticated.value) {
-//       router.push("/sign-in")
-//     }
-//   },
-//   {
-//     immediate: true,
-//   }
-// )
+// TODO: consider moving this to a route guard?
+const route = useRoute()
+const isUnauthenticatedRoute = computed(() => route.meta.requiresAuth === false)
+
+const { isLoading: isLoadingAuth0, isAuthenticated } = useAuth0()
+const isReadyAuth0 = computed(() => !isLoadingAuth0.value && isAuthenticated.value)
+const { isReady: isReadyCurrentUser, ensure } = useCurrentUser()
+
+const isReady = computed(() => isReadyAuth0.value && isReadyCurrentUser.value)
+
+watch(
+  () => isReadyAuth0.value,
+  async (newIsReadyAuth0) => {
+    // Don't bother attempting to load current user for unathenticated routes
+    if (isUnauthenticatedRoute.value) return
+
+    if (newIsReadyAuth0 === true) {
+      try {
+        await ensure()
+      } catch (error) {
+        console.log("Failed to ensure current user:", error)
+        // Toast/snack Please contact support ...
+        // logout?
+      }
+    }
+  },
+  { immediate: true }
+)
 </script>

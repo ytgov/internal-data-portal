@@ -1,8 +1,7 @@
 <template>
   <v-app>
     <v-container>
-      <!-- <router-link :to="{ name: 'Dashboard' }">Dashboard</router-link> -->
-      <router-link to="TODO">Dashboard</router-link>
+      Return to <router-link :to="{ name: returnTo.name }">{{ returnTo.title }}</router-link>
 
       <v-row class="mt-5">
         <v-col cols="12">
@@ -36,9 +35,26 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from "vue"
+import { computed, onMounted, reactive, ref } from "vue"
+import { useAuth0 } from "@auth0/auth0-vue"
 
 import http from "@/api/http-client"
+
+const { isAuthenticated } = useAuth0()
+
+const returnTo = computed<{ name: string; title: string }>(() => {
+  if (isAuthenticated.value) {
+    return {
+      name: "DashboardPage",
+      title: "Dashboard",
+    }
+  }
+
+  return {
+    name: "SignInPage",
+    title: "Sign In",
+  }
+})
 
 const environment = reactive({
   releaseTag: "not-set",
