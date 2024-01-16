@@ -38,6 +38,7 @@ const router = createRouter({
 router.beforeEach((to) => {
   if (to.meta.requiresAuth === false) return true
 
+  // TODO: consider whether I should redirect to /sign-in instead of the auth0 login page?
   return authGuard(to)
 })
 
