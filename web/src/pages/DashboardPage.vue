@@ -1,28 +1,35 @@
 <template>
-  Dashboard
+  <v-container>
+    <h2>Dashboard</h2>
 
-  <pre>
+    <h3>Auth0 User</h3>
+    <pre>
     {{ user }}
-  </pre>
+  </pre
+    >
 
-  <v-btn
-    dark
-    color="primary"
-    @click="logoutWrapper"
-    >Log Out</v-btn
-  >
+    <h3>Current User from Back-end</h3>
+    <pre>
+    {{ currentUser }}
+  </pre
+    >
+
+    <v-btn
+      dark
+      color="primary"
+      @click="logoutWrapper"
+      >Log Out</v-btn
+    >
+  </v-container>
 </template>
 
 <script lang="ts" setup>
 import { useAuth0 } from "@auth0/auth0-vue"
-import { onMounted } from "vue"
 
-const { isLoading, isAuthenticated, user, logout } = useAuth0()
+import useCurrentUser from "@/use/use-current-user"
 
-onMounted(() => {
-  console.log("isLoading.value:", isLoading.value)
-  console.log("isAuthenticated.value:", isAuthenticated.value)
-})
+const { user, logout } = useAuth0()
+const { currentUser } = useCurrentUser()
 
 async function logoutWrapper() {
   await logout({

@@ -1,4 +1,4 @@
-import { reactive, toRefs } from "vue"
+import { computed, reactive, toRefs } from "vue"
 
 import { sleep } from "@/utils/sleep"
 import usersApi, { User } from "@/api/users-api"
@@ -23,6 +23,8 @@ const state = reactive<{
 })
 
 export function useCurrentUser() {
+  const isReady = computed(() => !state.isLoading && !state.isErrored)
+
   async function fetch(): Promise<User> {
     state.isLoading = true
     try {
@@ -41,6 +43,7 @@ export function useCurrentUser() {
   }
 
   async function ensure(): Promise<User | UserStub> {
+    // TODO: add max timeout
     while (state.isLoading) {
       await sleep(75)
     }
@@ -68,6 +71,7 @@ export function useCurrentUser() {
 
   return {
     ...toRefs(state),
+    isReady,
     fetch,
     ensure,
     reset,
