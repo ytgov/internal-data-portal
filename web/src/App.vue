@@ -17,6 +17,7 @@ import { useRoute } from "vue-router"
 import useCurrentUser from "@/use/use-current-user"
 import PageLoader from "@/components/PageLoader.vue"
 
+// TODO: consider moving this to a route guard?
 const route = useRoute()
 const isUnauthenticatedRoute = computed(() => route.meta.requiresAuth === false)
 
