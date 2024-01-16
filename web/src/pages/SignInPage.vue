@@ -79,20 +79,9 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from "vue"
-
 import { useAuth0 } from "@auth0/auth0-vue"
 
 import { APPLICATION_NAME } from "@/config"
-// import router from "@/router"
 
-// const router = useRouter()
-const { isLoading, isAuthenticated, loginWithRedirect } = useAuth0()
-
-onMounted(() => {
-  if (isLoading.value === false && isAuthenticated.value === true) {
-    // TODO: enable once dashboard is implemented
-    // router.push({ name: "Dashboard" })
-  }
-})
+const { loginWithRedirect } = useAuth0()
 </script>
