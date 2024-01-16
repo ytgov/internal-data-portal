@@ -44,6 +44,8 @@ async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
 
 // Requires api/src/middlewares/jwt-middleware.ts to be run first
 // I'd love to merge that code in here at some point, or make all this code a controller "before action"
+// I'm uncomfortable with creating users automatically here, I'd rather the front-end requested
+// user creation directly, and might switch to that in the future.
 export async function ensureAndAuthorizeCurrentUser(
   req: AuthorizationRequest,
   res: Response,

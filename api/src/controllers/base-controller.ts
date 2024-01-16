@@ -14,14 +14,18 @@ export class BaseController {
   protected response: Response
   protected next: NextFunction
 
-  constructor(req: ControllerRequest, res: Response, next: NextFunction) {
-    this.request = req
+  constructor(req: Request, res: Response, next: NextFunction) {
+    // Assumes authorization has occured first in
+    // api/src/middlewares/jwt-middleware.ts and api/src/middlewares/authorization-middleware.ts
+    // At some future point it would make sense to do all that logic as
+    // controller actions to avoid the need for hack
+    this.request = req as ControllerRequest
     this.response = res
     this.next = next
   }
 
   static get index() {
-    return async (req: ControllerRequest, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
       return controllerInstance.index().catch(next)
     }
@@ -30,28 +34,28 @@ export class BaseController {
   // Usage app.post("/api/users", UsersController.create)
   // maps /api/users to UsersController#create()
   static get create() {
-    return async (req: ControllerRequest, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
       return controllerInstance.create().catch(next)
     }
   }
 
   static get show() {
-    return async (req: ControllerRequest, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
       return controllerInstance.show().catch(next)
     }
   }
 
   static get update() {
-    return async (req: ControllerRequest, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
       return controllerInstance.update().catch(next)
     }
   }
 
   static get destroy() {
-    return async (req: ControllerRequest, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
       return controllerInstance.destroy().catch(next)
     }
