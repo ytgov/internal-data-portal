@@ -2,7 +2,7 @@ import { type NextFunction, type Response } from "express"
 import { type Request as JwtRequest } from "express-jwt"
 
 import auth0Integration, { Auth0PayloadError } from "@/integrations/auth0-integration"
-import { User } from "@/models"
+import { Role, User } from "@/models"
 
 type AuthorizationRequest = JwtRequest & {
   currentUser?: User
@@ -20,6 +20,20 @@ async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
       lastName,
     },
   })
+  await Role.findOrCreate({
+    where: {
+      userId: user.id,
+      role: Role.Types.USER,
+    },
+    defaults: {
+      userId: user.id,
+      role: Role.Types.USER,
+    },
+  })
+
+  await user.reload({
+    include: ["roles"],
+  })
 
   if (created) {
     console.log(`CREATED USER FOR ${email}: ${JSON.stringify(user.dataValues)}`)
@@ -28,6 +42,8 @@ async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
   return user
 }
 
+// Requires api/src/middlewares/jwt-middleware.ts to be run first
+// I'd love to merge that code in here at some point, or make all this code a controller "before action"
 export async function ensureAndAuthorizeCurrentUser(
   req: AuthorizationRequest,
   res: Response,
@@ -44,7 +60,7 @@ export async function ensureAndAuthorizeCurrentUser(
     const user = await findOrCreateUserFromAuth0Token(token)
     req.currentUser = user
     return next()
-  } catch(error) {
+  } catch (error) {
     if (error instanceof Auth0PayloadError) {
       console.log(error)
       return res.status(502).json({ message: "External authorization api failed." })

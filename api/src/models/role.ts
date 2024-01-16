@@ -24,11 +24,11 @@ export enum RoleTypes {
 }
 
 export class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
-  static readonly RoleTypes = RoleTypes
+  static readonly Types = RoleTypes
 
   declare id: CreationOptional<number>
   declare userId: ForeignKey<User["id"]>
-  declare role: string
+  declare role: RoleTypes
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>

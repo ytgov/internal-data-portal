@@ -17,10 +17,11 @@ import {
   HasManyRemoveAssociationsMixin,
   HasManySetAssociationsMixin,
 } from "sequelize"
+import { pick } from "lodash"
 
 import sequelize from "@/db/db-client"
 
-import Role from "@/models/role"
+import Role, { RoleTypes } from "@/models/role"
 
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>
@@ -63,6 +64,10 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
       foreignKey: "userId",
       as: "roles",
     })
+  }
+
+  get roleTypes(): NonAttribute<RoleTypes[]> {
+    return this.roles?.map(({ role }) => role) || []
   }
 }
 
