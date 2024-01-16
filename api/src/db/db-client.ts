@@ -24,6 +24,7 @@ export const SEQUELIZE_CONFIG: Options = {
   define: {
     underscored: true,
     timestamps: true, // This is actually the default, but making it explicit for clarity.
+    paranoid: true, // adds deleted_at column
   },
 }
 
