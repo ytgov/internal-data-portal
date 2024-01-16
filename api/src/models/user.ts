@@ -22,11 +22,6 @@ import sequelize from "@/db/db-client"
 
 import Role from "@/models/role"
 
-export enum UserStatus {
-  ACTIVE = "Active",
-  INACTIVE = "Inactive",
-}
-
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>
   declare auth0Subject: string

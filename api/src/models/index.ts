@@ -7,5 +7,7 @@ import { User } from "@/models/user"
 Role.establishAssociations()
 User.establishAssociations()
 
+export { Role, User }
+
 // special db instance that has access to all models.
 export default db

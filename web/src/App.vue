@@ -15,16 +15,17 @@ import PageLoader from "@/components/PageLoader.vue"
 
 const { isLoading: isLoadingAuth0 } = useAuth0()
 
-const { currentUser, isLoading: isLoadingCurrentUser, ensure } = useCurrentUser()
+const { isLoading: isLoadingCurrentUser, ensure } = useCurrentUser()
 
 onMounted(async () => {
   // await isAuthenticated?
   // Though maybe the route guard will prevent this from being reached until after authentication?
   try {
     await ensure()
-  } catch(error) {
-    console.log("error:", error)
-    // await create({})
+  } catch (error) {
+    console.log("Failed to ensure current user:", error)
+    // Toast/snack Please contact support ...
+    // logout?
   }
 })
 </script>

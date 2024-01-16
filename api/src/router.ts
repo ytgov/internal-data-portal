@@ -7,6 +7,7 @@ import { template } from "lodash"
 import { APPLICATION_NAME, GIT_COMMIT_HASH, RELEASE_TAG } from "@/config"
 
 import jwtMiddleware from "@/middlewares/jwt-middleware"
+import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middleware"
 
 export const router = Router()
 
@@ -18,7 +19,7 @@ router.route("/_status").get((req: Request, res: Response) => {
   })
 })
 
-router.use("/api", jwtMiddleware)
+router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser)
 
 // if no other api routes match, send the 404 page
 router.use("/api", (req: Request, res: Response) => {
