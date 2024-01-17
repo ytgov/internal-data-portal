@@ -1,24 +1,35 @@
 <template>
   <v-container>
-    <h2>Dashboard</h2>
+    <h2 class="d-flex justify-space-between">
+      Dashboard
+      <v-btn
+        dark
+        color="primary"
+        @click="logoutWrapper"
+        >Log Out</v-btn
+      >
+    </h2>
 
-    <h3>Auth0 User</h3>
+    <v-btn
+      class="my-4"
+      dark
+      color="primary"
+      variant="outlined"
+      :to="{ name: 'DataSetNewPage' }"
+      >Create Dataset</v-btn
+    >
+
+    <h3>Debugging: development</h3>
+    <h4>Auth0 User</h4>
     <pre>
     {{ user }}
   </pre
     >
 
-    <h3>Current User from Back-end</h3>
+    <h4>Current User from Back-end</h4>
     <pre>
     {{ currentUser }}
   </pre
-    >
-
-    <v-btn
-      dark
-      color="primary"
-      @click="logoutWrapper"
-      >Log Out</v-btn
     >
   </v-container>
 </template>
