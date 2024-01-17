@@ -127,36 +127,71 @@ by default.
 
 See [api/tests/README.md](./api/tests/README.md) for more detailed info.
 
-## Migrations
+## Migrations - Database Management
 
-You can generate migrations via the api service code. Currently uses [knex Migration CLI](https://knexjs.org/guide/migrations.html#migration-cli) using `dev knex ...` or `cd api && npm run knex ...`.
+This project is using [umzug](https://github.com/sequelize/umzug) instead of [sequelize-cli](https://github.com/sequelize/cli) because `sequelize-cli` doesn't have TypeScript support.
 
-### Create a New Migration
+NOTE: while database table names use snake_case, sequelize models use camelCase to match the JS standard. This means that migrations need to either provide a "field" name for each column that is snake_case, or use snake_case for the column names.
 
-```bash
-dev knex migrate:make migration-name
-```
+1. To create a new migration from the template [sample-migration](./api/src/db/template/sample-migration.ts) do:
 
-This will generate a migration of the form:
+   ```bash
+   dev migrate create -- --name create-users-table.ts
 
-- `api/src/db/migrations/20231013235256_migration-name.ts`
+   # Or
 
-Ideally the full name would be dash cased but that would require switching to `umzug/Sequelize`.
+   dev sh
+   npm run migrate create --name create-users-table.ts
+   ```
 
-### Running Migrations
+   > If you are using Linux, all files created in docker will be created as `root` so you won't be able to edit them. Luckily, this is handle by the `dev migrate` command, when using Linux, after you provide your `sudo` password.
 
-```bash
-dev knex migrate:latest
-dev knex migrate:up
-```
+2. To run the all new migrations do:
 
-### Rolling Migrations Backwards
+   ```bash
+   dev migrate up
+   ```
 
-```bash
-dev knex migrate:rollback
-dev knex migrate:rollback --all
-dev knex migrate:down
-```
+3. To rollback the last executed migration:
+
+   ```bash
+   dev migrate down
+   ```
+
+4. To rollback all migrations:
+
+   ```bash
+   dev migrate down -- --to 0
+   ```
+
+### Seeding
+
+Seeding is effectively the same as migrating, you just replace the `dev migrate` command with `dev seed`.
+
+e.g.
+
+- `dev seed create -- --name fill-users-table.ts`
+
+Seeds are separated by environment.
+i.e. api/src/db/seeds/development vs. api/src/db/seeds/production
+
+This allows for the convenient loading of required defaults in production, with more complex seeds in development, for easy QA.
+
+Seed code should be idempotent, so that it can be executed at any point in every environment.
+
+Seeds currently don't keep track of whether they have run or not. An alternative to this would be to store seeds in a `SequelizeData` table. via `new SequelizeStorage({ sequelize, tablename: "SequelizeData" })` in the umzug seeder config.
+
+### References
+
+- [umzug](https://github.com/sequelize/umzug)
+- [query-interface](https://sequelize.org/docs/v6/other-topics/query-interface/) migration examples.
+- [query interface api](https://sequelize.org/api/v6/class/src/dialects/abstract/query-interface.js~queryinterface) for full details.
+
+### Extras
+
+If you want to take over a directory or file in Linux you can use `dev ownit <path-to-directory-or-file>`.
+
+If you are on Windows or Mac, and you want that to work, you should implement it in the `bin/dev` file. You might never actually need to take ownership of anything, so this might not be relevant to you.
 
 ## Set up `dev` command
 
