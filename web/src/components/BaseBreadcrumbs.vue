@@ -3,6 +3,7 @@
     :items="breadcrumbs"
     class="mx-3"
     color="primary"
+    density="compact"
   >
     <template #divider>
       <v-icon icon="mdi-chevron-right"></v-icon>

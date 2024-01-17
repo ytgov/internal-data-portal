@@ -70,7 +70,7 @@
     <!-- height 100% causes the main content to fill the entire page -->
     <v-container
       fluid
-      class="h-100"
+      class="h-100 pt-0"
     >
       <router-view></router-view>
     </v-container>
