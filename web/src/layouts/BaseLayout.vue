@@ -14,8 +14,9 @@
     <v-app-bar-title
       class="pt-0 font-weight-bold"
       style="margin-left: -20px"
-      >{{ APPLICATION_NAME }}</v-app-bar-title
     >
+      <h1>{{ APPLICATION_NAME }}</h1>
+    </v-app-bar-title>
 
     <template #append>
       <v-btn
