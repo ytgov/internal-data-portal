@@ -6,14 +6,12 @@
         <v-btn
           class="mr-4"
           :to="{ name: 'StatusPage' }"
-          dark
           color="primary"
           variant="outlined"
         >
           Status
         </v-btn>
         <v-btn
-          dark
           color="primary"
           @click="logoutWrapper"
           >Log Out</v-btn
@@ -23,7 +21,6 @@
 
     <v-btn
       class="my-4"
-      dark
       color="primary"
       variant="outlined"
       :to="{ name: 'DataSetNewPage' }"

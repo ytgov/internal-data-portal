@@ -64,7 +64,6 @@
                 </h6>
 
                 <v-btn
-                  dark
                   color="primary"
                   @click="loginWithRedirect"
                   >Sign In</v-btn
