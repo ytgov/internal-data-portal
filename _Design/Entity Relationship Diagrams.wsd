@@ -1,0 +1,31 @@
+@startuml Entity Relationship Diagrams
+entity "users" as users {
+  * id : int <<PK>>
+  --
+  * email : nvarchar(100)
+  * auth0_subject : nvarchar(100)
+  first_name : nvarchar(100)
+  last_name : nvarchar(100)
+  position : nvarchar(100)
+  department : nvarchar(100)
+  division : nvarchar(100)
+  branch : nvarchar(100)
+  unit : nvarchar(100)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "roles" as roles {
+  * id : int <<PK>>
+  --
+  * user_id : int <<FK>>
+  * role : nvarchar(100)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+' Define relationships
+users ||--|{ roles
+@enduml
