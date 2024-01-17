@@ -47,7 +47,9 @@
             <template #prepend>
               <v-icon>mdi-clock</v-icon>
             </template>
-            <v-list-item-title class="text-body-2">{{ status?.RELEASE_TAG || 'loading...' }}</v-list-item-title>
+            <v-list-item-title class="text-body-2">
+              {{ status?.RELEASE_TAG || "loading..." }}
+            </v-list-item-title>
           </v-list-item>
           <v-list-item @click="logoutWrapper">
             <template #prepend>
@@ -61,6 +63,8 @@
   </v-app-bar>
 
   <v-main>
+    <BaseBreadcrumbs />
+
     <!-- Provides the application content the proper gutter -->
     <!-- height 100% causes the main content to fill the entire page -->
     <v-container
@@ -75,6 +79,8 @@
 <script lang="ts" setup>
 import { computed, onMounted } from "vue"
 import { useAuth0 } from "@auth0/auth0-vue"
+
+import BaseBreadcrumbs from "@/components/BaseBreadcrumbs.vue"
 
 import { APPLICATION_NAME } from "@/config"
 import { useStatus } from "@/use/use-status"
