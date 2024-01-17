@@ -2,12 +2,23 @@
   <v-container>
     <h2 class="d-flex justify-space-between">
       Dashboard
-      <v-btn
-        dark
-        color="primary"
-        @click="logoutWrapper"
-        >Log Out</v-btn
-      >
+      <span>
+        <v-btn
+          class="mr-4"
+          :to="{ name: 'StatusPage' }"
+          dark
+          color="primary"
+          variant="outlined"
+        >
+          Status
+        </v-btn>
+        <v-btn
+          dark
+          color="primary"
+          @click="logoutWrapper"
+          >Log Out</v-btn
+        >
+      </span>
     </h2>
 
     <v-btn
