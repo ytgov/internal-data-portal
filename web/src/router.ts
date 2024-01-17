@@ -12,9 +12,15 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/pages/DashboardPage.vue"),
   },
   {
-    name: "DataSetNewPage",
-    path: "/data-set/new",
-    component: () => import("@/pages/DataSetNewPage.vue"),
+    path: "/",
+    component: () => import("@/layouts/BaseLayout.vue"),
+    children: [
+      {
+        name: "DataSetNewPage",
+        path: "data-set/new",
+        component: () => import("@/pages/DataSetNewPage.vue"),
+      },
+    ],
   },
   {
     name: "SignInPage",

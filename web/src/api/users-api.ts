@@ -15,6 +15,9 @@ export type User = {
   updatedAt: Date // might actual be string
   deletedAt: Date // might actual be string
 
+  roleTypes: RoleTypes[]
+  displayName: string
+
   // associations
   roles: Role[]
 }
