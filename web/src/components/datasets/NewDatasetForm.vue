@@ -163,7 +163,7 @@
 <script lang="ts" setup>
 import { ref } from "vue"
 
-type DataSet = {
+type Dataset = {
   name: string
   description: string
 }

@@ -23,7 +23,7 @@
       class="my-4"
       color="primary"
       variant="outlined"
-      :to="{ name: 'DataSetNewPage' }"
+      :to="{ name: 'DatasetNewPage' }"
       >Create Dataset</v-btn
     >
 

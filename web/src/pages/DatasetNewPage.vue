@@ -2,12 +2,12 @@
   <v-container>
     <h2 class="mb-3">Create Dataset</h2>
 
-    <NewDataSetForm />
+    <NewDatasetForm />
   </v-container>
 </template>
 
 <script lang="ts" setup>
-import NewDataSetForm from "@/components/data-sets/NewDataSetForm.vue"
+import NewDatasetForm from "@/components/datasets/NewDatasetForm.vue"
 
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 
@@ -16,7 +16,7 @@ const { setBreadcrumbs } = useBreadcrumbs()
 setBreadcrumbs([
   {
     title: "Create Dataset",
-    to: { name: "DataSetNewPage" },
+    to: { name: "DatasetNewPage" },
   },
 ])
 </script>

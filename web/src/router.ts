@@ -16,9 +16,9 @@ const routes: RouteRecordRaw[] = [
     component: () => import("@/layouts/BaseLayout.vue"),
     children: [
       {
-        name: "DataSetNewPage",
-        path: "data-set/new",
-        component: () => import("@/pages/DataSetNewPage.vue"),
+        name: "DatasetNewPage",
+        path: "datasets/new",
+        component: () => import("@/pages/DatasetNewPage.vue"),
       },
     ],
   },
