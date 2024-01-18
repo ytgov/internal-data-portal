@@ -27,6 +27,7 @@ router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser)
 
 // Add all the standard api controller routes here
 router.route("/api/current-user").get(CurrentUserController.show)
+router.route("/api/datasets").post(CurrentUserController.create)
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {
