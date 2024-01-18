@@ -10,8 +10,9 @@
       >
         <v-text-field
           v-model="dataset.name"
-          label="Name"
+          label="Name *"
           variant="outlined"
+          required
         />
       </v-col>
     </v-row>
@@ -19,9 +20,10 @@
       <v-col>
         <v-textarea
           v-model="dataset.description"
-          label="Description"
+          label="Description *"
           variant="outlined"
           rows="6"
+          required
         />
       </v-col>
     </v-row>
@@ -33,11 +35,12 @@
         <v-combobox
           v-model="stewardshipEvolution.ownerName"
           :items="users"
-          label="Owner Name"
+          label="Owner Name *"
           item-value="name"
           item-title="name"
           variant="outlined"
           auto-select-first
+          required
           @input:model-value="updateOwner"
         />
       </v-col>
@@ -48,8 +51,9 @@
         <!-- TODO: auto-fill from owner info selected in owner name -->
         <v-text-field
           v-model="stewardshipEvolution.ownerPosition"
-          label="Owner Position"
+          label="Owner Position *"
           variant="outlined"
+          required
         />
       </v-col>
     </v-row>
@@ -61,11 +65,12 @@
         <v-combobox
           v-model="stewardshipEvolution.supportName"
           :items="users"
-          label="Support Name"
+          label="Support Name *"
           variant="outlined"
           item-value="name"
           item-title="name"
           auto-select-first
+          required
         />
       </v-col>
       <v-col
@@ -75,9 +80,10 @@
         <!-- TODO: auto-fill from support info selected in support name -->
         <v-text-field
           v-model="stewardshipEvolution.supportEmail"
-          label="Support Email"
+          label="Support Email *"
           variant="outlined"
           auto-select-first
+          required
         />
       </v-col>
     </v-row>
@@ -89,8 +95,9 @@
         <!-- TODO: auto-fill from support info selected in support name -->
         <v-text-field
           v-model="stewardshipEvolution.supportPosition"
-          label="Support Position"
+          label="Support Position *"
           variant="outlined"
+          required
         />
       </v-col>
     </v-row>
@@ -103,9 +110,10 @@
         <v-autocomplete
           v-model="stewardshipEvolution.department"
           :items="departments"
-          label="Department"
+          label="Department *"
           variant="outlined"
           auto-select-first
+          required
         />
       </v-col>
       <v-col
