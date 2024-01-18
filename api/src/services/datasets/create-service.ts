@@ -1,9 +1,9 @@
 import { CreationAttributes } from "sequelize"
+import { isEmpty } from "lodash"
 
 import { Dataset, User } from "@/models"
 
 import BaseService from "@/services/base-service"
-import { isEmpty } from "lodash"
 
 type Attributes = Partial<Dataset>
 
@@ -18,7 +18,7 @@ export class CreateService extends BaseService {
   }
 
   async perform(): Promise<Dataset> {
-    const { name, description } = this.attributes
+    const { ownerId, name, description } = this.attributes
     if (name === undefined || isEmpty(name)) {
       throw new Error("Dataset name cannot be blank.")
     }
@@ -29,10 +29,11 @@ export class CreateService extends BaseService {
 
     const secureAttributes: CreationAttributes<Dataset> = {
       ...this.attributes,
-      name,
+      ownerId: ownerId || this.currentUser.id,
       slug: name,
+      name,
       description,
-      ownerId: this.currentUser.id,
+      creatorId: this.currentUser.id,
     }
 
     return Dataset.create(secureAttributes)

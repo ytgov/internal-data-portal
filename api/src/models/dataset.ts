@@ -26,6 +26,7 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
 
   declare id: CreationOptional<number>
   declare ownerId: ForeignKey<User["id"]>
+  declare creatorId: ForeignKey<User["id"]>
   declare slug: string
   declare name: string
   declare description: string
@@ -53,16 +54,26 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
   declare setOwner: BelongsToSetAssociationMixin<User, User["id"]>
   declare createOwner: BelongsToCreateAssociationMixin<User>
 
+  declare getCreator: BelongsToGetAssociationMixin<User>
+  declare setCreator: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createCreator: BelongsToCreateAssociationMixin<User>
+
   declare owner?: NonAttribute<User>
+  declare creator?: NonAttribute<User>
 
   declare static associations: {
     owner: Association<Dataset, User>
+    creator: Association<Dataset, User>
   }
 
   static establishAssociations() {
     this.belongsTo(User, {
       foreignKey: "ownerId",
       as: "owner",
+    })
+    this.belongsTo(User, {
+      foreignKey: "creatorId",
+      as: "creator",
     })
   }
 }
@@ -76,6 +87,14 @@ Dataset.init(
       autoIncrement: true,
     },
     ownerId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+    creatorId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
