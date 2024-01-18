@@ -32,17 +32,23 @@
         cols="12"
         md="6"
       >
-        <v-combobox
-          v-model="stewardshipEvolution.ownerName"
+        <v-autocomplete
+          :model-value="stewardshipEvolution.ownerName"
           :items="users"
           label="Owner Name *"
-          item-value="displayName"
+          item-value="id"
           item-title="displayName"
           variant="outlined"
           auto-select-first
           required
           @update:model-value="updateOwner"
-        />
+        >
+          <template #no-data>
+            <v-list-item>
+              <v-btn block> TODO: Create New User </v-btn>
+            </v-list-item>
+          </template>
+        </v-autocomplete>
       </v-col>
       <v-col
         cols="12"
@@ -62,7 +68,7 @@
         cols="12"
         md="6"
       >
-        <v-combobox
+        <v-autocomplete
           v-model="stewardshipEvolution.supportName"
           :items="users"
           label="Support Name *"
@@ -196,20 +202,18 @@ const stewardshipEvolution = ref<
 
 const { users } = useUsers()
 
-function updateOwner(ownerNameOrOwner: string | User) {
-  if (typeof ownerNameOrOwner === "string") {
-    const ownerName = ownerNameOrOwner
-    // TODO: create user via back-end then use below
-    // Or only allow existing users to be selected and build separate UI to create users
-    stewardshipEvolution.value.ownerId = -1
-    stewardshipEvolution.value.ownerName = ownerName
-    return
-  } else {
-    const owner = ownerNameOrOwner
-    dataset.value.ownerId = owner.id
-    stewardshipEvolution.value.ownerId = owner.id
-    stewardshipEvolution.value.ownerName = owner.displayName
+function updateOwner(ownerIdString: string): void {
+  const ownerId = parseInt(ownerIdString)
+  const owner = users.value.find((user) => user.id === ownerId)
+  if (owner === undefined) {
+    throw new Error(`Could not find user with id ${ownerId}`)
   }
+
+  dataset.value.ownerId = owner.id
+  console.log("dataset.value:", JSON.stringify(dataset.value, null, 2))
+  stewardshipEvolution.value.ownerId = owner.id
+  stewardshipEvolution.value.ownerName = owner.displayName
+  return
 }
 
 const departments = ref([
