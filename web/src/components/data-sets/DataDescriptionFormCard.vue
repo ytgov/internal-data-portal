@@ -34,8 +34,7 @@
           <v-row>
             <v-col>
               <v-checkbox
-                label="inactive"
-                variant="Spatial?"
+                label="Spatial?"
               />
             </v-col>
           </v-row>
@@ -43,10 +42,15 @@
             <v-col cols="3">
               <v-checkbox
                 label="Live data?"
-                variant="outlined"
               />
             </v-col>
-            <v-col cols="9"> TODO: datepicker </v-col>
+            <v-col cols="9">
+              <DatePicker
+                :field-options="{
+                  label: 'Date Published',
+                }"
+              />
+            </v-col>
           </v-row>
         </v-col>
         <v-col cols="6">
@@ -54,10 +58,15 @@
             <v-col cols="3">
               <v-checkbox
                 label="inactive"
-                variant="outlined"
               />
             </v-col>
-            <v-col cols="9"> TODO: datepicker </v-col>
+            <v-col cols="9">
+              <DatePicker
+                :field-options="{
+                  label: 'Date Deactivated',
+                }"
+              />
+            </v-col>
           </v-row>
           <v-row>
             <v-col cols="12">
@@ -82,3 +91,7 @@
     </v-card-text>
   </v-card>
 </template>
+
+<script lang="ts" setup>
+import DatePicker from "@/components/DatePicker.vue"
+</script>
