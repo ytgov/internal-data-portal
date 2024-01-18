@@ -164,6 +164,7 @@
 import { ref } from "vue"
 
 type Dataset = {
+  ownerId: User["id"]
   name: string
   description: string
 }
