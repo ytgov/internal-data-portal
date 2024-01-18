@@ -33,8 +33,8 @@
 2. Create a `.env.development` file with this content. It must match the config in `docker-compose.development.yml`
 
    ```bash
-   AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
-   AUTH0_AUDIENCE=testing
+   VITE_AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
+   VITE_AUTH0_AUDIENCE=testing
    ```
 
 3. Go back to the top level directory.
