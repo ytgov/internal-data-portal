@@ -36,12 +36,12 @@
           v-model="stewardshipEvolution.ownerName"
           :items="users"
           label="Owner Name *"
-          item-value="name"
-          item-title="name"
+          item-value="displayName"
+          item-title="displayName"
           variant="outlined"
           auto-select-first
           required
-          @input:model-value="updateOwner"
+          @update:model-value="updateOwner"
         />
       </v-col>
       <v-col
@@ -67,8 +67,8 @@
           :items="users"
           label="Support Name *"
           variant="outlined"
-          item-value="name"
-          item-title="name"
+          item-value="displayName"
+          item-title="displayName"
           auto-select-first
           required
         />
@@ -174,6 +174,8 @@ import { ref } from "vue"
 import datasetsApi, { type Dataset } from "@/api/datasets-api"
 import { type User } from "@/api/users-api"
 
+import useUsers from "@/use/use-users"
+
 const dataset = ref<Partial<Dataset>>({})
 
 const stewardshipEvolution = ref<
@@ -192,33 +194,21 @@ const stewardshipEvolution = ref<
   }>
 >({})
 
-const owner = ref<User | null>(null)
+const { users } = useUsers()
 
-const users = ref([
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@yukon.ca",
-    position: "Data Owner",
-  },
-  {
-    id: 2,
-    name: "Jane Doe",
-    email: "jane.doe@yukon.ca",
-    position: "Data Support",
-  },
-])
-
-function updateOwner(value: string | User) {
-  if (typeof value === "string") {
+function updateOwner(ownerNameOrOwner: string | User) {
+  if (typeof ownerNameOrOwner === "string") {
+    const ownerName = ownerNameOrOwner
+    // TODO: create user via back-end then use below
+    // Or only allow existing users to be selected and build separate UI to create users
     stewardshipEvolution.value.ownerId = -1
-    stewardshipEvolution.value.ownerName = value
-    // create user then load value here?
+    stewardshipEvolution.value.ownerName = ownerName
     return
   } else {
-    owner.value = value
-    stewardshipEvolution.value.ownerId = value.id
-    stewardshipEvolution.value.ownerName = value.displayName
+    const owner = ownerNameOrOwner
+    dataset.value.ownerId = owner.id
+    stewardshipEvolution.value.ownerId = owner.id
+    stewardshipEvolution.value.ownerName = owner.displayName
   }
 }
 

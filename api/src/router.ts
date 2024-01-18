@@ -10,7 +10,7 @@ import { APPLICATION_NAME, GIT_COMMIT_HASH, RELEASE_TAG } from "@/config"
 import jwtMiddleware from "@/middlewares/jwt-middleware"
 import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middleware"
 
-import { CurrentUserController, DatasetsController } from "@/controllers"
+import { CurrentUserController, DatasetsController, UsersController } from "@/controllers"
 
 export const router = Router()
 
@@ -27,6 +27,7 @@ router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser)
 
 // Add all the standard api controller routes here
 router.route("/api/current-user").get(CurrentUserController.show)
+router.route("/api/users").get(UsersController.index)
 router.route("/api/datasets").post(DatasetsController.create)
 
 // if no other routes match, return a 404
