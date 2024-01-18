@@ -9,7 +9,7 @@
         md="6"
       >
         <v-text-field
-          v-model="dataSet.name"
+          v-model="dataset.name"
           label="Name"
           variant="outlined"
         />
@@ -18,7 +18,7 @@
     <v-row>
       <v-col>
         <v-textarea
-          v-model="dataSet.description"
+          v-model="dataset.description"
           label="Description"
           variant="outlined"
           rows="6"
@@ -163,53 +163,26 @@
 <script lang="ts" setup>
 import { ref } from "vue"
 
-type Dataset = {
-  ownerId: User["id"]
-  name: string
-  description: string
-}
+import datasetsApi, { type Dataset } from "@/api/datasets-api"
+import { type User } from "@/api/users-api"
 
-type User = {
-  id: number | null
-  name: string | null
-  email: string | null
-  position: string | null
-  department: string | null
-  division: string | null
-  branch: string | null
-  unit: string | null
-}
+const dataset = ref<Partial<Dataset>>({})
 
-const dataSet = ref({
-  name: "",
-  description: "",
-})
-
-const stewardshipEvolution = ref<{
-  ownerId: User["id"]
-  supportId: User["id"]
-  ownerName: User["name"]
-  ownerPosition: User["position"]
-  supportName: User["name"]
-  supportEmail: User["email"]
-  supportPosition: User["position"]
-  department: User["department"]
-  division: User["division"]
-  branch: User["branch"]
-  unit: User["unit"]
-}>({
-  ownerId: null,
-  supportId: null,
-  ownerName: null,
-  ownerPosition: null,
-  supportName: null,
-  supportEmail: null,
-  supportPosition: null,
-  department: null,
-  division: null,
-  branch: null,
-  unit: null,
-})
+const stewardshipEvolution = ref<
+  Partial<{
+    ownerId: User["id"]
+    supportId: User["id"]
+    ownerName: User["displayName"]
+    ownerPosition: User["position"]
+    supportName: User["displayName"]
+    supportEmail: User["email"]
+    supportPosition: User["position"]
+    department: User["department"]
+    division: User["division"]
+    branch: User["branch"]
+    unit: User["unit"]
+  }>
+>({})
 
 const owner = ref<User | null>(null)
 
@@ -230,14 +203,14 @@ const users = ref([
 
 function updateOwner(value: string | User) {
   if (typeof value === "string") {
-    stewardshipEvolution.value.ownerId = null
+    stewardshipEvolution.value.ownerId = -1
     stewardshipEvolution.value.ownerName = value
     // create user then load value here?
     return
   } else {
     owner.value = value
     stewardshipEvolution.value.ownerId = value.id
-    stewardshipEvolution.value.ownerName = value.name
+    stewardshipEvolution.value.ownerName = value.displayName
   }
 }
 
@@ -297,7 +270,12 @@ const units = ref([
   "Wormhole Exploration Unit",
 ])
 
-function save() {
-  alert("TODO: will persist the dataset")
+async function save() {
+  try {
+    const { dataset: newDataset } = await datasetsApi.create(dataset.value)
+    dataset.value = newDataset
+  } catch (error) {
+    console.error(error)
+  }
 }
 </script>
