@@ -28,13 +28,14 @@
 
 ## Development
 
-1. In the `api` folder.
+1. In both the `api` and `web` folder.
 
 2. Create a `.env.development` file with this content. It must match the config in `docker-compose.development.yml`
 
    ```bash
    VITE_AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
    VITE_AUTH0_AUDIENCE=testing
+   VITE_AUTH0_CLIENT_ID=mS8zklFSgatWX3v1OCQgVpEq5MixCm4k   
    ```
 
 3. Go back to the top level directory.
@@ -55,6 +56,10 @@
    # or
 
    docker compose -f docker-compose.development.yml up api
+
+   # or
+
+   npm run start # from the /api directory
    ```
 
 2. Access the api by logging in to the front-end, then going to http://localhost:3000
@@ -69,6 +74,10 @@
    # or
 
    docker compose -f docker-compose.development.yml up web
+
+   # or
+
+   npm run start # from the /web directory
    ```
 
 2. Log in to the front-end service at http://localhost:8080
