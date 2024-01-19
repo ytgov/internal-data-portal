@@ -54,18 +54,21 @@ export class CreateService extends BaseService {
       },
     })
 
-    if (existingDatasets.length === 0) {
+    const slugMatcher = new RegExp(`${baseSlug}\-[1-9][0-9]*$`)
+    const relevantDatasets = existingDatasets.filter(
+      ({ slug }) => slug === baseSlug || slugMatcher.test(slug)
+    )
+
+    if (relevantDatasets.length === 0) {
       return baseSlug
     }
 
-    const highestCounter = existingDatasets.reduce((currentCounter, { slug }) => {
-      const determinant = slug.replace(baseSlug, "")
-      if (determinant === "") {
+    const highestCounter = relevantDatasets.reduce((currentCounter, { slug }) => {
+      if (slug === baseSlug) {
         return currentCounter
       }
 
-      // determinant is of the form "-[1-9][0-9]*"
-      const newCounter = parseInt(slug.replace("-", ""))
+      const newCounter = parseInt(slug.replace(`${baseSlug}-`, ""))
       if (newCounter > currentCounter) {
         return newCounter
       }
