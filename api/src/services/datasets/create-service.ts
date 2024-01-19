@@ -1,4 +1,4 @@
-import { CreationAttributes } from "sequelize"
+import { CreationAttributes, Op } from "sequelize"
 import { isEmpty } from "lodash"
 import slugify from "slugify"
 
@@ -45,21 +45,36 @@ export class CreateService extends BaseService {
   private async generateSafeSlug(source: string): Promise<string> {
     const baseSlug = slugify(source, { lower: true, strict: true })
 
-    let potentialSlug = baseSlug
-    let counter = 1
-    let existingDataset = null
-    while (true) {
-      existingDataset = await Dataset.findOne({ where: { slug: potentialSlug } })
+    const existingDatasets = await Dataset.findAll({
+      attributes: ["slug"],
+      where: {
+        slug: {
+          [Op.like]: `${baseSlug}%`,
+        },
+      },
+    })
 
-      if (existingDataset === null) {
-        break
-      }
-
-      potentialSlug = `${baseSlug}-${counter}`
-      counter += 1
+    if (existingDatasets.length === 0) {
+      return baseSlug
     }
 
-    return potentialSlug
+    const highestCounter = existingDatasets.reduce((currentCounter, { slug }) => {
+      const determinant = slug.replace(baseSlug, "")
+      if (determinant === "") {
+        return currentCounter
+      }
+
+      // determinant is of the form "-[1-9][0-9]*"
+      const newCounter = parseInt(slug.replace("-", ""))
+      if (newCounter > currentCounter) {
+        return newCounter
+      }
+
+      return currentCounter
+    }, 0)
+
+    const nextCounter = highestCounter + 1
+    return `${baseSlug}-${nextCounter}`
   }
 }
 
