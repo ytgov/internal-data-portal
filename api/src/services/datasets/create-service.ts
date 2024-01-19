@@ -1,8 +1,8 @@
-import { CreationAttributes, QueryTypes } from "sequelize"
+import { CreationAttributes, Op } from "sequelize"
 import { isEmpty } from "lodash"
 import slugify from "slugify"
 
-import db, { Dataset, User } from "@/models"
+import { Dataset, User } from "@/models"
 
 import BaseService from "@/services/base-service"
 
@@ -45,36 +45,34 @@ export class CreateService extends BaseService {
   private async generateSafeSlug(source: string): Promise<string> {
     const baseSlug = slugify(source, { lower: true, strict: true })
 
-    const [result] = await db.query<{ determinant: number }>(
-      `
-        WITH determinants AS (
-          SELECT
-            CASE
-              WHEN REPLACE(slug, :baseSlug, '') = '' THEN 0
-              ELSE CAST(REPLACE(slug, :baseSlugWithDash, '') AS INT)
-            END AS determinant
-          FROM datasets
-          WHERE slug LIKE :baseSlugPattern
-        )
-        SELECT TOP 1 determinant
-        FROM determinants
-        ORDER BY determinant DESC;
-      `,
-      {
-        replacements: {
-          baseSlug,
-          baseSlugWithDash: `${baseSlug}-`,
-          baseSlugPattern: `${baseSlug}%`,
+    const existingDatasets = await Dataset.findAll({
+      attributes: ["slug"],
+      where: {
+        slug: {
+          [Op.like]: `${baseSlug}%`,
         },
-        type: QueryTypes.SELECT,
-      }
-    )
+      },
+    })
 
-    if (result === undefined) {
+    if (existingDatasets.length === 0) {
       return baseSlug
     }
 
-    const highestCounter = result.determinant
+    const highestCounter = existingDatasets.reduce((currentCounter, { slug }) => {
+      const determinant = slug.replace(baseSlug, "")
+      if (determinant === "") {
+        return currentCounter
+      }
+
+      // determinant is of the form "-[1-9][0-9]*"
+      const newCounter = parseInt(slug.replace("-", ""))
+      if (newCounter > currentCounter) {
+        return newCounter
+      }
+
+      return currentCounter
+    }, 0)
+
     const nextCounter = highestCounter + 1
     return `${baseSlug}-${nextCounter}`
   }
