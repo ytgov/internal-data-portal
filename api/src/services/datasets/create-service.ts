@@ -1,5 +1,6 @@
 import { CreationAttributes } from "sequelize"
 import { isEmpty } from "lodash"
+import slugify from "slugify"
 
 import { Dataset, User } from "@/models"
 
@@ -27,16 +28,38 @@ export class CreateService extends BaseService {
       throw new Error("Dataset description cannot be blank.")
     }
 
+    const slug = await this.generateSafeSlug(name)
+
     const secureAttributes: CreationAttributes<Dataset> = {
       ...this.attributes,
       ownerId: ownerId || this.currentUser.id,
-      slug: name,
+      slug,
       name,
       description,
       creatorId: this.currentUser.id,
     }
 
     return Dataset.create(secureAttributes)
+  }
+
+  private async generateSafeSlug(source: string): Promise<string> {
+    const baseSlug = slugify(source, { lower: true, strict: true })
+
+    let potentialSlug = baseSlug
+    let counter = 1
+    let existingDataset = null
+    while (true) {
+      existingDataset = await Dataset.findOne({ where: { slug: potentialSlug } })
+
+      if (existingDataset === null) {
+        break
+      }
+
+      potentialSlug = `${baseSlug}-${counter}`
+      counter += 1
+    }
+
+    return potentialSlug
   }
 }
 
