@@ -1,5 +1,6 @@
 import { Dataset } from "@/models"
 import { DatasetsPolicy } from "@/policies"
+import { assertDatasetPolicyRecord, type DatasetPolicyRecord } from "@/policies/datasets-policy"
 import { CreateService } from "@/services/datasets"
 
 import BaseController from "@/controllers/base-controller"
@@ -23,21 +24,21 @@ export class DatasetsController extends BaseController {
     }
   }
 
-  private async buildDataset() {
+  private async buildDataset(): Promise<DatasetPolicyRecord> {
     const attributes = this.request.body
-    const dataset = Dataset.build(attributes, {
-      include: [
-        {
-          association: "owner",
-          include: ["roles"],
-        },
-      ],
-    })
+
+    // Sadly "include" does not work in "build".
+    // And also the "getOwner" function does not inject the owner into the dataset.
+    const dataset = Dataset.build(attributes)
+    dataset.owner = await dataset.getOwner({ include: ["roles"] })
+
+    // TypeScript garbage because inline check doesn't change type
+    assertDatasetPolicyRecord(dataset)
 
     return dataset
   }
 
-  private buildPolicy(record: Dataset): DatasetsPolicy {
+  private buildPolicy(record: DatasetPolicyRecord): DatasetsPolicy {
     return new DatasetsPolicy(this.currentUser, record)
   }
 }

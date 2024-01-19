@@ -1,10 +1,20 @@
 import { Dataset, User } from "@/models"
-
-import BasePolicy from "@/policies/base-policy"
 import { RoleTypes } from "@/models/role"
 
+import BasePolicy from "@/policies/base-policy"
+
+export type DatasetPolicyRecord = Dataset & { owner: User }
+
+export function assertDatasetPolicyRecord(
+  dataset: Dataset
+): asserts dataset is DatasetPolicyRecord {
+  if (dataset.owner === undefined) {
+    throw new Error('Dataset does not conform to DatasetPolicyRecord: missing "owner" property.')
+  }
+}
+
 export class DatasetsPolicy extends BasePolicy<Dataset> {
-  constructor(user: User, record: Dataset) {
+  constructor(user: User, record: DatasetPolicyRecord) {
     super(user, record)
   }
 
