@@ -203,6 +203,7 @@
 
 <script lang="ts" setup>
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
 
@@ -214,6 +215,7 @@ import useUsers from "@/use/use-users"
 
 import { required } from "@/utils/validators"
 
+const router = useRouter()
 const snack = useSnack()
 const form = ref<InstanceType<typeof VForm> | null>(null)
 const isValid = ref(null)
@@ -335,6 +337,12 @@ async function save() {
     dataset.value = newDataset
     snack.notify("Created new dataset!", {
       color: "success",
+    })
+    router.push({
+      name: "DatasetShowPage",
+      params: {
+        datasetId: newDataset.id,
+      },
     })
   } catch (error) {
     console.error(error)
