@@ -45,9 +45,17 @@ watch(
   { deep: true, immediate: true }
 )
 
+watch(
+  () => showSnackbar.value,
+  (newShowSnackbar) => {
+    if (newShowSnackbar === false) {
+      reset()
+    }
+  }
+)
+
 function close() {
   showSnackbar.value = false
-  reset()
 }
 
 function show() {
