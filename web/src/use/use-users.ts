@@ -1,16 +1,14 @@
-import { type Ref, reactive, toRefs, unref, watch } from "vue"
+import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
 
 import usersApi, { type User } from "@/api/users-api"
 
-export function useUsers({
-  where,
-  page,
-  perPage,
-}: {
-  where?: Ref<Record<string, any>>
-  page?: Ref<number>
-  perPage?: Ref<number>
-} = {}) {
+export function useUsers(
+  options: Ref<{
+    where?: Record<string, any>
+    page?: number
+    perPage?: number
+  }> = ref({})
+) {
   const state = reactive<{
     users: User[]
     isLoading: boolean
@@ -24,11 +22,7 @@ export function useUsers({
   async function fetch(): Promise<User[]> {
     state.isLoading = true
     try {
-      const { users } = await usersApi.list({
-        where: where?.value,
-        page: page?.value,
-        perPage: perPage?.value,
-      })
+      const { users } = await usersApi.list(unref(options))
       state.isErrored = false
       state.users = users
       return users
@@ -42,11 +36,11 @@ export function useUsers({
   }
 
   watch(
-    () => [where?.value, page?.value, perPage?.value],
+    () => unref(options),
     async () => {
       await fetch()
     },
-    { immediate: true }
+    { deep: true, immediate: true }
   )
 
   return {
