@@ -42,6 +42,7 @@ export class CreateService extends BaseService {
     return Dataset.create(secureAttributes)
   }
 
+  // TODO: move to utility or model and add tests.
   private async generateSafeSlug(source: string): Promise<string> {
     const baseSlug = slugify(source, { lower: true, strict: true })
 
