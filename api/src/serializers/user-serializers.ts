@@ -29,6 +29,7 @@ export class UserSerializers extends BaseSerializer<User> {
         "email",
         "firstName",
         "lastName",
+        "position",
         "department",
         "division",
         "branch",
