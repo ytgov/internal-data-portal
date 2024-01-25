@@ -180,8 +180,10 @@ import { ref } from "vue"
 import datasetsApi, { type Dataset } from "@/api/datasets-api"
 import { type User } from "@/api/users-api"
 
+import useSnack from "@/use/use-snack"
 import useUsers from "@/use/use-users"
 
+const snack = useSnack()
 const dataset = ref<Partial<Dataset>>({})
 
 const stewardshipEvolution = ref<
@@ -278,6 +280,9 @@ async function save() {
     dataset.value = newDataset
   } catch (error) {
     console.error(error)
+    snack.notify("Failed to create dataset", {
+      color: "error",
+    })
   }
 }
 </script>
