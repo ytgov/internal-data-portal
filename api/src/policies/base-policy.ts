@@ -1,6 +1,5 @@
-import { pick } from "lodash"
-
 import { User } from "@/models"
+import { Path, deepPick } from "@/utils/deep-pick"
 
 export type Actions = "show" | "create" | "update" | "destroy"
 
@@ -32,34 +31,34 @@ export class BasePolicy<Model> {
   // TODO: add scope method to base policy, see travel-authorizations-policy.ts
 
   permitAttributes(record: Partial<Model>): Partial<Model> {
-    return pick(record, this.permittedAttributes())
+    return deepPick(record, this.permittedAttributes())
   }
 
   permitAttributesForCreate(record: Partial<Model>): Partial<Model> {
     if (this.permittedAttributesForCreate !== BasePolicy.prototype.permittedAttributesForCreate) {
-      return pick(record, this.permittedAttributesForCreate())
+      return deepPick(record, this.permittedAttributesForCreate())
     } else {
-      return pick(record, this.permittedAttributes())
+      return deepPick(record, this.permittedAttributes())
     }
   }
 
   permitAttributesForUpdate(record: Partial<Model>): Partial<Model> {
     if (this.permittedAttributesForUpdate !== BasePolicy.prototype.permittedAttributesForUpdate) {
-      return pick(record, this.permittedAttributesForUpdate())
+      return deepPick(record, this.permittedAttributesForUpdate())
     } else {
-      return pick(record, this.permittedAttributes())
+      return deepPick(record, this.permittedAttributes())
     }
   }
 
-  permittedAttributes(): string[] {
+  permittedAttributes(): Path[] {
     throw new Error("Not Implemented")
   }
 
-  permittedAttributesForCreate(): string[] {
+  permittedAttributesForCreate(): Path[] {
     throw new Error("Not Implemented")
   }
 
-  permittedAttributesForUpdate(): string[] {
+  permittedAttributesForUpdate(): Path[] {
     throw new Error("Not Implemented")
   }
 }

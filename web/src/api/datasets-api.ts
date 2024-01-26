@@ -32,9 +32,27 @@ export type Dataset = {
   deletedAt: Date // might actual be string
 }
 
+export type StewardshipEvolution = {
+  ownerId: User["id"]
+  supportId: User["id"]
+  ownerName: User["displayName"]
+  ownerPosition: User["position"]
+  supportName: User["displayName"]
+  supportEmail: User["email"]
+  supportPosition: User["position"]
+  department: User["department"]
+  division: User["division"]
+  branch: User["branch"]
+  unit: User["unit"]
+}
+
 export const usersApi = {
   DatasetErrorTypes,
-  async create(attributes: Partial<Dataset>): Promise<{ dataset: Dataset }> {
+  async create(
+    attributes: Partial<Dataset> & {
+      stewardshipEvolutionsAttributes: Partial<StewardshipEvolution>[]
+    }
+  ): Promise<{ dataset: Dataset }> {
     const { data } = await http.post("/api/datasets", attributes)
     return data
   },

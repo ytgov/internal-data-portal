@@ -207,8 +207,7 @@ import { useRouter } from "vue-router"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
 
-import datasetsApi, { type Dataset } from "@/api/datasets-api"
-import { type User } from "@/api/users-api"
+import datasetsApi, { type Dataset, type StewardshipEvolution } from "@/api/datasets-api"
 
 import useSnack from "@/use/use-snack"
 import useUsers from "@/use/use-users"
@@ -221,21 +220,7 @@ const form = ref<InstanceType<typeof VForm> | null>(null)
 const isValid = ref(null)
 const dataset = ref<Partial<Dataset>>({})
 
-const stewardshipEvolution = ref<
-  Partial<{
-    ownerId: User["id"]
-    supportId: User["id"]
-    ownerName: User["displayName"]
-    ownerPosition: User["position"]
-    supportName: User["displayName"]
-    supportEmail: User["email"]
-    supportPosition: User["position"]
-    department: User["department"]
-    division: User["division"]
-    branch: User["branch"]
-    unit: User["unit"]
-  }>
->({})
+const stewardshipEvolution = ref<Partial<StewardshipEvolution>>({})
 
 const { users } = useUsers()
 
@@ -333,7 +318,10 @@ async function save() {
   if (!valid) throw new Error("Form is invalid")
 
   try {
-    const { dataset: newDataset } = await datasetsApi.create(dataset.value)
+    const { dataset: newDataset } = await datasetsApi.create({
+      ...dataset.value,
+      stewardshipEvolutionsAttributes: [stewardshipEvolution.value],
+    })
     dataset.value = newDataset
     snack.notify("Created new dataset!", {
       color: "success",

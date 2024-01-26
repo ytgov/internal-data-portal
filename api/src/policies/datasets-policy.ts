@@ -1,6 +1,7 @@
 import { Dataset, User } from "@/models"
 import { RoleTypes } from "@/models/role"
 
+import { Path } from "@/utils/deep-pick"
 import BasePolicy from "@/policies/base-policy"
 
 export type DatasetPolicyRecord = Dataset & { owner: User }
@@ -34,7 +35,7 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     return false
   }
 
-  permittedAttributes(): string[] {
+  permittedAttributes(): Path[] {
     // TODO: include owner id for SYSTEM_ADMIN and BUSINESS_ANALYST
     return [
       "name",
@@ -51,8 +52,26 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     ]
   }
 
-  permittedAttributesForCreate(): string[] {
-    return ["ownerId", ...this.permittedAttributes()]
+  permittedAttributesForCreate(): Path[] {
+    return [
+      ...this.permittedAttributes(),
+      "ownerId",
+      {
+        stewardshipEvolutionsAttributes: [
+          "ownerId",
+          "supportId",
+          "ownerName",
+          "ownerPosition",
+          "supportName",
+          "supportEmail",
+          "supportPosition",
+          "department",
+          "division",
+          "branch",
+          "unit",
+        ],
+      },
+    ]
   }
 }
 
