@@ -329,7 +329,8 @@ async function save() {
     router.push({
       name: "DatasetShowPage",
       params: {
-        datasetId: newDataset.id, // TODO: fix VS code so this loads correctly.
+        // @ts-expect-error - TODO: figure out why newDataset isn't detecting as having an id
+        datasetId: newDataset.id,
       },
     })
   } catch (error) {
