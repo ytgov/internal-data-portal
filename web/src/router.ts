@@ -24,7 +24,8 @@ const routes: RouteRecordRaw[] = [
         name: "DatasetShowPage",
         path: "datasets/:datasetId",
         component: () => import("@/pages/DatasetShowPage.vue"),
-      }
+        props: true,
+      },
     ],
   },
   {

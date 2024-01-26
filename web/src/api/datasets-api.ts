@@ -46,13 +46,29 @@ export type StewardshipEvolution = {
   unit: User["unit"]
 }
 
+export type DatasetDetailedResult = {
+  dataset: Dataset & {
+    owner: User
+    creator: User
+    stewardshipEvolutions: StewardshipEvolution[]
+  }
+}
+
 export const usersApi = {
   DatasetErrorTypes,
+  async get(datasetId: number): Promise<{
+    dataset: DatasetDetailedResult
+  }> {
+    const { data } = await http.get(`/api/datasets/${datasetId}`)
+    return data
+  },
   async create(
     attributes: Partial<Dataset> & {
       stewardshipEvolutionsAttributes: Partial<StewardshipEvolution>[]
     }
-  ): Promise<{ dataset: Dataset }> {
+  ): Promise<{
+    dataset: DatasetDetailedResult
+  }> {
     const { data } = await http.post("/api/datasets", attributes)
     return data
   },

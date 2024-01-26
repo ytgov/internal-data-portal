@@ -19,6 +19,22 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     super(user, record)
   }
 
+  show(): boolean {
+    if (
+      this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN) ||
+      this.user.roleTypes.includes(RoleTypes.BUSINESS_ANALYST)
+    ) {
+      return true
+    } else if (
+      this.user.roleTypes.includes(RoleTypes.DATA_OWNER) &&
+      this.record.ownerId === this.user.id
+    ) {
+      return true
+    }
+
+    return false
+  }
+
   create(): boolean {
     if (
       this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN) ||

@@ -255,6 +255,7 @@ function updateSupport(supportIdString: string): void {
   stewardshipEvolution.value.supportPosition = support.position
 }
 
+// TODO: load from back-end
 const departments = ref([
   "Department of Galactic Research",
   "Ministry of Time Travel Affairs",
@@ -322,14 +323,13 @@ async function save() {
       ...dataset.value,
       stewardshipEvolutionsAttributes: [stewardshipEvolution.value],
     })
-    dataset.value = newDataset
     snack.notify("Created new dataset!", {
       color: "success",
     })
     router.push({
       name: "DatasetShowPage",
       params: {
-        datasetId: newDataset.id,
+        datasetId: newDataset.id, // TODO: fix VS code so this loads correctly.
       },
     })
   } catch (error) {
