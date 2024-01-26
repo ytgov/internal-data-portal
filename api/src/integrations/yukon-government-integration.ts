@@ -38,16 +38,27 @@ type YukonGovernmentEmployee = {
   username: string //  "jdoe"
 }
 
+type YukonGovernmentDivision = {
+  department: string // "Cabinet Office",
+  division: string | null // null,
+  branch: string | null // null,
+  unit: string | null // null,
+  order: number // 100
+}
+
 export const yukonGovernmentIntegration = {
-  async searchEmployees(params: {
-    email?: string
-  }): Promise<{ employees: YukonGovernmentEmployee[] }> {
+  async searchEmployees(params: { email?: string }): Promise<{
+    employees: YukonGovernmentEmployee[]
+    count: number
+  }> {
     const { data } = await yukonGovernmentApi.get("/directory/employees", {
       params,
     })
     return data
   },
-  async fetchEmpolyee(email: string): Promise<{ employee: YukonGovernmentEmployee }> {
+  async fetchEmpolyee(email: string): Promise<{
+    employee: YukonGovernmentEmployee
+  }> {
     const { employees } = await yukonGovernmentIntegration.searchEmployees({ email })
 
     if (isEmpty(employees)) {
@@ -64,6 +75,20 @@ export const yukonGovernmentIntegration = {
     }
 
     return { employee: employees[0] }
+  },
+  async fetchDepartments(): Promise<{
+    departments: string[]
+    count: number
+  }> {
+    const { data } = await yukonGovernmentApi.get("/directory/departments")
+    return data
+  },
+  async fetchDivisions(): Promise<{
+    divisions: YukonGovernmentDivision[]
+    count: number
+  }> {
+    const { data } = await yukonGovernmentApi.get("/directory/divisions")
+    return data
   },
 }
 
