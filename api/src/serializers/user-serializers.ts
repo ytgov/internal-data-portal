@@ -12,6 +12,10 @@ export type UserDetailedView = Omit<Partial<User>, "roles"> & {
 }
 
 export class UserSerializers extends BaseSerializer<User> {
+  static asDetailedTable(users: User[]): UserDetailedView[] {
+    return users.map((user) => this.asDetailed(user))
+  }
+
   static asDetailed(user: User): UserDetailedView {
     const serializer = new this(user)
     return serializer.asDetailed()
@@ -25,6 +29,7 @@ export class UserSerializers extends BaseSerializer<User> {
         "email",
         "firstName",
         "lastName",
+        "position",
         "department",
         "division",
         "branch",

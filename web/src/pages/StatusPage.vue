@@ -24,8 +24,10 @@
               </v-btn>
             </v-card-title>
             <v-list dense>
-              <v-list-item> Release Tag: {{ environment.releaseTag }} </v-list-item>
-              <v-list-item> Git Commit Hash: {{ environment.gitCommitHash }} </v-list-item>
+              <v-list-item> Release Tag: {{ status?.RELEASE_TAG || "loading..." }} </v-list-item>
+              <v-list-item>
+                Git Commit Hash: {{ status?.GIT_COMMIT_HASH || "loading..." }}
+              </v-list-item>
             </v-list>
           </v-card>
         </v-col>
@@ -35,12 +37,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, reactive, ref } from "vue"
+import { computed, onMounted } from "vue"
 import { useAuth0 } from "@auth0/auth0-vue"
 
-import http from "@/api/http-client"
+import { useStatus } from "@/use/use-status"
 
 const { isAuthenticated } = useAuth0()
+const { status, isLoading, refresh } = useStatus()
 
 const returnTo = computed<{ name: string; title: string }>(() => {
   if (isAuthenticated.value) {
@@ -56,38 +59,7 @@ const returnTo = computed<{ name: string; title: string }>(() => {
   }
 })
 
-const environment = reactive({
-  releaseTag: "not-set",
-  gitCommitHash: "not-set",
-})
-
-const isLoading = ref(true)
-
 onMounted(async () => {
   await refresh()
 })
-
-async function fetchVersion() {
-  return http
-    .get("/_status")
-    .then(({ data }) => {
-      environment.releaseTag = data.RELEASE_TAG
-      environment.gitCommitHash = data.GIT_COMMIT_HASH
-      return data
-    })
-    .catch((error: unknown) => {
-      console.error(`Error fetching version: ${error}`)
-    })
-}
-
-async function refresh() {
-  isLoading.value = true
-  try {
-    await fetchVersion()
-  } catch (error) {
-    console.error(`Error fetching version: ${error}`)
-  } finally {
-    isLoading.value = false
-  }
-}
 </script>

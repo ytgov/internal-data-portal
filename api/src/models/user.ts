@@ -17,7 +17,6 @@ import {
   HasManyRemoveAssociationsMixin,
   HasManySetAssociationsMixin,
 } from "sequelize"
-import { pick } from "lodash"
 
 import sequelize from "@/db/db-client"
 

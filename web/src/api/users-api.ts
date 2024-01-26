@@ -15,6 +15,9 @@ export type User = {
   updatedAt: Date // might actual be string
   deletedAt: Date // might actual be string
 
+  roleTypes: RoleTypes[]
+  displayName: string
+
   // associations
   roles: Role[]
 }
@@ -38,8 +41,24 @@ export type Role = {
 
 export const usersApi = {
   RoleTypes,
+  // TODO: consider moving this to its own api?
   async fetchCurrentUser(): Promise<{ user: User }> {
     const { data } = await http.get("/api/current-user")
+    return data
+  },
+  async list({
+    where,
+    page,
+    perPage,
+  }: {
+    where?: Record<string, any> // TODO: consider adding Sequelize types to front-end?
+    page?: number
+    perPage?: number
+  } = {}): Promise<{
+    users: User[]
+    totalCount: number
+  }> {
+    const { data } = await http.get("/api/users", { params: { where, page, perPage } })
     return data
   },
 }
