@@ -17,9 +17,9 @@ import sequelize from "@/db/db-client"
 import User from "@/models/user"
 import Dataset from "@/models/dataset"
 
-export class StewardshipEvolutions extends Model<
-  InferAttributes<StewardshipEvolutions>,
-  InferCreationAttributes<StewardshipEvolutions>
+export class StewardshipEvolution extends Model<
+  InferAttributes<StewardshipEvolution>,
+  InferCreationAttributes<StewardshipEvolution>
 > {
   declare id: CreationOptional<number>
   declare datasetId: ForeignKey<Dataset["id"]>
@@ -58,9 +58,9 @@ export class StewardshipEvolutions extends Model<
   declare support?: NonAttribute<User>
 
   declare static associations: {
-    dataset: Association<StewardshipEvolutions, Dataset>
-    owner: Association<StewardshipEvolutions, User>
-    support: Association<StewardshipEvolutions, User>
+    dataset: Association<StewardshipEvolution, Dataset>
+    owner: Association<StewardshipEvolution, User>
+    support: Association<StewardshipEvolution, User>
   }
 
   static establishAssociations() {
@@ -76,7 +76,7 @@ export class StewardshipEvolutions extends Model<
   }
 }
 
-StewardshipEvolutions.init(
+StewardshipEvolution.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -164,4 +164,4 @@ StewardshipEvolutions.init(
   }
 )
 
-export default StewardshipEvolutions
+export default StewardshipEvolution

@@ -2,11 +2,13 @@ import { CreationAttributes, Op } from "sequelize"
 import { isEmpty } from "lodash"
 import slugify from "slugify"
 
-import { Dataset, User } from "@/models"
+import { Dataset, User, StewardshipEvolution } from "@/models"
 
 import BaseService from "@/services/base-service"
 
-type Attributes = Partial<Dataset>
+type Attributes = Partial<Dataset> & {
+  stewardshipEvolutionsAttributes: Partial<StewardshipEvolution>[]
+}
 
 export class CreateService extends BaseService {
   private attributes: Attributes

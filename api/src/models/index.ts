@@ -3,15 +3,15 @@ import db from "@/db/db-client"
 import { Role } from "@/models/role"
 import { User } from "@/models/user"
 import { Dataset } from "@/models/dataset"
-import { StewardshipEvolutions } from "@/models/stewardship-evolution"
+import { StewardshipEvolution } from "@/models/stewardship-evolution"
 
 // Estabilish associations between models, order likely matters
 Role.establishAssociations()
 User.establishAssociations()
 Dataset.establishAssociations()
-StewardshipEvolutions.establishAssociations()
+StewardshipEvolution.establishAssociations()
 
-export { Role, User, Dataset, StewardshipEvolutions }
+export { Role, User, Dataset, StewardshipEvolution }
 
 // special db instance that has access to all models.
 export default db

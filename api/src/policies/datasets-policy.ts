@@ -48,7 +48,7 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
       "termsOfUse",
       "credits",
       "ownerNotes",
-      // TODO: include nested attributes for StewardshipEvolutions
+      // TODO: include nested attributes for StewardshipEvolutions?
     ]
   }
 
