@@ -17,6 +17,7 @@ import {
   HasManyRemoveAssociationsMixin,
   HasManySetAssociationsMixin,
 } from "sequelize"
+import { DateTime } from "luxon"
 
 import sequelize from "@/db/db-client"
 
@@ -33,6 +34,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare division: string | null
   declare branch: string | null
   declare unit: string | null
+  declare lastEmployeeDirectorySyncAt: Date | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>
@@ -67,6 +69,17 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
 
   get roleTypes(): NonAttribute<RoleTypes[]> {
     return this.roles?.map(({ role }) => role) || []
+  }
+
+  isTimeToSyncWithEmployeeDirectory(): NonAttribute<boolean> {
+    if (this.lastEmployeeDirectorySyncAt === null) {
+      return true
+    }
+
+    const current = DateTime.utc()
+    const lastSyncDate = DateTime.fromJSDate(this.lastEmployeeDirectorySyncAt, { zone: "utc" })
+
+    return !current.hasSame(lastSyncDate, "day")
   }
 }
 
@@ -112,6 +125,10 @@ User.init(
     },
     unit: {
       type: DataTypes.STRING(100),
+      allowNull: true,
+    },
+    lastEmployeeDirectorySyncAt: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
     createdAt: {

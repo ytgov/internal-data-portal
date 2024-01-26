@@ -34,6 +34,7 @@ export class UserSerializers extends BaseSerializer<User> {
         "division",
         "branch",
         "unit",
+        "lastEmployeeDirectorySyncAt",
         "createdAt",
         "updatedAt",
       ]),

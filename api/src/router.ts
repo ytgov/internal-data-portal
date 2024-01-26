@@ -10,7 +10,7 @@ import { APPLICATION_NAME, GIT_COMMIT_HASH, NODE_ENV, RELEASE_TAG } from "@/conf
 import jwtMiddleware from "@/middlewares/jwt-middleware"
 import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middleware"
 
-import { CurrentUserController, DatasetsController, UsersController } from "@/controllers"
+import { CurrentUserController, DatasetsController, UsersController, Users } from "@/controllers"
 
 export const router = Router()
 
@@ -28,6 +28,9 @@ router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser)
 // Add all the standard api controller routes here
 router.route("/api/current-user").get(CurrentUserController.show)
 router.route("/api/users").get(UsersController.index)
+router
+  .route("/api/users/:userId/yukon-government-directory-sync")
+  .post(Users.YukonGovernmentDirectorySyncController.create)
 router.route("/api/datasets").post(DatasetsController.create)
 router.route("/api/datasets/:datasetId").get(DatasetsController.show)
 
