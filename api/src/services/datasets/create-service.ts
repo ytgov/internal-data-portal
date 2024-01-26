@@ -2,21 +2,23 @@ import { CreationAttributes, Op } from "sequelize"
 import { isEmpty } from "lodash"
 import slugify from "slugify"
 
-import { Dataset, User, StewardshipEvolution } from "@/models"
+import db, { Dataset, User, StewardshipEvolution } from "@/models"
 
 import BaseService from "@/services/base-service"
 
 type Attributes = Partial<Dataset> & {
-  stewardshipEvolutionsAttributes: Partial<StewardshipEvolution>[]
+  stewardshipEvolutionsAttributes?: Partial<StewardshipEvolution>[]
 }
 
 export class CreateService extends BaseService {
   private attributes: Attributes
+  private stewardshipEvolutionsAttributes: Partial<StewardshipEvolution>[]
   private currentUser: User
 
-  constructor(attributes: Attributes, currentUser: User) {
+  constructor({ stewardshipEvolutionsAttributes, ...attributes }: Attributes, currentUser: User) {
     super()
     this.attributes = attributes
+    this.stewardshipEvolutionsAttributes = stewardshipEvolutionsAttributes || []
     this.currentUser = currentUser
   }
 
@@ -32,16 +34,85 @@ export class CreateService extends BaseService {
 
     const slug = await this.generateSafeSlug(name)
 
-    const secureAttributes: CreationAttributes<Dataset> = {
-      ...this.attributes,
-      ownerId: ownerId || this.currentUser.id,
-      slug,
-      name,
-      description,
-      creatorId: this.currentUser.id,
-    }
+    return db.transaction(async (transaction) => {
+      const secureAttributes: CreationAttributes<Dataset> = {
+        ...this.attributes,
+        ownerId: ownerId || this.currentUser.id,
+        slug,
+        name,
+        description,
+        creatorId: this.currentUser.id,
+      }
 
-    return Dataset.create(secureAttributes)
+      const dataset = await Dataset.create(secureAttributes)
+
+      this.assertStewardshipEvolutionAttributesAreValid(
+        this.stewardshipEvolutionsAttributes,
+        dataset.id
+      )
+      await StewardshipEvolution.bulkCreate(this.stewardshipEvolutionsAttributes)
+
+      return dataset.reload({ include: ["owner", "creator", "stewardshipEvolutions"] })
+    })
+  }
+
+  private assertStewardshipEvolutionAttributesAreValid(
+    stewardshipEvolutionsAttributes: Partial<StewardshipEvolution>[],
+    datasetId: number
+  ): asserts stewardshipEvolutionsAttributes is CreationAttributes<StewardshipEvolution>[] {
+    stewardshipEvolutionsAttributes.forEach((stewardshipEvolutionAttributes) => {
+      stewardshipEvolutionAttributes["datasetId"] = datasetId
+
+      if (stewardshipEvolutionAttributes.ownerId === undefined) {
+        throw new Error("Stewardship evolution owner ID cannot be blank.")
+      }
+
+      if (stewardshipEvolutionAttributes.supportId === undefined) {
+        throw new Error("Stewardship evolution support ID cannot be blank.")
+      }
+
+      if (
+        stewardshipEvolutionAttributes.ownerName === undefined ||
+        isEmpty(stewardshipEvolutionAttributes.ownerName)
+      ) {
+        throw new Error("Stewardship evolution owner name cannot be blank.")
+      }
+
+      if (
+        stewardshipEvolutionAttributes.ownerPosition === undefined ||
+        isEmpty(stewardshipEvolutionAttributes.ownerPosition)
+      ) {
+        throw new Error("Stewardship evolution owner position cannot be blank.")
+      }
+
+      if (
+        stewardshipEvolutionAttributes.supportName === undefined ||
+        isEmpty(stewardshipEvolutionAttributes.supportName)
+      ) {
+        throw new Error("Stewardship evolution support name cannot be blank.")
+      }
+
+      if (
+        stewardshipEvolutionAttributes.supportEmail === undefined ||
+        isEmpty(stewardshipEvolutionAttributes.supportEmail)
+      ) {
+        throw new Error("Stewardship evolution support email cannot be blank.")
+      }
+
+      if (
+        stewardshipEvolutionAttributes.supportPosition === undefined ||
+        isEmpty(stewardshipEvolutionAttributes.supportPosition)
+      ) {
+        throw new Error("Stewardship evolution support position cannot be blank.")
+      }
+
+      if (
+        stewardshipEvolutionAttributes.department === undefined ||
+        isEmpty(stewardshipEvolutionAttributes.department)
+      ) {
+        throw new Error("Stewardship evolution department cannot be blank.")
+      }
+    })
   }
 
   // TODO: move to utility or model and add tests.

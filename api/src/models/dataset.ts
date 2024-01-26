@@ -6,6 +6,16 @@ import {
   CreationOptional,
   DataTypes,
   ForeignKey,
+  HasManyAddAssociationMixin,
+  HasManyAddAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -15,6 +25,7 @@ import {
 import sequelize from "@/db/db-client"
 
 import User from "@/models/user"
+import StewardshipEvolution from "@/models/stewardship-evolution"
 
 export enum DatasetErrorTypes {
   OK = "ok",
@@ -58,12 +69,46 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
   declare setCreator: BelongsToSetAssociationMixin<User, User["id"]>
   declare createCreator: BelongsToCreateAssociationMixin<User>
 
+  declare getStewardshipEvolutions: HasManyGetAssociationsMixin<StewardshipEvolution>
+  declare setStewardshipEvolutions: HasManySetAssociationsMixin<
+    StewardshipEvolution,
+    StewardshipEvolution["datasetId"]
+  >
+  declare hasStewardshipEvolution: HasManyHasAssociationMixin<
+    StewardshipEvolution,
+    StewardshipEvolution["datasetId"]
+  >
+  declare hasStewardshipEvolutions: HasManyHasAssociationsMixin<
+    StewardshipEvolution,
+    StewardshipEvolution["datasetId"]
+  >
+  declare addStewardshipEvolution: HasManyAddAssociationMixin<
+    StewardshipEvolution,
+    StewardshipEvolution["datasetId"]
+  >
+  declare addStewardshipEvolutions: HasManyAddAssociationsMixin<
+    StewardshipEvolution,
+    StewardshipEvolution["datasetId"]
+  >
+  declare removeStewardshipEvolution: HasManyRemoveAssociationMixin<
+    StewardshipEvolution,
+    StewardshipEvolution["datasetId"]
+  >
+  declare removeStewardshipEvolutions: HasManyRemoveAssociationsMixin<
+    StewardshipEvolution,
+    StewardshipEvolution["datasetId"]
+  >
+  declare countStewardshipEvolutions: HasManyCountAssociationsMixin
+  declare createStewardshipEvolution: HasManyCreateAssociationMixin<StewardshipEvolution>
+
   declare owner?: NonAttribute<User>
   declare creator?: NonAttribute<User>
+  declare stewardshipEvolutions?: NonAttribute<StewardshipEvolution[]>
 
   declare static associations: {
     owner: Association<Dataset, User>
     creator: Association<Dataset, User>
+    stewardshipEvolutions: Association<Dataset, StewardshipEvolution>
   }
 
   static establishAssociations() {
@@ -74,6 +119,11 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
     this.belongsTo(User, {
       foreignKey: "creatorId",
       as: "creator",
+    })
+    this.hasMany(StewardshipEvolution, {
+      sourceKey: "id",
+      foreignKey: "datasetId",
+      as: "stewardshipEvolutions",
     })
   }
 }
