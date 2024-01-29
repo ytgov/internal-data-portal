@@ -9,9 +9,9 @@ export function useUserGroups(
     perPage?: number
   }> = ref({}),
   {
-    eager = true,
+    immediate = true,
   }: {
-    eager?: boolean
+    immediate?: boolean
   } = {}
 ) {
   const state = reactive<{
@@ -43,11 +43,9 @@ export function useUserGroups(
   watch(
     () => unref(queryOptions),
     async () => {
-      if (eager) {
-        await fetch()
-      }
+      await fetch()
     },
-    { deep: true, immediate: true }
+    { deep: true, immediate }
   )
 
   return {

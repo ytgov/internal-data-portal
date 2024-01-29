@@ -285,22 +285,22 @@ const {
   userGroups: departments,
   isLoading: isLoadingDepartments,
   fetch: fetchDepartments,
-} = useUserGroups(departmentsQuery, { eager: false })
+} = useUserGroups(departmentsQuery, { immediate: false })
 const {
   userGroups: divisions,
   isLoading: isLoadingDivisions,
   fetch: fetchDivisions,
-} = useUserGroups(divisionsQuery, { eager: false })
+} = useUserGroups(divisionsQuery, { immediate: false })
 const {
   userGroups: branches,
   isLoading: isLoadingBranches,
   fetch: fetchBranches,
-} = useUserGroups(branchesQuery, { eager: false })
+} = useUserGroups(branchesQuery, { immediate: false })
 const {
   userGroups: units,
   isLoading: isLoadingUnits,
   fetch: fetchUnits,
-} = useUserGroups(unitsQuery, { eager: false })
+} = useUserGroups(unitsQuery, { immediate: false })
 
 async function updateOwner(newOwnerId: number | null) {
   if (newOwnerId === null) {
