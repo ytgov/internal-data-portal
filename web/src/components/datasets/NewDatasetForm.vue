@@ -48,7 +48,7 @@
           auto-select-first
           clearable
           required
-          @update:model-value="updateOwner"
+          @update:model-value="updateOwner($event as unknown as number | null)"
         >
           <template #no-data>
             <v-list-item>
@@ -298,8 +298,20 @@ const {
   fetch: fetchUnits,
 } = useUserGroups(unitsQuery, { eager: false })
 
-function updateOwner(ownerIdString: string): void {
-  const ownerId = parseInt(ownerIdString)
+function updateOwner(newOwnerId: number | null): void {
+  if (newOwnerId === null) {
+    delete dataset.value.ownerId
+    delete stewardshipEvolution.value.ownerId
+    delete stewardshipEvolution.value.ownerName
+    delete stewardshipEvolution.value.ownerPosition
+    departmentId.value = null
+    divisionId.value = null
+    branchId.value = null
+    unitId.value = null
+    return
+  }
+
+  const ownerId = newOwnerId
   const owner = users.value.find((user) => user.id === ownerId)
   if (owner === undefined) {
     throw new Error(`Could not find user with id ${ownerId}`)
