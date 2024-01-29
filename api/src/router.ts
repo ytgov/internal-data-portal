@@ -34,6 +34,10 @@ router
 router.route("/api/datasets").post(DatasetsController.create)
 router.route("/api/datasets/:datasetId").get(DatasetsController.show)
 
+router
+  .route("/api/user-groups/yukon-government-directory-sync")
+  .post(Users.YukonGovernmentDirectorySyncController.create)
+
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {
   return res.status(404).json({ message: "Not Found" })
