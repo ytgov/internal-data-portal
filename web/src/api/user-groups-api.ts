@@ -27,6 +27,23 @@ export const userGroupsApi = {
     const { data } = await http.post("/api/user-groups/yukon-government-directory-sync")
     return data
   },
+  async list({
+    where,
+    page,
+    perPage,
+  }: {
+    where?: Record<string, any> // TODO: consider adding Sequelize types to front-end?
+    page?: number
+    perPage?: number
+  } = {}): Promise<{
+    userGroups: UserGroup[]
+    totalCount: number
+  }> {
+    const { data } = await http.get("/api/user-groups", {
+      params: { where, page, perPage },
+    })
+    return data
+  },
 }
 
 export default userGroupsApi

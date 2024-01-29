@@ -125,14 +125,17 @@
         md="6"
       >
         <v-autocomplete
-          v-model="stewardshipEvolution.department"
+          :model-value="stewardshipEvolution.department"
           :items="departments"
           :rules="[required]"
+          item-value="id"
+          item-title="name"
           label="Department *"
           variant="outlined"
           auto-select-first
           clearable
           required
+          @update:model-value="updateDepartment"
         />
       </v-col>
       <v-col
@@ -141,12 +144,15 @@
         md="6"
       >
         <v-autocomplete
-          v-model="stewardshipEvolution.division"
+          :model-value="stewardshipEvolution.division"
           :items="divisions"
+          item-value="id"
+          item-title="name"
           label="Division"
           variant="outlined"
           auto-select-first
           clearable
+          @update:model-value="updateDivision"
         />
       </v-col>
     </v-row>
@@ -208,17 +214,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { useRouter } from "vue-router"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
 
 import datasetsApi, { type Dataset, type StewardshipEvolution } from "@/api/datasets-api"
+import { UserGroupTypes } from "@/api/user-groups-api"
 
 import useSnack from "@/use/use-snack"
 import useUsers from "@/use/use-users"
+import useUserGroups from "@/use/use-user-groups"
 
 import { required } from "@/utils/validators"
+import { update } from "lodash"
 
 const router = useRouter()
 const snack = useSnack()
@@ -229,6 +238,23 @@ const dataset = ref<Partial<Dataset>>({})
 const stewardshipEvolution = ref<Partial<StewardshipEvolution>>({})
 
 const { users } = useUsers()
+
+const departmentId = ref<number | null>(null)
+const divisionId = ref<number | null>(null)
+const branchId = ref<number | null>(null)
+const departmentsQuery = computed(() => ({
+  where: {
+    type: UserGroupTypes.DEPARTMENT,
+  },
+}))
+const divisionsQuery = computed(() => ({
+  where: {
+    type: UserGroupTypes.DIVISION,
+    parentId: departmentId.value,
+  },
+}))
+const { userGroups: departments } = useUserGroups(departmentsQuery)
+const { userGroups: divisions } = useUserGroups(divisionsQuery)
 
 function updateOwner(ownerIdString: string): void {
   const ownerId = parseInt(ownerIdString)
@@ -261,34 +287,25 @@ function updateSupport(supportIdString: string): void {
   stewardshipEvolution.value.supportPosition = support.position
 }
 
-// TODO: load from back-end
-const departments = ref([
-  "Department of Galactic Research",
-  "Ministry of Time Travel Affairs",
-  "Bureau of Quantum Computing",
-  "Office of Intergalactic Relations",
-  "Department of Historical Preservation",
-  "Ministry of Virtual Reality",
-  "Bureau of Advanced Robotics",
-  "Office of Cybersecurity",
-  "Department of Teleportation Studies",
-  "Ministry of Alternate Realities",
-  "Bureau of Space-Time Continuum",
-])
+function updateDepartment(departmentIdString: string): void {
+  departmentId.value = parseInt(departmentIdString)
+  const department = departments.value.find((department) => department.id === departmentId.value)
+  if (department === undefined) {
+    throw new Error(`Could not find department with id ${departmentId}`)
+  }
 
-const divisions = ref([
-  "Galactic Exploration Division",
-  "Temporal Research Division",
-  "Quantum Algorithms Division",
-  "Alien Diplomacy Division",
-  "Ancient Artifacts Division",
-  "Virtual Experiences Division",
-  "Robotics Innovation Division",
-  "Cyber Defense Division",
-  "Teleportation Ethics Division",
-  "Parallel Universes Division",
-  "Space-Time Anomalies Division",
-])
+  stewardshipEvolution.value.department = department.name
+}
+
+function updateDivision(divisionIdString: string): void {
+  divisionId.value = parseInt(divisionIdString)
+  const division = divisions.value.find((division) => division.id === divisionId.value)
+  if (division === undefined) {
+    throw new Error(`Could not find division with id ${divisionId}`)
+  }
+
+  stewardshipEvolution.value.division = division.name
+}
 
 const branches = ref([
   "Stellar Mapping Branch",

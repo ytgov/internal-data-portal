@@ -2,7 +2,13 @@ import path from "path"
 import fs from "fs"
 
 import { DatabaseError } from "sequelize"
-import { Router, type Request, type Response, type ErrorRequestHandler, type NextFunction } from "express"
+import {
+  Router,
+  type Request,
+  type Response,
+  type ErrorRequestHandler,
+  type NextFunction,
+} from "express"
 import { template } from "lodash"
 
 import { APPLICATION_NAME, GIT_COMMIT_HASH, NODE_ENV, RELEASE_TAG } from "@/config"
@@ -16,6 +22,7 @@ import {
   UsersController,
   Users,
   UserGroups,
+  UserGroupsController,
 } from "@/controllers"
 
 export const router = Router()
@@ -40,6 +47,7 @@ router
 router.route("/api/datasets").post(DatasetsController.create)
 router.route("/api/datasets/:datasetId").get(DatasetsController.show)
 
+router.route("/api/user-groups").get(UserGroupsController.index)
 router
   .route("/api/user-groups/yukon-government-directory-sync")
   .post(UserGroups.YukonGovernmentDirectorySyncController.create)
