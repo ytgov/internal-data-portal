@@ -139,7 +139,7 @@
         />
       </v-col>
       <v-col
-        v-if="stewardshipEvolution.department"
+        v-if="stewardshipEvolution.department && departments.length > 0"
         cols="12"
         md="6"
       >
@@ -158,31 +158,37 @@
     </v-row>
     <v-row>
       <v-col
-        v-if="stewardshipEvolution.division"
+        v-if="stewardshipEvolution.division && divisions.length > 0"
         cols="12"
         md="6"
       >
         <v-autocomplete
-          v-model="stewardshipEvolution.branch"
+          :model-value="stewardshipEvolution.branch"
           :items="branches"
+          item-value="id"
+          item-title="name"
           label="Branch"
           variant="outlined"
           auto-select-first
           clearable
+          @update:model-value="updateBranch"
         />
       </v-col>
       <v-col
-        v-if="stewardshipEvolution.branch"
+        v-if="stewardshipEvolution.branch && branches.length > 0"
         cols="12"
         md="6"
       >
         <v-autocomplete
-          v-model="stewardshipEvolution.unit"
+          :model-value="stewardshipEvolution.unit"
           :items="units"
+          item-value="id"
+          item-title="name"
           label="Unit"
           variant="outlined"
           auto-select-first
           clearable
+          @update:model-value="updateUnit"
         />
       </v-col>
     </v-row>
@@ -227,7 +233,6 @@ import useUsers from "@/use/use-users"
 import useUserGroups from "@/use/use-user-groups"
 
 import { required } from "@/utils/validators"
-import { update } from "lodash"
 
 const router = useRouter()
 const snack = useSnack()
@@ -253,8 +258,22 @@ const divisionsQuery = computed(() => ({
     parentId: departmentId.value,
   },
 }))
+const branchesQuery = computed(() => ({
+  where: {
+    type: UserGroupTypes.BRANCH,
+    parentId: divisionId.value,
+  },
+}))
+const unitsQuery = computed(() => ({
+  where: {
+    type: UserGroupTypes.UNIT,
+    parentId: branchId.value,
+  },
+}))
 const { userGroups: departments } = useUserGroups(departmentsQuery)
 const { userGroups: divisions } = useUserGroups(divisionsQuery)
+const { userGroups: branches } = useUserGroups(branchesQuery)
+const { userGroups: units } = useUserGroups(unitsQuery)
 
 function updateOwner(ownerIdString: string): void {
   const ownerId = parseInt(ownerIdString)
@@ -295,6 +314,9 @@ function updateDepartment(departmentIdString: string): void {
   }
 
   stewardshipEvolution.value.department = department.name
+  stewardshipEvolution.value.division = null
+  stewardshipEvolution.value.branch = null
+  stewardshipEvolution.value.unit = null
 }
 
 function updateDivision(divisionIdString: string): void {
@@ -305,35 +327,30 @@ function updateDivision(divisionIdString: string): void {
   }
 
   stewardshipEvolution.value.division = division.name
+  stewardshipEvolution.value.branch = null
+  stewardshipEvolution.value.unit = null
 }
 
-const branches = ref([
-  "Stellar Mapping Branch",
-  "Time Travel Protocols Branch",
-  "Quantum Encryption Branch",
-  "Extraterrestrial Communication Branch",
-  "Archaeological Discoveries Branch",
-  "Immersive Technologies Branch",
-  "Automaton Developments Branch",
-  "Network Security Branch",
-  "Instant Transport Branch",
-  "Multiverse Research Branch",
-  "Dimensional Physics Branch",
-])
+function updateBranch(branchIdString: string): void {
+  branchId.value = parseInt(branchIdString)
+  const branch = branches.value.find((branch) => branch.id === branchId.value)
+  if (branch === undefined) {
+    throw new Error(`Could not find branch with id ${branchId}`)
+  }
 
-const units = ref([
-  "Nebula Analysis Unit",
-  "Chronology Unit",
-  "Quantum Computing Unit",
-  "Intergalactic Negotiations Unit",
-  "Historical Conservation Unit",
-  "Virtual Development Unit",
-  "Synthetic Intelligence Unit",
-  "Cyber Surveillance Unit",
-  "Teleportation Safety Unit",
-  "Alternate Worlds Unit",
-  "Wormhole Exploration Unit",
-])
+  stewardshipEvolution.value.branch = branch.name
+  stewardshipEvolution.value.unit = null
+}
+
+function updateUnit(unitIdString: string): void {
+  const unitId = parseInt(unitIdString)
+  const unit = units.value.find((unit) => unit.id === unitId)
+  if (unit === undefined) {
+    throw new Error(`Could not find unit with id ${unitId}`)
+  }
+
+  stewardshipEvolution.value.unit = unit.name
+}
 
 async function save() {
   if (form.value === null) throw new Error("Form is null")
