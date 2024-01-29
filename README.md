@@ -35,7 +35,7 @@
    ```bash
    VITE_AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
    VITE_AUTH0_AUDIENCE=testing
-   VITE_AUTH0_CLIENT_ID=mS8zklFSgatWX3v1OCQgVpEq5MixCm4k   
+   VITE_AUTH0_CLIENT_ID=mS8zklFSgatWX3v1OCQgVpEq5MixCm4k
    ```
 
 3. Go back to the top level directory.
@@ -278,6 +278,8 @@ Files:
    DB_USER=sa
    DB_PASS=DevPwd99!
    DB_NAME=idp_production
+
+   YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
 
 2. (optional) If testing build arguments do
