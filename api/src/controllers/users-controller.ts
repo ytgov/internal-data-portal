@@ -14,7 +14,13 @@ export class UsersController extends BaseController {
       where,
       limit: this.pagination.limit,
       offset: this.pagination.offset,
-      include: ["roles"],
+      include: [
+        "roles",
+        {
+          association: "groupMembership",
+          include: ["department", "division", "branch", "unit"],
+        },
+      ],
     })
 
     const serializedUsers = UserSerializers.asDetailedTable(users)

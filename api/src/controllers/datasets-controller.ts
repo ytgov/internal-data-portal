@@ -62,7 +62,15 @@ export class DatasetsController extends BaseController {
     // Sadly "include" does not work in "build".
     // And also the "getOwner" function does not inject the owner into the dataset.
     const dataset = Dataset.build(attributes)
-    dataset.owner = await dataset.getOwner({ include: ["roles"] })
+    dataset.owner = await dataset.getOwner({
+      include: [
+        "roles",
+        {
+          association: "groupMembership",
+          include: ["department", "division", "branch", "unit"],
+        },
+      ],
+    })
 
     // TypeScript garbage because inline check doesn't change type
     assertDatasetPolicyRecord(dataset)

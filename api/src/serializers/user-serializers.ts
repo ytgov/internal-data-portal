@@ -5,7 +5,14 @@ import { type RoleTypes } from "@/models/role"
 
 import BaseSerializer from "@/serializers/base-serializer"
 
-export type UserDetailedView = Omit<Partial<User>, "roles"> & {
+export type UserDetailedView = Omit<
+  Partial<User>,
+  "roles" | "department" | "division" | "branch" | "unit"
+> & {
+  department?: string
+  division?: string
+  branch?: string
+  unit?: string
   displayName: string
   roleTypes: RoleTypes[]
   roles: Partial<Role>[]
@@ -30,14 +37,14 @@ export class UserSerializers extends BaseSerializer<User> {
         "firstName",
         "lastName",
         "position",
-        "department",
-        "division",
-        "branch",
-        "unit",
         "lastEmployeeDirectorySyncAt",
         "createdAt",
         "updatedAt",
       ]),
+      department: this.record.department?.name,
+      division: this.record.division?.name,
+      branch: this.record.branch?.name,
+      unit: this.record.unit?.name,
       roleTypes: this.record.roleTypes,
       displayName: `${this.record.firstName} ${this.record.lastName}`,
       // associations

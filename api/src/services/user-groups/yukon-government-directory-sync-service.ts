@@ -4,7 +4,7 @@ import BaseService from "@/services/base-service"
 import { yukonGovernmentIntegration } from "@/integrations"
 import { UserGroupTypes } from "@/models/user-groups"
 
-const DEFAULT_ORDER = -1
+export const DEFAULT_ORDER = -1
 
 export class YukonGovernmentDirectorySyncService extends BaseService {
   async perform(): Promise<UserGroup[]> {

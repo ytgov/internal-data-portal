@@ -23,6 +23,7 @@ import {
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
+import UserGroupMembership from "@/models/user-group-membership"
 
 export enum UserGroupTypes {
   DEPARTMENT = "department",
@@ -65,12 +66,48 @@ export class UserGroup extends Model<
   declare countChildren: HasManyCountAssociationsMixin
   declare createChild: HasManyCreateAssociationMixin<UserGroup>
 
+  declare getDepartmentMemberships: HasManyGetAssociationsMixin<UserGroupMembership>
+  declare setDepartmentMemberships: HasManySetAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["departmentId"]
+  >
+  declare hasDepartmentMembership: HasManyAddAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["departmentId"]
+  >
+  declare hasDepartmentMemberships: HasManyAddAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["departmentId"]
+  >
+  declare addDepartmentMembership: HasManyAddAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["departmentId"]
+  >
+  declare addDepartmentMemberships: HasManyAddAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["departmentId"]
+  >
+  declare removeDepartmentMembership: HasManyRemoveAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["departmentId"]
+  >
+  declare removeDepartmentMemberships: HasManyRemoveAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["departmentId"]
+  >
+  declare countDepartmentMemberships: HasManyCountAssociationsMixin
+  declare createDepartmentMembership: HasManyCreateAssociationMixin<UserGroupMembership>
+
+  // TODO: add declares for divisionId, branchId, and unitId
+
   declare parent?: NonAttribute<UserGroup>
   declare children?: NonAttribute<UserGroup[]>
+  declare departmentMemberships?: NonAttribute<UserGroupMembership[]>
 
   declare static associations: {
     parent: Association<UserGroup, UserGroup>
     children: Association<UserGroup, UserGroup>
+    departmentMemberships: Association<UserGroup, UserGroupMembership>
   }
 
   static establishAssociations() {
@@ -82,6 +119,26 @@ export class UserGroup extends Model<
       sourceKey: "id",
       foreignKey: "parentId",
       as: "children",
+    })
+    this.hasMany(UserGroupMembership, {
+      sourceKey: "id",
+      foreignKey: "departmentId",
+      as: "departmentMemberships",
+    })
+    this.hasMany(UserGroupMembership, {
+      sourceKey: "id",
+      foreignKey: "divisionId",
+      as: "divisionMemberships",
+    })
+    this.hasMany(UserGroupMembership, {
+      sourceKey: "id",
+      foreignKey: "branchId",
+      as: "branchMemberships",
+    })
+    this.hasMany(UserGroupMembership, {
+      sourceKey: "id",
+      foreignKey: "unitId",
+      as: "unitMemberships",
     })
   }
 }
