@@ -58,6 +58,7 @@
         </v-autocomplete>
       </v-col>
       <v-col
+        v-if="stewardshipEvolution.ownerName"
         cols="12"
         md="6"
       >
@@ -90,6 +91,7 @@
         />
       </v-col>
       <v-col
+        v-if="stewardshipEvolution.supportName"
         cols="12"
         md="6"
       >
@@ -104,6 +106,7 @@
     </v-row>
     <v-row>
       <v-col
+        v-if="stewardshipEvolution.supportName"
         cols="12"
         md="6"
       >
@@ -133,6 +136,7 @@
         />
       </v-col>
       <v-col
+        v-if="stewardshipEvolution.department"
         cols="12"
         md="6"
       >
@@ -148,6 +152,7 @@
     </v-row>
     <v-row>
       <v-col
+        v-if="stewardshipEvolution.division"
         cols="12"
         md="6"
       >
@@ -161,6 +166,7 @@
         />
       </v-col>
       <v-col
+        v-if="stewardshipEvolution.branch"
         cols="12"
         md="6"
       >
