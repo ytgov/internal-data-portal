@@ -1,5 +1,18 @@
 import http from "@/api/http-client"
 
+export type GroupMembership = {
+  id: number
+  userId: number
+  departmentId: number
+  divisionId: number | null
+  branchId: number | null
+  unitId: number | null
+  groupId: number
+  createdAt: Date // might actual be string
+  updatedAt: Date // might actual be string
+  deletedAt: Date // might actual be string
+}
+
 export type User = {
   id: number
   auth0Subject: string
@@ -20,6 +33,7 @@ export type User = {
 
   // associations
   roles: Role[]
+  groupMembership: GroupMembership
 }
 
 // Must match roles in api/src/models/roles.ts

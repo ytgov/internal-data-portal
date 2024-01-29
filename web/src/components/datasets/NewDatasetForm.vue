@@ -127,7 +127,7 @@
         <v-autocomplete
           :model-value="stewardshipEvolution.department"
           :items="departments"
-          :disabled="stewardshipEvolution.ownerName === undefined"
+          :disabled="stewardshipEvolution.ownerName === undefined || departments.length === 0"
           :loading="isLoadingDepartments"
           :rules="[required]"
           item-value="id"
@@ -137,11 +137,11 @@
           auto-select-first
           clearable
           required
-          @update:model-value="updateDepartmentId($event as unknown as number)"
+          @update:model-value="updateDepartment($event as unknown as number)"
+          @clear="clearDepartment"
         />
       </v-col>
       <v-col
-        v-if="stewardshipEvolution.department"
         cols="12"
         md="6"
       >
@@ -149,20 +149,20 @@
           :model-value="stewardshipEvolution.division"
           :items="divisions"
           :loading="isLoadingDivisions"
-          :disabled="divisions.length === 0"
+          :disabled="isNil(stewardshipEvolution.department) || divisions.length === 0"
           item-value="id"
           item-title="name"
           label="Division"
           variant="outlined"
           auto-select-first
           clearable
-          @update:model-value="updateDivisionId($event as unknown as number)"
+          @update:model-value="updateDivision($event as unknown as number)"
+          @clear="clearDivision"
         />
       </v-col>
     </v-row>
     <v-row>
       <v-col
-        v-if="stewardshipEvolution.division"
         cols="12"
         md="6"
       >
@@ -170,18 +170,18 @@
           :model-value="stewardshipEvolution.branch"
           :items="branches"
           :loading="isLoadingBranches"
-          :disabled="branches.length === 0"
+          :disabled="isNil(stewardshipEvolution.division) || branches.length === 0"
           item-value="id"
           item-title="name"
           label="Branch"
           variant="outlined"
           auto-select-first
           clearable
-          @update:model-value="updateBranchId($event as unknown as number)"
+          @update:model-value="updateBranch($event as unknown as number)"
+          @clear="clearBranch"
         />
       </v-col>
       <v-col
-        v-if="stewardshipEvolution.branch"
         cols="12"
         md="6"
       >
@@ -189,14 +189,15 @@
           :model-value="stewardshipEvolution.unit"
           :items="units"
           :loading="isLoadingUnits"
-          :disabled="units.length === 0"
+          :disabled="isNil(stewardshipEvolution.branch) || units.length === 0"
           item-value="id"
           item-title="name"
           label="Unit"
           variant="outlined"
           auto-select-first
           clearable
-          @update:model-value="updateUnitId($event as unknown as number)"
+          @update:model-value="updateUnit($event as unknown as number)"
+          @clear="clearUnit"
         />
       </v-col>
     </v-row>
@@ -228,8 +229,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from "vue"
+import { computed, ref } from "vue"
 import { useRouter } from "vue-router"
+import { isNil } from "lodash"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
 
@@ -279,14 +281,16 @@ const unitsQuery = computed(() => ({
     parentId: branchId.value,
   },
 }))
-const { userGroups: departments, isLoading: isLoadingDepartments } = useUserGroups(departmentsQuery)
+const {
+  userGroups: departments,
+  isLoading: isLoadingDepartments,
+  fetch: fetchDepartments,
+} = useUserGroups(departmentsQuery, { eager: false })
 const {
   userGroups: divisions,
   isLoading: isLoadingDivisions,
   fetch: fetchDivisions,
-} = useUserGroups(divisionsQuery, {
-  eager: false,
-})
+} = useUserGroups(divisionsQuery, { eager: false })
 const {
   userGroups: branches,
   isLoading: isLoadingBranches,
@@ -298,16 +302,13 @@ const {
   fetch: fetchUnits,
 } = useUserGroups(unitsQuery, { eager: false })
 
-function updateOwner(newOwnerId: number | null): void {
+async function updateOwner(newOwnerId: number | null) {
   if (newOwnerId === null) {
     delete dataset.value.ownerId
     delete stewardshipEvolution.value.ownerId
     delete stewardshipEvolution.value.ownerName
     delete stewardshipEvolution.value.ownerPosition
-    departmentId.value = null
-    divisionId.value = null
-    branchId.value = null
-    unitId.value = null
+    clearDepartment()
     return
   }
 
@@ -322,29 +323,27 @@ function updateOwner(newOwnerId: number | null): void {
   stewardshipEvolution.value.ownerName = owner.displayName
   stewardshipEvolution.value.ownerPosition = owner.position
 
-  // TODO: switch to ids? and trigger updateXXX methdods
-  const department = departments.value.find((department) => department.name === owner.department)
-  if (department !== undefined) {
-    updateDepartmentId(department.id)
-  }
+  const {
+    departmentId: newDepartmentId,
+    divisionId: newDivisionId,
+    branchId: newBranchId,
+    unitId: newUnitId,
+  } = owner.groupMembership || {}
+  await updateDepartment(newDepartmentId)
+  if (newDivisionId !== null) {
+    await updateDivision(newDivisionId)
 
-  const division = divisions.value.find((division) => division.name === owner.division)
-  if (division !== undefined) {
-    updateDivisionId(division.id)
-  }
+    if (newBranchId !== null) {
+      await updateBranch(newBranchId)
 
-  const branch = branches.value.find((branch) => branch.name === owner.branch)
-  if (branch !== undefined) {
-    updateBranchId(branch.id)
-  }
-
-  const unit = units.value.find((unit) => unit.name === owner.unit)
-  if (unit !== undefined) {
-    updateUnitId(unit.id)
+      if (newUnitId !== null) {
+        await updateUnit(newUnitId)
+      }
+    }
   }
 }
 
-function updateSupport(supportIdString: string): void {
+function updateSupport(supportIdString: string) {
   const supportId = parseInt(supportIdString)
   const support = users.value.find((user) => user.id === supportId)
   if (support === undefined) {
@@ -357,86 +356,94 @@ function updateSupport(supportIdString: string): void {
   stewardshipEvolution.value.supportPosition = support.position
 }
 
-function updateDepartmentId(newDepartmentId: number): void {
+function clearDepartment() {
+  departmentId.value = null
+  stewardshipEvolution.value.department = null
+  clearDivision()
+}
+
+function clearDivision() {
+  divisionId.value = null
+  stewardshipEvolution.value.division = null
+  clearBranch()
+}
+
+function clearBranch() {
+  branchId.value = null
+  stewardshipEvolution.value.branch = null
+  clearUnit()
+}
+
+function clearUnit() {
+  unitId.value = null
+  stewardshipEvolution.value.unit = null
+}
+
+async function updateDepartment(newDepartmentId: number | null) {
   departmentId.value = newDepartmentId
+  if (departmentId.value === null) return
+  if (departments.value.length === 0) {
+    await fetchDepartments()
+  }
+
+  const department = departments.value.find((department) => department.id === departmentId.value)
+  if (department === undefined) {
+    throw new Error(`Could not find department with id ${departmentId.value}`)
+  }
+
+  stewardshipEvolution.value.department = department.name
+  clearDivision()
 }
 
-function updateDivisionId(newDivisionId: number): void {
+async function updateDivision(newDivisionId: number) {
   divisionId.value = newDivisionId
+
+  if (divisionId.value === null) return
+  if (divisions.value.length === 0) {
+    await fetchDivisions()
+  }
+
+  const division = divisions.value.find((division) => division.id === divisionId.value)
+  if (division === undefined) {
+    throw new Error(`Could not find division with id ${divisionId.value}`)
+  }
+
+  stewardshipEvolution.value.division = division.name
+  clearBranch()
 }
 
-function updateBranchId(newBranchId: number): void {
+async function updateBranch(newBranchId: number) {
   branchId.value = newBranchId
+
+  if (branchId.value === null) return
+  if (branches.value.length === 0) {
+    await fetchBranches()
+  }
+
+  const branch = branches.value.find((branch) => branch.id === branchId.value)
+  if (branch === undefined) {
+    throw new Error(`Could not find branch with id ${branchId.value}`)
+  }
+
+  stewardshipEvolution.value.branch = branch.name
+  clearUnit()
 }
 
-function updateUnitId(newUnitId: number): void {
+async function updateUnit(newUnitId: number) {
   unitId.value = newUnitId
+
+  if (unitId.value === null) return
+  if (units.value.length === 0) {
+    await fetchUnits()
+  }
+
+  const unit = units.value.find((unit) => unit.id === unitId.value)
+  if (unit === undefined) {
+    throw new Error(`Could not find unit with id ${unitId.value}`)
+  }
+
+  stewardshipEvolution.value.unit = unit.name
 }
-
-watch(
-  () => [departmentId.value, departments.value],
-  () => {
-    if (departmentId.value === null) return
-
-    const department = departments.value.find((department) => department.id === departmentId.value)
-    if (department === undefined) {
-      throw new Error(`Could not find department with id ${departmentId.value}`)
-    }
-
-    stewardshipEvolution.value.department = department.name
-    stewardshipEvolution.value.division = null
-    stewardshipEvolution.value.branch = null
-    stewardshipEvolution.value.unit = null
-    fetchDivisions()
-  }
-)
-
-watch(
-  () => [divisionId.value, divisions.value],
-  () => {
-    if (divisionId.value === null) return
-
-    const division = divisions.value.find((division) => division.id === divisionId.value)
-    if (division === undefined) {
-      throw new Error(`Could not find division with id ${divisionId.value}`)
-    }
-
-    stewardshipEvolution.value.division = division.name
-    stewardshipEvolution.value.branch = null
-    stewardshipEvolution.value.unit = null
-    fetchBranches()
-  }
-)
-
-watch(
-  () => [branchId.value, branches],
-  () => {
-    if (branchId.value === null) return
-
-    const branch = branches.value.find((branch) => branch.id === branchId.value)
-    if (branch === undefined) {
-      throw new Error(`Could not find branch with id ${branchId.value}`)
-    }
-
-    stewardshipEvolution.value.branch = branch.name
-    stewardshipEvolution.value.unit = null
-    fetchUnits()
-  }
-)
-
-watch(
-  () => [unitId.value, units.value],
-  () => {
-    if (unitId.value === null) return
-
-    const unit = units.value.find((unit) => unit.id === unitId.value)
-    if (unit === undefined) {
-      throw new Error(`Could not find unit with id ${unitId.value}`)
-    }
-
-    stewardshipEvolution.value.unit = unit.name
-  }
-)
 
 async function save() {
   if (form.value === null) throw new Error("Form is null")

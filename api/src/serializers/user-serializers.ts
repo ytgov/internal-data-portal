@@ -41,6 +41,7 @@ export class UserSerializers extends BaseSerializer<User> {
         "createdAt",
         "updatedAt",
       ]),
+      groupMembership: this.record.groupMembership,
       department: this.record.department?.name,
       division: this.record.division?.name,
       branch: this.record.branch?.name,
