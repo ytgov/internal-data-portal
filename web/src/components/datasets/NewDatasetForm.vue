@@ -127,6 +127,7 @@
         <v-autocomplete
           :model-value="stewardshipEvolution.department"
           :items="departments"
+          :loading="isLoadingDepartments"
           :rules="[required]"
           item-value="id"
           item-title="name"
@@ -146,6 +147,7 @@
         <v-autocomplete
           :model-value="stewardshipEvolution.division"
           :items="divisions"
+          :loading="isLoadingDivisions"
           item-value="id"
           item-title="name"
           label="Division"
@@ -165,6 +167,7 @@
         <v-autocomplete
           :model-value="stewardshipEvolution.branch"
           :items="branches"
+          :loading="isLoadingBranches"
           item-value="id"
           item-title="name"
           label="Branch"
@@ -182,6 +185,7 @@
         <v-autocomplete
           :model-value="stewardshipEvolution.unit"
           :items="units"
+          :loading="isLoadingUnits"
           item-value="id"
           item-title="name"
           label="Unit"
@@ -270,10 +274,24 @@ const unitsQuery = computed(() => ({
     parentId: branchId.value,
   },
 }))
-const { userGroups: departments } = useUserGroups(departmentsQuery)
-const { userGroups: divisions } = useUserGroups(divisionsQuery)
-const { userGroups: branches } = useUserGroups(branchesQuery)
-const { userGroups: units } = useUserGroups(unitsQuery)
+const { userGroups: departments, isLoading: isLoadingDepartments } = useUserGroups(departmentsQuery)
+const {
+  userGroups: divisions,
+  isLoading: isLoadingDivisions,
+  fetch: fetchDivisions,
+} = useUserGroups(divisionsQuery, {
+  eager: false,
+})
+const {
+  userGroups: branches,
+  isLoading: isLoadingBranches,
+  fetch: fetchBranches,
+} = useUserGroups(branchesQuery, { eager: false })
+const {
+  userGroups: units,
+  isLoading: isLoadingUnits,
+  fetch: fetchUnits,
+} = useUserGroups(unitsQuery, { eager: false })
 
 function updateOwner(ownerIdString: string): void {
   const ownerId = parseInt(ownerIdString)
@@ -286,6 +304,8 @@ function updateOwner(ownerIdString: string): void {
   stewardshipEvolution.value.ownerId = owner.id
   stewardshipEvolution.value.ownerName = owner.displayName
   stewardshipEvolution.value.ownerPosition = owner.position
+
+  // TODO: switch to ids? and trigger updateXXX methdods
   stewardshipEvolution.value.department = owner.department
   stewardshipEvolution.value.division = owner.division
   stewardshipEvolution.value.branch = owner.branch
@@ -308,6 +328,8 @@ function updateSupport(supportIdString: string): void {
 
 function updateDepartment(departmentIdString: string): void {
   departmentId.value = parseInt(departmentIdString)
+  fetchDivisions()
+
   const department = departments.value.find((department) => department.id === departmentId.value)
   if (department === undefined) {
     throw new Error(`Could not find department with id ${departmentId}`)
@@ -321,6 +343,8 @@ function updateDepartment(departmentIdString: string): void {
 
 function updateDivision(divisionIdString: string): void {
   divisionId.value = parseInt(divisionIdString)
+  fetchBranches()
+
   const division = divisions.value.find((division) => division.id === divisionId.value)
   if (division === undefined) {
     throw new Error(`Could not find division with id ${divisionId}`)
@@ -333,6 +357,8 @@ function updateDivision(divisionIdString: string): void {
 
 function updateBranch(branchIdString: string): void {
   branchId.value = parseInt(branchIdString)
+  fetchUnits()
+
   const branch = branches.value.find((branch) => branch.id === branchId.value)
   if (branch === undefined) {
     throw new Error(`Could not find branch with id ${branchId}`)

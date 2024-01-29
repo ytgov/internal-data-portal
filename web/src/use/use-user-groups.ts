@@ -3,11 +3,16 @@ import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
 import userGroupsApi, { type UserGroup } from "@/api/user-groups-api"
 
 export function useUserGroups(
-  options: Ref<{
+  queryOptions: Ref<{
     where?: Record<string, any>
     page?: number
     perPage?: number
-  }> = ref({})
+  }> = ref({}),
+  {
+    eager = true,
+  }: {
+    eager?: boolean
+  } = {}
 ) {
   const state = reactive<{
     userGroups: UserGroup[]
@@ -22,7 +27,7 @@ export function useUserGroups(
   async function fetch(): Promise<UserGroup[]> {
     state.isLoading = true
     try {
-      const { userGroups } = await userGroupsApi.list(unref(options))
+      const { userGroups } = await userGroupsApi.list(unref(queryOptions))
       state.isErrored = false
       state.userGroups = userGroups
       return userGroups
@@ -36,9 +41,11 @@ export function useUserGroups(
   }
 
   watch(
-    () => unref(options),
+    () => unref(queryOptions),
     async () => {
-      await fetch()
+      if (eager) {
+        await fetch()
+      }
     },
     { deep: true, immediate: true }
   )
