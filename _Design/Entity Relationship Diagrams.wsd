@@ -1,31 +1,4 @@
 @startuml Entity Relationship Diagrams
-entity "users" {
-  * id : int <<PK>>
-  --
-  * email : nvarchar(100)
-  * auth0_subject : nvarchar(100)
-  first_name : nvarchar(100)
-  last_name : nvarchar(100)
-  position : nvarchar(100)
-  department : nvarchar(100)
-  division : nvarchar(100)
-  branch : nvarchar(100)
-  unit : nvarchar(100)
-  created_at : datetime2(0)
-  updated_at : datetime2(0)
-  deleted_at : datetime2(0)
-}
-
-entity "roles" {
-  * id : int <<PK>>
-  --
-  * user_id : int <<FK>>
-  * role : nvarchar(100)
-  created_at : datetime2(0)
-  updated_at : datetime2(0)
-  deleted_at : datetime2(0)
-}
-
 entity "datasets" {
   * id : int <<PK>>
   --
@@ -52,6 +25,16 @@ entity "datasets" {
   deleted_at : datetime2(0)
 }
 
+entity "roles" {
+  * id : int <<PK>>
+  --
+  * user_id : int <<FK>>
+  * role : nvarchar(100)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
 entity "stewardship_evolutions" {
   * id : int <<PK>>
   --
@@ -67,6 +50,37 @@ entity "stewardship_evolutions" {
   division : nvarchar(255)
   branch : nvarchar(255)
   unit : nvarchar(255)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "users" {
+  * id : int <<PK>>
+  --
+  * email : nvarchar(100)
+  * auth0_subject : nvarchar(100)
+  first_name : nvarchar(100)
+  last_name : nvarchar(100)
+  position : nvarchar(100)
+  department : nvarchar(100)
+  division : nvarchar(100)
+  branch : nvarchar(100)
+  unit : nvarchar(100)
+  lastEmployeeDirectorySyncAt: datetime2(0)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "user_groups" {
+  * id : int <<PK>>
+  --
+  * parentId : int <<FK>>
+  name: nvarchar(255)
+  type: nvarchar(255)
+  order: number
+  lastDivisionDirectorySyncAt: datetime2(0)
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
