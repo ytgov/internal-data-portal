@@ -356,24 +356,28 @@ function updateSupport(supportIdString: string) {
   stewardshipEvolution.value.supportPosition = support.position
 }
 
+// NOTE: clear function doesn't work as expected, might be a bug in Vuetify
 function clearDepartment() {
   departmentId.value = null
   stewardshipEvolution.value.department = null
   clearDivision()
 }
 
+// NOTE: clear function doesn't work as expected, might be a bug in Vuetify
 function clearDivision() {
   divisionId.value = null
   stewardshipEvolution.value.division = null
   clearBranch()
 }
 
+// NOTE: clear function doesn't work as expected, might be a bug in Vuetify
 function clearBranch() {
   branchId.value = null
   stewardshipEvolution.value.branch = null
   clearUnit()
 }
 
+// NOTE: clear function doesn't work as expected, might be a bug in Vuetify
 function clearUnit() {
   unitId.value = null
   stewardshipEvolution.value.unit = null
