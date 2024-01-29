@@ -5,6 +5,13 @@
       <span>
         <v-btn
           class="mr-4"
+          color="primary"
+          variant="outlined"
+          @click="syncUserGroups"
+          >Sync User Groups</v-btn
+        >
+        <v-btn
+          class="mr-4"
           :to="{ name: 'StatusPage' }"
           color="primary"
           variant="outlined"
@@ -46,6 +53,7 @@
 import { useAuth0 } from "@auth0/auth0-vue"
 
 import useCurrentUser from "@/use/use-current-user"
+import userGroupsApi from "@/api/user-groups-api"
 
 const { user, logout } = useAuth0()
 const { currentUser } = useCurrentUser()
@@ -57,5 +65,10 @@ async function logoutWrapper() {
       returnTo: window.location.origin,
     },
   })
+}
+
+async function syncUserGroups() {
+  const { userGroups } = await userGroupsApi.sync()
+  console.log("userGroups:", userGroups)
 }
 </script>

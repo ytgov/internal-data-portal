@@ -13,8 +13,8 @@ export class YukonGovernmentDirectorySyncController extends BaseController {
         .json({ message: "You are not authorized to sync user groups." })
     }
 
-    const userGroups = UserGroups.YukonGovernmentDirectorySyncService.perform()
-    return this.response.status(200).json({ userGroups })
+    const userGroups = await UserGroups.YukonGovernmentDirectorySyncService.perform()
+    return this.response.status(201).json({ userGroups })
   }
 
   private async buildUserGroup(): Promise<UserGroup> {

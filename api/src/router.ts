@@ -2,7 +2,7 @@ import path from "path"
 import fs from "fs"
 
 import { DatabaseError } from "sequelize"
-import { Router, type Request, type Response, ErrorRequestHandler, NextFunction } from "express"
+import { Router, type Request, type Response, type ErrorRequestHandler, type NextFunction } from "express"
 import { template } from "lodash"
 
 import { APPLICATION_NAME, GIT_COMMIT_HASH, NODE_ENV, RELEASE_TAG } from "@/config"
@@ -10,7 +10,13 @@ import { APPLICATION_NAME, GIT_COMMIT_HASH, NODE_ENV, RELEASE_TAG } from "@/conf
 import jwtMiddleware from "@/middlewares/jwt-middleware"
 import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middleware"
 
-import { CurrentUserController, DatasetsController, UsersController, Users } from "@/controllers"
+import {
+  CurrentUserController,
+  DatasetsController,
+  UsersController,
+  Users,
+  UserGroups,
+} from "@/controllers"
 
 export const router = Router()
 
@@ -36,7 +42,7 @@ router.route("/api/datasets/:datasetId").get(DatasetsController.show)
 
 router
   .route("/api/user-groups/yukon-government-directory-sync")
-  .post(Users.YukonGovernmentDirectorySyncController.create)
+  .post(UserGroups.YukonGovernmentDirectorySyncController.create)
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {

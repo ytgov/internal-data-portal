@@ -20,7 +20,7 @@ export class YukonGovernmentDirectorySyncController extends BaseController {
 
     return Users.YukonGovernmentDirectorySyncService.perform(this.currentUser).then((user) => {
       const serializedUser = UserSerializers.asDetailed(user)
-      return this.response.status(200).json({ user: serializedUser })
+      return this.response.status(201).json({ user: serializedUser })
     })
   }
 
