@@ -5,6 +5,14 @@
       <span>
         <v-btn
           class="mr-4"
+          color="primary"
+          variant="outlined"
+          :loading="isLoadingUserGroups"
+          @click="syncUserGroups"
+          >Sync User Groups</v-btn
+        >
+        <v-btn
+          class="mr-4"
           :to="{ name: 'StatusPage' }"
           color="primary"
           variant="outlined"
@@ -22,7 +30,6 @@
     <v-btn
       class="my-4"
       color="primary"
-      variant="outlined"
       :to="{ name: 'DatasetNewPage' }"
       >Create Dataset</v-btn
     >
@@ -43,12 +50,16 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from "vue"
+
 import { useAuth0 } from "@auth0/auth0-vue"
 
 import useCurrentUser from "@/use/use-current-user"
+import userGroupsApi from "@/api/user-groups-api"
 
 const { user, logout } = useAuth0()
 const { currentUser } = useCurrentUser()
+const isLoadingUserGroups = ref(false)
 
 async function logoutWrapper() {
   await logout({
@@ -57,5 +68,14 @@ async function logoutWrapper() {
       returnTo: window.location.origin,
     },
   })
+}
+
+async function syncUserGroups() {
+  isLoadingUserGroups.value = true
+  try {
+    await userGroupsApi.sync()
+  } finally {
+    isLoadingUserGroups.value = false
+  }
 }
 </script>

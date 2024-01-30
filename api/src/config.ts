@@ -40,3 +40,5 @@ export const DB_PORT = parseInt(process.env.DB_PORT || "1433")
 
 export const RELEASE_TAG = process.env.RELEASE_TAG || ""
 export const GIT_COMMIT_HASH = process.env.GIT_COMMIT_HASH || ""
+
+export const YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY = process.env.YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY || ""

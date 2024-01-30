@@ -48,7 +48,7 @@
           auto-select-first
           clearable
           required
-          @update:model-value="updateOwner"
+          @update:model-value="updateOwner($event as unknown as number | null)"
         >
           <template #no-data>
             <v-list-item>
@@ -63,6 +63,7 @@
       >
         <v-text-field
           v-model="stewardshipEvolution.ownerPosition"
+          :disabled="stewardshipEvolution.ownerName === undefined"
           :rules="[required]"
           label="Owner Position *"
           variant="outlined"
@@ -86,7 +87,7 @@
           auto-select-first
           clearable
           required
-          @update:model-value="updateSupport"
+          @update:model-value="updateSupport($event as unknown as number | null)"
         />
       </v-col>
       <v-col
@@ -95,6 +96,7 @@
       >
         <v-text-field
           v-model="stewardshipEvolution.supportEmail"
+          :disabled="stewardshipEvolution.supportName === undefined"
           :rules="[required]"
           label="Support Email *"
           variant="outlined"
@@ -109,6 +111,7 @@
       >
         <v-text-field
           v-model="stewardshipEvolution.supportPosition"
+          :disabled="stewardshipEvolution.supportName === undefined"
           :rules="[required]"
           label="Support Position *"
           variant="outlined"
@@ -122,14 +125,19 @@
         md="6"
       >
         <v-autocomplete
-          v-model="stewardshipEvolution.department"
+          :model-value="stewardshipEvolution.department"
           :items="departments"
+          :disabled="stewardshipEvolution.ownerName === undefined || departments.length === 0"
+          :loading="isLoadingDepartments"
           :rules="[required]"
+          item-value="id"
+          item-title="name"
           label="Department *"
           variant="outlined"
           auto-select-first
           clearable
           required
+          @update:model-value="updateDepartment($event as unknown as number | null)"
         />
       </v-col>
       <v-col
@@ -137,12 +145,17 @@
         md="6"
       >
         <v-autocomplete
-          v-model="stewardshipEvolution.division"
+          :model-value="stewardshipEvolution.division"
           :items="divisions"
+          :loading="isLoadingDivisions"
+          :disabled="isNil(stewardshipEvolution.department) || divisions.length === 0"
+          item-value="id"
+          item-title="name"
           label="Division"
           variant="outlined"
           auto-select-first
           clearable
+          @update:model-value="updateDivision($event as unknown as number | null)"
         />
       </v-col>
     </v-row>
@@ -152,12 +165,17 @@
         md="6"
       >
         <v-autocomplete
-          v-model="stewardshipEvolution.branch"
+          :model-value="stewardshipEvolution.branch"
           :items="branches"
+          :loading="isLoadingBranches"
+          :disabled="isNil(stewardshipEvolution.division) || branches.length === 0"
+          item-value="id"
+          item-title="name"
           label="Branch"
           variant="outlined"
           auto-select-first
           clearable
+          @update:model-value="updateBranch($event as unknown as number | null)"
         />
       </v-col>
       <v-col
@@ -165,12 +183,17 @@
         md="6"
       >
         <v-autocomplete
-          v-model="stewardshipEvolution.unit"
+          :model-value="stewardshipEvolution.unit"
           :items="units"
+          :loading="isLoadingUnits"
+          :disabled="isNil(stewardshipEvolution.branch) || units.length === 0"
+          item-value="id"
+          item-title="name"
           label="Unit"
           variant="outlined"
           auto-select-first
           clearable
+          @update:model-value="updateUnit($event as unknown as number | null)"
         />
       </v-col>
     </v-row>
@@ -202,15 +225,18 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { useRouter } from "vue-router"
+import { isNil } from "lodash"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
 
 import datasetsApi, { type Dataset, type StewardshipEvolution } from "@/api/datasets-api"
+import { UserGroupTypes } from "@/api/user-groups-api"
 
 import useSnack from "@/use/use-snack"
 import useUsers from "@/use/use-users"
+import useUserGroups from "@/use/use-user-groups"
 
 import { required } from "@/utils/validators"
 
@@ -224,8 +250,65 @@ const stewardshipEvolution = ref<Partial<StewardshipEvolution>>({})
 
 const { users } = useUsers()
 
-function updateOwner(ownerIdString: string): void {
-  const ownerId = parseInt(ownerIdString)
+const departmentId = ref<number | null>(null)
+const divisionId = ref<number | null>(null)
+const branchId = ref<number | null>(null)
+const unitId = ref<number | null>(null)
+const departmentsQuery = computed(() => ({
+  where: {
+    type: UserGroupTypes.DEPARTMENT,
+  },
+}))
+const divisionsQuery = computed(() => ({
+  where: {
+    type: UserGroupTypes.DIVISION,
+    parentId: departmentId.value,
+  },
+}))
+const branchesQuery = computed(() => ({
+  where: {
+    type: UserGroupTypes.BRANCH,
+    parentId: divisionId.value,
+  },
+}))
+const unitsQuery = computed(() => ({
+  where: {
+    type: UserGroupTypes.UNIT,
+    parentId: branchId.value,
+  },
+}))
+const {
+  userGroups: departments,
+  isLoading: isLoadingDepartments,
+  fetch: fetchDepartments,
+} = useUserGroups(departmentsQuery, { immediate: false })
+const {
+  userGroups: divisions,
+  isLoading: isLoadingDivisions,
+  fetch: fetchDivisions,
+} = useUserGroups(divisionsQuery, { immediate: false })
+const {
+  userGroups: branches,
+  isLoading: isLoadingBranches,
+  fetch: fetchBranches,
+} = useUserGroups(branchesQuery, { immediate: false })
+const {
+  userGroups: units,
+  isLoading: isLoadingUnits,
+  fetch: fetchUnits,
+} = useUserGroups(unitsQuery, { immediate: false })
+
+async function updateOwner(newOwnerId: number | null) {
+  if (isNil(newOwnerId)) {
+    delete dataset.value.ownerId
+    delete stewardshipEvolution.value.ownerId
+    delete stewardshipEvolution.value.ownerName
+    delete stewardshipEvolution.value.ownerPosition
+    clearDepartment()
+    return
+  }
+
+  const ownerId = newOwnerId
   const owner = users.value.find((user) => user.id === ownerId)
   if (owner === undefined) {
     throw new Error(`Could not find user with id ${ownerId}`)
@@ -235,15 +318,28 @@ function updateOwner(ownerIdString: string): void {
   stewardshipEvolution.value.ownerId = owner.id
   stewardshipEvolution.value.ownerName = owner.displayName
   stewardshipEvolution.value.ownerPosition = owner.position
-  stewardshipEvolution.value.department = owner.department
-  stewardshipEvolution.value.division = owner.division
-  stewardshipEvolution.value.branch = owner.branch
-  stewardshipEvolution.value.unit = owner.unit
-  return
+
+  const {
+    departmentId: newDepartmentId,
+    divisionId: newDivisionId,
+    branchId: newBranchId,
+    unitId: newUnitId,
+  } = owner.groupMembership || {}
+  await updateDepartment(newDepartmentId)
+  await updateDivision(newDivisionId)
+  await updateBranch(newBranchId)
+  await updateUnit(newUnitId)
 }
 
-function updateSupport(supportIdString: string): void {
-  const supportId = parseInt(supportIdString)
+function updateSupport(supportId: number | null) {
+  if (isNil(supportId)) {
+    delete stewardshipEvolution.value.supportId
+    delete stewardshipEvolution.value.supportName
+    delete stewardshipEvolution.value.supportEmail
+    delete stewardshipEvolution.value.supportPosition
+    return
+  }
+
   const support = users.value.find((user) => user.id === supportId)
   if (support === undefined) {
     throw new Error(`Could not find user with id ${supportId}`)
@@ -255,62 +351,107 @@ function updateSupport(supportIdString: string): void {
   stewardshipEvolution.value.supportPosition = support.position
 }
 
-// TODO: load from back-end
-const departments = ref([
-  "Department of Galactic Research",
-  "Ministry of Time Travel Affairs",
-  "Bureau of Quantum Computing",
-  "Office of Intergalactic Relations",
-  "Department of Historical Preservation",
-  "Ministry of Virtual Reality",
-  "Bureau of Advanced Robotics",
-  "Office of Cybersecurity",
-  "Department of Teleportation Studies",
-  "Ministry of Alternate Realities",
-  "Bureau of Space-Time Continuum",
-])
+function clearDepartment() {
+  departmentId.value = null
+  delete stewardshipEvolution.value.department
+  clearDivision()
+}
 
-const divisions = ref([
-  "Galactic Exploration Division",
-  "Temporal Research Division",
-  "Quantum Algorithms Division",
-  "Alien Diplomacy Division",
-  "Ancient Artifacts Division",
-  "Virtual Experiences Division",
-  "Robotics Innovation Division",
-  "Cyber Defense Division",
-  "Teleportation Ethics Division",
-  "Parallel Universes Division",
-  "Space-Time Anomalies Division",
-])
+function clearDivision() {
+  divisionId.value = null
+  delete stewardshipEvolution.value.division
+  clearBranch()
+}
 
-const branches = ref([
-  "Stellar Mapping Branch",
-  "Time Travel Protocols Branch",
-  "Quantum Encryption Branch",
-  "Extraterrestrial Communication Branch",
-  "Archaeological Discoveries Branch",
-  "Immersive Technologies Branch",
-  "Automaton Developments Branch",
-  "Network Security Branch",
-  "Instant Transport Branch",
-  "Multiverse Research Branch",
-  "Dimensional Physics Branch",
-])
+function clearBranch() {
+  branchId.value = null
+  delete stewardshipEvolution.value.branch
+  clearUnit()
+}
 
-const units = ref([
-  "Nebula Analysis Unit",
-  "Chronology Unit",
-  "Quantum Computing Unit",
-  "Intergalactic Negotiations Unit",
-  "Historical Conservation Unit",
-  "Virtual Development Unit",
-  "Synthetic Intelligence Unit",
-  "Cyber Surveillance Unit",
-  "Teleportation Safety Unit",
-  "Alternate Worlds Unit",
-  "Wormhole Exploration Unit",
-])
+function clearUnit() {
+  unitId.value = null
+  delete stewardshipEvolution.value.unit
+}
+
+async function updateDepartment(newDepartmentId: number | null) {
+  if (isNil(newDepartmentId)) {
+    clearDepartment()
+    return
+  }
+
+  departmentId.value = newDepartmentId
+  if (departments.value.length === 0) {
+    await fetchDepartments()
+  }
+
+  const department = departments.value.find((department) => department.id === newDepartmentId)
+  if (department === undefined) {
+    throw new Error(`Could not find department with id ${newDepartmentId}`)
+  }
+
+  stewardshipEvolution.value.department = department.name
+  clearDivision()
+}
+
+async function updateDivision(newDivisionId: number | null) {
+  if (isNil(newDivisionId)) {
+    clearDivision()
+    return
+  }
+
+  divisionId.value = newDivisionId
+  if (divisions.value.length === 0) {
+    await fetchDivisions()
+  }
+
+  const division = divisions.value.find((division) => division.id === newDivisionId)
+  if (division === undefined) {
+    throw new Error(`Could not find division with id ${newDivisionId}`)
+  }
+
+  stewardshipEvolution.value.division = division.name
+  clearBranch()
+}
+
+async function updateBranch(newBranchId: number | null) {
+  if (isNil(newBranchId)) {
+    clearBranch()
+    return
+  }
+
+  branchId.value = newBranchId
+  if (branches.value.length === 0) {
+    await fetchBranches()
+  }
+
+  const branch = branches.value.find((branch) => branch.id === newBranchId)
+  if (branch === undefined) {
+    throw new Error(`Could not find branch with id ${newBranchId}`)
+  }
+
+  stewardshipEvolution.value.branch = branch.name
+  clearUnit()
+}
+
+async function updateUnit(newUnitId: number | null) {
+  if (isNil(newUnitId)) {
+    clearUnit()
+    return
+  }
+
+  unitId.value = newUnitId
+  if (units.value.length === 0) {
+    await fetchUnits()
+  }
+
+  const unit = units.value.find((unit) => unit.id === newUnitId)
+  if (unit === undefined) {
+    throw new Error(`Could not find unit with id ${newUnitId}`)
+  }
+
+  stewardshipEvolution.value.unit = unit.name
+}
 
 async function save() {
   if (form.value === null) throw new Error("Form is null")
