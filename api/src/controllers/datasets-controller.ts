@@ -1,13 +1,32 @@
+import { WhereOptions } from "sequelize"
 import { isNil } from "lodash"
 
 import { Dataset, StewardshipEvolution, User } from "@/models"
 import { DatasetsPolicy } from "@/policies"
 import { assertDatasetPolicyRecord, type DatasetPolicyRecord } from "@/policies/datasets-policy"
 import { CreateService } from "@/services/datasets"
+import { DatasetSerializers } from "@/serializers"
 
 import BaseController from "@/controllers/base-controller"
 
 export class DatasetsController extends BaseController {
+  async index() {
+    const where = this.query.where as WhereOptions<Dataset>
+
+    // TODO: add query scoping
+
+    const totalCount = await Dataset.count({ where })
+    const datasets = await Dataset.findAll({
+      where,
+      limit: this.pagination.limit,
+      offset: this.pagination.offset,
+      include: ["owner", "creator", "stewardshipEvolutions"],
+    })
+
+    const serializedDatasets = DatasetSerializers.asDetailedTable(datasets)
+    return this.response.json({ datasets: serializedDatasets, totalCount })
+  }
+
   async show() {
     const dataset = await this.loadDataset()
     if (isNil(dataset)) {

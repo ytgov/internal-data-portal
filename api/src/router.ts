@@ -41,12 +41,15 @@ router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser)
 
 // Add all the standard api controller routes here
 router.route("/api/current-user").get(CurrentUserController.show)
+
+router.route("/api/datasets").get(DatasetsController.index)
+router.route("/api/datasets").post(DatasetsController.create)
+router.route("/api/datasets/:datasetId").get(DatasetsController.show)
+
 router.route("/api/users").get(UsersController.index)
 router
   .route("/api/users/:userId/yukon-government-directory-sync")
   .post(Users.YukonGovernmentDirectorySyncController.create)
-router.route("/api/datasets").post(DatasetsController.create)
-router.route("/api/datasets/:datasetId").get(DatasetsController.show)
 
 router.route("/api/user-groups").get(UserGroupsController.index)
 router

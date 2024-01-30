@@ -28,6 +28,14 @@
     </h2>
 
     <v-btn
+      class="my-4 mr-4"
+      color="primary"
+      variant="outlined"
+      :to="{ name: 'DatasetsPage' }"
+    >
+      View Datasets
+    </v-btn>
+    <v-btn
       class="my-4"
       color="primary"
       :to="{ name: 'DatasetNewPage' }"
