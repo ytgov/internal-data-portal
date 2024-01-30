@@ -20,7 +20,14 @@ export class DatasetsController extends BaseController {
       where,
       limit: this.pagination.limit,
       offset: this.pagination.offset,
-      include: ["owner", "creator", "stewardshipEvolutions"],
+      include: [
+        "owner",
+        "creator",
+        {
+          association: "stewardshipEvolutions",
+          order: [["createdAt", "DESC"]],
+        },
+      ],
     })
 
     const serializedDatasets = DatasetSerializers.asDetailedTable(datasets)

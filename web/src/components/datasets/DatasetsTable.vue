@@ -8,13 +8,17 @@
     :loading="isLoading"
     class="elevation-1"
   >
+    <template #item.stewardshipEvolutions="{ value }">
+      {{ formatOwnership(value[0]) }}
+    </template>
   </v-data-table>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from "vue"
 
-import useDatasets from "@/use/use-datasets"
+import acronymize from "@/utils/acronymize"
+import useDatasets, { type StewardshipEvolution } from "@/use/use-datasets"
 
 // Dataset - Dataset#name
 // Description - Dataset#description
@@ -34,7 +38,7 @@ const headers = ref([
   { title: "Name", key: "name" },
   { title: "Description", key: "description" },
   { title: "Keywords", key: "tags" }, // or maybe taggings
-  { title: "Owner", key: "owner" },
+  { title: "Owner", key: "stewardshipEvolutions" },
   { title: "Access", key: "access" },
   { title: "", key: "actions" },
 ])
@@ -46,4 +50,14 @@ const datasetsQuery = computed(() => ({
   page: page.value,
 }))
 const { datasets, isLoading, totalCount } = useDatasets(datasetsQuery)
+
+function formatOwnership(stewardshipEvolution: StewardshipEvolution | undefined) {
+  if (stewardshipEvolution === undefined) return
+
+  const { department, division, branch, unit } = stewardshipEvolution
+
+  return ([department, division, branch, unit].filter(Boolean) as string[])
+    .map(acronymize)
+    .join("-")
+}
 </script>
