@@ -31,6 +31,10 @@ export const up: Migration = async ({ context: queryInterface }) => {
       allowNull: false,
       defaultValue: MssqlSimpleTypes.NOW,
     },
+    deleted_at: {
+      type: MssqlSimpleTypes.DATETIME2(0),
+      allowNull: true,
+    },
   })
 }
 
