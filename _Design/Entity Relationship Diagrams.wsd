@@ -55,6 +55,26 @@ entity "stewardship_evolutions" {
   deleted_at : datetime2(0)
 }
 
+entity "tags" {
+  * id : int <<PK>>
+  --
+  * name : nvarchar(255)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "taggings" {
+  * id : int <<PK>>
+  --
+  * tag_id : int <<FK>>
+  * taggable_id : int - foreign key
+  * taggable_type : nvarchar(255)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
 entity "users" {
   * id : int <<PK>>
   --
@@ -111,4 +131,6 @@ user_groups }o--|| user_group_memberships : department_id
 user_groups }o--|| user_group_memberships : division_id
 user_groups }o--|| user_group_memberships : branch_id
 user_groups }o--|| user_group_memberships : unit_id
+datasets }o--|| taggings : taggable_id, tagging_type
+taggings ||--o{ tags : tag_id
 @enduml
