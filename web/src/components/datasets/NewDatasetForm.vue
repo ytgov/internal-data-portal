@@ -137,8 +137,7 @@
           auto-select-first
           clearable
           required
-          @update:model-value="updateDepartment($event as unknown as number)"
-          @clear="clearDepartment"
+          @update:model-value="updateDepartment($event as unknown as number | null)"
         />
       </v-col>
       <v-col
@@ -156,8 +155,7 @@
           variant="outlined"
           auto-select-first
           clearable
-          @update:model-value="updateDivision($event as unknown as number)"
-          @clear="clearDivision"
+          @update:model-value="updateDivision($event as unknown as number | null)"
         />
       </v-col>
     </v-row>
@@ -177,8 +175,7 @@
           variant="outlined"
           auto-select-first
           clearable
-          @update:model-value="updateBranch($event as unknown as number)"
-          @clear="clearBranch"
+          @update:model-value="updateBranch($event as unknown as number | null)"
         />
       </v-col>
       <v-col
@@ -196,8 +193,7 @@
           variant="outlined"
           auto-select-first
           clearable
-          @update:model-value="updateUnit($event as unknown as number)"
-          @clear="clearUnit"
+          @update:model-value="updateUnit($event as unknown as number | null)"
         />
       </v-col>
     </v-row>
@@ -330,17 +326,9 @@ async function updateOwner(newOwnerId: number | null) {
     unitId: newUnitId,
   } = owner.groupMembership || {}
   await updateDepartment(newDepartmentId)
-  if (newDivisionId !== null) {
-    await updateDivision(newDivisionId)
-
-    if (newBranchId !== null) {
-      await updateBranch(newBranchId)
-
-      if (newUnitId !== null) {
-        await updateUnit(newUnitId)
-      }
-    }
-  }
+  await updateDivision(newDivisionId)
+  await updateBranch(newBranchId)
+  await updateUnit(newUnitId)
 }
 
 function updateSupport(supportId: number | null) {
@@ -366,91 +354,104 @@ function updateSupport(supportId: number | null) {
 // NOTE: clear function doesn't work as expected, might be a bug in Vuetify
 function clearDepartment() {
   departmentId.value = null
-  stewardshipEvolution.value.department = null
+  delete stewardshipEvolution.value.department
   clearDivision()
 }
 
 // NOTE: clear function doesn't work as expected, might be a bug in Vuetify
 function clearDivision() {
   divisionId.value = null
-  stewardshipEvolution.value.division = null
+  delete stewardshipEvolution.value.division
   clearBranch()
 }
 
 // NOTE: clear function doesn't work as expected, might be a bug in Vuetify
 function clearBranch() {
   branchId.value = null
-  stewardshipEvolution.value.branch = null
+  delete stewardshipEvolution.value.branch
   clearUnit()
 }
 
 // NOTE: clear function doesn't work as expected, might be a bug in Vuetify
 function clearUnit() {
   unitId.value = null
-  stewardshipEvolution.value.unit = null
+  delete stewardshipEvolution.value.unit
 }
 
 async function updateDepartment(newDepartmentId: number | null) {
+  if (newDepartmentId === null) {
+    clearDepartment()
+    return
+  }
+
   departmentId.value = newDepartmentId
-  if (departmentId.value === null) return
   if (departments.value.length === 0) {
     await fetchDepartments()
   }
 
-  const department = departments.value.find((department) => department.id === departmentId.value)
+  const department = departments.value.find((department) => department.id === newDepartmentId)
   if (department === undefined) {
-    throw new Error(`Could not find department with id ${departmentId.value}`)
+    throw new Error(`Could not find department with id ${newDepartmentId}`)
   }
 
   stewardshipEvolution.value.department = department.name
   clearDivision()
 }
 
-async function updateDivision(newDivisionId: number) {
-  divisionId.value = newDivisionId
+async function updateDivision(newDivisionId: number | null) {
+  if (newDivisionId === null) {
+    clearDivision()
+    return
+  }
 
-  if (divisionId.value === null) return
+  divisionId.value = newDivisionId
   if (divisions.value.length === 0) {
     await fetchDivisions()
   }
 
-  const division = divisions.value.find((division) => division.id === divisionId.value)
+  const division = divisions.value.find((division) => division.id === newDivisionId)
   if (division === undefined) {
-    throw new Error(`Could not find division with id ${divisionId.value}`)
+    throw new Error(`Could not find division with id ${newDivisionId}`)
   }
 
   stewardshipEvolution.value.division = division.name
   clearBranch()
 }
 
-async function updateBranch(newBranchId: number) {
-  branchId.value = newBranchId
+async function updateBranch(newBranchId: number | null) {
+  if (newBranchId === null) {
+    clearBranch()
+    return
+  }
 
-  if (branchId.value === null) return
+  branchId.value = newBranchId
   if (branches.value.length === 0) {
     await fetchBranches()
   }
 
-  const branch = branches.value.find((branch) => branch.id === branchId.value)
+  const branch = branches.value.find((branch) => branch.id === newBranchId)
   if (branch === undefined) {
-    throw new Error(`Could not find branch with id ${branchId.value}`)
+    throw new Error(`Could not find branch with id ${newBranchId}`)
   }
 
   stewardshipEvolution.value.branch = branch.name
   clearUnit()
 }
 
-async function updateUnit(newUnitId: number) {
-  unitId.value = newUnitId
+async function updateUnit(newUnitId: number | null) {
+  if (newUnitId === null) {
+    clearUnit()
+    return
+  }
 
-  if (unitId.value === null) return
+  unitId.value = newUnitId
   if (units.value.length === 0) {
     await fetchUnits()
   }
 
-  const unit = units.value.find((unit) => unit.id === unitId.value)
+  const unit = units.value.find((unit) => unit.id === newUnitId)
   if (unit === undefined) {
-    throw new Error(`Could not find unit with id ${unitId.value}`)
+    throw new Error(`Could not find unit with id ${newUnitId}`)
   }
 
   stewardshipEvolution.value.unit = unit.name
