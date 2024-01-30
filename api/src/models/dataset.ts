@@ -26,6 +26,7 @@ import sequelize from "@/db/db-client"
 
 import User from "@/models/user"
 import StewardshipEvolution from "@/models/stewardship-evolution"
+import Tagging, { TaggableTypes } from "@/models/tagging"
 
 export enum DatasetErrorTypes {
   OK = "ok",
@@ -124,6 +125,13 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
       sourceKey: "id",
       foreignKey: "datasetId",
       as: "stewardshipEvolutions",
+    })
+    this.hasMany(Tagging, {
+      foreignKey: "taggableId",
+      constraints: false,
+      scope: {
+        taggableType: TaggableTypes.DATASET,
+      },
     })
   }
 }
