@@ -299,7 +299,7 @@ const {
 } = useUserGroups(unitsQuery, { immediate: false })
 
 async function updateOwner(newOwnerId: number | null) {
-  if (newOwnerId === null) {
+  if (isNil(newOwnerId)) {
     delete dataset.value.ownerId
     delete stewardshipEvolution.value.ownerId
     delete stewardshipEvolution.value.ownerName
@@ -332,7 +332,7 @@ async function updateOwner(newOwnerId: number | null) {
 }
 
 function updateSupport(supportId: number | null) {
-  if (supportId === null) {
+  if (isNil(supportId)) {
     delete stewardshipEvolution.value.supportId
     delete stewardshipEvolution.value.supportName
     delete stewardshipEvolution.value.supportEmail
@@ -375,7 +375,7 @@ function clearUnit() {
 }
 
 async function updateDepartment(newDepartmentId: number | null) {
-  if (newDepartmentId === null) {
+  if (isNil(newDepartmentId)) {
     clearDepartment()
     return
   }
@@ -395,7 +395,7 @@ async function updateDepartment(newDepartmentId: number | null) {
 }
 
 async function updateDivision(newDivisionId: number | null) {
-  if (newDivisionId === null) {
+  if (isNil(newDivisionId)) {
     clearDivision()
     return
   }
@@ -415,7 +415,7 @@ async function updateDivision(newDivisionId: number | null) {
 }
 
 async function updateBranch(newBranchId: number | null) {
-  if (newBranchId === null) {
+  if (isNil(newBranchId)) {
     clearBranch()
     return
   }
@@ -435,7 +435,7 @@ async function updateBranch(newBranchId: number | null) {
 }
 
 async function updateUnit(newUnitId: number | null) {
-  if (newUnitId === null) {
+  if (isNil(newUnitId)) {
     clearUnit()
     return
   }
