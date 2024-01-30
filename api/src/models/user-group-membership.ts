@@ -24,9 +24,9 @@ export class UserGroupMembership extends Model<
   declare id: CreationOptional<number>
   declare userId: ForeignKey<User["id"]>
   declare departmentId: ForeignKey<UserGroup["id"]>
-  declare divisionId: ForeignKey<UserGroup["id"]>
-  declare branchId: ForeignKey<UserGroup["id"]>
-  declare unitId: ForeignKey<UserGroup["id"]>
+  declare divisionId: ForeignKey<UserGroup["id"]> | null
+  declare branchId: ForeignKey<UserGroup["id"]> | null
+  declare unitId: ForeignKey<UserGroup["id"]> | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>

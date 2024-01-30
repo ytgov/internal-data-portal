@@ -67,7 +67,7 @@ entity "users" {
   division : nvarchar(100)
   branch : nvarchar(100)
   unit : nvarchar(100)
-  lastEmployeeDirectorySyncAt: datetime2(0)
+  last_employee_directory_sync_at: datetime2(0)
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
@@ -76,11 +76,24 @@ entity "users" {
 entity "user_groups" {
   * id : int <<PK>>
   --
-  * parentId : int <<FK>>
+  * parent_id : int <<FK>>
   name: nvarchar(255)
   type: nvarchar(255)
   order: number
-  lastDivisionDirectorySyncAt: datetime2(0)
+  last_division_directory_sync_at: datetime2(0)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "user_group_memberships" {
+  * id : int <<PK>>
+  --
+  * userId : int <<FK>>
+  * department_id : int <<FK>>
+  division_id : int <<FK>>
+  branch_id : int <<FK>>
+  unit_id : int <<FK>>
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
@@ -93,4 +106,9 @@ users }o--|| datasets : creator_id
 datasets }o--|| stewardship_evolutions : dataset_id
 users }o--|| stewardship_evolutions : owner_id
 users }o--|| stewardship_evolutions : support_id
+users |o--|| user_group_memberships : user_id
+user_groups }o--|| user_group_memberships : department_id
+user_groups }o--|| user_group_memberships : division_id
+user_groups }o--|| user_group_memberships : branch_id
+user_groups }o--|| user_group_memberships : unit_id
 @enduml
