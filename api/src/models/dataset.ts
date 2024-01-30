@@ -27,6 +27,7 @@ import sequelize from "@/db/db-client"
 import User from "@/models/user"
 import StewardshipEvolution from "@/models/stewardship-evolution"
 import Tagging, { TaggableTypes } from "@/models/tagging"
+import Tag from "@/models/tag"
 
 export enum DatasetErrorTypes {
   OK = "ok",
@@ -102,14 +103,40 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
   declare countStewardshipEvolutions: HasManyCountAssociationsMixin
   declare createStewardshipEvolution: HasManyCreateAssociationMixin<StewardshipEvolution>
 
+  declare getTaggings: HasManyGetAssociationsMixin<Tagging>
+  declare setTaggings: HasManySetAssociationsMixin<Tagging, Tagging["taggableId"]>
+  declare hasTagging: HasManyHasAssociationMixin<Tagging, Tagging["taggableId"]>
+  declare hasTaggings: HasManyHasAssociationsMixin<Tagging, Tagging["taggableId"]>
+  declare addTagging: HasManyAddAssociationMixin<Tagging, Tagging["taggableId"]>
+  declare addTaggings: HasManyAddAssociationsMixin<Tagging, Tagging["taggableId"]>
+  declare removeTagging: HasManyRemoveAssociationMixin<Tagging, Tagging["taggableId"]>
+  declare removeTaggings: HasManyRemoveAssociationsMixin<Tagging, Tagging["taggableId"]>
+  declare countTaggings: HasManyCountAssociationsMixin
+  declare createTagging: HasManyCreateAssociationMixin<Tagging>
+
+  declare getTags: HasManyGetAssociationsMixin<Tag>
+  declare setTags: HasManySetAssociationsMixin<Tag, Tag["id"]>
+  declare hasTag: HasManyHasAssociationMixin<Tag, Tag["id"]>
+  declare hasTags: HasManyHasAssociationsMixin<Tag, Tag["id"]>
+  declare addTag: HasManyAddAssociationMixin<Tag, Tag["id"]>
+  declare addTags: HasManyAddAssociationsMixin<Tag, Tag["id"]>
+  declare removeTag: HasManyRemoveAssociationMixin<Tag, Tag["id"]>
+  declare removeTags: HasManyRemoveAssociationsMixin<Tag, Tag["id"]>
+  declare countTags: HasManyCountAssociationsMixin
+  declare createTag: HasManyCreateAssociationMixin<Tag>
+
   declare owner?: NonAttribute<User>
   declare creator?: NonAttribute<User>
   declare stewardshipEvolutions?: NonAttribute<StewardshipEvolution[]>
+  declare taggings?: NonAttribute<Tagging[]>
+  declare tags?: NonAttribute<Tag[]>
 
   declare static associations: {
     owner: Association<Dataset, User>
     creator: Association<Dataset, User>
     stewardshipEvolutions: Association<Dataset, StewardshipEvolution>
+    taggings: Association<Dataset, Tagging>
+    tags: Association<Dataset, Tag>
   }
 
   static establishAssociations() {
@@ -131,6 +158,16 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
       constraints: false,
       scope: {
         taggableType: TaggableTypes.DATASET,
+      },
+    })
+    this.belongsToMany(Tag, {
+      foreignKey: "taggableId",
+      constraints: false,
+      through: {
+        model: Tagging,
+        scope: {
+          taggableType: TaggableTypes.DATASET,
+        },
       },
     })
   }
