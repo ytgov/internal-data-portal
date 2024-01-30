@@ -13,7 +13,8 @@
       >
         <v-btn
           class="my-4 mr-4"
-          @click="triggerScenario(scenario.url)"
+          :loading="scenario.isLoading"
+          @click="triggerScenario(scenario)"
         >
           {{ scenario.label }}
         </v-btn>
@@ -28,23 +29,26 @@ import { ref } from "vue"
 import http from "@/api/http-client"
 import useSnack from "@/use/use-snack"
 
+type Scenario = {
+  url: string
+  label: string
+  isLoaded: boolean
+}
+
 const snack = useSnack()
 
-const scenarios = ref<
-  {
-    url: string
-    label: string
-  }[]
->([
+const scenarios = ref<Scenario[]>([
   {
     url: "/api/qa-scenarios/link-random-tags",
     label: "Link Random Tags",
+    isLoaded: false,
   },
 ])
 
-async function triggerScenario(url: string) {
+async function triggerScenario(scenario: Scenario) {
+  scenario.isLoading = true
   try {
-    const { data } = await http.post(url)
+    const { data } = await http.post(scenario.url)
     snack.notify(data.message, { color: "success" })
   } catch (error: any) {
     if (error instanceof Error) {
@@ -54,6 +58,8 @@ async function triggerScenario(url: string) {
       console.error(error)
       snack.notify(`An error occurred: ${error}`, { color: "error" })
     }
+  } finally {
+    scenario.isLoading = false
   }
 }
 </script>
