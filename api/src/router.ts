@@ -10,6 +10,7 @@ import {
   type NextFunction,
 } from "express"
 import { template } from "lodash"
+import { UnauthorizedError } from "express-jwt"
 
 import { APPLICATION_NAME, GIT_COMMIT_HASH, NODE_ENV, RELEASE_TAG } from "@/config"
 
@@ -67,6 +68,9 @@ router.use("/api", (err: ErrorRequestHandler, req: Request, res: Response, next:
   if (err instanceof DatabaseError) {
     console.error(err)
     return res.status(422).json({ message: "Invalid query against database." })
+  } else if (err instanceof UnauthorizedError) {
+    console.error(err)
+    return res.status(401).json({ message: err.inner.message })
   }
 
   console.error(err)
