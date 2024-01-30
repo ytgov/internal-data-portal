@@ -87,7 +87,7 @@
           auto-select-first
           clearable
           required
-          @update:model-value="updateSupport"
+          @update:model-value="updateSupport($event as unknown as number | null)"
         />
       </v-col>
       <v-col
@@ -343,8 +343,15 @@ async function updateOwner(newOwnerId: number | null) {
   }
 }
 
-function updateSupport(supportIdString: string) {
-  const supportId = parseInt(supportIdString)
+function updateSupport(supportId: number | null) {
+  if (supportId === null) {
+    delete stewardshipEvolution.value.supportId
+    delete stewardshipEvolution.value.supportName
+    delete stewardshipEvolution.value.supportEmail
+    delete stewardshipEvolution.value.supportPosition
+    return
+  }
+
   const support = users.value.find((user) => user.id === supportId)
   if (support === undefined) {
     throw new Error(`Could not find user with id ${supportId}`)
