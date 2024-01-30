@@ -27,6 +27,7 @@ export class DatasetsController extends BaseController {
           association: "stewardshipEvolutions",
           order: [["createdAt", "DESC"]],
         },
+        "tags",
       ],
     })
 

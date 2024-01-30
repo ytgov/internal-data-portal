@@ -159,6 +159,7 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
       scope: {
         taggableType: TaggableTypes.DATASET,
       },
+      as: "taggings",
     })
     this.belongsToMany(Tag, {
       foreignKey: "taggableId",
@@ -169,6 +170,7 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
           taggableType: TaggableTypes.DATASET,
         },
       },
+      as: "tags",
     })
   }
 }

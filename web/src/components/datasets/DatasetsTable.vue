@@ -11,6 +11,9 @@
     <template #item.stewardshipEvolutions="{ value }">
       {{ formatOwnership(value[0]) }}
     </template>
+    <template #item.tags="{ value }">
+      {{ formatTags(value) }}
+    </template>
   </v-data-table>
 </template>
 
@@ -19,6 +22,13 @@ import { computed, ref } from "vue"
 
 import acronymize from "@/utils/acronymize"
 import useDatasets, { type StewardshipEvolution } from "@/use/use-datasets"
+
+type Tag = {
+  id: number
+  name: string
+  createdAt: string
+  updatedAt: string
+}
 
 // Dataset - Dataset#name
 // Description - Dataset#description
@@ -37,7 +47,7 @@ import useDatasets, { type StewardshipEvolution } from "@/use/use-datasets"
 const headers = ref([
   { title: "Name", key: "name" },
   { title: "Description", key: "description" },
-  { title: "Keywords", key: "tags" }, // or maybe taggings
+  { title: "Keywords", key: "tags" },
   { title: "Owner", key: "stewardshipEvolutions" },
   { title: "Access", key: "access" },
   { title: "", key: "actions" },
@@ -59,5 +69,9 @@ function formatOwnership(stewardshipEvolution: StewardshipEvolution | undefined)
   return ([department, division, branch, unit].filter(Boolean) as string[])
     .map(acronymize)
     .join("-")
+}
+
+function formatTags(tags: Tag[]) {
+  return tags.map(tag => tag.name).join(", ")
 }
 </script>

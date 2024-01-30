@@ -8,6 +8,7 @@ import BaseController from "@/controllers/base-controller"
 export class LinkRandomTagsController extends BaseController {
   async create() {
     try {
+      await Tagging.destroy({ where: {} })
       await this.ensureRandomTags()
       await this.linkRandomTagsToDatasets()
       return this.response
