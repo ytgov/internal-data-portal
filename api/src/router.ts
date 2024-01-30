@@ -24,6 +24,7 @@ import {
   Users,
   UserGroups,
   UserGroupsController,
+  QaScenarios,
 } from "@/controllers"
 
 export const router = Router()
@@ -55,6 +56,8 @@ router.route("/api/user-groups").get(UserGroupsController.index)
 router
   .route("/api/user-groups/yukon-government-directory-sync")
   .post(UserGroups.YukonGovernmentDirectorySyncController.create)
+
+router.route("/api/qa-scenarios/link-random-tags").post(QaScenarios.LinkRandomTagsController.create)
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {

@@ -5,3 +5,4 @@ export { UserGroupsController } from "./user-groups-controller"
 
 export * as Users from "./users"
 export * as UserGroups from "./user-groups"
+export * as QaScenarios from "./qa-scenarios"
