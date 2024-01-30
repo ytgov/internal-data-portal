@@ -59,7 +59,7 @@ const datasetsQuery = computed(() => ({
   perPage: itemsPerPage.value,
   page: page.value,
 }))
-const { datasets, isLoading, totalCount } = useDatasets(datasetsQuery)
+const { datasets, isLoading, totalCount, fetch: refresh } = useDatasets(datasetsQuery)
 
 function formatOwnership(stewardshipEvolution: StewardshipEvolution | undefined) {
   if (stewardshipEvolution === undefined) return
@@ -74,4 +74,6 @@ function formatOwnership(stewardshipEvolution: StewardshipEvolution | undefined)
 function formatTags(tags: Tag[]) {
   return tags.map(tag => tag.name).join(", ")
 }
+
+defineExpose({ refresh })
 </script>
