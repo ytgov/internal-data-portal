@@ -197,11 +197,17 @@ export class UserGroup extends Model<
   declare parent?: NonAttribute<UserGroup>
   declare children?: NonAttribute<UserGroup[]>
   declare departmentMemberships?: NonAttribute<UserGroupMembership[]>
+  declare divisionMemberships?: NonAttribute<UserGroupMembership[]>
+  declare branchMemberships?: NonAttribute<UserGroupMembership[]>
+  declare unitMemberships?: NonAttribute<UserGroupMembership[]>
 
   declare static associations: {
     parent: Association<UserGroup, UserGroup>
     children: Association<UserGroup, UserGroup>
     departmentMemberships: Association<UserGroup, UserGroupMembership>
+    divisionMemberships: Association<UserGroup, UserGroupMembership>
+    branchMemberships: Association<UserGroup, UserGroupMembership>
+    unitMemberships: Association<UserGroup, UserGroupMembership>
   }
 
   static establishAssociations() {
