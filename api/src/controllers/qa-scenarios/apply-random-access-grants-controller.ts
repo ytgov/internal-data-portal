@@ -26,7 +26,7 @@ export class ApplyRandomAccessGrantsController extends BaseController {
 
     const promises = datasets.map(async (dataset) => {
       const randomGrantLevels = faker.helpers.arrayElements(Object.values(GrantLevels), {
-        min: 1,
+        min: 0,
         max: 3,
       })
 
