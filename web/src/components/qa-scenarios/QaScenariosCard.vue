@@ -32,7 +32,7 @@ import useSnack from "@/use/use-snack"
 type Scenario = {
   url: string
   label: string
-  isLoaded: boolean
+  isLoading: boolean
 }
 
 const snack = useSnack()
@@ -41,7 +41,7 @@ const scenarios = ref<Scenario[]>([
   {
     url: "/api/qa-scenarios/link-random-tags",
     label: "Link Random Tags",
-    isLoaded: false,
+    isLoading: false,
   },
 ])
 
