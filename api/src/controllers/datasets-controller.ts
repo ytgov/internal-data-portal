@@ -29,6 +29,7 @@ export class DatasetsController extends BaseController {
         },
         "tags",
         "accessGrants",
+        "accessRequests",
       ],
     })
 

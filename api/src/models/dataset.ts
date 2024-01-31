@@ -25,6 +25,7 @@ import {
 import sequelize from "@/db/db-client"
 
 import AccessGrant from "@/models/access-grant"
+import AccessRequest from "@/models/access-request"
 import StewardshipEvolution from "@/models/stewardship-evolution"
 import Tag from "@/models/tag"
 import Tagging, { TaggableTypes } from "@/models/tagging"
@@ -83,6 +84,17 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
   declare countAccessGrants: HasManyCountAssociationsMixin
   declare createAccessGrant: HasManyCreateAssociationMixin<AccessGrant>
 
+  declare getAccessRequests: HasManyGetAssociationsMixin<AccessRequest>
+  declare setAccessRequests: HasManySetAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare hasAccessRequest: HasManyHasAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare hasAccessRequests: HasManyHasAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare addAccessRequest: HasManyAddAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare addAccessRequests: HasManyAddAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare removeAccessRequest: HasManyRemoveAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare removeAccessRequests: HasManyRemoveAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare countAccessRequests: HasManyCountAssociationsMixin
+  declare createAccessRequest: HasManyCreateAssociationMixin<AccessRequest>
+
   declare getStewardshipEvolutions: HasManyGetAssociationsMixin<StewardshipEvolution>
   declare setStewardshipEvolutions: HasManySetAssociationsMixin<
     StewardshipEvolution,
@@ -140,6 +152,7 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
   declare owner?: NonAttribute<User>
   declare creator?: NonAttribute<User>
   declare accessGrants?: NonAttribute<AccessGrant[]>
+  declare accessRequests?: NonAttribute<AccessRequest[]>
   declare stewardshipEvolutions?: NonAttribute<StewardshipEvolution[]>
   declare taggings?: NonAttribute<Tagging[]>
   declare tags?: NonAttribute<Tag[]>
@@ -148,6 +161,7 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
     owner: Association<Dataset, User>
     creator: Association<Dataset, User>
     accessGrants: Association<Dataset, AccessGrant>
+    accessRequests: Association<Dataset, AccessRequest>
     stewardshipEvolutions: Association<Dataset, StewardshipEvolution>
     taggings: Association<Dataset, Tagging>
     tags: Association<Dataset, Tag>
@@ -161,6 +175,10 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
     this.belongsTo(User, {
       foreignKey: "creatorId",
       as: "creator",
+    })
+    this.hasMany(AccessRequest, {
+      foreignKey: "datasetId",
+      as: "accessRequests",
     })
     this.hasMany(StewardshipEvolution, {
       sourceKey: "id",

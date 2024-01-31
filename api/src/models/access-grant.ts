@@ -6,6 +6,16 @@ import {
   CreationOptional,
   DataTypes,
   ForeignKey,
+  HasManyAddAssociationMixin,
+  HasManyAddAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -15,6 +25,7 @@ import {
 
 import sequelize from "@/db/db-client"
 
+import AccessRequest from "@/models/access-request"
 import Dataset from "@/models/dataset"
 import User from "@/models/user"
 
@@ -65,14 +76,27 @@ export class AccessGrant extends Model<
   declare setRequestor: BelongsToSetAssociationMixin<User, User["id"]>
   declare createRequestor: BelongsToCreateAssociationMixin<User>
 
+  declare getAccessRequests: HasManyGetAssociationsMixin<AccessRequest>
+  declare setAccessRequests: HasManySetAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare hasAccessRequest: HasManyHasAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare hasAccessRequests: HasManyHasAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare addAccessRequest: HasManyAddAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare addAccessRequests: HasManyAddAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare removeAccessRequest: HasManyRemoveAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare removeAccessRequests: HasManyRemoveAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare countAccessRequests: HasManyCountAssociationsMixin
+  declare createAccessRequest: HasManyCreateAssociationMixin<AccessRequest>
+
   declare dataset?: NonAttribute<Dataset>
   declare owner?: NonAttribute<User>
   declare requestor?: NonAttribute<User>
+  declare accessRequests?: NonAttribute<AccessRequest[]>
 
   declare static associations: {
     dataset: Association<AccessGrant, Dataset>
     owner: Association<AccessGrant, User>
     requestor: Association<AccessGrant, User>
+    accessRequests: Association<Dataset, AccessRequest>
   }
 
   static establishAssociations() {
@@ -84,6 +108,10 @@ export class AccessGrant extends Model<
     this.belongsTo(User, {
       foreignKey: "requestorId",
       as: "requestor",
+    })
+    this.hasMany(AccessRequest, {
+      foreignKey: "datasetId",
+      as: "accessRequests",
     })
   }
 }
