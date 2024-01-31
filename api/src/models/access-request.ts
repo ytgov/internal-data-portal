@@ -200,6 +200,20 @@ AccessRequest.init(
         },
       },
     ],
+    validate: {
+      async accessGrantRefersToSameDataset() {
+        if (typeof this.datasetId !== "number" || typeof this.accessGrantId !== "number") {
+          throw new Error("Dataset and AccessGrant must be numbers.")
+        }
+
+        const count = await AccessGrant.count({
+          where: { id: this.accessGrantId, datasetId: this.datasetId },
+        })
+        if (count !== 1) {
+          throw new Error("AcccessGrant must refer to the same dataset as the AccessRequest.")
+        }
+      },
+    },
   }
 )
 
