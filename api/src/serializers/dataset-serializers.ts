@@ -6,6 +6,7 @@ import BaseSerializer from "@/serializers/base-serializer"
 
 export type DatasetTableView = Partial<Dataset> & {
   access: string
+  actions: string[]
 }
 export type DatasetDetailedView = Partial<Dataset>
 
@@ -54,6 +55,7 @@ export class DatasetSerializers extends BaseSerializer<Dataset> {
 
       // magic fields
       access: this.determineAccess(),
+      actions: this.determineActions(),
     }
   }
 
@@ -107,6 +109,10 @@ export class DatasetSerializers extends BaseSerializer<Dataset> {
     }
 
     return "no_access"
+  }
+
+  private determineActions(): string[] {
+    return ["TODO"]
   }
 }
 

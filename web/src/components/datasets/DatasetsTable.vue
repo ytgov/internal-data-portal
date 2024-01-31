@@ -17,7 +17,18 @@
     <template #item.access="{ value }">
       {{ formatAccess(value) }}
     </template>
-    <template #item.actions="{ value }"> TODO </template>
+    <!--
+      TODO
+      (unlabeled) - aggregate of possible actions and states depending on available AccessGrants
+                    and current AccessRequests, and the type of access request (i.e. subscriptions).
+                    This is pretty complex logic and would benefit from testing.
+        - RequestAccessButton.vue - Either opens a request access dialog or redirects to a request access form
+        - SubscribeToDatasetButton.vue - Either opens a subscription request dialog or redirects to a subscription request form
+        - Subscribed state
+        - Approved state
+        - Awaiting approval state
+     -->
+    <template #item.actions="{ value }"> {{ value }} </template>
   </v-data-table>
 </template>
 
@@ -36,18 +47,6 @@ type Tag = {
 }
 
 const { t } = useI18n()
-
-// Dataset - Dataset#name
-// Description - Dataset#description
-// Keywords - Tags through Taggings
-// Owner - Dataset#owner -> department
-// Access - magic aggregate field that describes the type of access the current user has available against the database, should be serialized in the back-end from the AccessGrants for the dataset.
-// (unlabeled) - aggregate of possible actions and states depending on available AccessGrants and current AccessRequests, and the type of access request (i.e. subscriptions). This is pretty complex logic and would benefit from testing.
-// - RequestAccessButton.vue - Either opens a request access dialog or redirects to a request access form
-// - SubscribeToDatasetButton.vue - Either opens a subscription request dialog or redirects to a subscription request form
-// - Subscribed state
-// - Approved state
-// - Awaiting approval state
 
 const headers = ref([
   { title: "Dataset", key: "name" },
