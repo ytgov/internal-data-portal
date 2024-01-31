@@ -98,7 +98,101 @@ export class UserGroup extends Model<
   declare countDepartmentMemberships: HasManyCountAssociationsMixin
   declare createDepartmentMembership: HasManyCreateAssociationMixin<UserGroupMembership>
 
-  // TODO: add declares for divisionId, branchId, and unitId
+  declare getDivisionMemberships: HasManyGetAssociationsMixin<UserGroupMembership>
+  declare setDivisionMemberships: HasManySetAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["divisionId"]
+  >
+  declare hasDivisionMembership: HasManyAddAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["divisionId"]
+  >
+  declare hasDivisionMemberships: HasManyAddAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["divisionId"]
+  >
+  declare addDivisionMembership: HasManyAddAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["divisionId"]
+  >
+  declare addDivisionMemberships: HasManyAddAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["divisionId"]
+  >
+  declare removeDivisionMembership: HasManyRemoveAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["divisionId"]
+  >
+  declare removeDivisionMemberships: HasManyRemoveAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["divisionId"]
+  >
+  declare countDivisionMemberships: HasManyCountAssociationsMixin
+  declare createDivisionMembership: HasManyCreateAssociationMixin<UserGroupMembership>
+
+  declare getBranchMemberships: HasManyGetAssociationsMixin<UserGroupMembership>
+  declare setBranchMemberships: HasManySetAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["branchId"]
+  >
+  declare hasBranchMembership: HasManyAddAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["branchId"]
+  >
+  declare hasBranchMemberships: HasManyAddAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["branchId"]
+  >
+  declare addBranchMembership: HasManyAddAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["branchId"]
+  >
+  declare addBranchMemberships: HasManyAddAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["branchId"]
+  >
+  declare removeBranchMembership: HasManyRemoveAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["branchId"]
+  >
+  declare removeBranchMemberships: HasManyRemoveAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["branchId"]
+  >
+  declare countBranchMemberships: HasManyCountAssociationsMixin
+  declare createBranchMembership: HasManyCreateAssociationMixin<UserGroupMembership>
+
+  declare getUnitMemberships: HasManyGetAssociationsMixin<UserGroupMembership>
+  declare setUnitMemberships: HasManySetAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["unitId"]
+  >
+  declare hasUnitMembership: HasManyAddAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["unitId"]
+  >
+  declare hasUnitMemberships: HasManyAddAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["unitId"]
+  >
+  declare addUnitMembership: HasManyAddAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["unitId"]
+  >
+  declare addUnitMemberships: HasManyAddAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["unitId"]
+  >
+  declare removeUnitMembership: HasManyRemoveAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["unitId"]
+  >
+  declare removeUnitMemberships: HasManyRemoveAssociationsMixin<
+    UserGroupMembership,
+    UserGroupMembership["unitId"]
+  >
+  declare countUnitMemberships: HasManyCountAssociationsMixin
+  declare createUnitMembership: HasManyCreateAssociationMixin<UserGroupMembership>
 
   declare parent?: NonAttribute<UserGroup>
   declare children?: NonAttribute<UserGroup[]>
