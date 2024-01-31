@@ -1,4 +1,18 @@
 @startuml Entity Relationship Diagrams
+entity "access_grants" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  * owner_id : int <<FK>>
+  * grant_level : nvarchar(255)
+  * access_type : nvarchar(255)
+  requestor_id : int <<FK>>
+  is_project_description_required : bit
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
 entity "datasets" {
   * id : int <<PK>>
   --
@@ -133,4 +147,7 @@ user_groups }o--|| user_group_memberships : branch_id
 user_groups }o--|| user_group_memberships : unit_id
 datasets }o--|| taggings : taggable_id, tagging_type
 taggings ||--o{ tags : tag_id
+datasets }o--|| access_grants : dataset_id
+users }o--|| access_grants : owner_id
+users }o--|| access_grants : requestor_id
 @enduml
