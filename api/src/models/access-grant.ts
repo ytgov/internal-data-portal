@@ -45,7 +45,7 @@ export class AccessGrant extends Model<
   declare requestorId: ForeignKey<User["id"]>
   declare grantLevel: GrantLevels
   declare accessType: AccessTypes
-  declare isProjectDescriptionRequired: boolean
+  declare isProjectDescriptionRequired: CreationOptional<boolean>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>
