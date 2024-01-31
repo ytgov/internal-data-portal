@@ -41,6 +41,10 @@ export enum AccessTypes {
   OPEN_ACCESS = "open_access",
   SELF_SERVE_ACCESS = "self_serve_access",
   SCREENED_ACCESS = "screened_access",
+  // This is a special access type that is not stored in the database
+  // "no access" is determined by the absence of any access grants
+  // It's only here for repeatable use in other places
+  NO_ACCESS = "no_access",
 }
 
 export class AccessGrant extends Model<

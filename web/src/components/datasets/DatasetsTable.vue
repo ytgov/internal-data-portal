@@ -28,7 +28,9 @@
         - Approved state
         - Awaiting approval state
      -->
-    <template #item.actions="{ value }"> {{ value }} </template>
+    <template #item.actions="{ value }">
+      {{ value }}
+    </template>
   </v-data-table>
 </template>
 

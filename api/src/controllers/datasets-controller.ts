@@ -13,7 +13,7 @@ export class DatasetsController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<Dataset>
 
-    // TODO: add query scoping
+    // TODO: add query scoping, filter out datasets where the user does not have any access
 
     const totalCount = await Dataset.count({ where })
     const datasets = await Dataset.findAll({

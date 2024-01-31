@@ -1,12 +1,13 @@
 import { pick } from "lodash"
 
 import { AccessGrant, Dataset, User } from "@/models"
+import { GrantLevels, AccessTypes } from "@/models/access-grant"
 
 import BaseSerializer from "@/serializers/base-serializer"
 
 export type DatasetTableView = Partial<Dataset> & {
   access: string
-  actions: string[]
+  actions: string
 }
 export type DatasetDetailedView = Partial<Dataset>
 
@@ -91,28 +92,16 @@ export class DatasetSerializers extends BaseSerializer<Dataset> {
     }
   }
 
-  private determineAccess(): string {
-    if (this.currentUser === undefined) {
-      throw new Error("currentUser is required to determine access")
-    }
-
-    for (const accessType of Object.values(AccessGrant.AccessTypes)) {
-      for (const grantLevel of Object.values(AccessGrant.GrantLevels)) {
-        const accessGrant = this.record.accessGrants?.find(
-          (accessGrant) =>
-            accessGrant.accessType === accessType && accessGrant.grantLevel === grantLevel
-        )
-        if (accessGrant) {
-          return accessGrant.accessType
-        }
-      }
-    }
-
-    return "no_access"
+  // TODO: handle enormous number of cases
+  // I need tests for this so I'm doing it in a future PR.
+  private determineAccess(): AccessTypes {
+    return 'TODO' as any
   }
 
-  private determineActions(): string[] {
-    return ["TODO"]
+  // TODO: this will also have a lot of cases
+  // I need tests for this so I'm doing it in a future PR.
+  private determineActions(): string {
+    return 'TODO'
   }
 }
 
