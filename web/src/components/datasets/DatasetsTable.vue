@@ -14,7 +14,9 @@
     <template #item.tags="{ value }">
       {{ formatTags(value) }}
     </template>
-    <template #item.access="{ value }"> TODO </template>
+    <template #item.access="{ value }">
+      {{ value }}
+    </template>
     <template #item.actions="{ value }"> TODO </template>
   </v-data-table>
 </template>
@@ -49,7 +51,7 @@ const headers = ref([
   { title: "Description", key: "description" },
   { title: "Keywords", key: "tags" },
   { title: "Owner", key: "stewardshipEvolutions" },
-  { title: "Access", key: "access" },
+  { title: "Access", key: "accessGrants" },
   { title: "", key: "actions" },
 ])
 

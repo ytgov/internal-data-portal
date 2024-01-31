@@ -57,7 +57,11 @@ router
   .route("/api/user-groups/yukon-government-directory-sync")
   .post(UserGroups.YukonGovernmentDirectorySyncController.create)
 
+// TODO: might want to lock these to only run in non-production environments?
 router.route("/api/qa-scenarios/link-random-tags").post(QaScenarios.LinkRandomTagsController.create)
+router
+  .route("/api/qa-scenarios/apply-random-access-grants")
+  .post(QaScenarios.ApplyRandomAccessGrantsController.create)
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {

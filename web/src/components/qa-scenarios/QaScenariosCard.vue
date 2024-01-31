@@ -4,22 +4,28 @@
     max-width="300"
   >
     <v-card-title>QA Scenarios</v-card-title>
-    <v-list density="compact">
-      <v-list-item
-        v-for="(scenario, index) in scenarios"
-        :key="index"
-        :value="scenario"
-        color="primary"
-      >
+    <v-divider
+      :thickness="1"
+      class="border-opacity-100"
+    />
+    <v-row
+      v-for="(scenario, index) in scenarios"
+      :key="index"
+      :value="scenario"
+      class="pa-4"
+      no-gutters
+    >
+      <v-col>
         <v-btn
-          class="my-4 mr-4"
+          block
+          variant="outlined"
           :loading="scenario.isLoading"
           @click="triggerScenario(scenario)"
         >
           {{ scenario.label }}
         </v-btn>
-      </v-list-item>
-    </v-list>
+      </v-col>
+    </v-row>
   </v-card>
 </template>
 
@@ -32,7 +38,7 @@ import useSnack from "@/use/use-snack"
 type Scenario = {
   url: string
   label: string
-  isLoading: boolean
+  isLoading: boolean | undefined
 }
 
 const snack = useSnack()
@@ -41,7 +47,10 @@ const scenarios = ref<Scenario[]>([
   {
     url: "/api/qa-scenarios/link-random-tags",
     label: "Link Random Tags",
-    isLoading: false,
+  },
+  {
+    url: "/api/qa-scenarios/apply-random-access-grants",
+    label: "Apply Random Access Grants",
   },
 ])
 

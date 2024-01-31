@@ -49,3 +49,5 @@ export class LinkRandomTagsController extends BaseController {
     return Promise.all(promises)
   }
 }
+
+export default LinkRandomTagsController
