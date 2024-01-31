@@ -32,7 +32,7 @@ export class DatasetsController extends BaseController {
       ],
     })
 
-    const serializedDatasets = DatasetSerializers.asDetailedTable(datasets)
+    const serializedDatasets = DatasetSerializers.asTable(datasets, this.currentUser)
     return this.response.json({ datasets: serializedDatasets, totalCount })
   }
 

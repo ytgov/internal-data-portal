@@ -15,7 +15,7 @@
       {{ formatTags(value) }}
     </template>
     <template #item.access="{ value }">
-      {{ value }}
+      {{ formatAccess(value) }}
     </template>
     <template #item.actions="{ value }"> TODO </template>
   </v-data-table>
@@ -23,6 +23,7 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue"
+import { useI18n } from "vue-i18n"
 
 import acronymize from "@/utils/acronymize"
 import useDatasets, { type StewardshipEvolution } from "@/use/use-datasets"
@@ -33,6 +34,8 @@ type Tag = {
   createdAt: string
   updatedAt: string
 }
+
+const { t } = useI18n()
 
 // Dataset - Dataset#name
 // Description - Dataset#description
@@ -51,7 +54,7 @@ const headers = ref([
   { title: "Description", key: "description" },
   { title: "Keywords", key: "tags" },
   { title: "Owner", key: "stewardshipEvolutions" },
-  { title: "Access", key: "accessGrants" },
+  { title: "Access", key: "access" },
   { title: "", key: "actions" },
 ])
 
@@ -75,6 +78,12 @@ function formatOwnership(stewardshipEvolution: StewardshipEvolution | undefined)
 
 function formatTags(tags: Tag[]) {
   return tags.map((tag) => tag.name).join(", ")
+}
+
+function formatAccess(access: string | undefined) {
+  if (access === undefined) return
+
+  return t(`access_grants.access_types.${access}`, access)
 }
 
 defineExpose({ refresh })
