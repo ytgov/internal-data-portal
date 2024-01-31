@@ -55,14 +55,32 @@ export class AccessRequest extends Model<
   declare setRequestor: BelongsToSetAssociationMixin<User, User["id"]>
   declare createRequestor: BelongsToCreateAssociationMixin<User>
 
+  declare getDenier: BelongsToGetAssociationMixin<User>
+  declare setDenier: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createDenier: BelongsToCreateAssociationMixin<User>
+
+  declare getApprover: BelongsToGetAssociationMixin<User>
+  declare setApprover: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createApprover: BelongsToCreateAssociationMixin<User>
+
+  declare getRevoker: BelongsToGetAssociationMixin<User>
+  declare setRevoker: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createRevoker: BelongsToCreateAssociationMixin<User>
+
   declare accessGrant?: NonAttribute<AccessGrant>
   declare requestor?: NonAttribute<User>
   declare dataset?: NonAttribute<Dataset>
+  declare denier?: NonAttribute<User>
+  declare approver?: NonAttribute<User>
+  declare revoker?: NonAttribute<User>
 
   declare static associations: {
     accessGrant: Association<AccessRequest, AccessGrant>
     dataset: Association<AccessRequest, Dataset>
     requestor: Association<AccessRequest, User>
+    denier: Association<AccessRequest, User>
+    approver: Association<AccessRequest, User>
+    revoker: Association<AccessRequest, User>
   }
 
   static establishAssociations() {
@@ -77,6 +95,18 @@ export class AccessRequest extends Model<
     this.belongsTo(User, {
       foreignKey: "requestorId",
       as: "requestor",
+    })
+    this.belongsTo(User, {
+      foreignKey: "denierId",
+      as: "denier",
+    })
+    this.belongsTo(User, {
+      foreignKey: "approverId",
+      as: "approver",
+    })
+    this.belongsTo(User, {
+      foreignKey: "revokerId",
+      as: "revoker",
     })
   }
 }
