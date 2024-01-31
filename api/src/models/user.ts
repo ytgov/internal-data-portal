@@ -25,9 +25,10 @@ import { DateTime } from "luxon"
 
 import sequelize from "@/db/db-client"
 
+import AccessGrant from "@/models/access-grant"
 import Role, { RoleTypes } from "@/models/role"
 import UserGroup from "@/models/user-groups"
-import UserGroupMembership from "./user-group-membership"
+import UserGroupMembership from "@/models/user-group-membership"
 
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>
@@ -66,6 +67,28 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare countRoles: HasManyCountAssociationsMixin
   declare createRole: HasManyCreateAssociationMixin<Role>
 
+  declare getAccessGrantOwnerships: HasManyGetAssociationsMixin<AccessGrant>
+  declare setAccessGrantOwnerships: HasManySetAssociationsMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare hasAccessGrantOwnership: HasManyHasAssociationMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare hasAccessGrantOwnerships: HasManyHasAssociationsMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare addAccessGrantOwnership: HasManyAddAssociationMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare addAccessGrantOwnerships: HasManyAddAssociationsMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare removeAccessGrantOwnership: HasManyRemoveAssociationMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare removeAccessGrantOwnerships: HasManyRemoveAssociationsMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare countAccessGrantOwnerships: HasManyCountAssociationsMixin
+  declare createAccessGrantOwnerships: HasManyCreateAssociationMixin<AccessGrant>
+
+  declare getAccessGrantRequests: HasManyGetAssociationsMixin<AccessGrant>
+  declare setAccessGrantRequests: HasManySetAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare hasAccessGrantRequest: HasManyHasAssociationMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare hasAccessGrantRequests: HasManyHasAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare addAccessGrantRequest: HasManyAddAssociationMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare addAccessGrantRequests: HasManyAddAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare removeAccessGrantRequest: HasManyRemoveAssociationMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare removeAccessGrantRequests: HasManyRemoveAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare countAccessGrantRequests: HasManyCountAssociationsMixin
+  declare createAccessGrantRequests: HasManyCreateAssociationMixin<AccessGrant>
+
   declare groupMembership?: NonAttribute<UserGroupMembership>
   declare roles?: NonAttribute<Role[]>
 
@@ -84,7 +107,14 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
       foreignKey: "userId",
       as: "roles",
     })
-    // TODO: add access grant relationship
+    this.hasMany(AccessGrant, {
+      foreignKey: "ownerId",
+      as: "accessGrantOwnerships",
+    })
+    this.hasMany(AccessGrant, {
+      foreignKey: "requestorId",
+      as: "accessGrantRequests",
+    })
   }
 
   get roleTypes(): NonAttribute<RoleTypes[]> {

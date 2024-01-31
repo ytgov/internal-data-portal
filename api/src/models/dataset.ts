@@ -24,10 +24,11 @@ import {
 
 import sequelize from "@/db/db-client"
 
-import User from "@/models/user"
+import AccessGrant from "@/models/access-grant"
 import StewardshipEvolution from "@/models/stewardship-evolution"
-import Tagging, { TaggableTypes } from "@/models/tagging"
 import Tag from "@/models/tag"
+import Tagging, { TaggableTypes } from "@/models/tagging"
+import User from "@/models/user"
 
 export enum DatasetErrorTypes {
   OK = "ok",
@@ -70,6 +71,17 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
   declare getCreator: BelongsToGetAssociationMixin<User>
   declare setCreator: BelongsToSetAssociationMixin<User, User["id"]>
   declare createCreator: BelongsToCreateAssociationMixin<User>
+
+  declare getAccessGrants: HasManyGetAssociationsMixin<AccessGrant>
+  declare setAccessGrants: HasManySetAssociationsMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare hasAccessGrant: HasManyHasAssociationMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare hasAccessGrants: HasManyHasAssociationsMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare addAccessGrant: HasManyAddAssociationMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare addAccessGrants: HasManyAddAssociationsMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare removeAccessGrant: HasManyRemoveAssociationMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare removeAccessGrants: HasManyRemoveAssociationsMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare countAccessGrants: HasManyCountAssociationsMixin
+  declare createAccessGrant: HasManyCreateAssociationMixin<AccessGrant>
 
   declare getStewardshipEvolutions: HasManyGetAssociationsMixin<StewardshipEvolution>
   declare setStewardshipEvolutions: HasManySetAssociationsMixin<
@@ -172,7 +184,10 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
       },
       as: "tags",
     })
-    // TODO: add access grant relationship
+    this.hasMany(AccessGrant, {
+      foreignKey: "datasetId",
+      as: "accessGrants",
+    })
   }
 }
 
