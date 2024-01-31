@@ -39,7 +39,7 @@ export class UserGroup extends Model<
   static readonly Types = UserGroupTypes
 
   declare id: CreationOptional<number>
-  declare parentId: ForeignKey<UserGroup["id"]>
+  declare parentId: ForeignKey<UserGroup["id"]> | null
   declare name: string
   declare type: string
   declare order: number

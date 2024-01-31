@@ -42,7 +42,7 @@ export class AccessGrant extends Model<
   declare id: CreationOptional<number>
   declare datasetId: ForeignKey<Dataset["id"]>
   declare ownerId: ForeignKey<User["id"]>
-  declare requestorId: ForeignKey<User["id"]>
+  declare requestorId: ForeignKey<User["id"]> | null
   declare grantLevel: GrantLevels
   declare accessType: AccessTypes
   declare isProjectDescriptionRequired: CreationOptional<boolean>

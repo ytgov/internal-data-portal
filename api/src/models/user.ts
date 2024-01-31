@@ -16,7 +16,6 @@ import {
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
   HasManySetAssociationsMixin,
-  ForeignKey,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
   HasOneCreateAssociationMixin,
@@ -37,10 +36,6 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare firstName: string | null
   declare lastName: string | null
   declare position: string | null
-  declare departmentId: ForeignKey<UserGroup["id"]>
-  declare divisionId: ForeignKey<UserGroup["id"]>
-  declare branchId: ForeignKey<UserGroup["id"]>
-  declare unitId: ForeignKey<UserGroup["id"]>
   declare lastEmployeeDirectorySyncAt: Date | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
