@@ -9,6 +9,7 @@ import { UserGroupMembership } from "@/models/user-group-membership"
 import { Tag } from "@/models/tag"
 import { Tagging } from "@/models/tagging"
 import { AccessGrant } from "@/models/access-grant"
+import { AccessRequest } from "@/models/access-request"
 
 // Estabilish associations between models, order likely matters
 Role.establishAssociations()
@@ -20,9 +21,11 @@ UserGroupMembership.establishAssociations()
 Tag.establishAssociations()
 Tagging.establishAssociations()
 AccessGrant.establishAssociations()
+AccessRequest.establishAssociations()
 
 export {
   AccessGrant,
+  AccessRequest,
   Dataset,
   Role,
   StewardshipEvolution,
