@@ -139,6 +139,7 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
 
   declare owner?: NonAttribute<User>
   declare creator?: NonAttribute<User>
+  declare accessGrants?: NonAttribute<AccessGrant[]>
   declare stewardshipEvolutions?: NonAttribute<StewardshipEvolution[]>
   declare taggings?: NonAttribute<Tagging[]>
   declare tags?: NonAttribute<Tag[]>
@@ -146,6 +147,7 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
   declare static associations: {
     owner: Association<Dataset, User>
     creator: Association<Dataset, User>
+    accessGrants: Association<Dataset, AccessGrant>
     stewardshipEvolutions: Association<Dataset, StewardshipEvolution>
     taggings: Association<Dataset, Tagging>
     tags: Association<Dataset, Tag>

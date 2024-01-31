@@ -45,6 +45,7 @@ export class DatasetSerializers extends BaseSerializer<Dataset> {
       creator: this.record.creator,
       stewardshipEvolutions: this.record.stewardshipEvolutions,
       tags: this.record.tags,
+      accessGrants: this.record.accessGrants,
     }
   }
 }

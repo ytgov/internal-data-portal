@@ -28,6 +28,7 @@ export class DatasetsController extends BaseController {
           order: [["createdAt", "DESC"]],
         },
         "tags",
+        "accessGrants",
       ],
     })
 

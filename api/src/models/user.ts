@@ -90,10 +90,14 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare createAccessGrantRequests: HasManyCreateAssociationMixin<AccessGrant>
 
   declare groupMembership?: NonAttribute<UserGroupMembership>
+  declare accessGrantOwnerships?: NonAttribute<AccessGrant[]>
+  declare accessGrantRequests?: NonAttribute<AccessGrant[]>
   declare roles?: NonAttribute<Role[]>
 
   declare static associations: {
     groupMembership: Association<User, UserGroupMembership>
+    accessGrantOwnerships: Association<User, AccessGrant>
+    accessGrantRequests: Association<User, AccessGrant>
     roles: Association<User, Role>
   }
 
