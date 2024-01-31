@@ -172,6 +172,7 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
       },
       as: "tags",
     })
+    // TODO: add access grant relationship
   }
 }
 

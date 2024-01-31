@@ -8,6 +8,7 @@ import { UserGroup } from "@/models/user-groups"
 import { UserGroupMembership } from "@/models/user-group-membership"
 import { Tag } from "@/models/tag"
 import { Tagging } from "@/models/tagging"
+import { AccessGrant } from "@/models/access-grant"
 
 // Estabilish associations between models, order likely matters
 Role.establishAssociations()
@@ -18,8 +19,19 @@ UserGroup.establishAssociations()
 UserGroupMembership.establishAssociations()
 Tag.establishAssociations()
 Tagging.establishAssociations()
+AccessGrant.establishAssociations()
 
-export { Role, User, Dataset, StewardshipEvolution, UserGroup, UserGroupMembership, Tag, Tagging }
+export {
+  AccessGrant,
+  Dataset,
+  Role,
+  StewardshipEvolution,
+  Tag,
+  Tagging,
+  User,
+  UserGroup,
+  UserGroupMembership,
+}
 
 // special db instance that has access to all models.
 export default db

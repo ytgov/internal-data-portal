@@ -49,7 +49,10 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   // https://sequelize.org/docs/v6/core-concepts/assocs/#foohasmanybar
   // https://sequelize.org/api/v7/types/_sequelize_core.index.hasmanyaddassociationmixin
   declare getUserGroupMembership: HasOneGetAssociationMixin<UserGroupMembership>
-  declare setUserGroupMembership: HasOneSetAssociationMixin<UserGroupMembership, UserGroupMembership["userId"]>
+  declare setUserGroupMembership: HasOneSetAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["userId"]
+  >
   declare createUserGroupMembership: HasOneCreateAssociationMixin<UserGroupMembership>
 
   declare getRoles: HasManyGetAssociationsMixin<Role>
@@ -81,6 +84,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
       foreignKey: "userId",
       as: "roles",
     })
+    // TODO: add access grant relationship
   }
 
   get roleTypes(): NonAttribute<RoleTypes[]> {
