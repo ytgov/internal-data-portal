@@ -28,24 +28,24 @@
     </h2>
 
     <v-btn
+      class="my-4 mr-4"
+      color="primary"
+      variant="outlined"
+      :to="{ name: 'DatasetsPage' }"
+    >
+      View Datasets
+    </v-btn>
+    <v-btn
       class="my-4"
       color="primary"
       :to="{ name: 'DatasetNewPage' }"
       >Create Dataset</v-btn
     >
 
-    <h3>Debugging: development</h3>
-    <h4>Auth0 User</h4>
-    <pre>
-    {{ user }}
-  </pre
-    >
-
-    <h4>Current User from Back-end</h4>
-    <pre>
-    {{ currentUser }}
-  </pre
-    >
+    <v-row class="mt-10">
+      <QaScenariosCard />
+      <v-spacer />
+    </v-row>
   </v-container>
 </template>
 
@@ -54,11 +54,11 @@ import { ref } from "vue"
 
 import { useAuth0 } from "@auth0/auth0-vue"
 
-import useCurrentUser from "@/use/use-current-user"
 import userGroupsApi from "@/api/user-groups-api"
 
-const { user, logout } = useAuth0()
-const { currentUser } = useCurrentUser()
+import QaScenariosCard from "@/components/qa-scenarios/QaScenariosCard.vue"
+
+const { logout } = useAuth0()
 const isLoadingUserGroups = ref(false)
 
 async function logoutWrapper() {

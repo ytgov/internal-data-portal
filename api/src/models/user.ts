@@ -16,7 +16,6 @@ import {
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
   HasManySetAssociationsMixin,
-  ForeignKey,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
   HasOneCreateAssociationMixin,
@@ -25,9 +24,10 @@ import { DateTime } from "luxon"
 
 import sequelize from "@/db/db-client"
 
+import AccessGrant from "@/models/access-grant"
 import Role, { RoleTypes } from "@/models/role"
 import UserGroup from "@/models/user-groups"
-import UserGroupMembership from "./user-group-membership"
+import UserGroupMembership from "@/models/user-group-membership"
 
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>
@@ -36,10 +36,6 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare firstName: string | null
   declare lastName: string | null
   declare position: string | null
-  declare departmentId: ForeignKey<UserGroup["id"]>
-  declare divisionId: ForeignKey<UserGroup["id"]>
-  declare branchId: ForeignKey<UserGroup["id"]>
-  declare unitId: ForeignKey<UserGroup["id"]>
   declare lastEmployeeDirectorySyncAt: Date | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
@@ -49,7 +45,10 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   // https://sequelize.org/docs/v6/core-concepts/assocs/#foohasmanybar
   // https://sequelize.org/api/v7/types/_sequelize_core.index.hasmanyaddassociationmixin
   declare getUserGroupMembership: HasOneGetAssociationMixin<UserGroupMembership>
-  declare setUserGroupMembership: HasOneSetAssociationMixin<UserGroupMembership, UserGroupMembership["userId"]>
+  declare setUserGroupMembership: HasOneSetAssociationMixin<
+    UserGroupMembership,
+    UserGroupMembership["userId"]
+  >
   declare createUserGroupMembership: HasOneCreateAssociationMixin<UserGroupMembership>
 
   declare getRoles: HasManyGetAssociationsMixin<Role>
@@ -63,11 +62,37 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare countRoles: HasManyCountAssociationsMixin
   declare createRole: HasManyCreateAssociationMixin<Role>
 
+  declare getAccessGrantOwnerships: HasManyGetAssociationsMixin<AccessGrant>
+  declare setAccessGrantOwnerships: HasManySetAssociationsMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare hasAccessGrantOwnership: HasManyHasAssociationMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare hasAccessGrantOwnerships: HasManyHasAssociationsMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare addAccessGrantOwnership: HasManyAddAssociationMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare addAccessGrantOwnerships: HasManyAddAssociationsMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare removeAccessGrantOwnership: HasManyRemoveAssociationMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare removeAccessGrantOwnerships: HasManyRemoveAssociationsMixin<AccessGrant, AccessGrant["ownerId"]>
+  declare countAccessGrantOwnerships: HasManyCountAssociationsMixin
+  declare createAccessGrantOwnerships: HasManyCreateAssociationMixin<AccessGrant>
+
+  declare getAccessGrantRequests: HasManyGetAssociationsMixin<AccessGrant>
+  declare setAccessGrantRequests: HasManySetAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare hasAccessGrantRequest: HasManyHasAssociationMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare hasAccessGrantRequests: HasManyHasAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare addAccessGrantRequest: HasManyAddAssociationMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare addAccessGrantRequests: HasManyAddAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare removeAccessGrantRequest: HasManyRemoveAssociationMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare removeAccessGrantRequests: HasManyRemoveAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare countAccessGrantRequests: HasManyCountAssociationsMixin
+  declare createAccessGrantRequests: HasManyCreateAssociationMixin<AccessGrant>
+
   declare groupMembership?: NonAttribute<UserGroupMembership>
+  declare accessGrantOwnerships?: NonAttribute<AccessGrant[]>
+  declare accessGrantRequests?: NonAttribute<AccessGrant[]>
   declare roles?: NonAttribute<Role[]>
 
   declare static associations: {
     groupMembership: Association<User, UserGroupMembership>
+    accessGrantOwnerships: Association<User, AccessGrant>
+    accessGrantRequests: Association<User, AccessGrant>
     roles: Association<User, Role>
   }
 
@@ -80,6 +105,14 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
       sourceKey: "id",
       foreignKey: "userId",
       as: "roles",
+    })
+    this.hasMany(AccessGrant, {
+      foreignKey: "ownerId",
+      as: "accessGrantOwnerships",
+    })
+    this.hasMany(AccessGrant, {
+      foreignKey: "requestorId",
+      as: "accessGrantRequests",
     })
   }
 

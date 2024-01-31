@@ -54,8 +54,19 @@ export type DatasetDetailedResult = {
   }
 }
 
-export const usersApi = {
+export const datasetsApi = {
   DatasetErrorTypes,
+  async list(params: {
+    where?: Record<string, any> // TODO: consider adding Sequelize types to front-end?
+    page?: number
+    perPage?: number
+  }): Promise<{
+    datasets: Dataset[]
+    totalCount: number
+  }> {
+    const { data } = await http.get("/api/datasets", { params })
+    return data
+  },
   async get(datasetId: number): Promise<{
     dataset: DatasetDetailedResult
   }> {
@@ -74,4 +85,4 @@ export const usersApi = {
   },
 }
 
-export default usersApi
+export default datasetsApi

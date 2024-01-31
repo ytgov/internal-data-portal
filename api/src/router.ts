@@ -10,6 +10,7 @@ import {
   type NextFunction,
 } from "express"
 import { template } from "lodash"
+import { UnauthorizedError } from "express-jwt"
 
 import { APPLICATION_NAME, GIT_COMMIT_HASH, NODE_ENV, RELEASE_TAG } from "@/config"
 
@@ -23,6 +24,7 @@ import {
   Users,
   UserGroups,
   UserGroupsController,
+  QaScenarios,
 } from "@/controllers"
 
 export const router = Router()
@@ -40,17 +42,26 @@ router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser)
 
 // Add all the standard api controller routes here
 router.route("/api/current-user").get(CurrentUserController.show)
+
+router.route("/api/datasets").get(DatasetsController.index)
+router.route("/api/datasets").post(DatasetsController.create)
+router.route("/api/datasets/:datasetId").get(DatasetsController.show)
+
 router.route("/api/users").get(UsersController.index)
 router
   .route("/api/users/:userId/yukon-government-directory-sync")
   .post(Users.YukonGovernmentDirectorySyncController.create)
-router.route("/api/datasets").post(DatasetsController.create)
-router.route("/api/datasets/:datasetId").get(DatasetsController.show)
 
 router.route("/api/user-groups").get(UserGroupsController.index)
 router
   .route("/api/user-groups/yukon-government-directory-sync")
   .post(UserGroups.YukonGovernmentDirectorySyncController.create)
+
+// TODO: might want to lock these to only run in non-production environments?
+router.route("/api/qa-scenarios/link-random-tags").post(QaScenarios.LinkRandomTagsController.create)
+router
+  .route("/api/qa-scenarios/apply-random-access-grants")
+  .post(QaScenarios.ApplyRandomAccessGrantsController.create)
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {
@@ -67,6 +78,9 @@ router.use("/api", (err: ErrorRequestHandler, req: Request, res: Response, next:
   if (err instanceof DatabaseError) {
     console.error(err)
     return res.status(422).json({ message: "Invalid query against database." })
+  } else if (err instanceof UnauthorizedError) {
+    console.error(err)
+    return res.status(401).json({ message: err.inner.message })
   }
 
   console.error(err)

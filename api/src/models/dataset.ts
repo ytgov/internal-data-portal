@@ -24,8 +24,12 @@ import {
 
 import sequelize from "@/db/db-client"
 
-import User from "@/models/user"
+import AccessGrant from "@/models/access-grant"
+import AccessRequest from "@/models/access-request"
 import StewardshipEvolution from "@/models/stewardship-evolution"
+import Tag from "@/models/tag"
+import Tagging, { TaggableTypes } from "@/models/tagging"
+import User from "@/models/user"
 
 export enum DatasetErrorTypes {
   OK = "ok",
@@ -69,6 +73,28 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
   declare setCreator: BelongsToSetAssociationMixin<User, User["id"]>
   declare createCreator: BelongsToCreateAssociationMixin<User>
 
+  declare getAccessGrants: HasManyGetAssociationsMixin<AccessGrant>
+  declare setAccessGrants: HasManySetAssociationsMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare hasAccessGrant: HasManyHasAssociationMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare hasAccessGrants: HasManyHasAssociationsMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare addAccessGrant: HasManyAddAssociationMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare addAccessGrants: HasManyAddAssociationsMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare removeAccessGrant: HasManyRemoveAssociationMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare removeAccessGrants: HasManyRemoveAssociationsMixin<AccessGrant, AccessGrant["datasetId"]>
+  declare countAccessGrants: HasManyCountAssociationsMixin
+  declare createAccessGrant: HasManyCreateAssociationMixin<AccessGrant>
+
+  declare getAccessRequests: HasManyGetAssociationsMixin<AccessRequest>
+  declare setAccessRequests: HasManySetAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare hasAccessRequest: HasManyHasAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare hasAccessRequests: HasManyHasAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare addAccessRequest: HasManyAddAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare addAccessRequests: HasManyAddAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare removeAccessRequest: HasManyRemoveAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare removeAccessRequests: HasManyRemoveAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare countAccessRequests: HasManyCountAssociationsMixin
+  declare createAccessRequest: HasManyCreateAssociationMixin<AccessRequest>
+
   declare getStewardshipEvolutions: HasManyGetAssociationsMixin<StewardshipEvolution>
   declare setStewardshipEvolutions: HasManySetAssociationsMixin<
     StewardshipEvolution,
@@ -101,14 +127,44 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
   declare countStewardshipEvolutions: HasManyCountAssociationsMixin
   declare createStewardshipEvolution: HasManyCreateAssociationMixin<StewardshipEvolution>
 
+  declare getTaggings: HasManyGetAssociationsMixin<Tagging>
+  declare setTaggings: HasManySetAssociationsMixin<Tagging, Tagging["taggableId"]>
+  declare hasTagging: HasManyHasAssociationMixin<Tagging, Tagging["taggableId"]>
+  declare hasTaggings: HasManyHasAssociationsMixin<Tagging, Tagging["taggableId"]>
+  declare addTagging: HasManyAddAssociationMixin<Tagging, Tagging["taggableId"]>
+  declare addTaggings: HasManyAddAssociationsMixin<Tagging, Tagging["taggableId"]>
+  declare removeTagging: HasManyRemoveAssociationMixin<Tagging, Tagging["taggableId"]>
+  declare removeTaggings: HasManyRemoveAssociationsMixin<Tagging, Tagging["taggableId"]>
+  declare countTaggings: HasManyCountAssociationsMixin
+  declare createTagging: HasManyCreateAssociationMixin<Tagging>
+
+  declare getTags: HasManyGetAssociationsMixin<Tag>
+  declare setTags: HasManySetAssociationsMixin<Tag, Tag["id"]>
+  declare hasTag: HasManyHasAssociationMixin<Tag, Tag["id"]>
+  declare hasTags: HasManyHasAssociationsMixin<Tag, Tag["id"]>
+  declare addTag: HasManyAddAssociationMixin<Tag, Tag["id"]>
+  declare addTags: HasManyAddAssociationsMixin<Tag, Tag["id"]>
+  declare removeTag: HasManyRemoveAssociationMixin<Tag, Tag["id"]>
+  declare removeTags: HasManyRemoveAssociationsMixin<Tag, Tag["id"]>
+  declare countTags: HasManyCountAssociationsMixin
+  declare createTag: HasManyCreateAssociationMixin<Tag>
+
   declare owner?: NonAttribute<User>
   declare creator?: NonAttribute<User>
+  declare accessGrants?: NonAttribute<AccessGrant[]>
+  declare accessRequests?: NonAttribute<AccessRequest[]>
   declare stewardshipEvolutions?: NonAttribute<StewardshipEvolution[]>
+  declare taggings?: NonAttribute<Tagging[]>
+  declare tags?: NonAttribute<Tag[]>
 
   declare static associations: {
     owner: Association<Dataset, User>
     creator: Association<Dataset, User>
+    accessGrants: Association<Dataset, AccessGrant>
+    accessRequests: Association<Dataset, AccessRequest>
     stewardshipEvolutions: Association<Dataset, StewardshipEvolution>
+    taggings: Association<Dataset, Tagging>
+    tags: Association<Dataset, Tag>
   }
 
   static establishAssociations() {
@@ -120,10 +176,37 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
       foreignKey: "creatorId",
       as: "creator",
     })
+    this.hasMany(AccessRequest, {
+      foreignKey: "datasetId",
+      as: "accessRequests",
+    })
     this.hasMany(StewardshipEvolution, {
       sourceKey: "id",
       foreignKey: "datasetId",
       as: "stewardshipEvolutions",
+    })
+    this.hasMany(Tagging, {
+      foreignKey: "taggableId",
+      constraints: false,
+      scope: {
+        taggableType: TaggableTypes.DATASET,
+      },
+      as: "taggings",
+    })
+    this.belongsToMany(Tag, {
+      foreignKey: "taggableId",
+      constraints: false,
+      through: {
+        model: Tagging,
+        scope: {
+          taggableType: TaggableTypes.DATASET,
+        },
+      },
+      as: "tags",
+    })
+    this.hasMany(AccessGrant, {
+      foreignKey: "datasetId",
+      as: "accessGrants",
     })
   }
 }
