@@ -1,7 +1,6 @@
-import { isNumber } from "lodash"
 import { faker } from "@faker-js/faker"
 
-import { Role, User } from "@/models"
+import { Role } from "@/models"
 import { RoleTypes } from "@/models/role"
 
 import BaseFactory from "@/factories/base-factory"
