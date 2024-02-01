@@ -45,19 +45,19 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
   declare slug: string
   declare name: string
   declare description: string
-  declare subscriptionUrl: CreationOptional<string>
-  declare subscriptionAccessCode: CreationOptional<string>
+  declare subscriptionUrl: CreationOptional<string | null>
+  declare subscriptionAccessCode: CreationOptional<string | null>
   declare isSubscribable: CreationOptional<boolean>
   declare isSpatialData: CreationOptional<boolean>
   declare isLiveData: CreationOptional<boolean>
-  declare termsOfUse: CreationOptional<string>
-  declare credits: CreationOptional<string>
-  declare ownerNotes: CreationOptional<string>
+  declare termsOfUse: CreationOptional<string | null>
+  declare credits: CreationOptional<string | null>
+  declare ownerNotes: CreationOptional<string | null>
   declare status: CreationOptional<DatasetErrorTypes>
-  declare errorCode: CreationOptional<string>
-  declare errorDetails: CreationOptional<string>
-  declare publishedAt: CreationOptional<Date>
-  declare deactivatedAt: CreationOptional<Date>
+  declare errorCode: CreationOptional<string | null>
+  declare errorDetails: CreationOptional<string | null>
+  declare publishedAt: CreationOptional<Date | null>
+  declare deactivatedAt: CreationOptional<Date | null>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>
