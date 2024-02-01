@@ -38,7 +38,7 @@ import useSnack from "@/use/use-snack"
 type Scenario = {
   url: string
   label: string
-  isLoading: boolean | undefined
+  isLoading?: boolean
 }
 
 const snack = useSnack()
