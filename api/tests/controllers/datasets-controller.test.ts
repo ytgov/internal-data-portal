@@ -10,8 +10,6 @@ import { RoleTypes } from "@/models/role"
 import { datasetFactory, roleFactory, userFactory } from "@/factories"
 import { mockCurrentUser } from "@/support"
 
-jest.mock("@/middlewares/jwt-middleware")
-jest.mock("@/middlewares/authorization-middleware")
 jest.mock("@/services/datasets")
 
 describe("api/src/controllers/datasets-controller.ts", () => {

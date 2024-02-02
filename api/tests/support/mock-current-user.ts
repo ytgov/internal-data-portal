@@ -8,6 +8,9 @@ import {
 
 import { User } from "@/models"
 
+jest.mock("@/middlewares/jwt-middleware")
+jest.mock("@/middlewares/authorization-middleware")
+
 /**
  * Usage:
  * At the top level of a test file add:

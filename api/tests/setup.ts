@@ -15,6 +15,9 @@ from jest-extended library or call setup and teardown hooks.
 
 import db from "@/models"
 
+// Global Mocks
+import "@/support/mock-current-user"
+
 /*
   e.g.
   EXEC sp_msforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT ALL';
