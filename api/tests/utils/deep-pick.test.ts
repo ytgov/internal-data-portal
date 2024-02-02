@@ -34,7 +34,7 @@ describe("api/src/utils/deep-pick.ts", () => {
 
       // Act
       const result = deepPick(objectToPick, ["a", "b", { d: ["a", "b"] }, { f: ["a", "b"] }])
-      console.log("result:", result)
+
       // Assert
       expect(result).toEqual({
         a: 1,
