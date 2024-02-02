@@ -47,7 +47,7 @@ type YukonGovernmentDivision = {
 }
 
 export const yukonGovernmentIntegration = {
-  async searchEmployees(params: { email?: string }): Promise<{
+  async searchEmployees(params?: { email?: string }): Promise<{
     employees: YukonGovernmentEmployee[]
     count: number
   }> {

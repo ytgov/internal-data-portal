@@ -17,6 +17,7 @@ import db from "@/models"
 
 // Global Mocks
 import "@/support/mock-current-user"
+import "@/support/mock-axios"
 
 /*
   e.g.
