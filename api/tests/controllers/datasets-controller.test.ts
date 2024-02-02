@@ -1,28 +1,29 @@
-import { Request, Response, NextFunction } from "express"
 import request from "supertest"
 
+import { Request, Response, NextFunction } from "express"
+
+import { CreateService } from "@/services/datasets"
+
 import app from "@/app"
-import {
-  ensureAndAuthorizeCurrentUser,
-  type AuthorizationRequest,
-} from "@/middlewares/authorization-middleware"
 import { RoleTypes } from "@/models/role"
 
 import { datasetFactory, roleFactory, userFactory } from "@/factories"
+import { mockCurrentUser } from "@/support"
 
-jest.mock(
-  "@/middlewares/jwt-middleware",
-  () => (req: Request, res: Response, next: NextFunction) => next()
-)
-jest.mock("@/middlewares/authorization-middleware", () => ({
-  ensureAndAuthorizeCurrentUser: jest.fn(),
-}))
-const ensureAndAuthorizeCurrentUserMock = ensureAndAuthorizeCurrentUser as jest.Mock
+jest.mock("@/middlewares/jwt-middleware")
+jest.mock("@/middlewares/authorization-middleware")
+jest.mock("@/services/datasets")
 
 describe("api/src/controllers/datasets-controller.ts", () => {
   describe("DatasetsController", () => {
+    let mockedCreateService: jest.MockedObjectDeep<typeof CreateService>
+
+    beforeEach(() => {
+      mockedCreateService = jest.mocked(CreateService)
+    })
     describe("#update", () => {
-      test("when authorized and dataset creation is successful", async () => {
+      test("when authorized - role is `data_owner` - and dataset creation is successful", async () => {
+        // Arrange
         const dataOwnerRole = roleFactory.build({ role: RoleTypes.DATA_OWNER })
         const currentUser = await userFactory
           .associations({
@@ -32,14 +33,41 @@ describe("api/src/controllers/datasets-controller.ts", () => {
             include: ["roles"],
           })
           .create()
-        ensureAndAuthorizeCurrentUserMock.mockImplementation(
-          (req: AuthorizationRequest, res: Response, next: NextFunction) => {
-            req.currentUser = currentUser
-            next()
-          }
-        )
+        mockCurrentUser(currentUser)
 
+        const newDatasetAttributes = datasetFactory.attributesFor({
+          name: "test dataset creation",
+          ownerId: currentUser.id,
+        })
+        mockedCreateService.perform.mockResolvedValue(datasetFactory.build(newDatasetAttributes))
+
+        // Act
+        const response = await request(app).post("/api/datasets").send(newDatasetAttributes)
+
+        // Assert
+        expect.assertions(2)
+        expect(response.status).toEqual(201)
+        expect(response.body).toEqual({
+          dataset: expect.objectContaining({
+            name: "test dataset creation",
+            ownerId: currentUser.id,
+          }),
+        })
+      })
+
+      test("when unauthorized - role is `user`, returns a 403", async () => {
         // Arrange
+        const dataOwnerRole = roleFactory.build({ role: RoleTypes.USER })
+        const currentUser = await userFactory
+          .associations({
+            roles: [dataOwnerRole],
+          })
+          .transient({
+            include: ["roles"],
+          })
+          .create()
+        mockCurrentUser(currentUser)
+
         const newDatasetAttributes = datasetFactory.attributesFor({
           name: "test dataset creation",
           ownerId: currentUser.id,
@@ -49,12 +77,9 @@ describe("api/src/controllers/datasets-controller.ts", () => {
         const response = await request(app).post("/api/datasets").send(newDatasetAttributes)
 
         // Assert
-        expect(response.status).toEqual(201)
-        expect(response.body).toEqual({
-          dataset: expect.objectContaining({
-            name: "test dataset creation",
-          }),
-        })
+        expect.assertions(2)
+        expect(response.status).toEqual(403)
+        expect(response.body).toEqual({ message: "You are not authorized to create this dataset." })
       })
     })
   })
