@@ -4,7 +4,7 @@ import { type Request as JwtRequest } from "express-jwt"
 import auth0Integration, { Auth0PayloadError } from "@/integrations/auth0-integration"
 import { Role, User } from "@/models"
 
-type AuthorizationRequest = JwtRequest & {
+export type AuthorizationRequest = JwtRequest & {
   currentUser?: User
 }
 

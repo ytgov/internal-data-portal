@@ -1,9 +1,11 @@
 import { expressjwt as jwt } from "express-jwt"
 import jwksRsa, { type GetVerificationKey } from "jwks-rsa"
 
-import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "@/config"
+import { AUTH0_DOMAIN, AUTH0_AUDIENCE, NODE_ENV } from "@/config"
 
-console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}/.well-known/jwks.json`)
+if (NODE_ENV !== "test") {
+  console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}/.well-known/jwks.json`)
+}
 
 // TODO: investigate converting this to an integration or utility of the authorization middleware
 export default jwt({
