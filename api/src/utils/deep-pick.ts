@@ -38,12 +38,14 @@ export function deepPick(object: any, paths: Path[]) {
     } else if (typeof path === "object") {
       Object.entries(path).forEach(([key, nestedPaths]) => {
         const nestedResult = cloneDeep(object[key])
+        if (nestedResult === undefined) return
+
         if (Array.isArray(nestedResult)) {
           result[key] = nestedResult.map((item) => deepPick(item, nestedPaths))
         } else if (typeof nestedResult === "object") {
           result[key] = deepPick(nestedResult, nestedPaths)
         } else {
-          throw new Error("result type unsupported")
+          result[key] = nestedResult
         }
       })
 

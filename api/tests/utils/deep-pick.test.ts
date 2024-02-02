@@ -7,27 +7,94 @@ describe("api/src/utils/deep-pick.ts", () => {
       const objectToPick = {
         a: 1,
         b: 2,
-        c: {
-          d: 4,
-          f: 5,
+        c: 3,
+        d: {
+          a: 1,
+          b: 2,
+          c: 3,
         },
-        g: [
+        e: {
+          a: 1,
+          b: 2,
+          c: 3,
+        },
+        f: [
           {
-            h: 6,
-            i: 7,
+            a: 1,
+            b: 2,
+            c: 3,
           },
           {
-            h: 8,
-            i: 9,
+            a: 1,
+            b: 2,
+            c: 3,
           },
         ],
       }
 
       // Act
-      const result = deepPick(objectToPick, ["a", { c: ["d"] }, { g: ["h"] }])
+      const result = deepPick(objectToPick, ["a", "b", { d: ["a", "b"] }, { f: ["a", "b"] }])
+      console.log("result:", result)
+      // Assert
+      expect(result).toEqual({
+        a: 1,
+        b: 2,
+        d: { a: 1, b: 2 },
+        f: [
+          { a: 1, b: 2 },
+          { a: 1, b: 2 },
+        ],
+      })
+    })
+
+    test("when pick options reference non-existent value in path, picks correctly", () => {
+      // Arrange
+      const objectToPick = {
+        a: 1,
+        b: 2,
+        c: 3,
+      }
+
+      // Act
+      const result = deepPick(objectToPick, [
+        "a",
+        "b",
+        {
+          d: ["a", "b"],
+        },
+      ])
 
       // Assert
-      expect(result).toEqual({ a: 1, c: { d: 4 }, g: [{ h: 6 }, { h: 8 }] })
+      expect(result).toEqual({
+        a: 1,
+        b: 2,
+      })
+    })
+
+    test("when pick options path references simple value in path, picks correctly", () => {
+      // Arrange
+      const objectToPick = {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4,
+      }
+
+      // Act
+      const result = deepPick(objectToPick, [
+        "a",
+        "b",
+        {
+          d: ["a", "b"],
+        },
+      ])
+
+      // Assert
+      expect(result).toEqual({
+        a: 1,
+        b: 2,
+        d: 4,
+      })
     })
   })
 })
