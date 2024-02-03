@@ -5,7 +5,7 @@ import { Dataset, StewardshipEvolution, User } from "@/models"
 import { DatasetsPolicy } from "@/policies"
 import { assertDatasetPolicyRecord, type DatasetPolicyRecord } from "@/policies/datasets-policy"
 import { CreateService } from "@/services/datasets"
-import { DatasetSerializers } from "@/serializers"
+import { TableSerializer } from "@/serializers/datasets"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -33,7 +33,7 @@ export class DatasetsController extends BaseController {
       ],
     })
 
-    const serializedDatasets = DatasetSerializers.asTable(datasets, this.currentUser)
+    const serializedDatasets = TableSerializer.perform(datasets, this.currentUser)
     return this.response.json({ datasets: serializedDatasets, totalCount })
   }
 
