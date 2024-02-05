@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 import { Includeable } from "sequelize"
 
-import { Role, User } from "@/models"
+import { Role, User, UserGroupMembership } from "@/models"
 
 import BaseFactory from "@/factories/base-factory"
 
@@ -22,6 +22,14 @@ export const userFactory = BaseFactory.define<User, TransientParam>(
           }
         })
         await Role.bulkCreate(roleAttributes)
+      }
+
+      if (associations.groupMembership) {
+        const groupMembershipAttributes = {
+          ...associations.groupMembership.dataValues,
+          userId: user.id,
+        }
+        await UserGroupMembership.create(groupMembershipAttributes)
       }
 
       if (transientParams.include === undefined) {

@@ -32,6 +32,8 @@ export enum UserGroupTypes {
   UNIT = "unit",
 }
 
+export const DEFAULT_ORDER = -1
+
 export class UserGroup extends Model<
   InferAttributes<UserGroup>,
   InferCreationAttributes<UserGroup>
