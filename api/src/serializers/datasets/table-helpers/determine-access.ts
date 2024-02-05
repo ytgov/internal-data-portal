@@ -1,67 +1,30 @@
 import { isEmpty, isNil, isUndefined } from "lodash"
 
-import { Dataset, User, AccessGrant } from "@/models"
+import { Dataset, User, AccessGrant, UserGroupMembership } from "@/models"
 import { AccessTypes, GrantLevels, orderOfAccessType } from "@/models/access-grant"
 
 export function determineAccess(record: Dataset, requestingUser: User): AccessTypes {
   const { accessGrants, owner } = record
 
-  if (isUndefined(accessGrants) || isEmpty(accessGrants)) {
+  if (isUndefined(accessGrants) || isEmpty(accessGrants) || isUndefined(owner)) {
     return AccessTypes.NO_ACCESS
   }
 
-  const accessType = accessGrants.reduce<AccessTypes>(
+  return accessGrants.reduce<AccessTypes>(
     (currentAccess: AccessTypes, accessGrant: AccessGrant) => {
-      if (orderOfAccessType(currentAccess) > orderOfAccessType(accessGrant.accessType)) {
+      const { accessType } = accessGrant
+      if (orderOfAccessType(currentAccess) > orderOfAccessType(accessType)) {
         return currentAccess
       }
 
-      if (accessGrant.grantLevel === GrantLevels.GOVERNMENT_WIDE) {
-        return accessGrant.accessType
+      const { grantLevel } = accessGrant
+      const { groupMembership: ownerGroupMembership } = owner
+      const { groupMembership: requestingUserGroupMembership } = requestingUser
+      if (isUndefined(ownerGroupMembership) || isUndefined(requestingUserGroupMembership)) {
+        return currentAccess
       }
 
-      if (
-        accessGrant.grantLevel === GrantLevels.DEPARTMENT &&
-        !isUndefined(owner) &&
-        !isNil(owner.groupMembership?.departmentId) &&
-        owner.groupMembership?.departmentId === requestingUser.groupMembership?.departmentId
-      ) {
-        return accessGrant.accessType
-      }
-
-      if (
-        accessGrant.grantLevel === GrantLevels.DIVISION &&
-        !isUndefined(owner) &&
-        !isNil(owner.groupMembership?.divisionId) &&
-        !isNil(owner.groupMembership?.departmentId) &&
-        owner.groupMembership?.departmentId === requestingUser.groupMembership?.departmentId &&
-        owner.groupMembership?.divisionId === requestingUser.groupMembership?.divisionId
-      ) {
-        return accessGrant.accessType
-      }
-
-      if (
-        accessGrant.grantLevel === GrantLevels.BRANCH &&
-        !isUndefined(owner) &&
-        !isNil(owner.groupMembership?.divisionId) &&
-        !isNil(owner.groupMembership?.departmentId) &&
-        owner.groupMembership?.departmentId === requestingUser.groupMembership?.departmentId &&
-        owner.groupMembership?.divisionId === requestingUser.groupMembership?.divisionId &&
-        owner.groupMembership?.branchId === requestingUser.groupMembership?.branchId
-      ) {
-        return accessGrant.accessType
-      }
-
-      if (
-        accessGrant.grantLevel === GrantLevels.UNIT &&
-        !isUndefined(owner) &&
-        !isNil(owner.groupMembership?.divisionId) &&
-        !isNil(owner.groupMembership?.departmentId) &&
-        owner.groupMembership?.departmentId === requestingUser.groupMembership?.departmentId &&
-        owner.groupMembership?.divisionId === requestingUser.groupMembership?.divisionId &&
-        owner.groupMembership?.branchId === requestingUser.groupMembership?.branchId &&
-        owner.groupMembership?.unitId === requestingUser.groupMembership?.unitId
-      ) {
+      if (matchesGrantLevel(grantLevel, ownerGroupMembership, requestingUserGroupMembership)) {
         return accessGrant.accessType
       }
 
@@ -69,8 +32,54 @@ export function determineAccess(record: Dataset, requestingUser: User): AccessTy
     },
     AccessTypes.NO_ACCESS
   )
+}
 
-  return accessType
+function matchesGrantLevel(
+  grantLevel: GrantLevels,
+  ownerGroupMembership: UserGroupMembership,
+  requestingUserGroupMembership: UserGroupMembership
+): boolean {
+  if (grantLevel === GrantLevels.GOVERNMENT_WIDE) {
+    return true
+  } else if (
+    grantLevel === GrantLevels.DEPARTMENT &&
+    !isNil(ownerGroupMembership.departmentId) &&
+    ownerGroupMembership.departmentId === requestingUserGroupMembership.departmentId
+  ) {
+    return true
+  } else if (
+    grantLevel === GrantLevels.DIVISION &&
+    !isNil(ownerGroupMembership.departmentId) &&
+    !isNil(ownerGroupMembership.divisionId) &&
+    ownerGroupMembership.departmentId === requestingUserGroupMembership.departmentId &&
+    ownerGroupMembership.divisionId === requestingUserGroupMembership.divisionId
+  ) {
+    return true
+  } else if (
+    grantLevel === GrantLevels.BRANCH &&
+    !isNil(ownerGroupMembership.departmentId) &&
+    !isNil(ownerGroupMembership.divisionId) &&
+    !isNil(ownerGroupMembership.branchId) &&
+    ownerGroupMembership.departmentId === requestingUserGroupMembership.departmentId &&
+    ownerGroupMembership.divisionId === requestingUserGroupMembership.divisionId &&
+    ownerGroupMembership.branchId === requestingUserGroupMembership.branchId
+  ) {
+    return true
+  } else if (
+    grantLevel === GrantLevels.UNIT &&
+    !isNil(ownerGroupMembership.divisionId) &&
+    !isNil(ownerGroupMembership.departmentId) &&
+    !isNil(ownerGroupMembership.branchId) &&
+    !isNil(ownerGroupMembership.unitId) &&
+    ownerGroupMembership.departmentId === requestingUserGroupMembership.departmentId &&
+    ownerGroupMembership.divisionId === requestingUserGroupMembership.divisionId &&
+    ownerGroupMembership.branchId === requestingUserGroupMembership.branchId &&
+    ownerGroupMembership.unitId === requestingUserGroupMembership.unitId
+  ) {
+    return true
+  } else {
+    return false
+  }
 }
 
 export default determineAccess

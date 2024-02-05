@@ -18,8 +18,32 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
     describe("when datataset has access grant with open access", () => {
       test("when grant level is government wide, returns open access", async () => {
         // Arrange
-        const requestingUser = await userFactory.create()
-        const datasetOwner = await userFactory.create()
+        const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const otherDepartment = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const requestingUserGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const requestingUser = await userFactory
+          .associations({
+            groupMembership: requestingUserGroupMembership,
+          })
+          .transient({
+            include: [
+              {
+                association: "groupMembership",
+                include: ["department", "division", "branch", "unit"],
+              },
+            ],
+          })
+          .create()
+        const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
+          departmentId: otherDepartment.id,
+        })
+        const datasetOwner = await userFactory
+          .associations({
+            groupMembership: datasetOwnerGroupMembership,
+          })
+          .create()
         const openAccessGrant = accessGrantFactory.build({
           ownerId: datasetOwner.id,
           grantLevel: GrantLevels.GOVERNMENT_WIDE,
@@ -27,7 +51,18 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
         })
         const dataset = await datasetFactory
           .transient({
-            include: ["owner", "accessGrants"],
+            include: [
+              {
+                association: "owner",
+                include: [
+                  {
+                    association: "groupMembership",
+                    include: ["department", "division", "branch", "unit"],
+                  },
+                ],
+              },
+              "accessGrants",
+            ],
           })
           .associations({
             accessGrants: [openAccessGrant],
@@ -70,14 +105,6 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
           const datasetOwner = await userFactory
             .associations({
               groupMembership: datasetOwnerGroupMembership,
-            })
-            .transient({
-              include: [
-                {
-                  association: "groupMembership",
-                  include: ["department", "division", "branch", "unit"],
-                },
-              ],
             })
             .create()
           const openAccessGrant = accessGrantFactory.build({
@@ -143,14 +170,6 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
           const datasetOwner = await userFactory
             .associations({
               groupMembership: datasetOwnerGroupMembership,
-            })
-            .transient({
-              include: [
-                {
-                  association: "groupMembership",
-                  include: ["department", "division", "branch", "unit"],
-                },
-              ],
             })
             .create()
           const openAccessGrant = accessGrantFactory.build({
@@ -219,14 +238,6 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             .associations({
               groupMembership: datasetOwnerGroupMembership,
             })
-            .transient({
-              include: [
-                {
-                  association: "groupMembership",
-                  include: ["department", "division", "branch", "unit"],
-                },
-              ],
-            })
             .create()
           const openAccessGrant = accessGrantFactory.build({
             ownerId: datasetOwner.id,
@@ -292,14 +303,6 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
           const datasetOwner = await userFactory
             .associations({
               groupMembership: datasetOwnerGroupMembership,
-            })
-            .transient({
-              include: [
-                {
-                  association: "groupMembership",
-                  include: ["department", "division", "branch", "unit"],
-                },
-              ],
             })
             .create()
           const openAccessGrant = accessGrantFactory.build({
@@ -369,14 +372,6 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             .associations({
               groupMembership: datasetOwnerGroupMembership,
             })
-            .transient({
-              include: [
-                {
-                  association: "groupMembership",
-                  include: ["department", "division", "branch", "unit"],
-                },
-              ],
-            })
             .create()
           const openAccessGrant = accessGrantFactory.build({
             ownerId: datasetOwner.id,
@@ -418,8 +413,32 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
     describe("when datataset has access grant with self-serve access", () => {
       test("when only access grant level is government wide, returns self-serve access", async () => {
         // Arrange
-        const requestingUser = await userFactory.create()
-        const datasetOwner = await userFactory.create()
+        const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const otherDepartment = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const requestingUserGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const requestingUser = await userFactory
+          .associations({
+            groupMembership: requestingUserGroupMembership,
+          })
+          .transient({
+            include: [
+              {
+                association: "groupMembership",
+                include: ["department", "division", "branch", "unit"],
+              },
+            ],
+          })
+          .create()
+        const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
+          departmentId: otherDepartment.id,
+        })
+        const datasetOwner = await userFactory
+          .associations({
+            groupMembership: datasetOwnerGroupMembership,
+          })
+          .create()
         const selfServeAccessGrant = accessGrantFactory.build({
           ownerId: datasetOwner.id,
           grantLevel: GrantLevels.GOVERNMENT_WIDE,
@@ -427,7 +446,18 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
         })
         const dataset = await datasetFactory
           .transient({
-            include: ["owner", "accessGrants"],
+            include: [
+              {
+                association: "owner",
+                include: [
+                  {
+                    association: "groupMembership",
+                    include: ["department", "division", "branch", "unit"],
+                  },
+                ],
+              },
+              "accessGrants",
+            ],
           })
           .associations({
             accessGrants: [selfServeAccessGrant],
@@ -446,8 +476,32 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
 
       test("when access types of open and self-serve access exist with grant levels government wide, prefers open access", async () => {
         // Arrange
-        const requestingUser = await userFactory.create()
-        const datasetOwner = await userFactory.create()
+        const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const otherDepartment = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const requestingUserGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const requestingUser = await userFactory
+          .associations({
+            groupMembership: requestingUserGroupMembership,
+          })
+          .transient({
+            include: [
+              {
+                association: "groupMembership",
+                include: ["department", "division", "branch", "unit"],
+              },
+            ],
+          })
+          .create()
+        const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
+          departmentId: otherDepartment.id,
+        })
+        const datasetOwner = await userFactory
+          .associations({
+            groupMembership: datasetOwnerGroupMembership,
+          })
+          .create()
         const openAccessGrant = accessGrantFactory.build({
           ownerId: datasetOwner.id,
           grantLevel: GrantLevels.GOVERNMENT_WIDE,
@@ -461,7 +515,18 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
         const accessGrants = faker.helpers.shuffle([selfServeAccessGrant, openAccessGrant])
         const dataset = await datasetFactory
           .transient({
-            include: ["owner", "accessGrants"],
+            include: [
+              {
+                association: "owner",
+                include: [
+                  {
+                    association: "groupMembership",
+                    include: ["department", "division", "branch", "unit"],
+                  },
+                ],
+              },
+              "accessGrants",
+            ],
           })
           .associations({
             accessGrants,
@@ -480,8 +545,32 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
 
       test("when access types of self-serve and screened access exist with grant levels government wide, prefers self-serve access", async () => {
         // Arrange
-        const requestingUser = await userFactory.create()
-        const datasetOwner = await userFactory.create()
+        const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const otherDepartment = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const requestingUserGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const requestingUser = await userFactory
+          .associations({
+            groupMembership: requestingUserGroupMembership,
+          })
+          .transient({
+            include: [
+              {
+                association: "groupMembership",
+                include: ["department", "division", "branch", "unit"],
+              },
+            ],
+          })
+          .create()
+        const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
+          departmentId: otherDepartment.id,
+        })
+        const datasetOwner = await userFactory
+          .associations({
+            groupMembership: datasetOwnerGroupMembership,
+          })
+          .create()
         const selfServeAccessGrant = accessGrantFactory.build({
           ownerId: datasetOwner.id,
           grantLevel: GrantLevels.GOVERNMENT_WIDE,
@@ -495,7 +584,18 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
         const accessGrants = faker.helpers.shuffle([screenedAccessGrant, selfServeAccessGrant])
         const dataset = await datasetFactory
           .transient({
-            include: ["owner", "accessGrants"],
+            include: [
+              {
+                association: "owner",
+                include: [
+                  {
+                    association: "groupMembership",
+                    include: ["department", "division", "branch", "unit"],
+                  },
+                ],
+              },
+              "accessGrants",
+            ],
           })
           .associations({
             accessGrants,
