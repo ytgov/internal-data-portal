@@ -38,8 +38,12 @@ export enum GrantLevels {
 }
 
 export enum AccessTypes {
+  // Open - I don't care who uses my data I am not likely to change it.
   OPEN_ACCESS = "open_access",
+  // Subscribe - I am happy to share my data but I need to know who is using it as there might be changes
   SELF_SERVE_ACCESS = "self_serve_access",
+  // Request - I want to control access to my data and need to know how they will use my data,
+  // I need to inform them of any changes that are made.
   SCREENED_ACCESS = "screened_access",
   // This is a special access type that is not stored in the database
   // "no access" is determined by the absence of any access grants
@@ -86,8 +90,14 @@ export class AccessGrant extends Model<
   declare hasAccessRequests: HasManyHasAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
   declare addAccessRequest: HasManyAddAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
   declare addAccessRequests: HasManyAddAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
-  declare removeAccessRequest: HasManyRemoveAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
-  declare removeAccessRequests: HasManyRemoveAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare removeAccessRequest: HasManyRemoveAssociationMixin<
+    AccessRequest,
+    AccessRequest["datasetId"]
+  >
+  declare removeAccessRequests: HasManyRemoveAssociationsMixin<
+    AccessRequest,
+    AccessRequest["datasetId"]
+  >
   declare countAccessRequests: HasManyCountAssociationsMixin
   declare createAccessRequest: HasManyCreateAssociationMixin<AccessRequest>
 
