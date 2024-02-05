@@ -1,7 +1,7 @@
 import { pick } from "lodash"
 
 import { Dataset, User } from "@/models"
-import { DetermineAccessSerializer } from "@/serializers/datasets/table"
+import { determineAccess } from "@/serializers/datasets/table-helpers"
 import BaseSerializer from "@/serializers/base-serializer"
 
 export type DatasetTableView = Partial<Dataset> & {
@@ -47,7 +47,7 @@ export class TableSerializer extends BaseSerializer<Dataset> {
   }
 
   private determineAccess() {
-    return DetermineAccessSerializer.perform(this.record, this.currentUser)
+    return determineAccess(this.record, this.currentUser)
   }
 
   // TODO: this will also have a lot of cases
