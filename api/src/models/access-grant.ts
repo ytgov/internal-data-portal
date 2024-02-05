@@ -38,17 +38,23 @@ export enum GrantLevels {
 }
 
 export enum AccessTypes {
-  // Open - I don't care who uses my data I am not likely to change it.
-  OPEN_ACCESS = "open_access",
-  // Subscribe - I am happy to share my data but I need to know who is using it as there might be changes
-  SELF_SERVE_ACCESS = "self_serve_access",
-  // Request - I want to control access to my data and need to know how they will use my data,
-  // I need to inform them of any changes that are made.
-  SCREENED_ACCESS = "screened_access",
   // This is a special access type that is not stored in the database
   // "no access" is determined by the absence of any access grants
   // It's only here for repeatable use in other places
   NO_ACCESS = "no_access",
+  // Request - I want to control access to my data and need to know how they will use my data,
+  // I need to inform them of any changes that are made.
+  SCREENED_ACCESS = "screened_access",
+  // Subscribe - I am happy to share my data but I need to know who is using it as there might be changes
+  SELF_SERVE_ACCESS = "self_serve_access",
+  // Open - I don't care who uses my data I am not likely to change it.
+  OPEN_ACCESS = "open_access",
+}
+
+export const AccessTypeOrdering = Object.values(AccessTypes)
+
+export function orderOfAccessType(type: AccessTypes): number {
+  return AccessTypeOrdering.indexOf(type)
 }
 
 export class AccessGrant extends Model<
