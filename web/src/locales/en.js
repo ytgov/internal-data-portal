@@ -12,6 +12,19 @@ export default {
       self_serve_access: "Self Serve Access",
       screened_access: "Screened Access",
       no_access: "No Access",
-    }
+    },
+  },
+
+  // datasets.datasets_table.actions
+  datasets: {
+    datasets_table: {
+      actions: {
+        approved: "Approved",
+        awaiting_approval: "Awaiting approval",
+        request_access: "Request Access",
+        subscribe: "Subscribe",
+        subscribed: "Subscribed",
+      },
+    },
   },
 }

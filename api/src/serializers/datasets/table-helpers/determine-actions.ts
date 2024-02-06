@@ -3,6 +3,7 @@ import { isEmpty, isUndefined } from "lodash"
 import { Dataset, User } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
 
+// Keep in sync with web/src/components/datasets/DatasetsTable.vue
 export enum DatasetTableActions {
   REQUEST_ACCESS = "request_access",
   SUBSCRIBED = "subscribed",
