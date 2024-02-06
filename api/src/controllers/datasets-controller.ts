@@ -21,7 +21,15 @@ export class DatasetsController extends BaseController {
       limit: this.pagination.limit,
       offset: this.pagination.offset,
       include: [
-        "owner",
+        {
+          association: "owner",
+          include: [
+            {
+              association: "groupMembership",
+              include: ["department", "division", "branch", "unit"],
+            },
+          ],
+        },
         "creator",
         {
           association: "stewardshipEvolutions",
