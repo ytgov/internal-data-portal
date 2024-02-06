@@ -7,7 +7,7 @@ export enum DatasetTableActions {
   REQUEST_ACCESS = "request_access",
   SUBSCRIBED = "subscribed",
   APPROVED = "approved",
-  SUBSCRIBE = "Subscribe",
+  SUBSCRIBE = "subscribe",
   AWAITING_APPROVAL = "awaiting_approval",
 }
 
