@@ -113,6 +113,39 @@ describe("api/src/serializers/datasets/table-helpers/determine-actions.ts", () =
         expect.assertions(1)
         expect(result).toEqual(DatasetTableActions.SUBSCRIBE)
       })
+
+      test("when dataset has non-matching access request to user, returns subscribe action", async () => {
+        // Arrange
+        const accessType = AccessTypes.SELF_SERVE_ACCESS
+        const requestingUser = await userFactory.create()
+        const otherRequestingUser = await userFactory.create()
+        const datasetOwner = await userFactory.create()
+        const dataset = await datasetFactory.create({
+          creatorId: datasetOwner.id,
+          ownerId: datasetOwner.id,
+        })
+        const accessGrant = await accessGrantFactory.create({
+          datasetId: dataset.id,
+          creatorId: datasetOwner.id,
+        })
+        await accessRequestFactory.transient({
+          approved: false
+        }).create({
+          datasetId: dataset.id,
+          accessGrantId: accessGrant.id,
+          requestorId: otherRequestingUser.id,
+        })
+        await dataset.reload({
+          include: ["accessRequests"],
+        })
+
+        // Act
+        const result = determineActions(dataset, requestingUser, accessType)
+
+        // Assert
+        expect.assertions(1)
+        expect(result).toEqual(DatasetTableActions.SUBSCRIBE)
+      })
     })
   })
 })
