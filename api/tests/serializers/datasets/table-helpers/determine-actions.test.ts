@@ -63,7 +63,9 @@ describe("api/src/serializers/datasets/table-helpers/determine-actions.ts", () =
           datasetId: dataset.id,
           creatorId: datasetOwner.id,
         })
-        await accessRequestFactory.create({
+        await accessRequestFactory.transient({
+          approved: true
+        }).create({
           datasetId: dataset.id,
           accessGrantId: accessGrant.id,
           requestorId: requestingUser.id,
@@ -78,6 +80,38 @@ describe("api/src/serializers/datasets/table-helpers/determine-actions.ts", () =
         // Assert
         expect.assertions(1)
         expect(result).toEqual(DatasetTableActions.SUBSCRIBED)
+      })
+
+      test("when user has non-approved access request to dataset, returns subscribe action", async () => {
+        // Arrange
+        const accessType = AccessTypes.SELF_SERVE_ACCESS
+        const requestingUser = await userFactory.create()
+        const datasetOwner = await userFactory.create()
+        const dataset = await datasetFactory.create({
+          creatorId: datasetOwner.id,
+          ownerId: datasetOwner.id,
+        })
+        const accessGrant = await accessGrantFactory.create({
+          datasetId: dataset.id,
+          creatorId: datasetOwner.id,
+        })
+        await accessRequestFactory.transient({
+          approved: false
+        }).create({
+          datasetId: dataset.id,
+          accessGrantId: accessGrant.id,
+          requestorId: requestingUser.id,
+        })
+        await dataset.reload({
+          include: ["accessRequests"],
+        })
+
+        // Act
+        const result = determineActions(dataset, requestingUser, accessType)
+
+        // Assert
+        expect.assertions(1)
+        expect(result).toEqual(DatasetTableActions.SUBSCRIBE)
       })
     })
   })
