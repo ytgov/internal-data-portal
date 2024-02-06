@@ -1,7 +1,6 @@
 import type { JestConfigWithTsJest } from "ts-jest"
 
 export const jestConfig: JestConfigWithTsJest = {
-  preset: "ts-jest",
   testEnvironment: "node",
   moduleNameMapper: {
     "^@/(.*)$": ["<rootDir>/src/$1", "<rootDir>/tests/$1"],
@@ -14,6 +13,15 @@ export const jestConfig: JestConfigWithTsJest = {
   resetMocks: true,
   restoreMocks: true,
   resetModules: true,
+  // https://kulshekhar.github.io/ts-jest/docs/getting-started/options/#introduction
+  transform: {
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        tsconfig: "<rootDir>/tests/tsconfig.json",
+      },
+    ],
+  },
 }
 
 export default jestConfig
