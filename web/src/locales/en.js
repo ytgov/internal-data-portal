@@ -14,8 +14,6 @@ export default {
       no_access: "No Access",
     },
   },
-
-  // datasets.datasets_table.actions
   datasets: {
     datasets_table: {
       actions: {
