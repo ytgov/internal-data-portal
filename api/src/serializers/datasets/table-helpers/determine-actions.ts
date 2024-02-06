@@ -17,11 +17,6 @@ export function determineActions(
   accessType: AccessTypes
 ): DatasetTableActions | void {
   const { accessRequests } = dataset
-
-  if (accessType === AccessTypes.NO_ACCESS) {
-    return
-  }
-
   if (accessType === AccessTypes.SELF_SERVE_ACCESS) {
     if (isUndefined(accessRequests) || isEmpty(accessRequests)) return DatasetTableActions.SUBSCRIBE
 
@@ -35,7 +30,8 @@ export function determineActions(
   }
 
   if (accessType === AccessTypes.SCREENED_ACCESS) {
-    if (isUndefined(accessRequests) || isEmpty(accessRequests)) return DatasetTableActions.REQUEST_ACCESS
+    if (isUndefined(accessRequests) || isEmpty(accessRequests))
+      return DatasetTableActions.REQUEST_ACCESS
 
     const accessRequest = accessRequests.find((accessRequest) => {
       return accessRequest.requestorId === requestingUser.id
