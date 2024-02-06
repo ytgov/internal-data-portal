@@ -45,7 +45,7 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
           })
           .create()
         const openAccessGrant = accessGrantFactory.build({
-          ownerId: datasetOwner.id,
+          creatorId: datasetOwner.id,
           grantLevel: GrantLevels.GOVERNMENT_WIDE,
           accessType: AccessTypes.OPEN_ACCESS,
         })
@@ -108,7 +108,7 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             })
             .create()
           const openAccessGrant = accessGrantFactory.build({
-            ownerId: datasetOwner.id,
+            creatorId: datasetOwner.id,
             grantLevel: GrantLevels.DEPARTMENT,
             accessType: AccessTypes.OPEN_ACCESS,
           })
@@ -173,7 +173,7 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             })
             .create()
           const openAccessGrant = accessGrantFactory.build({
-            ownerId: datasetOwner.id,
+            creatorId: datasetOwner.id,
             grantLevel: GrantLevels.DEPARTMENT,
             accessType: AccessTypes.OPEN_ACCESS,
           })
@@ -240,7 +240,7 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             })
             .create()
           const openAccessGrant = accessGrantFactory.build({
-            ownerId: datasetOwner.id,
+            creatorId: datasetOwner.id,
             grantLevel: GrantLevels.DIVISION,
             accessType: AccessTypes.OPEN_ACCESS,
           })
@@ -306,7 +306,7 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             })
             .create()
           const openAccessGrant = accessGrantFactory.build({
-            ownerId: datasetOwner.id,
+            creatorId: datasetOwner.id,
             grantLevel: GrantLevels.DIVISION,
             accessType: AccessTypes.OPEN_ACCESS,
           })
@@ -374,7 +374,7 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             })
             .create()
           const openAccessGrant = accessGrantFactory.build({
-            ownerId: datasetOwner.id,
+            creatorId: datasetOwner.id,
             grantLevel: GrantLevels.DEPARTMENT,
             accessType: AccessTypes.OPEN_ACCESS,
           })
@@ -440,7 +440,7 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
           })
           .create()
         const selfServeAccessGrant = accessGrantFactory.build({
-          ownerId: datasetOwner.id,
+          creatorId: datasetOwner.id,
           grantLevel: GrantLevels.GOVERNMENT_WIDE,
           accessType: AccessTypes.SELF_SERVE_ACCESS,
         })
@@ -503,12 +503,12 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
           })
           .create()
         const openAccessGrant = accessGrantFactory.build({
-          ownerId: datasetOwner.id,
+          creatorId: datasetOwner.id,
           grantLevel: GrantLevels.GOVERNMENT_WIDE,
           accessType: AccessTypes.OPEN_ACCESS,
         })
         const selfServeAccessGrant = accessGrantFactory.build({
-          ownerId: datasetOwner.id,
+          creatorId: datasetOwner.id,
           grantLevel: GrantLevels.GOVERNMENT_WIDE,
           accessType: AccessTypes.SELF_SERVE_ACCESS,
         })
@@ -572,12 +572,12 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
           })
           .create()
         const selfServeAccessGrant = accessGrantFactory.build({
-          ownerId: datasetOwner.id,
+          creatorId: datasetOwner.id,
           grantLevel: GrantLevels.GOVERNMENT_WIDE,
           accessType: AccessTypes.SELF_SERVE_ACCESS,
         })
         const screenedAccessGrant = accessGrantFactory.build({
-          ownerId: datasetOwner.id,
+          creatorId: datasetOwner.id,
           grantLevel: GrantLevels.GOVERNMENT_WIDE,
           accessType: AccessTypes.SCREENED_ACCESS,
         })

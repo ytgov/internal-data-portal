@@ -66,7 +66,7 @@ export class AccessGrant extends Model<
 
   declare id: CreationOptional<number>
   declare datasetId: ForeignKey<Dataset["id"]>
-  declare ownerId: ForeignKey<User["id"]>
+  declare creatorId: ForeignKey<User["id"]>
   declare requestorId: ForeignKey<User["id"]> | null
   declare grantLevel: GrantLevels
   declare accessType: AccessTypes
@@ -82,9 +82,9 @@ export class AccessGrant extends Model<
   declare setDataset: BelongsToSetAssociationMixin<Dataset, Dataset["id"]>
   declare createDataset: BelongsToCreateAssociationMixin<Dataset>
 
-  declare getOwner: BelongsToGetAssociationMixin<User>
-  declare setOwner: BelongsToSetAssociationMixin<User, User["id"]>
-  declare createOwner: BelongsToCreateAssociationMixin<User>
+  declare getCreator: BelongsToGetAssociationMixin<User>
+  declare setCreator: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createCreator: BelongsToCreateAssociationMixin<User>
 
   declare getRequestor: BelongsToGetAssociationMixin<User>
   declare setRequestor: BelongsToSetAssociationMixin<User, User["id"]>
@@ -108,13 +108,13 @@ export class AccessGrant extends Model<
   declare createAccessRequest: HasManyCreateAssociationMixin<AccessRequest>
 
   declare dataset?: NonAttribute<Dataset>
-  declare owner?: NonAttribute<User>
+  declare creator?: NonAttribute<User>
   declare requestor?: NonAttribute<User>
   declare accessRequests?: NonAttribute<AccessRequest[]>
 
   declare static associations: {
     dataset: Association<AccessGrant, Dataset>
-    owner: Association<AccessGrant, User>
+    creator: Association<AccessGrant, User>
     requestor: Association<AccessGrant, User>
     accessRequests: Association<Dataset, AccessRequest>
   }
@@ -122,8 +122,8 @@ export class AccessGrant extends Model<
   static establishAssociations() {
     this.belongsTo(Dataset)
     this.belongsTo(User, {
-      foreignKey: "ownerId",
-      as: "owner",
+      foreignKey: "creatorId",
+      as: "creator",
     })
     this.belongsTo(User, {
       foreignKey: "requestorId",
@@ -152,7 +152,7 @@ AccessGrant.init(
         key: "id",
       },
     },
-    ownerId: {
+    creatorId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
