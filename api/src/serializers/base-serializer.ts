@@ -61,7 +61,7 @@ export class BaseSerializer<M extends Model> {
     if (Array.isArray(args[0])) {
       const records = args[0] as ConstructorParameters<C>[0][]
       return records.map((record) => {
-        const instance = new this(record, ...args)
+        const instance = new this(record, ...args.slice(1))
         return instance.perform()
       }) as ReturnType<InstanceType<C>["perform"]>[]
     } else {
