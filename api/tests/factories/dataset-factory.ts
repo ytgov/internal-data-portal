@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 import { Includeable } from "sequelize"
 
-import { AccessGrant, Dataset, User } from "@/models"
+import { AccessGrant, AccessRequest, Dataset, User } from "@/models"
 
 import BaseFactory from "@/factories/base-factory"
 
@@ -25,13 +25,23 @@ export const datasetFactory = DatasetFactory.define(
       }
 
       if (associations.accessGrants) {
-        const accessGrantAttributes = associations.accessGrants.map((accessGrant) => {
+        const accessGrantsAttributes = associations.accessGrants.map((accessGrant) => {
           return {
             ...accessGrant.dataValues,
             datasetId: dataset.id,
           }
         })
-        await AccessGrant.bulkCreate(accessGrantAttributes)
+        await AccessGrant.bulkCreate(accessGrantsAttributes)
+      }
+
+      if (associations.accessRequests) {
+        const accessRequestsAttributes = associations.accessRequests.map((accessRequest) => {
+          return {
+            ...accessRequest.dataValues,
+            datasetId: dataset.id,
+          }
+        })
+        await AccessRequest.bulkCreate(accessRequestsAttributes)
       }
 
       if (transientParams.include === undefined) {

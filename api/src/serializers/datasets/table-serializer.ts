@@ -1,12 +1,13 @@
 import { pick } from "lodash"
 
 import { Dataset, User } from "@/models"
-import { determineAccess } from "@/serializers/datasets/table-helpers"
+import { determineAccess, determineActions, type DatasetTableActions } from "@/serializers/datasets/table-helpers"
 import BaseSerializer from "@/serializers/base-serializer"
+import { AccessTypes } from "@/models/access-grant"
 
 export type DatasetTableView = Partial<Dataset> & {
   access: string
-  actions: string
+  actions: DatasetTableActions | void
 }
 
 export class TableSerializer extends BaseSerializer<Dataset> {
@@ -18,6 +19,7 @@ export class TableSerializer extends BaseSerializer<Dataset> {
   }
 
   perform(): DatasetTableView {
+    const accessTypes = this.determineAccess()
     return {
       ...pick(this.record.dataValues, [
         "id",
@@ -41,8 +43,8 @@ export class TableSerializer extends BaseSerializer<Dataset> {
       tags: this.record.tags,
 
       // magic fields
-      access: this.determineAccess(),
-      actions: this.determineActions(),
+      access: accessTypes,
+      actions: this.determineActions(accessTypes),
     }
   }
 
@@ -50,9 +52,7 @@ export class TableSerializer extends BaseSerializer<Dataset> {
     return determineAccess(this.record, this.currentUser)
   }
 
-  // TODO: this will also have a lot of cases
-  // I need tests for this so I'm doing it in a future PR.
-  private determineActions(): string {
-    return "TODO"
+  private determineActions(accessType: AccessTypes) {
+    return determineActions(this.record, this.currentUser, accessType)
   }
 }

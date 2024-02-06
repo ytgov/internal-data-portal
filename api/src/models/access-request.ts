@@ -109,6 +109,18 @@ export class AccessRequest extends Model<
       as: "revoker",
     })
   }
+
+  isApproved(): NonAttribute<boolean> {
+    return this.revokedAt === null && this.approvedAt !== null
+  }
+
+  isRevoked(): NonAttribute<boolean> {
+    return this.revokedAt !== null
+  }
+
+  isDenied(): NonAttribute<boolean> {
+    return this.deniedAt !== null
+  }
 }
 
 AccessRequest.init(
