@@ -31,9 +31,9 @@ export class StewardshipEvolution extends Model<
   declare supportEmail: string
   declare supportPosition: string
   declare department: string
-  declare division: CreationOptional<string>
-  declare branch: CreationOptional<string>
-  declare unit: CreationOptional<string>
+  declare division: CreationOptional<string | null>
+  declare branch: CreationOptional<string | null>
+  declare unit: CreationOptional<string | null>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>

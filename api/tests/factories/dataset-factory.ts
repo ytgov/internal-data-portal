@@ -1,39 +1,84 @@
 import { faker } from "@faker-js/faker"
+import { Includeable } from "sequelize"
 
-import { Dataset } from "@/models"
+import { AccessGrant, AccessRequest, Dataset, User } from "@/models"
 
 import BaseFactory from "@/factories/base-factory"
 
-class DatasetFactory extends BaseFactory<Dataset> {}
+type TransientParam = {
+  include?: Includeable | Includeable[]
+}
 
-export const datasetFactory = DatasetFactory.define(({ sequence, onCreate }) => {
-  onCreate((Dataset) => Dataset.save())
+class DatasetFactory extends BaseFactory<Dataset, TransientParam> {}
 
-  const name = faker.lorem.words({ min: 3, max: 5 })
-  const slug = faker.helpers.slugify(name).toLowerCase()
+export const datasetFactory = DatasetFactory.define(
+  ({ sequence, transientParams, associations, onCreate }) => {
+    onCreate(async (dataset) => {
+      await dataset.save()
 
-  const subscriptionUrl = faker.datatype.boolean(0.5) ? faker.internet.url() : null
-  const subscriptionAccessCode = subscriptionUrl ? faker.string.alphanumeric(32) : null
+      if (associations.owner) {
+        const ownerAttributes = {
+          ...associations.owner.dataValues,
+          datasetId: dataset.id,
+        }
+        await User.create(ownerAttributes)
+      }
 
-  return Dataset.build({
-    id: sequence,
-    slug,
-    name,
-    description: faker.lorem.paragraph(),
-    subscriptionUrl,
-    subscriptionAccessCode,
-    isSubscribable: faker.datatype.boolean(0.5),
-    isSpatialData: faker.datatype.boolean(0.5),
-    isLiveData: faker.datatype.boolean(0.5),
-    termsOfUse: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
-    credits: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
-    ownerNotes: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
-    status: Dataset.ErrorTypes.OK,
-    errorCode: null,
-    errorDetails: null,
-    publishedAt: null,
-    deactivatedAt: null,
-  })
-})
+      if (associations.accessGrants) {
+        const accessGrantsAttributes = associations.accessGrants.map((accessGrant) => {
+          return {
+            ...accessGrant.dataValues,
+            datasetId: dataset.id,
+          }
+        })
+        await AccessGrant.bulkCreate(accessGrantsAttributes)
+      }
+
+      if (associations.accessRequests) {
+        const accessRequestsAttributes = associations.accessRequests.map((accessRequest) => {
+          return {
+            ...accessRequest.dataValues,
+            datasetId: dataset.id,
+          }
+        })
+        await AccessRequest.bulkCreate(accessRequestsAttributes)
+      }
+
+      if (transientParams.include === undefined) {
+        return dataset
+      }
+
+      return dataset.reload({
+        include: transientParams.include,
+      })
+    })
+
+    const name = faker.lorem.words({ min: 3, max: 5 })
+    const slug = faker.helpers.slugify(name).toLowerCase()
+
+    const subscriptionUrl = faker.datatype.boolean(0.5) ? faker.internet.url() : null
+    const subscriptionAccessCode = subscriptionUrl ? faker.string.alphanumeric(32) : null
+
+    return Dataset.build({
+      id: sequence,
+      slug,
+      name,
+      description: faker.lorem.paragraph(),
+      subscriptionUrl,
+      subscriptionAccessCode,
+      isSubscribable: faker.datatype.boolean(0.5),
+      isSpatialData: faker.datatype.boolean(0.5),
+      isLiveData: faker.datatype.boolean(0.5),
+      termsOfUse: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
+      credits: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
+      ownerNotes: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
+      status: Dataset.ErrorTypes.OK,
+      errorCode: null,
+      errorDetails: null,
+      publishedAt: null,
+      deactivatedAt: null,
+    })
+  }
+)
 
 export default datasetFactory

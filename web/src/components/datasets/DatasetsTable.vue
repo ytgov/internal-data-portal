@@ -17,19 +17,12 @@
     <template #item.access="{ value }">
       {{ formatAccess(value) }}
     </template>
-    <!--
-      TODO
-      (unlabeled) - aggregate of possible actions and states depending on available AccessGrants
-                    and current AccessRequests, and the type of access request (i.e. subscriptions).
-                    This is pretty complex logic and would benefit from testing.
-        - RequestAccessButton.vue - Either opens a request access dialog or redirects to a request access form
-        - SubscribeToDatasetButton.vue - Either opens a subscription request dialog or redirects to a subscription request form
-        - Subscribed state
-        - Approved state
-        - Awaiting approval state
-     -->
-    <template #item.actions="{ value }">
-      {{ value }}
+    <template #item.actions="{ value: action }">
+      <RequestAccessButton v-if="action === DatasetTableActions.REQUEST_ACCESS" />
+      <SubscribeToDatasetButton v-else-if="action === DatasetTableActions.SUBSCRIBE" />
+      <template v-else>
+        {{ formatAction(action) }}
+      </template>
     </template>
   </v-data-table>
 </template>
@@ -41,11 +34,23 @@ import { useI18n } from "vue-i18n"
 import acronymize from "@/utils/acronymize"
 import useDatasets, { type StewardshipEvolution } from "@/use/use-datasets"
 
+import RequestAccessButton from "@/components/datasets/datasets-table/RequestAccessButton.vue"
+import SubscribeToDatasetButton from "@/components/datasets/datasets-table/SubscribeToDatasetButton.vue"
+
 type Tag = {
   id: number
   name: string
   createdAt: string
   updatedAt: string
+}
+
+// Keep in sync with api/src/serializers/datasets/table-helpers/determine-actions.ts
+enum DatasetTableActions {
+  REQUEST_ACCESS = "request_access",
+  SUBSCRIBED = "subscribed",
+  APPROVED = "approved",
+  SUBSCRIBE = "subscribe",
+  AWAITING_APPROVAL = "awaiting_approval",
 }
 
 const { t } = useI18n()
@@ -85,6 +90,12 @@ function formatAccess(access: string | undefined) {
   if (access === undefined) return
 
   return t(`access_grants.access_types.${access}`, access)
+}
+
+function formatAction(action: string | undefined) {
+  if (action === undefined) return
+
+  return t(`datasets.datasets_table.actions.${action}`, action)
 }
 
 defineExpose({ refresh })

@@ -38,13 +38,23 @@ export enum GrantLevels {
 }
 
 export enum AccessTypes {
-  OPEN_ACCESS = "open_access",
-  SELF_SERVE_ACCESS = "self_serve_access",
-  SCREENED_ACCESS = "screened_access",
   // This is a special access type that is not stored in the database
   // "no access" is determined by the absence of any access grants
   // It's only here for repeatable use in other places
   NO_ACCESS = "no_access",
+  // Request - I want to control access to my data and need to know how they will use my data,
+  // I need to inform them of any changes that are made.
+  SCREENED_ACCESS = "screened_access",
+  // Subscribe - I am happy to share my data but I need to know who is using it as there might be changes
+  SELF_SERVE_ACCESS = "self_serve_access",
+  // Open - I don't care who uses my data I am not likely to change it.
+  OPEN_ACCESS = "open_access",
+}
+
+export const AccessTypeOrdering = Object.values(AccessTypes)
+
+export function orderOfAccessType(type: AccessTypes): number {
+  return AccessTypeOrdering.indexOf(type)
 }
 
 export class AccessGrant extends Model<
@@ -56,7 +66,7 @@ export class AccessGrant extends Model<
 
   declare id: CreationOptional<number>
   declare datasetId: ForeignKey<Dataset["id"]>
-  declare ownerId: ForeignKey<User["id"]>
+  declare creatorId: ForeignKey<User["id"]>
   declare requestorId: ForeignKey<User["id"]> | null
   declare grantLevel: GrantLevels
   declare accessType: AccessTypes
@@ -72,9 +82,9 @@ export class AccessGrant extends Model<
   declare setDataset: BelongsToSetAssociationMixin<Dataset, Dataset["id"]>
   declare createDataset: BelongsToCreateAssociationMixin<Dataset>
 
-  declare getOwner: BelongsToGetAssociationMixin<User>
-  declare setOwner: BelongsToSetAssociationMixin<User, User["id"]>
-  declare createOwner: BelongsToCreateAssociationMixin<User>
+  declare getCreator: BelongsToGetAssociationMixin<User>
+  declare setCreator: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createCreator: BelongsToCreateAssociationMixin<User>
 
   declare getRequestor: BelongsToGetAssociationMixin<User>
   declare setRequestor: BelongsToSetAssociationMixin<User, User["id"]>
@@ -86,19 +96,25 @@ export class AccessGrant extends Model<
   declare hasAccessRequests: HasManyHasAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
   declare addAccessRequest: HasManyAddAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
   declare addAccessRequests: HasManyAddAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
-  declare removeAccessRequest: HasManyRemoveAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
-  declare removeAccessRequests: HasManyRemoveAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare removeAccessRequest: HasManyRemoveAssociationMixin<
+    AccessRequest,
+    AccessRequest["datasetId"]
+  >
+  declare removeAccessRequests: HasManyRemoveAssociationsMixin<
+    AccessRequest,
+    AccessRequest["datasetId"]
+  >
   declare countAccessRequests: HasManyCountAssociationsMixin
   declare createAccessRequest: HasManyCreateAssociationMixin<AccessRequest>
 
   declare dataset?: NonAttribute<Dataset>
-  declare owner?: NonAttribute<User>
+  declare creator?: NonAttribute<User>
   declare requestor?: NonAttribute<User>
   declare accessRequests?: NonAttribute<AccessRequest[]>
 
   declare static associations: {
     dataset: Association<AccessGrant, Dataset>
-    owner: Association<AccessGrant, User>
+    creator: Association<AccessGrant, User>
     requestor: Association<AccessGrant, User>
     accessRequests: Association<Dataset, AccessRequest>
   }
@@ -106,8 +122,8 @@ export class AccessGrant extends Model<
   static establishAssociations() {
     this.belongsTo(Dataset)
     this.belongsTo(User, {
-      foreignKey: "ownerId",
-      as: "owner",
+      foreignKey: "creatorId",
+      as: "creator",
     })
     this.belongsTo(User, {
       foreignKey: "requestorId",
@@ -136,7 +152,7 @@ AccessGrant.init(
         key: "id",
       },
     },
-    ownerId: {
+    creatorId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
