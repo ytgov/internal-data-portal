@@ -281,7 +281,7 @@ const {
   userGroups: departments,
   isLoading: isLoadingDepartments,
   fetch: fetchDepartments,
-} = useUserGroups(departmentsQuery, { immediate: false })
+} = useUserGroups(departmentsQuery, { immediate: true })
 const {
   userGroups: divisions,
   isLoading: isLoadingDivisions,
@@ -381,10 +381,6 @@ async function updateDepartment(newDepartmentId: number | null) {
   }
 
   departmentId.value = newDepartmentId
-  if (departments.value.length === 0) {
-    await fetchDepartments()
-  }
-
   const department = departments.value.find((department) => department.id === newDepartmentId)
   if (department === undefined) {
     throw new Error(`Could not find department with id ${newDepartmentId}`)
