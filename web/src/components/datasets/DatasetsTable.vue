@@ -129,9 +129,9 @@ defineExpose({ refresh })
   position: relative;
 }
 
-::v-deep tr:hover,
+::v-deep tbody > tr:hover,
 tr:focus-within {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(var(--v-theme-yg-blue), 0.1);
 }
 
 .action-buttons {
