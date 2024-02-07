@@ -8,6 +8,9 @@
     :loading="isLoading"
     class="elevation-1"
   >
+    <!-- <template #item>
+      TODO: implement link wrapping rows
+    </template> -->
     <template #item.stewardshipEvolutions="{ value }">
       {{ formatOwnership(value[0]) }}
     </template>
@@ -96,6 +99,10 @@ function formatAction(action: string | undefined) {
   if (action === undefined) return
 
   return t(`datasets.datasets_table.actions.${action}`, action)
+}
+
+function goToDataset(dataset: any) {
+  console.log("goToDataset", dataset)
 }
 
 defineExpose({ refresh })

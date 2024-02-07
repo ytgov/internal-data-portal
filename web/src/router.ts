@@ -33,6 +33,19 @@ const routes: RouteRecordRaw[] = [
           datasetId: parseInt(route.params.datasetId as string)
         }),
       },
+      {
+        path: "datasets/:datasetSlug",
+        component: () => import("@/layouts/DatasetLayout.vue"),
+        props: true,
+        children: [
+          {
+            path: "description/manage",
+            name: "DatasetDescriptionManagePage",
+            component: () => import("@/pages/DatasetDescriptionManagePage.vue"),
+            props: true,
+          }
+        ]
+      }
     ],
   },
   {
