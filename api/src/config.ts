@@ -28,7 +28,6 @@ export const API_PORT = process.env.API_PORT || "3000"
 export const FRONTEND_URL = process.env.FRONTEND_URL || ""
 export const AUTH0_DOMAIN = stripTrailingSlash(process.env.VITE_AUTH0_DOMAIN || "")
 export const AUTH0_AUDIENCE = process.env.VITE_AUTH0_AUDIENCE
-export const AUTH0_REDIRECT = process.env.VITE_AUTH0_REDIRECT || process.env.FRONTEND_URL || ""
 
 export const APPLICATION_NAME = process.env.VITE_APPLICATION_NAME || ""
 

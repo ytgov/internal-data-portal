@@ -7,7 +7,7 @@ export type Status = {
 
 export const statusApi = {
   async fetchStatus(): Promise<Status> {
-    const { data } = await http.get("_status")
+    const { data } = await http.get("/_status")
     return data
   },
 }

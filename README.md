@@ -264,13 +264,23 @@ Files:
 1. Create a `.env` file in top level directory with the appropriate values.
 
    ```bash
-   APPLICATION_NAME=Internal Data Portal
+   NODE_ENV=production
+
+   VITE_APPLICATION_NAME=Internal Data Portal
+   VITE_AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
+   VITE_AUTH0_CLIENT_ID=mS8zklFSgatWX3v1OCQgVpEq5MixCm4k
+   VITE_AUTH0_AUDIENCE=testing
+
+   FRONTEND_URL=http://localhost:8080
+   API_PORT=8080
 
    DB_HOST=db
    DB_PORT=1433
    DB_USER=sa
    DB_PASS=DevPwd99!
    DB_NAME=idp_production
+
+   PRODUCTION_DATABASE_SA_MASTER_CREDS_AVAILABLE=true
 
    YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
@@ -289,6 +299,6 @@ Files:
    docker compose up --build
    ```
 
-4. Go to http://localhost:3000/ and log in.
+4. Go to http://localhost:8080/ and log in.
 
 5. Navigate around the app and do some stuff and see if it works.

@@ -1,4 +1,4 @@
-import { isEmpty, isNil, isUndefined } from "lodash"
+import { isEmpty, isNil } from "lodash"
 
 import { Dataset, User, AccessGrant, UserGroupMembership } from "@/models"
 import { AccessTypes, GrantLevels, orderOfAccessType } from "@/models/access-grant"
@@ -6,7 +6,7 @@ import { AccessTypes, GrantLevels, orderOfAccessType } from "@/models/access-gra
 export function determineAccess(record: Dataset, requestingUser: User): AccessTypes {
   const { accessGrants, owner } = record
 
-  if (isUndefined(accessGrants) || isEmpty(accessGrants) || isUndefined(owner)) {
+  if (isNil(accessGrants) || isEmpty(accessGrants) || isNil(owner)) {
     return AccessTypes.NO_ACCESS
   }
 
@@ -20,7 +20,7 @@ export function determineAccess(record: Dataset, requestingUser: User): AccessTy
       const { grantLevel } = accessGrant
       const { groupMembership: ownerGroupMembership } = owner
       const { groupMembership: requestingUserGroupMembership } = requestingUser
-      if (isUndefined(ownerGroupMembership) || isUndefined(requestingUserGroupMembership)) {
+      if (isNil(ownerGroupMembership) || isNil(requestingUserGroupMembership)) {
         return currentAccess
       }
 

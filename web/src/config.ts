@@ -1,15 +1,41 @@
-import { stripTrailingSlash } from "@/utils/strip-trailing-slash"
+type Environments = "development" | "production"
 
-export const ENVIRONMENT = import.meta.env.MODE
+type ConfigAttributes = {
+  API_BASE_URL: string
+  AUTH0_DOMAIN: string
+  AUTH0_CLIENT_ID: string
+  AUTH0_AUDIENCE: string
+}
 
-// Generally we use window.location.origin for the redirect_uri but if
-// you may want to use a different URL for the redirect_uri. Make sure you
-// make the related changes in @/config.js and @/plugins/auth.js
-export const APPLICATION_NAME = import.meta.env.VITE_APPLICATION_NAME || ""
-export const APPLICATION_ICON = "mdi-cable-data"
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ""
+const CONFIGS: {
+  [key in Environments]: ConfigAttributes
+} = {
+  development: {
+    API_BASE_URL: "http://localhost:3000",
+    AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com",
+    AUTH0_CLIENT_ID: "mS8zklFSgatWX3v1OCQgVpEq5MixCm4k",
+    AUTH0_AUDIENCE: "testing",
+  },
+  // Make sure that it's still possible to build locally in production mode
+  // even after this gets changed, whether via environment variables in
+  // docker-compose.yml or some other method
+  production: {
+    API_BASE_URL: "",
+    AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com",
+    AUTH0_CLIENT_ID: "mS8zklFSgatWX3v1OCQgVpEq5MixCm4k",
+    AUTH0_AUDIENCE: "testing",
+  },
+}
 
-export const AUTH0_DOMAIN = stripTrailingSlash(import.meta.env.VITE_AUTH0_DOMAIN || "")
-export const AUTH0_AUDIENCE = import.meta.env.VITE_AUTH0_AUDIENCE || ""
-export const AUTH0_REDIRECT = import.meta.env.VITE_AUTH0_REDIRECT || ""
-export const AUTH0_CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID || ""
+export const ENVIRONMENT = import.meta.env.MODE as Environments
+
+if (!(ENVIRONMENT in CONFIGS)) {
+  throw new Error(`Invalid environment: ${ENVIRONMENT}`)
+}
+
+const config: ConfigAttributes = CONFIGS[ENVIRONMENT]
+
+export const APPLICATION_NAME = "Internal Data Portal"
+export const { API_BASE_URL, AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_AUDIENCE } = config
+
+export default config
