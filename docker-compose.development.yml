@@ -46,6 +46,8 @@ services:
       - "8080:8080"
     volumes:
       - ./web:/usr/src/web
+      - ./.gitignore:/usr/src/.gitignore
+      - ./.prettierrc.yaml:/usr/src/.prettierrc.yaml
     depends_on:
       - api
 
