@@ -34,7 +34,7 @@ const routes: RouteRecordRaw[] = [
         }),
       },
       {
-        path: "datasets/:datasetSlug",
+        path: "datasets/:slug",
         component: () => import("@/layouts/DatasetLayout.vue"),
         props: true,
         children: [
