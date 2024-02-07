@@ -11,7 +11,8 @@
     "ts-node": "ts-node -r tsconfig-paths/register --logError",
     "migrate": "ts-node -r tsconfig-paths/register ./bin/migrate.ts",
     "seed": "ts-node -r tsconfig-paths/register ./bin/seed.ts",
-    "test": "jest --watchAll --runInBand --detectOpenHandles"
+    "test": "jest --watchAll --runInBand --detectOpenHandles",
+    "lint": "eslint . --ext .js,.ts --ignore-path ../.gitignore"
   },
   "author": "Michael Johnson",
   "license": "ISC",
@@ -40,8 +41,8 @@
     "@types/lodash": "^4.14.202",
     "@types/luxon": "^3.4.2",
     "@types/supertest": "^6.0.2",
-    "@typescript-eslint/eslint-plugin": "^6.18.0",
-    "@typescript-eslint/parser": "^6.18.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "fishery": "^2.2.2",
