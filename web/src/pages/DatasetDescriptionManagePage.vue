@@ -1,7 +1,5 @@
 <template>
-  {{ slug }}
-  <br />
-  TODO: implement DatasetDescriptionManagePage
+  <DataDescriptionManageFormCard :slug="slug" />
 
   <pre>{{ dataset }}</pre>
 </template>
@@ -11,6 +9,8 @@ import { toRefs } from "vue"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import { useDataset } from "@/use/use-dataset"
+
+import DataDescriptionManageFormCard from "@/components/datasets/DataDescriptionManageFormCard.vue"
 
 const props = defineProps({
   slug: {

@@ -1,13 +1,34 @@
 <template>
-  <v-container>
-    <h2 class="mb-3">{{ dataset.name }}</h2>
+  <div
+    v-if="isNil(dataset) || isLoading"
+    class="d-flex justify-center"
+  >
+    <v-progress-circular
+      indeterminate
+      color="yg-blue"
+    />
+  </div>
+  <v-container v-else>
+    <h2 class="mb-3">
+      {{ dataset.name }}
+    </h2>
+
+    <v-tabs>
+      <DescriptionTab />
+      <!-- TODO: add in further tabs -->
+    </v-tabs>
 
     <router-view></router-view>
   </v-container>
 </template>
 
 <script lang="ts" setup>
-import { reactive, toRefs } from "vue"
+import { toRefs } from "vue"
+import { isNil } from "lodash"
+
+import { useDataset } from "@/use/use-dataset"
+
+import DescriptionTab from "@/layouts/dataset-layout/DescriptionTab.vue"
 
 const props = defineProps({
   slug: {
@@ -16,16 +37,6 @@ const props = defineProps({
   },
 })
 
-function useDataset(slug: string) {
-  const state = reactive({
-    dataset: {
-      name: "TODO: some dataset name",
-      slug,
-    },
-  })
-
-  return { ...toRefs(state) }
-}
-
-const { dataset } = useDataset(props.slug)
+const { slug } = toRefs(props)
+const { dataset, isLoading } = useDataset(slug)
 </script>
