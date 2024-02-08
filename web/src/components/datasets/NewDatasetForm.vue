@@ -277,11 +277,10 @@ const unitsQuery = computed(() => ({
     parentId: branchId.value,
   },
 }))
-const {
-  userGroups: departments,
-  isLoading: isLoadingDepartments,
-  fetch: fetchDepartments,
-} = useUserGroups(departmentsQuery, { immediate: true })
+const { userGroups: departments, isLoading: isLoadingDepartments } = useUserGroups(
+  departmentsQuery,
+  { immediate: true }
+)
 const {
   userGroups: divisions,
   isLoading: isLoadingDivisions,
@@ -466,7 +465,7 @@ async function save() {
     router.push({
       name: "DatasetShowPage",
       params: {
-        datasetId: newDataset.id,
+        datasetId: newDataset.slug,
       },
     })
   } catch (error) {
