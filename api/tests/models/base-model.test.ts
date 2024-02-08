@@ -36,14 +36,12 @@ describe("api/src/models/base-model.ts", () => {
       })
 
       test("when the model does not have a slug attribute, throws an error", async () => {
-        // Arrange
         await userFactory.create()
 
-        // Act
-        const result = User.findBySlugOrPk("some-slug")
-
-        // Assert
-        await expect(result).rejects.toThrow("User does not have a 'slug' attribute.")
+        expect.assertions(1)
+        return expect(User.findBySlugOrPk("some-slug")).rejects.toThrow(
+          "User does not have a 'slug' attribute."
+        )
       })
     })
   })

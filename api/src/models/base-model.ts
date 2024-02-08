@@ -1,4 +1,11 @@
-import { Attributes, CreationOptional, FindOptions, Model, ModelStatic, Op } from "sequelize"
+import {
+  Attributes,
+  CreationOptional,
+  FindOptions,
+  Model,
+  ModelStatic,
+  Op,
+} from "sequelize"
 
 // See api/node_modules/sequelize/types/model.d.ts -> Model
 export abstract class BaseModel<
@@ -9,13 +16,24 @@ export abstract class BaseModel<
 > extends Model<TModelAttributes, TCreationAttributes> {
   declare id: CreationOptional<number>
 
+  // public static findByPk<M extends Model>(
+  //   this: ModelStatic<M>,
+  //   identifier: Identifier,
+  //   options: Omit<NonNullFindOptions<Attributes<M>>, 'where'>
+  // ): Promise<M>;
+  // public static findByPk<M extends Model>(
+  //   this: ModelStatic<M>,
+  //   identifier?: Identifier,
+  //   options?: Omit<FindOptions<Attributes<M>>, 'where'>
+  // ): Promise<M | null>;
   public static async findBySlugOrPk<M extends BaseModel>(
     this: ModelStatic<M>,
-    slugOrPk: string | number
+    slugOrPk: string | number,
+    options?: Omit<FindOptions<Attributes<M>>, "where">
   ): Promise<M | null> {
     if (typeof slugOrPk === "number" || !isNaN(Number(slugOrPk))) {
       const primaryKey = slugOrPk
-      return this.findByPk(primaryKey)
+      return this.findByPk(primaryKey, options)
     }
 
     const slug = slugOrPk
@@ -24,7 +42,7 @@ export abstract class BaseModel<
     }
 
     // @ts-expect-error - We know that the model has a slug attribute, and are ignoring the TS error
-    return this.findOne({ where: { slug } })
+    return this.findOne({ where: { slug } }, options)
   }
 
   // See api/node_modules/sequelize/types/model.d.ts -> findAll

@@ -80,7 +80,7 @@ export class DatasetsController extends BaseController {
   }
 
   private async loadDataset(): Promise<DatasetPolicyRecord | null> {
-    const dataset = await Dataset.findByPk(this.params.datasetId, {
+    const dataset = await Dataset.findBySlugOrPk(this.params.datasetIdOrSlug, {
       include: ["owner", "creator", "stewardshipEvolutions"],
     })
 
