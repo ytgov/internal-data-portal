@@ -1,11 +1,10 @@
 import { reactive, toRefs } from "vue"
+import { RouteLocationRaw } from "vue-router"
 
 export interface Breadcrumb {
   title: string
   disabled?: boolean
-  to: {
-    name: string
-  }
+  to: RouteLocationRaw
 }
 
 const BASE_CRUMB = {
@@ -30,7 +29,7 @@ export function useBreadcrumbs() {
 
   return {
     ...toRefs(state),
-    setBreadcrumbs
+    setBreadcrumbs,
   }
 }
 

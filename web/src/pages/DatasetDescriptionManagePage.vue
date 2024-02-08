@@ -32,7 +32,7 @@ import OwnerFormCard from "@/components/datasets/OwnerFormCard.vue"
 import SubjectFormCard from "@/components/datasets/SubjectFormCard.vue"
 import OwnerNotesFormCard from "@/components/datasets/OwnerNotesFormCard.vue"
 
-defineProps({
+const props = defineProps({
   slug: {
     type: String,
     required: true,
@@ -44,15 +44,24 @@ const { setBreadcrumbs } = useBreadcrumbs()
 setBreadcrumbs([
   {
     title: "Dataset",
-    to: { name: "DatasetPage" },
+    to: {
+      name: "DatasetPage",
+      params: { slug: props.slug },
+    },
   },
   {
     title: "Description",
-    to: { name: "DatasetDescriptionReadPage" },
+    to: {
+      name: "DatasetDescriptionReadPage",
+      params: { slug: props.slug },
+    },
   },
   {
     title: "Manage",
-    to: { name: "DatasetDescriptionManagePage" },
+    to: {
+      name: "DatasetDescriptionManagePage",
+      params: { slug: props.slug },
+    },
   },
 ])
 </script>

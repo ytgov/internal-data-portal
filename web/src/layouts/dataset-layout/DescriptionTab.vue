@@ -18,10 +18,13 @@ const route = useRoute()
 // TODO: make this a bit more sensible and resilient
 // maybe list all valid route names directly to avoid errors from dynamic calculation
 const routeName = computed(() => {
-  if (route.name.endsWith("ManagePage")) {
-    return "DatasetDescriptionManagePage"
-  } else {
-    return "DatasetDescriptionReadPage"
+  switch (route.name) {
+    case "DatasetDescriptionManagePage":
+      return "DatasetDescriptionManagePage"
+    case "DatasetDescriptionReadPage":
+      return "DatasetDescriptionReadPage"
+    default:
+      return "DatasetDescriptionReadPage"
   }
 })
 </script>
