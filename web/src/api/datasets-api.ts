@@ -67,10 +67,10 @@ export const datasetsApi = {
     const { data } = await http.get("/api/datasets", { params })
     return data
   },
-  async get(datasetId: number): Promise<{
+  async get(idOrSlug: number | string): Promise<{
     dataset: DatasetDetailedResult
   }> {
-    const { data } = await http.get(`/api/datasets/${datasetId}`)
+    const { data } = await http.get(`/api/datasets/${idOrSlug}`)
     return data
   },
   async create(

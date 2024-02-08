@@ -1,6 +1,16 @@
 <template>
   TODO: build out dataset show page.
 
+  <v-btn
+    color="primary"
+    :to="{
+      name: 'DatasetDescriptionManagePage',
+      params: { slug },
+    }"
+  >
+    Edit
+  </v-btn>
+
   <pre>{{ dataset }}</pre>
 </template>
 
@@ -12,8 +22,8 @@ import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 import useSnack from "@/use/use-snack"
 
 const props = defineProps({
-  datasetId: {
-    type: Number,
+  slug: {
+    type: String,
     required: true,
   },
 })
@@ -23,7 +33,11 @@ const { setBreadcrumbs } = useBreadcrumbs()
 setBreadcrumbs([
   {
     title: "Dataset",
-    to: { name: "DatasetShowPage" },
+    to: { name: "DatasetPage" },
+  },
+  {
+    title: "Description",
+    to: { name: "DatasetDescriptionReadPage" },
   },
 ])
 const snack = useSnack()
@@ -31,7 +45,7 @@ const dataset = ref<DatasetDetailedResult>()
 
 onMounted(async () => {
   try {
-    const { dataset: newDataset } = await datasetsApi.get(props.datasetId)
+    const { dataset: newDataset } = await datasetsApi.get(props.slug)
     dataset.value = newDataset
   } catch (error) {
     console.log("Failed to get dataset:", error)

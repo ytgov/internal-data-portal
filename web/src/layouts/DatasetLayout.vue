@@ -2,8 +2,6 @@
   <v-container>
     <h2 class="mb-3">{{ dataset.name }}</h2>
 
-    {{ slug }}
-
     <router-view></router-view>
   </v-container>
 </template>

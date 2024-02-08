@@ -1,7 +1,7 @@
 <template>
   <router-link
     :to="{
-      name: 'DatasetDescriptionManagePage',
+      name: 'DatasetPage',
       params: { slug },
     }"
     :tabindex="tabindex"
