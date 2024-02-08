@@ -1,5 +1,5 @@
 <template>
-  <v-tab :to="{ name: routeName }">Description</v-tab>
+  <v-tab :to="{ name: routeName }"><h3>Description</h3></v-tab>
 </template>
 
 <script lang="ts" setup>

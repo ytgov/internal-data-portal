@@ -1,18 +1,38 @@
 <template>
-  <DataDescriptionManageFormCard :slug="slug" />
+  <DataDescriptionFormCard
+    :slug="slug"
+    class="mt-6"
+  />
 
-  <pre>{{ dataset }}</pre>
+  <v-row class="mt-6">
+    <v-col
+      cols="12"
+      md="6"
+    >
+      <OwnerFormCard :slug="slug" />
+    </v-col>
+    <v-col
+      cols="12"
+      md="6"
+    >
+      <SubjectFormCard :slug="slug" />
+      <OwnerNotesFormCard
+        :slug="slug"
+        class="mt-5"
+      />
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts" setup>
-import { toRefs } from "vue"
-
 import useBreadcrumbs from "@/use/use-breadcrumbs"
-import { useDataset } from "@/use/use-dataset"
 
-import DataDescriptionManageFormCard from "@/components/datasets/DataDescriptionManageFormCard.vue"
+import DataDescriptionFormCard from "@/components/datasets/DataDescriptionFormCard.vue"
+import OwnerFormCard from "@/components/datasets/OwnerFormCard.vue"
+import SubjectFormCard from "@/components/datasets/SubjectFormCard.vue"
+import OwnerNotesFormCard from "@/components/datasets/OwnerNotesFormCard.vue"
 
-const props = defineProps({
+defineProps({
   slug: {
     type: String,
     required: true,
@@ -35,7 +55,4 @@ setBreadcrumbs([
     to: { name: "DatasetDescriptionManagePage" },
   },
 ])
-
-const { slug } = toRefs(props)
-const { dataset } = useDataset(slug)
 </script>
