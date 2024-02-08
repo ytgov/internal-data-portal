@@ -14,22 +14,22 @@ export type Dataset = {
   slug: string
   name: string
   description: string
-  subscriptionUrl: string
-  subscriptionAccessCode: string
+  subscriptionUrl: string | null
+  subscriptionAccessCode: string | null
   isSubscribable: boolean
   isSpatialData: boolean
   isLiveData: boolean
-  termsOfUse: string
-  credits: string
-  ownerNotes: string
+  termsOfUse: string | null
+  credits: string | null
+  ownerNotes: string | null
   status: DatasetErrorTypes
-  errorCode: string
-  errorDetails: string
-  publishedAt: Date // might actual be string
-  deactivatedAt: Date // might actual be string
-  createdAt: Date // might actual be string
-  updatedAt: Date // might actual be string
-  deletedAt: Date // might actual be string
+  errorCode: string | null
+  errorDetails: string | null
+  publishedAt: string | null
+  deactivatedAt: string | null
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
 }
 
 export type StewardshipEvolution = {
