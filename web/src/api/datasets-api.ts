@@ -46,18 +46,16 @@ export type StewardshipEvolution = {
   unit: User["unit"]
 }
 
-export type DatasetDetailedResult = {
-  dataset: Dataset & {
-    owner: User
-    creator: User
-    stewardshipEvolutions: StewardshipEvolution[]
-  }
+export type DatasetDetailedResult = Dataset & {
+  owner: User
+  creator: User
+  stewardshipEvolutions: StewardshipEvolution[]
 }
 
 export const datasetsApi = {
   DatasetErrorTypes,
   async list(params: {
-    where?: Record<string, any> // TODO: consider adding Sequelize types to front-end?
+    where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
     page?: number
     perPage?: number
   }): Promise<{
