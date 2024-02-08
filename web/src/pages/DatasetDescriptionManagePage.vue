@@ -2,12 +2,17 @@
   {{ slug }}
   <br />
   TODO: implement DatasetDescriptionManagePage
+
+  <pre>{{ dataset }}</pre>
 </template>
 
 <script lang="ts" setup>
-import useBreadcrumbs from '@/use/use-breadcrumbs';
+import { toRefs } from "vue"
 
-defineProps({
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+import { useDataset } from "@/use/use-dataset"
+
+const props = defineProps({
   slug: {
     type: String,
     required: true,
@@ -30,4 +35,7 @@ setBreadcrumbs([
     to: { name: "DatasetDescriptionManagePage" },
   },
 ])
+
+const { slug } = toRefs(props)
+const { dataset } = useDataset(slug)
 </script>

@@ -15,11 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue"
-
-import datasetsApi, { type DatasetDetailedResult } from "@/api/datasets-api"
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
-import useSnack from "@/use/use-snack"
+import { useDataset } from "@/use/use-dataset"
+import { toRefs } from "vue"
 
 const props = defineProps({
   slug: {
@@ -40,16 +38,7 @@ setBreadcrumbs([
     to: { name: "DatasetDescriptionReadPage" },
   },
 ])
-const snack = useSnack()
-const dataset = ref<DatasetDetailedResult>()
 
-onMounted(async () => {
-  try {
-    const { dataset: newDataset } = await datasetsApi.get(props.slug)
-    dataset.value = newDataset
-  } catch (error) {
-    console.log("Failed to get dataset:", error)
-    snack.notify("Failed to get dataset", { color: "error" })
-  }
-})
+const { slug } = toRefs(props)
+const { dataset } = useDataset(slug)
 </script>
