@@ -18,7 +18,6 @@ import {
   HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
-  Model,
   NonAttribute,
 } from "sequelize"
 
@@ -31,12 +30,14 @@ import Tag from "@/models/tag"
 import Tagging, { TaggableTypes } from "@/models/tagging"
 import User from "@/models/user"
 
+import BaseModel from "@/models/base-model"
+
 export enum DatasetErrorTypes {
   OK = "ok",
   ERRORED = "errored",
 }
 
-export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttributes<Dataset>> {
+export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAttributes<Dataset>> {
   static readonly ErrorTypes = DatasetErrorTypes
 
   declare id: CreationOptional<number>
@@ -90,8 +91,14 @@ export class Dataset extends Model<InferAttributes<Dataset>, InferCreationAttrib
   declare hasAccessRequests: HasManyHasAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
   declare addAccessRequest: HasManyAddAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
   declare addAccessRequests: HasManyAddAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
-  declare removeAccessRequest: HasManyRemoveAssociationMixin<AccessRequest, AccessRequest["datasetId"]>
-  declare removeAccessRequests: HasManyRemoveAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
+  declare removeAccessRequest: HasManyRemoveAssociationMixin<
+    AccessRequest,
+    AccessRequest["datasetId"]
+  >
+  declare removeAccessRequests: HasManyRemoveAssociationsMixin<
+    AccessRequest,
+    AccessRequest["datasetId"]
+  >
   declare countAccessRequests: HasManyCountAssociationsMixin
   declare createAccessRequest: HasManyCreateAssociationMixin<AccessRequest>
 
