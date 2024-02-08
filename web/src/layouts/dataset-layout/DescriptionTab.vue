@@ -1,10 +1,17 @@
 <template>
-  <v-tab :to="{ name: routeName }"><h3>Description</h3></v-tab>
+  <v-tab :to="{ name: routeName, params: { slug } }"><h3>Description</h3></v-tab>
 </template>
 
 <script lang="ts" setup>
 import { computed } from "vue"
 import { useRoute } from "vue-router"
+
+defineProps({
+  slug: {
+    type: String,
+    required: true,
+  },
+})
 
 const route = useRoute()
 

@@ -14,7 +14,7 @@
     </h2>
 
     <v-tabs>
-      <DescriptionTab />
+      <DescriptionTab :slug="slug" />
       <!-- TODO: add in further tabs -->
     </v-tabs>
 
