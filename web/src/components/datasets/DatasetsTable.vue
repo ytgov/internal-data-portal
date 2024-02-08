@@ -36,10 +36,14 @@
       <RequestAccessButton
         v-if="action === DatasetTableActions.REQUEST_ACCESS"
         class="action-buttons"
+        @mouseover="disableRowHighlight"
+        @mouseleave="removeDisableRowHighlight"
       />
       <SubscribeToDatasetButton
         v-else-if="action === DatasetTableActions.SUBSCRIBE"
         class="action-buttons"
+        @mouseover="disableRowHighlight"
+        @mouseleave="removeDisableRowHighlight"
       />
       <template v-else>
         {{ formatAction(action) }}
@@ -121,6 +125,24 @@ function formatAction(action: string | undefined) {
   return t(`datasets.datasets_table.actions.${action}`, action)
 }
 
+function disableRowHighlight(event: MouseEvent) {
+  const target = event.target as HTMLElement
+  const row = target.closest("tr")
+
+  if (row) {
+    row.classList.add("no-highlight")
+  }
+}
+
+function removeDisableRowHighlight(event: MouseEvent) {
+  const target = event.target as HTMLElement
+  const row = target.closest("tr")
+
+  if (row) {
+    row.classList.remove("no-highlight")
+  }
+}
+
 defineExpose({ refresh })
 </script>
 
@@ -132,6 +154,10 @@ defineExpose({ refresh })
 ::v-deep tbody > tr:hover,
 tr:focus-within {
   background-color: rgba(var(--v-theme-yg-blue), 0.1);
+}
+
+::v-deep tbody > tr.no-highlight {
+  background-color: transparent !important;
 }
 
 .action-buttons {
