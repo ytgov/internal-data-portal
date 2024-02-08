@@ -147,16 +147,15 @@ defineExpose({ refresh })
 </script>
 
 <style scoped>
-::v-deep td {
+::v-deep(td) {
   position: relative;
 }
 
-::v-deep tbody > tr:hover,
-tr:focus-within {
+::v-deep(tbody > tr:hover, tr:focus-within) {
   background-color: rgba(var(--v-theme-yg-blue), 0.1);
 }
 
-::v-deep tbody > tr.no-highlight {
+::v-deep(tbody > tr.no-highlight) {
   background-color: transparent !important;
 }
 
