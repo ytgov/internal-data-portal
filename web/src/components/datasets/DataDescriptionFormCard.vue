@@ -74,10 +74,10 @@
         <v-col cols="6">
           <v-row>
             <v-col cols="3">
-              <!-- TODO: trigger wiping deactivated at -->
               <v-checkbox
-                :value="dataset.deactivatedAt === null"
+                :model-value="isInactive"
                 label="inactive"
+                @update:model-value="deactivateDataset"
               />
             </v-col>
             <v-col cols="9">
@@ -116,7 +116,7 @@
 </template>
 
 <script lang="ts" setup>
-import { toRefs } from "vue"
+import { computed, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import { useDataset } from "@/use/use-dataset"
@@ -132,6 +132,19 @@ const props = defineProps({
 
 const { slug } = toRefs(props)
 const { dataset, isLoading } = useDataset(slug)
+
+const isInactive = computed<boolean>(() => !isNil(dataset.value?.deactivatedAt))
+
+function deactivateDataset(value: boolean | null) {
+  if (isNil(dataset.value)) return
+
+  if (value) {
+    // TODO: verify this is creating the correct date value
+    dataset.value.deactivatedAt = new Date().toISOString()
+  } else {
+    dataset.value.deactivatedAt = null
+  }
+}
 
 function openAddApiDialog() {
   alert("TODO: open add API dialog")

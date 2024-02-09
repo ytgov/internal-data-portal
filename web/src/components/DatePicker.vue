@@ -3,12 +3,12 @@
     v-model="menu"
     :close-on-content-click="false"
   >
-    <template #activator="{ props }">
+    <template #activator="{ props: menuProps }">
       <v-text-field
         :model-value="formattedDate"
         prepend-icon="mdi-calendar"
         readonly
-        v-bind="{ ...fieldOptions, ...props }"
+        v-bind="{ ...fieldOptions, ...menuProps }"
       />
     </template>
 
@@ -21,23 +21,56 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import { DateTime } from "luxon"
 import { VDatePicker, VTextField } from "vuetify/lib/components/index.mjs"
 
-// TODO: support v-model on this component
-defineProps<{
+const props = defineProps<{
+  modelValue: string | null
   dateOptions?: VDatePicker["$props"]
   fieldOptions?: VTextField["$props"]
 }>()
 
+const emit = defineEmits(["update:modelValue"])
+
 const menu = ref(false)
-const date = ref(null)
+const date = ref<Date | null>(null)
+
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue === null) {
+      date.value = null
+      return
+    }
+
+    const newDateTime = DateTime.fromISO(newValue)
+    if (date.value === null) {
+      date.value = newDateTime.toJSDate()
+      return
+    }
+
+    // This avoids triggering an infinite loop
+    const newDateString = newDateTime.toFormat("yyyy-MM-dd")
+    const currentDateTime = DateTime.fromJSDate(date.value)
+    const currentDateString = currentDateTime.toFormat("yyyy-MM-dd")
+    if (newDateString === currentDateString) return
+
+    date.value = newDateTime.toJSDate()
+  },
+  {
+    immediate: true,
+  }
+)
 
 const formattedDate = computed(() => {
   if (date.value === null) return ""
 
   const dateTime = DateTime.fromJSDate(date.value)
-  return dateTime.toFormat("yyyy-MM-dd")
+  const dateString = dateTime.toFormat("yyyy-MM-dd")
+
+  emit("update:modelValue", dateString)
+
+  return dateString
 })
 </script>
