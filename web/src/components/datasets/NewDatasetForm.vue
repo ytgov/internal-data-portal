@@ -463,9 +463,9 @@ async function save() {
       color: "success",
     })
     router.push({
-      name: "DatasetShowPage",
+      name: "DatasetDescriptionManagePage",
       params: {
-        datasetId: newDataset.slug,
+        slug: newDataset.slug,
       },
     })
   } catch (error) {
