@@ -13,9 +13,9 @@
     </template>
 
     <v-date-picker
-      v-model="date"
+      :model-value="date"
       v-bind="dateOptions"
-      @update:model-value="menu = false"
+      @update:model-value="updateDateAndCloseMenu"
     ></v-date-picker>
   </v-menu>
 </template>
@@ -45,17 +45,6 @@ watch(
     }
 
     const newDateTime = DateTime.fromISO(newValue)
-    if (date.value === null) {
-      date.value = newDateTime.toJSDate()
-      return
-    }
-
-    // This avoids triggering an infinite loop
-    const newDateString = newDateTime.toFormat("yyyy-MM-dd")
-    const currentDateTime = DateTime.fromJSDate(date.value)
-    const currentDateString = currentDateTime.toFormat("yyyy-MM-dd")
-    if (newDateString === currentDateString) return
-
     date.value = newDateTime.toJSDate()
   },
   {
@@ -68,9 +57,18 @@ const formattedDate = computed(() => {
 
   const dateTime = DateTime.fromJSDate(date.value)
   const dateString = dateTime.toFormat("yyyy-MM-dd")
-
-  emit("update:modelValue", dateString)
-
   return dateString
 })
+
+function updateDateAndCloseMenu(newDate: unknown) {
+  if (newDate instanceof Date) {
+    date.value = newDate
+    emit("update:modelValue", newDate.toISOString())
+  } else {
+    date.value = null
+    emit("update:modelValue", null)
+  }
+
+  menu.value = false
+}
 </script>
