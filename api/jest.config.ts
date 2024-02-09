@@ -1,0 +1,27 @@
+import type { JestConfigWithTsJest } from "ts-jest"
+
+export const jestConfig: JestConfigWithTsJest = {
+  testEnvironment: "node",
+  moduleNameMapper: {
+    "^@/(.*)$": ["<rootDir>/src/$1", "<rootDir>/tests/$1"],
+  },
+  setupFilesAfterEnv: ["<rootDir>/tests/setup.ts"], // Runs once for each test file
+  globalSetup: "<rootDir>/tests/global-setup.ts", // Runs once before all tests
+  // Make jest as much like RSpec as possible, add these if I get confused when
+  // testing with mocks.
+  clearMocks: true,
+  resetMocks: true,
+  restoreMocks: true,
+  resetModules: true,
+  // https://kulshekhar.github.io/ts-jest/docs/getting-started/options/#introduction
+  transform: {
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        tsconfig: "<rootDir>/tests/tsconfig.json",
+      },
+    ],
+  },
+}
+
+export default jestConfig

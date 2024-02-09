@@ -1,5 +1,18 @@
 import http from "@/api/http-client"
 
+export type GroupMembership = {
+  id: number
+  userId: number
+  departmentId: number
+  divisionId: number | null
+  branchId: number | null
+  unitId: number | null
+  groupId: number
+  createdAt: Date // might actual be string
+  updatedAt: Date // might actual be string
+  deletedAt: Date // might actual be string
+}
+
 export type User = {
   id: number
   auth0Subject: string
@@ -15,8 +28,12 @@ export type User = {
   updatedAt: Date // might actual be string
   deletedAt: Date // might actual be string
 
+  roleTypes: RoleTypes[]
+  displayName: string
+
   // associations
   roles: Role[]
+  groupMembership: GroupMembership
 }
 
 // Must match roles in api/src/models/roles.ts
@@ -38,8 +55,24 @@ export type Role = {
 
 export const usersApi = {
   RoleTypes,
+  // TODO: consider moving this to its own api?
   async fetchCurrentUser(): Promise<{ user: User }> {
     const { data } = await http.get("/api/current-user")
+    return data
+  },
+  async list({
+    where,
+    page,
+    perPage,
+  }: {
+    where?: Record<string, any> // TODO: consider adding Sequelize types to front-end?
+    page?: number
+    perPage?: number
+  } = {}): Promise<{
+    users: User[]
+    totalCount: number
+  }> {
+    const { data } = await http.get("/api/users", { params: { where, page, perPage } })
     return data
   },
 }

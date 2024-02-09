@@ -28,7 +28,6 @@ export const API_PORT = process.env.API_PORT || "3000"
 export const FRONTEND_URL = process.env.FRONTEND_URL || ""
 export const AUTH0_DOMAIN = stripTrailingSlash(process.env.VITE_AUTH0_DOMAIN || "")
 export const AUTH0_AUDIENCE = process.env.VITE_AUTH0_AUDIENCE
-export const AUTH0_REDIRECT = process.env.VITE_AUTH0_REDIRECT || process.env.FRONTEND_URL || ""
 
 export const APPLICATION_NAME = process.env.VITE_APPLICATION_NAME || ""
 
@@ -40,3 +39,5 @@ export const DB_PORT = parseInt(process.env.DB_PORT || "1433")
 
 export const RELEASE_TAG = process.env.RELEASE_TAG || ""
 export const GIT_COMMIT_HASH = process.env.GIT_COMMIT_HASH || ""
+
+export const YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY = process.env.YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY || ""

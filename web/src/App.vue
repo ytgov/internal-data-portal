@@ -6,6 +6,7 @@
     -->
     <router-view v-else-if="isReady" />
     <PageLoader v-else />
+    <AppSnackbar />
   </v-app>
 </template>
 
@@ -16,6 +17,7 @@ import { useRoute } from "vue-router"
 
 import useCurrentUser from "@/use/use-current-user"
 import PageLoader from "@/components/PageLoader.vue"
+import AppSnackbar from "@/components/AppSnackbar.vue"
 
 // TODO: consider moving this to a route guard?
 const route = useRoute()

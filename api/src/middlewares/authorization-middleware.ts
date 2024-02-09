@@ -4,7 +4,7 @@ import { type Request as JwtRequest } from "express-jwt"
 import auth0Integration, { Auth0PayloadError } from "@/integrations/auth0-integration"
 import { Role, User } from "@/models"
 
-type AuthorizationRequest = JwtRequest & {
+export type AuthorizationRequest = JwtRequest & {
   currentUser?: User
 }
 
@@ -32,7 +32,13 @@ async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
   })
 
   await user.reload({
-    include: ["roles"],
+    include: [
+      "roles",
+      {
+        association: "groupMembership",
+        include: ["department", "division", "branch", "unit"],
+      },
+    ],
   })
 
   if (created) {
@@ -53,7 +59,13 @@ export async function ensureAndAuthorizeCurrentUser(
 ) {
   const user = await User.findOne({
     where: { auth0Subject: req.auth?.sub }, // req.auth from express-jwt
-    include: ["roles"],
+    include: [
+      "roles",
+      {
+        association: "groupMembership",
+        include: ["department", "division", "branch", "unit"],
+      },
+    ],
   })
   if (user !== null) {
     req.currentUser = user

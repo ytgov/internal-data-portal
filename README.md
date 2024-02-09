@@ -28,13 +28,14 @@
 
 ## Development
 
-1. In the `api` folder.
+1. In both the `api` and `web` folder.
 
 2. Create a `.env.development` file with this content. It must match the config in `docker-compose.development.yml`
 
    ```bash
-   AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
-   AUTH0_AUDIENCE=testing
+   VITE_AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
+   VITE_AUTH0_AUDIENCE=testing
+   VITE_AUTH0_CLIENT_ID=mS8zklFSgatWX3v1OCQgVpEq5MixCm4k
    ```
 
 3. Go back to the top level directory.
@@ -55,6 +56,10 @@
    # or
 
    docker compose -f docker-compose.development.yml up api
+
+   # or
+
+   npm run start # from the /api directory
    ```
 
 2. Access the api by logging in to the front-end, then going to http://localhost:3000
@@ -69,6 +74,10 @@
    # or
 
    docker compose -f docker-compose.development.yml up web
+
+   # or
+
+   npm run start # from the /web directory
    ```
 
 2. Log in to the front-end service at http://localhost:8080
@@ -104,13 +113,6 @@
       -I
    '
    ```
-
-You can also run migrations and seeding manually after login in to the web UI by going to
-
-- http://localhost:3000/migrate/latest
-- http://localhost:3000/migrate/up
-- http://localhost:3000/migrate/down
-- http://localhost:3000/migrate/seed
 
 You can also skip seeding if database is not empty by setting the `SKIP_SEEDING_UNLESS_EMPTY=true` environment variable.
 
@@ -262,13 +264,25 @@ Files:
 1. Create a `.env` file in top level directory with the appropriate values.
 
    ```bash
-   APPLICATION_NAME=Internal Data Portal
+   NODE_ENV=production
+
+   VITE_APPLICATION_NAME=Internal Data Portal
+   VITE_AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
+   VITE_AUTH0_CLIENT_ID=mS8zklFSgatWX3v1OCQgVpEq5MixCm4k
+   VITE_AUTH0_AUDIENCE=testing
+
+   FRONTEND_URL=http://localhost:8080
+   API_PORT=8080
 
    DB_HOST=db
    DB_PORT=1433
    DB_USER=sa
    DB_PASS=DevPwd99!
    DB_NAME=idp_production
+
+   PRODUCTION_DATABASE_SA_MASTER_CREDS_AVAILABLE=true
+
+   YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
 
 2. (optional) If testing build arguments do
@@ -285,6 +299,6 @@ Files:
    docker compose up --build
    ```
 
-4. Go to http://localhost:3000/ and log in.
+4. Go to http://localhost:8080/ and log in.
 
 5. Navigate around the app and do some stuff and see if it works.

@@ -3,20 +3,14 @@ import { computed, reactive, toRefs } from "vue"
 import { sleep } from "@/utils/sleep"
 import usersApi, { User } from "@/api/users-api"
 
-type UserStub = {
-  roles: []
-}
-
 // Global state
 const state = reactive<{
-  currentUser: User | UserStub
+  currentUser: User | null
   isLoading: boolean
   isErrored: boolean
   isCached: boolean
 }>({
-  currentUser: {
-    roles: [],
-  },
+  currentUser: null,
   isLoading: false,
   isErrored: false,
   isCached: false,
@@ -42,7 +36,7 @@ export function useCurrentUser() {
     }
   }
 
-  async function ensure(): Promise<User | UserStub> {
+  async function ensure(): Promise<User | null> {
     // TODO: add max timeout
     while (state.isLoading) {
       await sleep(75)
@@ -61,9 +55,7 @@ export function useCurrentUser() {
 
   // I think this needs to be called during logout or current user will persist?
   function reset() {
-    state.currentUser = {
-      roles: [],
-    }
+    state.currentUser = null
     state.isLoading = false
     state.isErrored = false
     state.isCached = false

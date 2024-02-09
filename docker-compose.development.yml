@@ -32,6 +32,8 @@ services:
       - "3000:3000"
     volumes:
       - ./api:/usr/src/api
+      - ./.gitignore:/usr/src/.gitignore
+      - ./.prettierrc.yaml:/usr/src/.prettierrc.yaml
     depends_on:
       db:
         condition: service_healthy
@@ -46,26 +48,28 @@ services:
       - "8080:8080"
     volumes:
       - ./web:/usr/src/web
+      - ./.gitignore:/usr/src/.gitignore
+      - ./.prettierrc.yaml:/usr/src/.prettierrc.yaml
     depends_on:
       - api
 
-  # test_api:
-  #   build:
-  #     context: ./api
-  #     dockerfile: development.Dockerfile
-  #   command: /bin/true
-  #   env_file:
-  #     - ./api/.env.development
-  #   environment:
-  #     <<: *default-environment
-  #     NODE_ENV: test
-  #     DB_NAME: idp_test
-  #   tty: true
-  #   volumes:
-  #     - ./api:/usr/src/api
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
+  test_api:
+    build:
+      context: ./api
+      dockerfile: development.Dockerfile
+    command: /bin/true
+    env_file:
+      - ./api/.env.development
+    environment:
+      <<: *default-environment
+      NODE_ENV: test
+      DB_NAME: idp_test
+    tty: true
+    volumes:
+      - ./api:/usr/src/api
+    depends_on:
+      db:
+        condition: service_healthy
 
   # test_web:
   #   build:
@@ -86,7 +90,6 @@ services:
       <<: *default-environment
       DB_HOST: "localhost"
       MSSQL_SA_PASSWORD: *default-db-password
-      TZ: "America/Whitehorse"
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
