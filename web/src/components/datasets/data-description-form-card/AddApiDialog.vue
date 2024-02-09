@@ -47,16 +47,24 @@
 import { ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
-defineProps<{
+const props = defineProps<{
   modelValue: string | null
 }>()
 
-const emit = defineEmits(["update:modelValue"])
+const emit = defineEmits(["update:modelValue", "added"])
 
 const router = useRouter()
 const route = useRoute()
 const showDialog = ref(route.query.showAddApi === "true")
 const subscriptionUrl = ref<string | null>(null)
+
+watch(
+  () => props.modelValue,
+  (value) => {
+    subscriptionUrl.value = value
+  },
+  { immediate: true }
+)
 
 watch(
   () => showDialog.value,
@@ -76,5 +84,6 @@ function close() {
 function saveAndClose() {
   emit("update:modelValue", subscriptionUrl)
   close()
+  emit("added")
 }
 </script>
