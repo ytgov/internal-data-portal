@@ -51,6 +51,22 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     return false
   }
 
+  update(): boolean {
+    if (
+      this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN) ||
+      this.user.roleTypes.includes(RoleTypes.BUSINESS_ANALYST)
+    ) {
+      return true
+    } else if (
+      this.user.roleTypes.includes(RoleTypes.DATA_OWNER) &&
+      this.record.ownerId === this.user.id
+    ) {
+      return true
+    }
+
+    return false
+  }
+
   permittedAttributes(): Path[] {
     // TODO: include owner id for SYSTEM_ADMIN and BUSINESS_ANALYST
     return [

@@ -44,7 +44,10 @@ router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser)
 router.route("/api/current-user").get(CurrentUserController.show)
 
 router.route("/api/datasets").get(DatasetsController.index).post(DatasetsController.create)
-router.route("/api/datasets/:datasetIdOrSlug").get(DatasetsController.show)
+router
+  .route("/api/datasets/:datasetIdOrSlug")
+  .get(DatasetsController.show)
+  .patch(DatasetsController.update)
 
 router.route("/api/users").get(UsersController.index)
 router
