@@ -15,9 +15,15 @@
         v-else
         class="d-flex"
       >
-        <v-col cols="6">
+        <v-col
+          cols="12"
+          md="6"
+        >
           <v-row>
-            <v-col col="8">
+            <v-col
+              cols="12"
+              md="8"
+            >
               <v-text-field
                 v-model="dataset.name"
                 label="Name"
@@ -25,7 +31,8 @@
               />
             </v-col>
             <v-col
-              cols="4"
+              cols="12"
+              md="4"
               class="d-flex justify-center mt-3"
             >
               <AddApiDialog v-model="dataset.subscriptionUrl" />
@@ -50,13 +57,19 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="3">
+            <v-col
+              cols="12"
+              md="3"
+            >
               <v-checkbox
                 v-model="dataset.isLiveData"
                 label="Live data?"
               />
             </v-col>
-            <v-col cols="9">
+            <v-col
+              cols="12"
+              md="9"
+            >
               <DatePicker
                 v-model="dataset.publishedAt"
                 :field-options="{
@@ -66,16 +79,25 @@
             </v-col>
           </v-row>
         </v-col>
-        <v-col cols="6">
+        <v-col
+          cols="12"
+          md="6"
+        >
           <v-row>
-            <v-col cols="3">
+            <v-col
+              cols="12"
+              md="3"
+            >
               <v-checkbox
                 :model-value="isInactive"
                 label="inactive"
                 @update:model-value="deactivateDataset"
               />
             </v-col>
-            <v-col cols="9">
+            <v-col
+              cols="12"
+              md="9"
+            >
               <DatePicker
                 v-model="dataset.deactivatedAt"
                 :field-options="{
