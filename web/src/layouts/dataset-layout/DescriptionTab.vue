@@ -15,8 +15,7 @@ defineProps({
 
 const route = useRoute()
 
-// TODO: make this a bit more sensible and resilient
-// maybe list all valid route names directly to avoid errors from dynamic calculation
+// TODO: maybe vary route by user role?
 const routeName = computed(() => {
   switch (route.name) {
     case "DatasetDescriptionManagePage":
