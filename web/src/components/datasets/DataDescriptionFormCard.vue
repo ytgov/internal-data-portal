@@ -1,16 +1,18 @@
 <template>
   <v-card>
-    <v-card-title>Data Description</v-card-title>
+    <v-card-title class="d-flex justify-space-between align-center">
+      Data Description
+      <SaveStateProgress
+        :saving="isLoading"
+        @click="save"
+      />
+    </v-card-title>
     <v-card-text>
-      <div
-        v-if="isNil(dataset) || isLoading"
-        class="d-flex justify-center"
-      >
-        <v-progress-circular
-          indeterminate
-          color="yg-blue"
-        />
-      </div>
+      <!-- TODO: make this an external component that maches the form -->
+      <v-skeleton-loader
+        v-if="isNil(dataset)"
+        type="card"
+      />
       <v-form
         v-else
         class="d-flex"
@@ -133,12 +135,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs } from "vue"
-import { isNil } from "lodash"
+import { computed, toRefs, watch } from "vue"
+import { debounce, isNil } from "lodash"
 
+import { useSnack } from "@/use/use-snack"
 import { useDataset } from "@/use/use-dataset"
 
 import DatePicker from "@/components/DatePicker.vue"
+import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import AddApiDialog from "@/components/datasets/data-description-form-card/AddApiDialog.vue"
 
 const props = defineProps({
@@ -149,7 +153,8 @@ const props = defineProps({
 })
 
 const { slug } = toRefs(props)
-const { dataset, isLoading } = useDataset(slug)
+const { dataset, isLoading, save } = useDataset(slug)
+const snack = useSnack()
 
 const isInactive = computed<boolean>(() => !isNil(dataset.value?.deactivatedAt))
 
@@ -163,4 +168,29 @@ function deactivateDataset(value: boolean | null) {
     dataset.value.deactivatedAt = null
   }
 }
+
+const debouncedUpdate = debounce(async (newValue, oldValue) => {
+  console.log("Dataset changed:", newValue, oldValue)
+  try {
+    await save()
+    snack.notify("Dataset saved", {
+      color: "success",
+    })
+  } catch (error) {
+    console.error("Error saving dataset:", error)
+    snack.notify("Error saving dataset", {
+      color: "error",
+    })
+  }
+}, 500)
+
+watch(
+  () => dataset.value,
+  async (newValue, oldValue) => {
+    if (isNil(oldValue)) return
+
+    await debouncedUpdate(newValue, oldValue)
+  },
+  { deep: true }
+)
 </script>

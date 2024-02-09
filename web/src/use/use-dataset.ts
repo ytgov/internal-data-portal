@@ -1,4 +1,5 @@
 import { type Ref, reactive, unref, watch, toRefs } from "vue"
+import { isNil } from "lodash"
 
 import datasetsApi, { Dataset } from "@/api/datasets-api"
 
@@ -29,6 +30,26 @@ export function useDataset(slug: Ref<string>) {
     }
   }
 
+  async function save() {
+    if (isNil(state.dataset)) {
+      throw new Error("No dataset to save")
+    }
+
+    state.isLoading = true
+    try {
+      const { dataset } = await datasetsApi.update(unref(slug), state.dataset)
+      state.dataset = dataset
+      state.isErrored = false
+      return dataset
+    } catch (error) {
+      console.error("Failed to save dataset:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
   watch(
     () => unref(slug),
     async () => {
@@ -40,6 +61,7 @@ export function useDataset(slug: Ref<string>) {
   return {
     ...toRefs(state),
     refresh: fetch,
+    save,
   }
 }
 

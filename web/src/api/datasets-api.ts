@@ -81,6 +81,15 @@ export const datasetsApi = {
     const { data } = await http.post("/api/datasets", attributes)
     return data
   },
+  async update(
+    idOrSlug: number | string,
+    attributes: Partial<Dataset>
+  ): Promise<{
+    dataset: DatasetDetailedResult
+  }> {
+    const { data } = await http.patch(`/api/datasets/${idOrSlug}`, attributes)
+    return data
+  },
 }
 
 export default datasetsApi
