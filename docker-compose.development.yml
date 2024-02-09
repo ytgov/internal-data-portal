@@ -90,7 +90,6 @@ services:
       <<: *default-environment
       DB_HOST: "localhost"
       MSSQL_SA_PASSWORD: *default-db-password
-      TZ: "America/Whitehorse"
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"

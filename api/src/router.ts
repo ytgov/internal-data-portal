@@ -43,9 +43,11 @@ router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser)
 // Add all the standard api controller routes here
 router.route("/api/current-user").get(CurrentUserController.show)
 
-router.route("/api/datasets").get(DatasetsController.index)
-router.route("/api/datasets").post(DatasetsController.create)
-router.route("/api/datasets/:datasetId").get(DatasetsController.show)
+router.route("/api/datasets").get(DatasetsController.index).post(DatasetsController.create)
+router
+  .route("/api/datasets/:datasetIdOrSlug")
+  .get(DatasetsController.show)
+  .patch(DatasetsController.update)
 
 router.route("/api/users").get(UsersController.index)
 router

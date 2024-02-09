@@ -6,7 +6,7 @@ export { type Dataset, type StewardshipEvolution }
 
 export function useDatasets(
   options: Ref<{
-    where?: Record<string, any>
+    where?: Record<string, unknown>
     page?: number
     perPage?: number
   }> = ref({})

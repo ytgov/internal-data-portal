@@ -14,22 +14,22 @@ export type Dataset = {
   slug: string
   name: string
   description: string
-  subscriptionUrl: string
-  subscriptionAccessCode: string
+  subscriptionUrl: string | null
+  subscriptionAccessCode: string | null
   isSubscribable: boolean
   isSpatialData: boolean
   isLiveData: boolean
-  termsOfUse: string
-  credits: string
-  ownerNotes: string
+  termsOfUse: string | null
+  credits: string | null
+  ownerNotes: string | null
   status: DatasetErrorTypes
-  errorCode: string
-  errorDetails: string
-  publishedAt: Date // might actual be string
-  deactivatedAt: Date // might actual be string
-  createdAt: Date // might actual be string
-  updatedAt: Date // might actual be string
-  deletedAt: Date // might actual be string
+  errorCode: string | null
+  errorDetails: string | null
+  publishedAt: string | null
+  deactivatedAt: string | null
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
 }
 
 export type StewardshipEvolution = {
@@ -46,18 +46,16 @@ export type StewardshipEvolution = {
   unit: User["unit"]
 }
 
-export type DatasetDetailedResult = {
-  dataset: Dataset & {
-    owner: User
-    creator: User
-    stewardshipEvolutions: StewardshipEvolution[]
-  }
+export type DatasetDetailedResult = Dataset & {
+  owner: User
+  creator: User
+  stewardshipEvolutions: StewardshipEvolution[]
 }
 
 export const datasetsApi = {
   DatasetErrorTypes,
   async list(params: {
-    where?: Record<string, any> // TODO: consider adding Sequelize types to front-end?
+    where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
     page?: number
     perPage?: number
   }): Promise<{
@@ -67,10 +65,10 @@ export const datasetsApi = {
     const { data } = await http.get("/api/datasets", { params })
     return data
   },
-  async get(datasetId: number): Promise<{
+  async get(idOrSlug: number | string): Promise<{
     dataset: DatasetDetailedResult
   }> {
-    const { data } = await http.get(`/api/datasets/${datasetId}`)
+    const { data } = await http.get(`/api/datasets/${idOrSlug}`)
     return data
   },
   async create(
@@ -81,6 +79,15 @@ export const datasetsApi = {
     dataset: DatasetDetailedResult
   }> {
     const { data } = await http.post("/api/datasets", attributes)
+    return data
+  },
+  async update(
+    idOrSlug: number | string,
+    attributes: Partial<Dataset>
+  ): Promise<{
+    dataset: DatasetDetailedResult
+  }> {
+    const { data } = await http.patch(`/api/datasets/${idOrSlug}`, attributes)
     return data
   },
 }

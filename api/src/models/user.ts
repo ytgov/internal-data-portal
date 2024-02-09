@@ -1,24 +1,23 @@
 import {
-  Model,
-  DataTypes,
-  InferAttributes,
-  InferCreationAttributes,
-  CreationOptional,
-  NonAttribute,
   Association,
-  HasManyGetAssociationsMixin,
+  CreationOptional,
+  DataTypes,
   HasManyAddAssociationMixin,
   HasManyAddAssociationsMixin,
   HasManyCountAssociationsMixin,
   HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
   HasManyHasAssociationMixin,
   HasManyHasAssociationsMixin,
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
   HasManySetAssociationsMixin,
+  HasOneCreateAssociationMixin,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
-  HasOneCreateAssociationMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  NonAttribute,
 } from "sequelize"
 import { DateTime } from "luxon"
 
@@ -29,7 +28,9 @@ import Role, { RoleTypes } from "@/models/role"
 import UserGroup from "@/models/user-groups"
 import UserGroupMembership from "@/models/user-group-membership"
 
-export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+import BaseModel from "@/models/base-model"
+
+export class User extends BaseModel<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>
   declare auth0Subject: string
   declare email: string
@@ -74,13 +75,28 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare createAccessGrants: HasManyCreateAssociationMixin<AccessGrant>
 
   declare getAccessGrantRequests: HasManyGetAssociationsMixin<AccessGrant>
-  declare setAccessGrantRequests: HasManySetAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare setAccessGrantRequests: HasManySetAssociationsMixin<
+    AccessGrant,
+    AccessGrant["requestorId"]
+  >
   declare hasAccessGrantRequest: HasManyHasAssociationMixin<AccessGrant, AccessGrant["requestorId"]>
-  declare hasAccessGrantRequests: HasManyHasAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare hasAccessGrantRequests: HasManyHasAssociationsMixin<
+    AccessGrant,
+    AccessGrant["requestorId"]
+  >
   declare addAccessGrantRequest: HasManyAddAssociationMixin<AccessGrant, AccessGrant["requestorId"]>
-  declare addAccessGrantRequests: HasManyAddAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
-  declare removeAccessGrantRequest: HasManyRemoveAssociationMixin<AccessGrant, AccessGrant["requestorId"]>
-  declare removeAccessGrantRequests: HasManyRemoveAssociationsMixin<AccessGrant, AccessGrant["requestorId"]>
+  declare addAccessGrantRequests: HasManyAddAssociationsMixin<
+    AccessGrant,
+    AccessGrant["requestorId"]
+  >
+  declare removeAccessGrantRequest: HasManyRemoveAssociationMixin<
+    AccessGrant,
+    AccessGrant["requestorId"]
+  >
+  declare removeAccessGrantRequests: HasManyRemoveAssociationsMixin<
+    AccessGrant,
+    AccessGrant["requestorId"]
+  >
   declare countAccessGrantRequests: HasManyCountAssociationsMixin
   declare createAccessGrantRequests: HasManyCreateAssociationMixin<AccessGrant>
 

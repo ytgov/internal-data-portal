@@ -277,11 +277,10 @@ const unitsQuery = computed(() => ({
     parentId: branchId.value,
   },
 }))
-const {
-  userGroups: departments,
-  isLoading: isLoadingDepartments,
-  fetch: fetchDepartments,
-} = useUserGroups(departmentsQuery, { immediate: true })
+const { userGroups: departments, isLoading: isLoadingDepartments } = useUserGroups(
+  departmentsQuery,
+  { immediate: true }
+)
 const {
   userGroups: divisions,
   isLoading: isLoadingDivisions,
@@ -464,10 +463,9 @@ async function save() {
       color: "success",
     })
     router.push({
-      name: "DatasetShowPage",
+      name: "DatasetDescriptionManagePage",
       params: {
-        // @ts-expect-error - TODO: figure out why newDataset isn't detecting as having an id
-        datasetId: newDataset.id,
+        slug: newDataset.slug,
       },
     })
   } catch (error) {

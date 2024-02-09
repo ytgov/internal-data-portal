@@ -34,7 +34,7 @@ export class CreateService extends BaseService {
 
     const slug = await this.generateSafeSlug(name)
 
-    return db.transaction(async (transaction) => {
+    return db.transaction(async () => {
       const secureAttributes: CreationAttributes<Dataset> = {
         ...this.attributes,
         ownerId: ownerId || this.currentUser.id,
@@ -128,7 +128,7 @@ export class CreateService extends BaseService {
       },
     })
 
-    const slugMatcher = new RegExp(`${baseSlug}\-[1-9][0-9]*$`)
+    const slugMatcher = new RegExp(`${baseSlug}-[1-9][0-9]*$`)
     const relevantDatasets = existingDatasets.filter(
       ({ slug }) => slug === baseSlug || slugMatcher.test(slug)
     )

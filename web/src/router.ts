@@ -26,12 +26,28 @@ const routes: RouteRecordRaw[] = [
         component: () => import("@/pages/DatasetNewPage.vue"),
       },
       {
-        name: "DatasetShowPage",
-        path: "datasets/:datasetId",
-        component: () => import("@/pages/DatasetShowPage.vue"),
-        props: (route) => ({
-          datasetId: parseInt(route.params.datasetId as string)
-        }),
+        path: "datasets/:slug",
+        component: () => import("@/layouts/DatasetLayout.vue"),
+        props: true,
+        children: [
+          {
+            name: "DatasetPage",
+            path: "",
+            redirect: { name: "DatasetDescriptionReadPage" },
+          },
+          {
+            name: "DatasetDescriptionReadPage",
+            path: "description/read",
+            component: () => import("@/pages/DatasetDescriptionReadPage.vue"),
+            props: true,
+          },
+          {
+            path: "description/manage",
+            name: "DatasetDescriptionManagePage",
+            component: () => import("@/pages/DatasetDescriptionManagePage.vue"),
+            props: true,
+          },
+        ],
       },
     ],
   },

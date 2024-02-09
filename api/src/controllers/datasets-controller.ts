@@ -4,7 +4,7 @@ import { isNil } from "lodash"
 import { Dataset, StewardshipEvolution, User } from "@/models"
 import { DatasetsPolicy } from "@/policies"
 import { assertDatasetPolicyRecord, type DatasetPolicyRecord } from "@/policies/datasets-policy"
-import { CreateService } from "@/services/datasets"
+import { CreateService, UpdateService } from "@/services/datasets"
 import { TableSerializer } from "@/serializers/datasets"
 
 import BaseController from "@/controllers/base-controller"
@@ -79,8 +79,34 @@ export class DatasetsController extends BaseController {
     }
   }
 
+  async update() {
+    const dataset = await this.loadDataset()
+    if (isNil(dataset)) {
+      return this.response.status(404).json({ message: "Dataset not found." })
+    }
+
+    const policy = this.buildPolicy(dataset)
+    if (!policy.update()) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to update this dataset." })
+    }
+
+    const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
+    try {
+      const updatedDataset = await UpdateService.perform(
+        dataset,
+        permittedAttributes,
+        this.currentUser
+      )
+      return this.response.status(200).json({ dataset: updatedDataset })
+    } catch (error) {
+      return this.response.status(422).json({ message: `Dataset update failed: ${error}` })
+    }
+  }
+
   private async loadDataset(): Promise<DatasetPolicyRecord | null> {
-    const dataset = await Dataset.findByPk(this.params.datasetId, {
+    const dataset = await Dataset.findBySlugOrPk(this.params.datasetIdOrSlug, {
       include: ["owner", "creator", "stewardshipEvolutions"],
     })
 
