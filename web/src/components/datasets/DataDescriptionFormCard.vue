@@ -1,14 +1,8 @@
 <template>
   <v-card>
-    <v-card-title class="d-flex justify-space-between align-center">
-      Data Description
-      <SaveStateProgress
-        :saving="isLoading"
-        @click="save"
-      />
-    </v-card-title>
+    <v-card-title> Data Description </v-card-title>
     <v-card-text>
-      <!-- TODO: make this an external component that maches the form -->
+      <!-- TODO: make this an external component that matches the form -->
       <v-skeleton-loader
         v-if="isNil(dataset)"
         type="card"
@@ -128,6 +122,20 @@
               />
             </v-col>
           </v-row>
+          <v-row>
+            <v-col
+              cols="12"
+              class="d-flex justify-end"
+            >
+              <v-btn
+                :loading="isLoading"
+                color="primary"
+                @click="saveWrapper"
+              >
+                Save
+              </v-btn>
+            </v-col>
+          </v-row>
         </v-col>
       </v-form>
     </v-card-text>
@@ -135,14 +143,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs, watch } from "vue"
-import { debounce, isNil } from "lodash"
+import { computed, toRefs } from "vue"
+import { isNil } from "lodash"
 
 import { useSnack } from "@/use/use-snack"
 import { useDataset } from "@/use/use-dataset"
 
 import DatePicker from "@/components/DatePicker.vue"
-import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import AddApiDialog from "@/components/datasets/data-description-form-card/AddApiDialog.vue"
 
 const props = defineProps({
@@ -169,28 +176,16 @@ function deactivateDataset(value: boolean | null) {
   }
 }
 
-const debouncedUpdate = debounce(async (newValue, oldValue) => {
-  console.log("Dataset changed:", newValue, oldValue)
+async function saveWrapper() {
   try {
     await save()
     snack.notify("Dataset saved", {
       color: "success",
     })
   } catch (error) {
-    console.error("Error saving dataset:", error)
     snack.notify("Error saving dataset", {
       color: "error",
     })
   }
-}, 500)
-
-watch(
-  () => dataset.value,
-  async (newValue, oldValue) => {
-    if (isNil(oldValue)) return
-
-    await debouncedUpdate(newValue, oldValue)
-  },
-  { deep: true }
-)
+}
 </script>
