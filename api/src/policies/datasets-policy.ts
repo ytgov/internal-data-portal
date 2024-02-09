@@ -20,15 +20,9 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
   }
 
   show(): boolean {
-    if (
-      this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN) ||
-      this.user.roleTypes.includes(RoleTypes.BUSINESS_ANALYST)
-    ) {
+    if (this.isSystemAdmin || this.isBusinessAnalyst) {
       return true
-    } else if (
-      this.user.roleTypes.includes(RoleTypes.DATA_OWNER) &&
-      this.record.ownerId === this.user.id
-    ) {
+    } else if (this.isDataOwner && this.record.ownerId === this.user.id) {
       return true
     }
 
@@ -36,15 +30,9 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
   }
 
   create(): boolean {
-    if (
-      this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN) ||
-      this.user.roleTypes.includes(RoleTypes.BUSINESS_ANALYST)
-    ) {
+    if (this.isSystemAdmin || this.isBusinessAnalyst) {
       return true
-    } else if (
-      this.user.roleTypes.includes(RoleTypes.DATA_OWNER) &&
-      this.record.ownerId === this.user.id
-    ) {
+    } else if (this.isDataOwner && this.record.ownerId === this.user.id) {
       return true
     }
 
@@ -52,15 +40,9 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
   }
 
   update(): boolean {
-    if (
-      this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN) ||
-      this.user.roleTypes.includes(RoleTypes.BUSINESS_ANALYST)
-    ) {
+    if (this.isSystemAdmin || this.isBusinessAnalyst) {
       return true
-    } else if (
-      this.user.roleTypes.includes(RoleTypes.DATA_OWNER) &&
-      this.record.ownerId === this.user.id
-    ) {
+    } else if (this.isDataOwner && this.record.ownerId === this.user.id) {
       return true
     }
 
@@ -68,8 +50,8 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
   }
 
   permittedAttributes(): Path[] {
-    // TODO: include owner id for SYSTEM_ADMIN and BUSINESS_ANALYST
     return [
+      ...(this.isSystemAdmin || this.isBusinessAnalyst ? ["ownerId"] : []),
       "name",
       "description",
       "subscriptionUrl",
@@ -80,7 +62,6 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
       "termsOfUse",
       "credits",
       "ownerNotes",
-      // TODO: include nested attributes for StewardshipEvolutions?
 
       // stateful attributes - maybe should require a stateful controller endpoint to update?
       "deactivatedAt",
@@ -108,6 +89,18 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
         ],
       },
     ]
+  }
+
+  private get isSystemAdmin(): boolean {
+    return this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN)
+  }
+
+  private get isBusinessAnalyst(): boolean {
+    return this.user.roleTypes.includes(RoleTypes.BUSINESS_ANALYST)
+  }
+
+  private get isDataOwner(): boolean {
+    return this.user.roleTypes.includes(RoleTypes.DATA_OWNER)
   }
 }
 
