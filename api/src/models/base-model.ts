@@ -1,11 +1,4 @@
-import {
-  Attributes,
-  CreationOptional,
-  FindOptions,
-  Model,
-  ModelStatic,
-  Op,
-} from "sequelize"
+import { Attributes, CreationOptional, FindOptions, Model, ModelStatic, Op } from "sequelize"
 
 // See api/node_modules/sequelize/types/model.d.ts -> Model
 export abstract class BaseModel<
@@ -41,8 +34,11 @@ export abstract class BaseModel<
       throw new Error(`${this.name} does not have a 'slug' attribute.`)
     }
 
-    // @ts-expect-error - We know that the model has a slug attribute, and are ignoring the TS error
-    return this.findOne({ where: { slug } }, options)
+    return this.findOne({
+      ...options,
+      // @ts-expect-error - We know that the model has a slug attribute, and are ignoring the TS error
+      where: { slug },
+    })
   }
 
   // See api/node_modules/sequelize/types/model.d.ts -> findAll

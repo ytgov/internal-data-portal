@@ -43,6 +43,24 @@ describe("api/src/models/base-model.ts", () => {
           "User does not have a 'slug' attribute."
         )
       })
+
+      test("when finding by slug with include option, returns the object with included associations", async () => {
+        // Arrange
+        const user = await userFactory.create()
+        const dataset = await datasetFactory.create({
+          creatorId: user.id,
+          ownerId: user.id,
+        })
+
+        // Act
+        const result = await Dataset.findBySlugOrPk(dataset.slug, {
+          include: ["owner", "creator"],
+        })
+
+        // Assert
+        expect(result?.owner?.dataValues).toEqual(user.dataValues)
+        expect(result?.creator?.dataValues).toEqual(user.dataValues)
+      })
     })
   })
 })
