@@ -1,6 +1,7 @@
 import http from "@/api/http-client"
 
 import { type User } from "@/api/users-api"
+import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
 
 export enum DatasetErrorTypes {
   OK = "ok",
@@ -32,24 +33,10 @@ export type Dataset = {
   deletedAt: string | null
 }
 
-export type StewardshipEvolution = {
-  ownerId: User["id"]
-  supportId: User["id"]
-  ownerName: User["displayName"]
-  ownerPosition: User["position"]
-  supportName: User["displayName"]
-  supportEmail: User["email"]
-  supportPosition: User["position"]
-  department: User["department"]
-  division: User["division"]
-  branch: User["branch"]
-  unit: User["unit"]
-}
-
 export type DatasetDetailedResult = Dataset & {
   owner: User
   creator: User
-  stewardshipEvolutions: StewardshipEvolution[]
+  stewardship: DatasetStewardship
 }
 
 export const datasetsApi = {
@@ -73,7 +60,7 @@ export const datasetsApi = {
   },
   async create(
     attributes: Partial<Dataset> & {
-      stewardshipEvolutionsAttributes: Partial<StewardshipEvolution>[]
+      stewardshipAttributes: Partial<DatasetStewardship>
     }
   ): Promise<{
     dataset: DatasetDetailedResult

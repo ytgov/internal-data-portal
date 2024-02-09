@@ -38,7 +38,7 @@
       >
         <!-- TODO: enforce owner as current user if data_owner type -->
         <v-autocomplete
-          :model-value="stewardshipEvolution.ownerName"
+          :model-value="datasetStewardship.ownerId"
           :items="users"
           :rules="[required]"
           label="Owner Name *"
@@ -61,13 +61,17 @@
         cols="12"
         md="6"
       >
-        <v-text-field
-          v-model="stewardshipEvolution.ownerPosition"
-          :disabled="stewardshipEvolution.ownerName === undefined"
+        <v-autocomplete
+          :model-value="datasetStewardship.ownerId"
+          :items="users"
+          :disabled="datasetStewardship.ownerId === undefined"
           :rules="[required]"
           label="Owner Position *"
+          item-value="id"
+          item-title="position"
           variant="outlined"
           required
+          @update:model-value="updateOwner($event as unknown as number | null)"
         />
       </v-col>
     </v-row>
@@ -77,7 +81,7 @@
         md="6"
       >
         <v-autocomplete
-          :model-value="stewardshipEvolution.supportName"
+          :model-value="datasetStewardship.supportId"
           :items="users"
           :rules="[required]"
           label="Support Name *"
@@ -94,28 +98,17 @@
         cols="12"
         md="6"
       >
-        <v-text-field
-          v-model="stewardshipEvolution.supportEmail"
-          :disabled="stewardshipEvolution.supportName === undefined"
+        <v-autocomplete
+          :model-value="datasetStewardship.supportId"
+          :items="users"
+          :disabled="datasetStewardship.supportId === undefined"
           :rules="[required]"
           label="Support Email *"
+          item-value="id"
+          item-title="email"
           variant="outlined"
           required
-        />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
-        <v-text-field
-          v-model="stewardshipEvolution.supportPosition"
-          :disabled="stewardshipEvolution.supportName === undefined"
-          :rules="[required]"
-          label="Support Position *"
-          variant="outlined"
-          required
+          @update:model-value="updateSupport($event as unknown as number | null)"
         />
       </v-col>
     </v-row>
@@ -125,9 +118,28 @@
         md="6"
       >
         <v-autocomplete
-          :model-value="stewardshipEvolution.department"
+          :model-value="datasetStewardship.supportId"
+          :items="users"
+          :disabled="datasetStewardship.supportId === undefined"
+          :rules="[required]"
+          label="Support Position *"
+          item-value="id"
+          item-title="position"
+          variant="outlined"
+          required
+          @update:model-value="updateSupport($event as unknown as number | null)"
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-autocomplete
+          :model-value="datasetStewardship.departmentId"
           :items="departments"
-          :disabled="stewardshipEvolution.ownerName === undefined || departments.length === 0"
+          :disabled="datasetStewardship.ownerId === undefined || departments.length === 0"
           :loading="isLoadingDepartments"
           :rules="[required]"
           item-value="id"
@@ -145,10 +157,10 @@
         md="6"
       >
         <v-autocomplete
-          :model-value="stewardshipEvolution.division"
+          :model-value="datasetStewardship.divisionId"
           :items="divisions"
           :loading="isLoadingDivisions"
-          :disabled="isNil(stewardshipEvolution.department) || divisions.length === 0"
+          :disabled="isNil(datasetStewardship.departmentId) || divisions.length === 0"
           item-value="id"
           item-title="name"
           label="Division"
@@ -165,10 +177,10 @@
         md="6"
       >
         <v-autocomplete
-          :model-value="stewardshipEvolution.branch"
+          :model-value="datasetStewardship.branchId"
           :items="branches"
           :loading="isLoadingBranches"
-          :disabled="isNil(stewardshipEvolution.division) || branches.length === 0"
+          :disabled="isNil(datasetStewardship.divisionId) || branches.length === 0"
           item-value="id"
           item-title="name"
           label="Branch"
@@ -183,10 +195,10 @@
         md="6"
       >
         <v-autocomplete
-          :model-value="stewardshipEvolution.unit"
+          :model-value="datasetStewardship.unitId"
           :items="units"
           :loading="isLoadingUnits"
-          :disabled="isNil(stewardshipEvolution.branch) || units.length === 0"
+          :disabled="isNil(datasetStewardship.branchId) || units.length === 0"
           item-value="id"
           item-title="name"
           label="Unit"
@@ -231,12 +243,13 @@ import { isNil } from "lodash"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
 
-import datasetsApi, { type Dataset, type StewardshipEvolution } from "@/api/datasets-api"
+import datasetsApi, { type Dataset } from "@/api/datasets-api"
 import { UserGroupTypes } from "@/api/user-groups-api"
+import { DatasetStewardship } from "@/api/dataset-stewardships-api"
 
 import useSnack from "@/use/use-snack"
-import useUsers from "@/use/use-users"
 import useUserGroups from "@/use/use-user-groups"
+import useUsers from "@/use/use-users"
 
 import { required } from "@/utils/validators"
 
@@ -246,14 +259,13 @@ const form = ref<InstanceType<typeof VForm> | null>(null)
 const isValid = ref(null)
 const dataset = ref<Partial<Dataset>>({})
 
-const stewardshipEvolution = ref<Partial<StewardshipEvolution>>({})
+const datasetStewardship = ref<Partial<DatasetStewardship>>({})
 
 const { users } = useUsers()
 
-const departmentId = ref<number | null>(null)
-const divisionId = ref<number | null>(null)
-const branchId = ref<number | null>(null)
-const unitId = ref<number | null>(null)
+const departmentId = computed(() => datasetStewardship.value.departmentId)
+const divisionId = computed(() => datasetStewardship.value.divisionId)
+const branchId = computed(() => datasetStewardship.value.branchId)
 const departmentsQuery = computed(() => ({
   where: {
     type: UserGroupTypes.DEPARTMENT,
@@ -300,9 +312,7 @@ const {
 async function updateOwner(newOwnerId: number | null) {
   if (isNil(newOwnerId)) {
     delete dataset.value.ownerId
-    delete stewardshipEvolution.value.ownerId
-    delete stewardshipEvolution.value.ownerName
-    delete stewardshipEvolution.value.ownerPosition
+    delete datasetStewardship.value.ownerId
     clearDepartment()
     return
   }
@@ -314,9 +324,7 @@ async function updateOwner(newOwnerId: number | null) {
   }
 
   dataset.value.ownerId = owner.id
-  stewardshipEvolution.value.ownerId = owner.id
-  stewardshipEvolution.value.ownerName = owner.displayName
-  stewardshipEvolution.value.ownerPosition = owner.position
+  datasetStewardship.value.ownerId = owner.id
 
   const {
     departmentId: newDepartmentId,
@@ -332,45 +340,30 @@ async function updateOwner(newOwnerId: number | null) {
 
 function updateSupport(supportId: number | null) {
   if (isNil(supportId)) {
-    delete stewardshipEvolution.value.supportId
-    delete stewardshipEvolution.value.supportName
-    delete stewardshipEvolution.value.supportEmail
-    delete stewardshipEvolution.value.supportPosition
+    delete datasetStewardship.value.supportId
     return
   }
 
-  const support = users.value.find((user) => user.id === supportId)
-  if (support === undefined) {
-    throw new Error(`Could not find user with id ${supportId}`)
-  }
-
-  stewardshipEvolution.value.supportId = support.id
-  stewardshipEvolution.value.supportName = support.displayName
-  stewardshipEvolution.value.supportEmail = support.email
-  stewardshipEvolution.value.supportPosition = support.position
+  datasetStewardship.value.supportId = supportId
 }
 
 function clearDepartment() {
-  departmentId.value = null
-  delete stewardshipEvolution.value.department
+  delete datasetStewardship.value.departmentId
   clearDivision()
 }
 
 function clearDivision() {
-  divisionId.value = null
-  delete stewardshipEvolution.value.division
+  delete datasetStewardship.value.divisionId
   clearBranch()
 }
 
 function clearBranch() {
-  branchId.value = null
-  delete stewardshipEvolution.value.branch
+  delete datasetStewardship.value.branchId
   clearUnit()
 }
 
 function clearUnit() {
-  unitId.value = null
-  delete stewardshipEvolution.value.unit
+  delete datasetStewardship.value.unitId
 }
 
 async function updateDepartment(newDepartmentId: number | null) {
@@ -379,13 +372,7 @@ async function updateDepartment(newDepartmentId: number | null) {
     return
   }
 
-  departmentId.value = newDepartmentId
-  const department = departments.value.find((department) => department.id === newDepartmentId)
-  if (department === undefined) {
-    throw new Error(`Could not find department with id ${newDepartmentId}`)
-  }
-
-  stewardshipEvolution.value.department = department.name
+  datasetStewardship.value.departmentId = newDepartmentId
   clearDivision()
 }
 
@@ -395,17 +382,11 @@ async function updateDivision(newDivisionId: number | null) {
     return
   }
 
-  divisionId.value = newDivisionId
   if (divisions.value.length === 0) {
     await fetchDivisions()
   }
 
-  const division = divisions.value.find((division) => division.id === newDivisionId)
-  if (division === undefined) {
-    throw new Error(`Could not find division with id ${newDivisionId}`)
-  }
-
-  stewardshipEvolution.value.division = division.name
+  datasetStewardship.value.divisionId = newDivisionId
   clearBranch()
 }
 
@@ -415,17 +396,11 @@ async function updateBranch(newBranchId: number | null) {
     return
   }
 
-  branchId.value = newBranchId
   if (branches.value.length === 0) {
     await fetchBranches()
   }
 
-  const branch = branches.value.find((branch) => branch.id === newBranchId)
-  if (branch === undefined) {
-    throw new Error(`Could not find branch with id ${newBranchId}`)
-  }
-
-  stewardshipEvolution.value.branch = branch.name
+  datasetStewardship.value.branchId = newBranchId
   clearUnit()
 }
 
@@ -435,17 +410,11 @@ async function updateUnit(newUnitId: number | null) {
     return
   }
 
-  unitId.value = newUnitId
   if (units.value.length === 0) {
     await fetchUnits()
   }
 
-  const unit = units.value.find((unit) => unit.id === newUnitId)
-  if (unit === undefined) {
-    throw new Error(`Could not find unit with id ${newUnitId}`)
-  }
-
-  stewardshipEvolution.value.unit = unit.name
+  datasetStewardship.value.unitId = newUnitId
 }
 
 async function save() {
@@ -457,7 +426,7 @@ async function save() {
   try {
     const { dataset: newDataset } = await datasetsApi.create({
       ...dataset.value,
-      stewardshipEvolutionsAttributes: [stewardshipEvolution.value],
+      stewardshipAttributes: datasetStewardship.value,
     })
     snack.notify("Created new dataset!", {
       color: "success",

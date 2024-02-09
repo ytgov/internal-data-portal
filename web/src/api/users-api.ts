@@ -65,7 +65,7 @@ export const usersApi = {
     page,
     perPage,
   }: {
-    where?: Record<string, any> // TODO: consider adding Sequelize types to front-end?
+    where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
     page?: number
     perPage?: number
   } = {}): Promise<{
@@ -73,6 +73,10 @@ export const usersApi = {
     totalCount: number
   }> {
     const { data } = await http.get("/api/users", { params: { where, page, perPage } })
+    return data
+  },
+  async get(id: number): Promise<{ user: User }> {
+    const { data } = await http.get(`/api/users/${id}`)
     return data
   },
 }
