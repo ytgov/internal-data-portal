@@ -31,10 +31,9 @@ const { setBreadcrumbs } = useBreadcrumbs()
 
 setBreadcrumbs([
   {
-    title: "Dataset",
+    title: "Datasets",
     to: {
-      name: "DatasetPage",
-      params: { slug: props.slug },
+      name: "DatasetsPage",
     },
   },
   {
