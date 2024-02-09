@@ -81,6 +81,10 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
       "credits",
       "ownerNotes",
       // TODO: include nested attributes for StewardshipEvolutions?
+
+      // stateful attributes - maybe should require a stateful controller endpoint to update?
+      "deactivatedAt",
+      "publishedAt",
     ]
   }
 
