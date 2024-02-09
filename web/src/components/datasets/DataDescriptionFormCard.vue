@@ -28,12 +28,7 @@
               cols="4"
               class="d-flex justify-center mt-3"
             >
-              <v-btn
-                color="primary"
-                variant="outlined"
-                @click="openAddApiDialog"
-                >Add API Link</v-btn
-              >
+              <AddApiDialog v-model="dataset.subscriptionUrl" />
             </v-col>
           </v-row>
           <v-row>
@@ -122,6 +117,7 @@ import { isNil } from "lodash"
 import { useDataset } from "@/use/use-dataset"
 
 import DatePicker from "@/components/DatePicker.vue"
+import AddApiDialog from "@/components/datasets/data-description-form-card/AddApiDialog.vue"
 
 const props = defineProps({
   slug: {
@@ -144,9 +140,5 @@ function deactivateDataset(value: boolean | null) {
   } else {
     dataset.value.deactivatedAt = null
   }
-}
-
-function openAddApiDialog() {
-  alert("TODO: open add API dialog")
 }
 </script>
