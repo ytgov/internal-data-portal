@@ -12,6 +12,17 @@ export type DatasetStewardship = {
   divisionId: UserGroup["id"]
   branchId: UserGroup["id"]
   unitId: UserGroup["id"]
+  createdAt: string
+  updatedAt: string
+
+  // associations
+  dataset?: Dataset
+  owner?: User
+  support?: User
+  department?: UserGroup
+  division?: UserGroup
+  branch?: UserGroup
+  unit?: UserGroup
 }
 
 export const datasetStewardshipsApi = {

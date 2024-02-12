@@ -24,7 +24,7 @@
       {{ formatTags(value) }}
       <ColumnRouterLink :slug="slug" />
     </template>
-    <template #item.stewardshipEvolutions="{ value, item: { slug } }">
+    <template #item.stewardship="{ value, item: { slug } }">
       {{ formatOwnership(value[0]) }}
       <ColumnRouterLink :slug="slug" />
     </template>
@@ -58,7 +58,9 @@ import { computed, ref } from "vue"
 import { useI18n } from "vue-i18n"
 
 import acronymize from "@/utils/acronymize"
-import useDatasets, { type StewardshipEvolution } from "@/use/use-datasets"
+import { type UserGroup } from "@/api/user-groups-api"
+import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
+import useDatasets from "@/use/use-datasets"
 
 import ColumnRouterLink from "@/components/datasets/datasets-table/ColumnRouterLink.vue"
 import RequestAccessButton from "@/components/datasets/datasets-table/RequestAccessButton.vue"
@@ -86,7 +88,7 @@ const headers = ref([
   { title: "Dataset", key: "name" },
   { title: "Description", key: "description" },
   { title: "Keywords", key: "tags" },
-  { title: "Owner", key: "stewardshipEvolutions" },
+  { title: "Owner", key: "stewardship" },
   { title: "Access", key: "access" },
   { title: "", key: "actions" },
 ])
@@ -99,12 +101,13 @@ const datasetsQuery = computed(() => ({
 }))
 const { datasets, isLoading, totalCount, fetch: refresh } = useDatasets(datasetsQuery)
 
-function formatOwnership(stewardshipEvolution: StewardshipEvolution | undefined) {
-  if (stewardshipEvolution === undefined) return
+function formatOwnership(datasetStewardship: DatasetStewardship | undefined) {
+  if (datasetStewardship === undefined) return
 
-  const { department, division, branch, unit } = stewardshipEvolution
+  const { department, division, branch, unit } = datasetStewardship
 
-  return ([department, division, branch, unit].filter(Boolean) as string[])
+  return ([department, division, branch, unit].filter(Boolean) as UserGroup[])
+    .map((userGroup) => userGroup.name)
     .map(acronymize)
     .join("-")
 }

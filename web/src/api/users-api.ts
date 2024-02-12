@@ -8,9 +8,8 @@ export type GroupMembership = {
   branchId: number | null
   unitId: number | null
   groupId: number
-  createdAt: Date // might actual be string
-  updatedAt: Date // might actual be string
-  deletedAt: Date // might actual be string
+  createdAt: string
+  updatedAt: string
 }
 
 export type User = {
@@ -24,9 +23,8 @@ export type User = {
   division: string | null
   branch: string | null
   unit: string | null
-  createdAt: Date // might actual be string
-  updatedAt: Date // might actual be string
-  deletedAt: Date // might actual be string
+  createdAt: string
+  updatedAt: string
 
   roleTypes: RoleTypes[]
   displayName: string
