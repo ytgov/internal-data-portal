@@ -3,14 +3,14 @@
     <v-card-title>Owner</v-card-title>
 
     <v-card-text>
-      <!-- TODO: make this an external component that matches the form -->
+      <!-- TODO: make the skeleton loader an external component that matches the form -->
       <v-skeleton-loader
         v-if="isNil(datasetStewardship)"
         type="card"
       />
       <v-form
         v-else
-        class="d-flex mt-6"
+        class="d-flex flex-column mt-6"
         @submit.prevent="saveWrapper"
       >
         <v-row>

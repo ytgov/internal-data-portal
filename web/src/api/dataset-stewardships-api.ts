@@ -39,6 +39,7 @@ export const datasetStewardshipsApi = {
     const { data } = await http.get("/api/dataset-stewardships", { params })
     return data
   },
+  // TODO: implement in back-end
   async get(id: number): Promise<{
     datasetStewardship: DatasetStewardship
   }> {
