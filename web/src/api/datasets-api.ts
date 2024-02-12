@@ -30,7 +30,11 @@ export type Dataset = {
   deactivatedAt: string | null
   createdAt: string
   updatedAt: string
-  deletedAt: string | null
+
+  // associations
+  owner?: User
+  creator?: User
+  stewardship?: DatasetStewardship
 }
 
 export type DatasetDetailedResult = Dataset & {

@@ -5,13 +5,14 @@ import { type User } from "@/api/users-api"
 import { type UserGroup } from "@/api/user-groups-api"
 
 export type DatasetStewardship = {
+  id: number
   datasetId: Dataset["id"]
   ownerId: User["id"]
   supportId: User["id"]
   departmentId: UserGroup["id"]
-  divisionId: UserGroup["id"]
-  branchId: UserGroup["id"]
-  unitId: UserGroup["id"]
+  divisionId: UserGroup["id"] | null
+  branchId: UserGroup["id"] | null
+  unitId: UserGroup["id"] | null
   createdAt: string
   updatedAt: string
 
@@ -36,6 +37,21 @@ export const datasetStewardshipsApi = {
     totalCount: number
   }> {
     const { data } = await http.get("/api/dataset-stewardships", { params })
+    return data
+  },
+  async get(id: number): Promise<{
+    datasetStewardship: DatasetStewardship
+  }> {
+    const { data } = await http.get(`/api/dataset-stewardships/${id}`)
+    return data
+  },
+  async update(
+    id: number,
+    datasetStewardship: Partial<DatasetStewardship>
+  ): Promise<{
+    datasetStewardship: DatasetStewardship
+  }> {
+    const { data } = await http.patch(`/api/dataset-stewardships/${id}`, datasetStewardship)
     return data
   },
 }
