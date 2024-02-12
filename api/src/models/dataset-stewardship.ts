@@ -187,8 +187,8 @@ DatasetStewardship.init(
       },
     ],
     validate: {
-      async validUserGroupings() {
-        if (!isNil(this.departmentId)) {
+      async validUserGroupings(this: DatasetStewardship) {
+        if (isNil(this.departmentId)) {
           throw new Error("departmentId cannot be null")
         }
 
