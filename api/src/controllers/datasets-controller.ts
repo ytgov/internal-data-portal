@@ -29,8 +29,11 @@ export class DatasetsController extends BaseController {
             },
           ],
         },
+        {
+          association: "stewardship",
+          include: ["department", "division", "branch", "unit"],
+        },
         "creator",
-        "stewardship",
         "tags",
         "accessGrants",
         "accessRequests",
