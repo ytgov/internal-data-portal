@@ -20,12 +20,13 @@ import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middl
 import {
   CurrentUserController,
   DatasetsController,
-  UsersController,
-  Users,
+  DatasetStewardshipsController,
+  QaScenarios,
+  TagsController,
   UserGroups,
   UserGroupsController,
-  QaScenarios,
-  DatasetStewardshipsController,
+  Users,
+  UsersController,
 } from "@/controllers"
 
 export const router = Router()
@@ -63,6 +64,8 @@ router.route("/api/user-groups").get(UserGroupsController.index)
 router
   .route("/api/user-groups/yukon-government-directory-sync")
   .post(UserGroups.YukonGovernmentDirectorySyncController.create)
+
+router.route("/api/tags").get(TagsController.index)
 
 // TODO: might want to lock these to only run in non-production environments?
 router.route("/api/qa-scenarios/link-random-tags").post(QaScenarios.LinkRandomTagsController.create)
