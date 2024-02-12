@@ -1,6 +1,6 @@
 import { pick } from "lodash"
 
-import { Dataset, User } from "@/models"
+import { Dataset } from "@/models"
 
 import BaseSerializer from "@/serializers/base-serializer"
 
@@ -39,7 +39,7 @@ export class DatasetSerializers extends BaseSerializer<Dataset> {
       ]),
       owner: this.record.owner,
       creator: this.record.creator,
-      stewardshipEvolutions: this.record.stewardshipEvolutions,
+      stewardship: this.record.stewardship,
       tags: this.record.tags,
     }
   }

@@ -1,9 +1,9 @@
 import { pick } from "lodash"
 
 import { Dataset, User } from "@/models"
+import { AccessTypes } from "@/models/access-grant"
 import { determineAccess, determineActions, type DatasetTableActions } from "@/serializers/datasets/table-helpers"
 import BaseSerializer from "@/serializers/base-serializer"
-import { AccessTypes } from "@/models/access-grant"
 
 export type DatasetTableView = Partial<Dataset> & {
   access: string
@@ -39,7 +39,7 @@ export class TableSerializer extends BaseSerializer<Dataset> {
       ]),
       owner: this.record.owner,
       creator: this.record.creator,
-      stewardshipEvolutions: this.record.stewardshipEvolutions,
+      stewardship: this.record.stewardship,
       tags: this.record.tags,
 
       // magic fields

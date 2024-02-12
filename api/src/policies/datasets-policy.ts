@@ -4,18 +4,8 @@ import { RoleTypes } from "@/models/role"
 import { Path } from "@/utils/deep-pick"
 import BasePolicy from "@/policies/base-policy"
 
-export type DatasetPolicyRecord = Dataset & { owner: User }
-
-export function assertDatasetPolicyRecord(
-  dataset: Dataset
-): asserts dataset is DatasetPolicyRecord {
-  if (dataset.owner === undefined) {
-    throw new Error('Dataset does not conform to DatasetPolicyRecord: missing "owner" property.')
-  }
-}
-
 export class DatasetsPolicy extends BasePolicy<Dataset> {
-  constructor(user: User, record: DatasetPolicyRecord) {
+  constructor(user: User, record: Dataset) {
     super(user, record)
   }
 
@@ -72,20 +62,14 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
   permittedAttributesForCreate(): Path[] {
     return [
       ...this.permittedAttributes(),
-      "ownerId",
       {
-        stewardshipEvolutionsAttributes: [
+        stewardshipAttributes: [
           "ownerId",
           "supportId",
-          "ownerName",
-          "ownerPosition",
-          "supportName",
-          "supportEmail",
-          "supportPosition",
-          "department",
-          "division",
-          "branch",
-          "unit",
+          "departmentId",
+          "divisionId",
+          "branchId",
+          "unitId",
         ],
       },
     ]
