@@ -193,6 +193,7 @@
         </v-row>
         <div class="d-flex justify-end">
           <v-btn
+            :loading="isLoading"
             type="submit"
             color="primary"
             variant="outlined"
@@ -206,7 +207,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs } from "vue"
+import { computed, ref, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import { required } from "@/utils/validators"
@@ -231,9 +232,9 @@ const { users } = useUsers()
 
 const { slug } = toRefs(props)
 const { dataset } = useDataset(slug)
-
 const datasetStewardship = computed(() => dataset.value?.stewardship)
 
+const isLoading = ref(false)
 const departmentId = computed(() => datasetStewardship.value?.departmentId)
 const divisionId = computed(() => datasetStewardship.value?.divisionId)
 const branchId = computed(() => datasetStewardship.value?.branchId)
@@ -418,9 +419,10 @@ async function saveWrapper() {
     throw new Error("Dataset stewardship is not defined")
   }
 
+  isLoading.value = true
   try {
     await datasetStewardshipsApi.update(datasetStewardship.value.id, datasetStewardship.value)
-    snack.notify("Updated new owner information!", {
+    snack.notify("Updated owner information.", {
       color: "success",
     })
   } catch (error) {
@@ -428,6 +430,8 @@ async function saveWrapper() {
     snack.notify("Failed to update owner information", {
       color: "error",
     })
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
