@@ -28,7 +28,6 @@
               item-title="displayName"
               variant="outlined"
               auto-select-first
-              clearable
               required
               @update:model-value="updateOwner($event as unknown as number | null)"
             >
@@ -52,6 +51,7 @@
               item-value="id"
               item-title="position"
               variant="outlined"
+              auto-select-first
               required
               @update:model-value="updateOwner($event as unknown as number | null)"
             />
@@ -71,7 +71,6 @@
               item-title="displayName"
               variant="outlined"
               auto-select-first
-              clearable
               required
               @update:model-value="updateSupport($event as unknown as number | null)"
             />
@@ -89,6 +88,7 @@
               item-value="id"
               item-title="email"
               variant="outlined"
+              auto-select-first
               required
               @update:model-value="updateSupport($event as unknown as number | null)"
             />
@@ -108,6 +108,7 @@
               item-value="id"
               item-title="position"
               variant="outlined"
+              auto-select-first
               required
               @update:model-value="updateSupport($event as unknown as number | null)"
             />
@@ -129,7 +130,6 @@
               label="Department *"
               variant="outlined"
               auto-select-first
-              clearable
               required
               @update:model-value="updateDepartment($event as unknown as number | null)"
             />
@@ -210,12 +210,14 @@ import { computed, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import { required } from "@/utils/validators"
+
 import { UserGroupTypes } from "@/api/user-groups-api"
+import datasetStewardshipsApi from "@/api/dataset-stewardships-api"
+
 import useDataset from "@/use/use-dataset"
 import useSnack from "@/use/use-snack"
 import useUserGroups from "@/use/use-user-groups"
 import useUsers from "@/use/use-users"
-import datasetStewardshipsApi from "@/api/dataset-stewardships-api"
 
 const props = defineProps({
   slug: {
@@ -284,9 +286,7 @@ async function updateOwner(newOwnerId: number | null) {
   }
 
   if (isNil(newOwnerId)) {
-    // TODO: delete datasetStewardship.value.ownerId
-    clearDepartment()
-    return
+    throw new Error("Owner id is required")
   }
 
   const ownerId = newOwnerId
@@ -315,20 +315,10 @@ function updateSupport(supportId: number | null) {
   }
 
   if (isNil(supportId)) {
-    // TODO: delete datasetStewardship.value.supportId
-    return
+    throw new Error("Support id is required")
   }
 
   datasetStewardship.value.supportId = supportId
-}
-
-function clearDepartment() {
-  if (isNil(datasetStewardship.value)) {
-    throw new Error("Dataset stewardship is not defined")
-  }
-
-  // TODO: delete datasetStewardship.value.departmentId
-  clearDivision()
 }
 
 function clearDivision() {
@@ -363,8 +353,7 @@ async function updateDepartment(newDepartmentId: number | null) {
   }
 
   if (isNil(newDepartmentId)) {
-    clearDepartment()
-    return
+    throw new Error("Department id is required")
   }
 
   datasetStewardship.value.departmentId = newDepartmentId
@@ -431,12 +420,12 @@ async function saveWrapper() {
 
   try {
     await datasetStewardshipsApi.update(datasetStewardship.value.id, datasetStewardship.value)
-    snack.notify("Created new dataset!", {
+    snack.notify("Updated new owner information!", {
       color: "success",
     })
   } catch (error) {
     console.error(error)
-    snack.notify("Failed to create dataset", {
+    snack.notify("Failed to update owner information", {
       color: "error",
     })
   }
