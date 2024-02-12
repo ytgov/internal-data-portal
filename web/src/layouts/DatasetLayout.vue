@@ -8,7 +8,7 @@
       color="yg-blue"
     />
   </div>
-  <v-container v-else>
+  <v-container v-else class="px-0 px-md-4">
     <h2 class="mb-3">
       {{ dataset.name }}
     </h2>
