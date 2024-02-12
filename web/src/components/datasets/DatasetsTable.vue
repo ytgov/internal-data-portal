@@ -25,7 +25,7 @@
       <ColumnRouterLink :slug="slug" />
     </template>
     <template #item.stewardship="{ value, item: { slug } }">
-      {{ formatOwnership(value[0]) }}
+      {{ formatOwnership(value) }}
       <ColumnRouterLink :slug="slug" />
     </template>
     <template #item.access="{ value, item: { slug } }">
@@ -55,10 +55,10 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue"
+import { compact, isNil } from "lodash"
 import { useI18n } from "vue-i18n"
 
 import acronymize from "@/utils/acronymize"
-import { type UserGroup } from "@/api/user-groups-api"
 import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
 import useDatasets from "@/use/use-datasets"
 
@@ -102,14 +102,13 @@ const datasetsQuery = computed(() => ({
 const { datasets, isLoading, totalCount, fetch: refresh } = useDatasets(datasetsQuery)
 
 function formatOwnership(datasetStewardship: DatasetStewardship | undefined) {
-  if (datasetStewardship === undefined) return
+  if (isNil(datasetStewardship)) return
 
   const { department, division, branch, unit } = datasetStewardship
-
-  return ([department, division, branch, unit].filter(Boolean) as UserGroup[])
-    .map((userGroup) => userGroup.name)
-    .map(acronymize)
-    .join("-")
+  const userGroupNames = compact(
+    [department, division, branch, unit].map((userGroup) => userGroup?.name)
+  )
+  return userGroupNames.map(acronymize).join("-")
 }
 
 function formatTags(tags: Tag[]) {
