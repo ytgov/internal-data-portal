@@ -2,7 +2,7 @@
   <v-card>
     <v-card-title>Data Description</v-card-title>
     <v-card-text>
-      <!-- TODO: make this an external component that matches the form -->
+      <!-- TODO: make the skeleton loader an external component that matches the form -->
       <v-skeleton-loader
         v-if="isNil(dataset)"
         type="card"

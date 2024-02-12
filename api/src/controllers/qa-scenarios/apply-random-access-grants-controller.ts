@@ -9,7 +9,7 @@ import BaseController from "@/controllers/base-controller"
 export class ApplyRandomAccessGrantsController extends BaseController {
   async create() {
     try {
-      await AccessGrant.destroy({ where: {} })
+      await AccessGrant.destroy({ where: {}, force: true })
       await this.applyRandomAccessGrantsToDatasets()
       return this.response
         .status(201)
@@ -30,14 +30,16 @@ export class ApplyRandomAccessGrantsController extends BaseController {
         max: 3,
       })
 
-      const randomAccessGrantAttributes: CreationAttributes<AccessGrant>[] = randomGrantLevels.map((randomGrantLevel) => ({
-        datasetId: dataset.id,
-        creatorId: dataset.ownerId,
-        // TODO: requestorId: faker.helpers.arrayElement(users - dataset.owner).id,
-        grantLevel: randomGrantLevel,
-        accessType: faker.helpers.arrayElement(Object.values(AccessTypes)),
-        isProjectDescriptionRequired: faker.datatype.boolean(),
-      }))
+      const randomAccessGrantAttributes: CreationAttributes<AccessGrant>[] = randomGrantLevels.map(
+        (randomGrantLevel) => ({
+          datasetId: dataset.id,
+          creatorId: dataset.ownerId,
+          // TODO: requestorId: faker.helpers.arrayElement(users - dataset.owner).id,
+          grantLevel: randomGrantLevel,
+          accessType: faker.helpers.arrayElement(Object.values(AccessTypes)),
+          isProjectDescriptionRequired: faker.datatype.boolean(),
+        })
+      )
       return AccessGrant.bulkCreate(randomAccessGrantAttributes)
     })
 

@@ -25,6 +25,7 @@ import {
   UserGroups,
   UserGroupsController,
   QaScenarios,
+  DatasetStewardshipsController,
 } from "@/controllers"
 
 export const router = Router()
@@ -48,6 +49,10 @@ router
   .route("/api/datasets/:datasetIdOrSlug")
   .get(DatasetsController.show)
   .patch(DatasetsController.update)
+
+router
+  .route("/api/dataset-stewardships/:datasetStewardshipId")
+  .patch(DatasetStewardshipsController.update)
 
 router.route("/api/users").get(UsersController.index)
 router

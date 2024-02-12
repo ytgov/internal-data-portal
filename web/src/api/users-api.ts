@@ -8,9 +8,8 @@ export type GroupMembership = {
   branchId: number | null
   unitId: number | null
   groupId: number
-  createdAt: Date // might actual be string
-  updatedAt: Date // might actual be string
-  deletedAt: Date // might actual be string
+  createdAt: string
+  updatedAt: string
 }
 
 export type User = {
@@ -24,9 +23,8 @@ export type User = {
   division: string | null
   branch: string | null
   unit: string | null
-  createdAt: Date // might actual be string
-  updatedAt: Date // might actual be string
-  deletedAt: Date // might actual be string
+  createdAt: string
+  updatedAt: string
 
   roleTypes: RoleTypes[]
   displayName: string
@@ -65,7 +63,7 @@ export const usersApi = {
     page,
     perPage,
   }: {
-    where?: Record<string, any> // TODO: consider adding Sequelize types to front-end?
+    where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
     page?: number
     perPage?: number
   } = {}): Promise<{
@@ -73,6 +71,10 @@ export const usersApi = {
     totalCount: number
   }> {
     const { data } = await http.get("/api/users", { params: { where, page, perPage } })
+    return data
+  },
+  async get(id: number): Promise<{ user: User }> {
+    const { data } = await http.get(`/api/users/${id}`)
     return data
   },
 }

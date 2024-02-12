@@ -24,8 +24,8 @@
       {{ formatTags(value) }}
       <ColumnRouterLink :slug="slug" />
     </template>
-    <template #item.stewardshipEvolutions="{ value, item: { slug } }">
-      {{ formatOwnership(value[0]) }}
+    <template #item.stewardship="{ value, item: { slug } }">
+      {{ formatOwnership(value) }}
       <ColumnRouterLink :slug="slug" />
     </template>
     <template #item.access="{ value, item: { slug } }">
@@ -55,10 +55,12 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue"
+import { compact, isNil } from "lodash"
 import { useI18n } from "vue-i18n"
 
 import acronymize from "@/utils/acronymize"
-import useDatasets, { type StewardshipEvolution } from "@/use/use-datasets"
+import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
+import useDatasets from "@/use/use-datasets"
 
 import ColumnRouterLink from "@/components/datasets/datasets-table/ColumnRouterLink.vue"
 import RequestAccessButton from "@/components/datasets/datasets-table/RequestAccessButton.vue"
@@ -86,7 +88,7 @@ const headers = ref([
   { title: "Dataset", key: "name" },
   { title: "Description", key: "description" },
   { title: "Keywords", key: "tags" },
-  { title: "Owner", key: "stewardshipEvolutions" },
+  { title: "Owner", key: "stewardship" },
   { title: "Access", key: "access" },
   { title: "", key: "actions" },
 ])
@@ -99,14 +101,14 @@ const datasetsQuery = computed(() => ({
 }))
 const { datasets, isLoading, totalCount, fetch: refresh } = useDatasets(datasetsQuery)
 
-function formatOwnership(stewardshipEvolution: StewardshipEvolution | undefined) {
-  if (stewardshipEvolution === undefined) return
+function formatOwnership(datasetStewardship: DatasetStewardship | undefined) {
+  if (isNil(datasetStewardship)) return
 
-  const { department, division, branch, unit } = stewardshipEvolution
-
-  return ([department, division, branch, unit].filter(Boolean) as string[])
-    .map(acronymize)
-    .join("-")
+  const { department, division, branch, unit } = datasetStewardship
+  const userGroupNames = compact(
+    [department, division, branch, unit].map((userGroup) => userGroup?.name)
+  )
+  return userGroupNames.map(acronymize).join("-")
 }
 
 function formatTags(tags: Tag[]) {

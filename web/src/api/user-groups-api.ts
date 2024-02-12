@@ -13,12 +13,12 @@ export type UserGroup = {
   name: string
   type: UserGroupTypes
   order: number
-  createdAt: Date // might actual be string
-  updatedAt: Date // might actual be string
-  deletedAt: Date // might actual be string
+  createdAt: string
+  updatedAt: string
 
+  // Associations
   parent: UserGroup | null
-  childrens: UserGroup[]
+  children: UserGroup[]
 }
 
 export const userGroupsApi = {
@@ -32,7 +32,7 @@ export const userGroupsApi = {
     page,
     perPage,
   }: {
-    where?: Record<string, any> // TODO: consider adding Sequelize types to front-end?
+    where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
     page?: number
     perPage?: number
   } = {}): Promise<{

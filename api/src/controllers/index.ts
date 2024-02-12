@@ -1,5 +1,6 @@
 export { CurrentUserController } from "./current-user-controller"
 export { DatasetsController } from "./datasets-controller"
+export { DatasetStewardshipsController } from "./dataset-stewardships-controller"
 export { UsersController } from "./users-controller"
 export { UserGroupsController } from "./user-groups-controller"
 
