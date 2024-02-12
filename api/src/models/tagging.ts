@@ -7,7 +7,6 @@ import {
   BelongsToSetAssociationMixinOptions,
   CreationOptional,
   DataTypes,
-  FindOptions,
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
@@ -63,8 +62,10 @@ export class Tagging extends Model<InferAttributes<Tagging>, InferCreationAttrib
   }
 
   static establishAssociations() {
-    this.belongsTo(Tag)
-
+    this.belongsTo(Tag, {
+      foreignKey: "tagId",
+      as: "tag",
+    })
     // specific taggable type implementations
     this.belongsTo(Dataset, {
       foreignKey: "taggableId",
@@ -173,7 +174,7 @@ Tagging.init(
     hooks: {
       // See https://sequelize.org/docs/v6/advanced-association-concepts/polymorphic-associations/#configuring-a-one-to-many-polymorphic-association
       // afterFind(instancesOrInstance: readonly M[] | M | null, options: FindOptions<TAttributes>): HookReturn;
-      afterFind: (findResult: Tagging[] | Tagging | null, options: FindOptions<Tagging>) => {
+      afterFind: (findResult: Tagging[] | Tagging | null) => {
         if (isNil(findResult) || isEmpty(findResult)) return Promise.resolve()
 
         let findResultArray: Tagging[]
@@ -191,7 +192,7 @@ Tagging.init(
           // To prevent mistakes:
           delete instance.dataset
           // Sequelize 7 might not raise an error here, or it might make this code unnecessary.
-          // @ts-expect-error
+          // @ts-expect-error - See documentation https://sequelize.org/docs/v6/advanced-association-concepts/polymorphic-associations/#configuring-a-one-to-many-polymorphic-association
           delete instance.dataValues.dataset
         }
       },

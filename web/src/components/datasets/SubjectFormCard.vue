@@ -25,11 +25,15 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue"
+import { computed, toRefs } from "vue"
+import { compact, isNil } from "lodash"
 
+import { TaggableTypes } from "@/api/taggings-api"
 import useTaggings from "@/use/use-taggings"
+import useDataset from "@/use/use-dataset"
 
 import TagsCombobox from "@/components/tags/TagsCombobox.vue"
+import { watch } from "vue"
 
 const props = defineProps({
   slug: {
@@ -38,13 +42,27 @@ const props = defineProps({
   },
 })
 
+const { slug } = toRefs(props)
+const { dataset } = useDataset(slug)
+
 const taggingsQuery = computed(() => ({
-  dataset: {
-    slug: props.slug,
+  where: {
+    taggableType: TaggableTypes.DATASET,
+    taggableId: dataset.value?.id,
   },
 }))
-const { taggings } = useTaggings(taggingsQuery)
-const selectedTags = computed(() => taggings.value.map((tagging) => tagging.tag))
+const { taggings, fetch: fetchTaggings } = useTaggings(taggingsQuery, { immediate: false })
+const selectedTags = computed(() => compact(taggings.value.map((tagging) => tagging.tag)))
+
+watch(
+  () => dataset.value?.id,
+  async (newId) => {
+    if (isNil(newId)) return
+
+    await fetchTaggings()
+  },
+  { immediate: true }
+)
 
 function addTagging(tagId: number) {
   alert(`TODO: implement add tagging for ${tagId}`)

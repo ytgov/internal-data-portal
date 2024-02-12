@@ -22,6 +22,7 @@ import {
   DatasetsController,
   DatasetStewardshipsController,
   QaScenarios,
+  TaggingsController,
   TagsController,
   UserGroups,
   UserGroupsController,
@@ -65,6 +66,7 @@ router
   .route("/api/user-groups/yukon-government-directory-sync")
   .post(UserGroups.YukonGovernmentDirectorySyncController.create)
 
+router.route("/api/taggings").get(TaggingsController.index)
 router.route("/api/tags").get(TagsController.index)
 
 // TODO: might want to lock these to only run in non-production environments?

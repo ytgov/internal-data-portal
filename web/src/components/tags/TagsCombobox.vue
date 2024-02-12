@@ -29,9 +29,9 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  "tag-removed": (tagId: number) => void
-  "tag-created": (tagName: string) => void
-  "tag-added": (tagId: number) => void
+  tagRemoved: [tagId: number]
+  tagCreated: [tagName: string]
+  tagAdded: [tagId: number]
 }>()
 
 const { tags, isLoading } = useTags()
@@ -39,20 +39,27 @@ const { tags, isLoading } = useTags()
 function updateSelectedTags(newSelectedValues: (Tag | string)[]) {
   if (props.modelValue.length > newSelectedValues.length) {
     const tagRemoved = differenceBy(props.modelValue, newSelectedValues, "id")[0]
-    emit("tag-removed", tagRemoved.id)
+    emit("tagRemoved", tagRemoved.id)
 
     return
   }
 
   const newTagName: string | undefined = newSelectedValues.find(isString)
   if (newTagName === undefined) {
-    const tagAdded = differenceBy(newSelectedValues, props.modelValue, "id")[0]
-    emit("tag-added", tagAdded.id)
+    assertAreTags(newSelectedValues)
+    const tagAdded: Tag = differenceBy(newSelectedValues, props.modelValue, "id")[0]
+    emit("tagAdded", tagAdded.id)
 
     return
   }
 
-  emit("tag-created", newTagName)
+  emit("tagCreated", newTagName)
+}
+
+function assertAreTags(values: (Tag | string)[]): asserts values is Tag[] {
+  if (values.some(isString)) {
+    throw new Error("Expected all values to be tags")
+  }
 }
 
 function isString(value: Tag | string): value is string {
