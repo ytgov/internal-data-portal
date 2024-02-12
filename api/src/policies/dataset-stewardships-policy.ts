@@ -9,7 +9,7 @@ export class DatasetStewardshipsPolicy extends BasePolicy<DatasetStewardship> {
     super(user, record)
   }
 
-  // Or maybe this should simply do DatasetPolicy.show()?
+  // TODO: Consider if this should simply do DatasetPolicy.show()?
   update(): boolean {
     if (this.isSystemAdmin || this.isBusinessAnalyst) {
       return true
