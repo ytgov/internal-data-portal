@@ -212,6 +212,7 @@
     <div class="d-flex justify-end mt-4">
       <v-btn
         v-if="isValid"
+        :loading="isLoading"
         type="submit"
         color="primary"
       >
@@ -225,7 +226,7 @@
               type="submit"
               color="success"
             >
-              Save
+              Create
               <v-icon end>mdi-help-circle-outline</v-icon>
             </v-btn>
           </span>
@@ -257,6 +258,7 @@ const router = useRouter()
 const snack = useSnack()
 const form = ref<InstanceType<typeof VForm> | null>(null)
 const isValid = ref(null)
+const isLoading = ref(false)
 const dataset = ref<Partial<Dataset>>({})
 
 const datasetStewardship = ref<Partial<DatasetStewardship>>({})
@@ -423,6 +425,7 @@ async function save() {
   const { valid } = await form.value.validate()
   if (!valid) throw new Error("Form is invalid")
 
+  isLoading.value = true
   try {
     const { dataset: newDataset } = await datasetsApi.create({
       ...dataset.value,
@@ -442,6 +445,8 @@ async function save() {
     snack.notify("Failed to create dataset", {
       color: "error",
     })
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
