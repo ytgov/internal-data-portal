@@ -13,7 +13,6 @@ export class TagsController extends BaseController {
       where,
       limit: this.pagination.limit,
       offset: this.pagination.offset,
-      // TODO: consider ordering in the front-end, to avoid OS specific ordering issues.
       order: [["name", "ASC"]],
     })
 
