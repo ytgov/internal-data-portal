@@ -1,8 +1,10 @@
 import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
 
-import userGroupsApi, { type UserGroup } from "@/api/user-groups-api"
+import taggingsApi, { type Tagging } from "@/api/taggings-api"
 
-export function useUserGroups(
+export { type Tagging }
+
+export function useTaggings(
   queryOptions: Ref<{
     where?: Record<string, unknown>
     page?: number
@@ -15,24 +17,24 @@ export function useUserGroups(
   } = {}
 ) {
   const state = reactive<{
-    userGroups: UserGroup[]
+    taggings: Tagging[]
     isLoading: boolean
     isErrored: boolean
   }>({
-    userGroups: [],
+    taggings: [],
     isLoading: false,
     isErrored: false,
   })
 
-  async function fetch(): Promise<UserGroup[]> {
+  async function fetch(): Promise<Tagging[]> {
     state.isLoading = true
     try {
-      const { userGroups } = await userGroupsApi.list(unref(queryOptions))
+      const { taggings } = await taggingsApi.list(unref(queryOptions))
       state.isErrored = false
-      state.userGroups = userGroups
-      return userGroups
+      state.taggings = taggings
+      return taggings
     } catch (error) {
-      console.error("Failed to fetch user groups:", error)
+      console.error("Failed to fetch taggings:", error)
       state.isErrored = true
       throw error
     } finally {
@@ -55,4 +57,4 @@ export function useUserGroups(
   }
 }
 
-export default useUserGroups
+export default useTaggings

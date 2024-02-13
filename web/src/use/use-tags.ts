@@ -1,38 +1,35 @@
 import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
 
-import userGroupsApi, { type UserGroup } from "@/api/user-groups-api"
+import tagsApi, { type Tag } from "@/api/tags-api"
 
-export function useUserGroups(
+export { type Tag }
+
+export function useTags(
   queryOptions: Ref<{
     where?: Record<string, unknown>
     page?: number
     perPage?: number
-  }> = ref({}),
-  {
-    immediate = true,
-  }: {
-    immediate?: boolean
-  } = {}
+  }> = ref({})
 ) {
   const state = reactive<{
-    userGroups: UserGroup[]
+    tags: Tag[]
     isLoading: boolean
     isErrored: boolean
   }>({
-    userGroups: [],
+    tags: [],
     isLoading: false,
     isErrored: false,
   })
 
-  async function fetch(): Promise<UserGroup[]> {
+  async function fetch(): Promise<Tag[]> {
     state.isLoading = true
     try {
-      const { userGroups } = await userGroupsApi.list(unref(queryOptions))
+      const { tags } = await tagsApi.list(unref(queryOptions))
       state.isErrored = false
-      state.userGroups = userGroups
-      return userGroups
+      state.tags = tags
+      return tags
     } catch (error) {
-      console.error("Failed to fetch user groups:", error)
+      console.error("Failed to fetch tags:", error)
       state.isErrored = true
       throw error
     } finally {
@@ -45,7 +42,7 @@ export function useUserGroups(
     async () => {
       await fetch()
     },
-    { deep: true, immediate }
+    { deep: true, immediate: true }
   )
 
   return {
@@ -55,4 +52,4 @@ export function useUserGroups(
   }
 }
 
-export default useUserGroups
+export default useTags
