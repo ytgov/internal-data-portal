@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { differenceBy } from "lodash"
 
 import useTags, { Tag } from "@/use/use-tags"
@@ -40,7 +40,11 @@ const emit = defineEmits<{
 // Probably best to add a custom /tags/search endpoint?
 const searchToken = ref<string>("")
 
-const { tags, isLoading, refresh } = useTags()
+// TODO: once search is implemented, this should be removed.
+const tagsQuery = computed(() => ({
+  perPage: 1000,
+}))
+const { tags, isLoading, refresh } = useTags(tagsQuery)
 
 function updateSelectedTags(newSelectedValues: (Tag | string)[]) {
   if (props.modelValue.length > newSelectedValues.length) {
@@ -62,6 +66,7 @@ function updateSelectedTags(newSelectedValues: (Tag | string)[]) {
   emit("tagCreated", newTagName)
 }
 
+// TODO: debounce search
 function updateSearch(value: string) {
   searchToken.value = value
 }
