@@ -34,7 +34,7 @@ const emit = defineEmits<{
   tagAdded: [tagId: number]
 }>()
 
-const { tags, isLoading } = useTags()
+const { tags, isLoading, refresh } = useTags()
 
 function updateSelectedTags(newSelectedValues: (Tag | string)[]) {
   if (props.modelValue.length > newSelectedValues.length) {
@@ -56,6 +56,10 @@ function updateSelectedTags(newSelectedValues: (Tag | string)[]) {
   emit("tagCreated", newTagName)
 }
 
+function updateSearch(value: string) {
+  console.log(`TODO: filter tag search from value:`, value)
+}
+
 function assertAreTags(values: (Tag | string)[]): asserts values is Tag[] {
   if (values.some(isString)) {
     throw new Error("Expected all values to be tags")
@@ -66,7 +70,7 @@ function isString(value: Tag | string): value is string {
   return typeof value === "string"
 }
 
-function updateSearch(value: string) {
-  console.log(`TODO: filter tag search from value:`, value)
-}
+defineExpose({
+  refresh,
+})
 </script>

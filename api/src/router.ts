@@ -67,6 +67,7 @@ router
   .post(UserGroups.YukonGovernmentDirectorySyncController.create)
 
 router.route("/api/taggings").get(TaggingsController.index).post(TaggingsController.create)
+router.route("/api/taggings/:taggingId").delete(TaggingsController.destroy)
 router.route("/api/tags").get(TagsController.index)
 
 // TODO: might want to lock these to only run in non-production environments?
@@ -77,7 +78,7 @@ router
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {
-  return res.status(404).json({ message: "Not Found" })
+  return res.status(404).json({ message: `Resource not found for ${req.path}` })
 })
 
 // Special error handler for all api errors

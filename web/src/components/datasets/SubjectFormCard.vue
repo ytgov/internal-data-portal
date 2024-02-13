@@ -3,13 +3,11 @@
     <v-card-title>Subject</v-card-title>
 
     <v-card-text>
-      <v-form
-        class="d-flex flex-column mt-6"
-        @submit.prevent="saveWrapper"
-      >
+      <v-form class="d-flex flex-column mt-6">
         <v-row>
           <v-col cols="12">
             <TagsCombobox
+              ref="tagsCombobox"
               :model-value="selectedTags"
               label="Keywords"
               variant="outlined"
@@ -28,7 +26,6 @@
 import { computed, ref, toRefs, watch } from "vue"
 import { compact, isNil } from "lodash"
 
-import { Tag } from "@/api/tags-api"
 import taggingsApi, { TaggableTypes } from "@/api/taggings-api"
 import useTaggings from "@/use/use-taggings"
 import useDataset from "@/use/use-dataset"
@@ -42,6 +39,8 @@ const props = defineProps({
   },
 })
 
+const tagsCombobox = ref<InstanceType<typeof TagsCombobox> | null>(null)
+
 const { slug } = toRefs(props)
 const { dataset } = useDataset(slug)
 
@@ -52,7 +51,7 @@ const taggingsQuery = computed(() => ({
   },
 }))
 const { taggings, fetch: fetchTaggings } = useTaggings(taggingsQuery, { immediate: false })
-const selectedTags = ref<Tag[]>([])
+const selectedTags = computed(() => compact(taggings.value.map((tagging) => tagging.tag)))
 
 watch(
   () => dataset.value?.id,
@@ -60,30 +59,46 @@ watch(
     if (isNil(newId)) return
 
     await fetchTaggings()
-    selectedTags.value = compact(taggings.value.map((tagging) => tagging.tag))
   },
   { immediate: true }
 )
 
 async function addTagging(tagId: number) {
-  const { tagging } = await taggingsApi.create({
+  await taggingsApi.create({
     tagId,
     taggableType: TaggableTypes.DATASET,
     taggableId: dataset.value?.id,
   })
-  const { tag } = tagging
-  selectedTags.value.push(tag)
+  await fetchTaggings()
 }
 
-function removeTagging(tagId: number) {
-  alert(`TODO: implement remove tagging for ${tagId}`)
+async function removeTagging(tagId: number) {
+  const tagging = taggings.value.find((tagging) => tagging.tagId === tagId)
+  if (isNil(tagging)) {
+    throw new Error(`Tagging not found for tagId: ${tagId}`)
+  }
+
+  await taggingsApi.delete(tagging.id)
+  await fetchTaggings()
 }
 
-function addTaggingAndCreateTag(tagName: string) {
-  alert(`TODO: implement add tagging and create tag for ${tagName}`)
+async function addTaggingAndCreateTag(tagName: string) {
+  await taggingsApi.create({
+    taggableType: TaggableTypes.DATASET,
+    taggableId: dataset.value?.id,
+    tagAttributes: {
+      name: tagName,
+    },
+  })
+  await refreshTags()
+  await fetchTaggings()
 }
 
-function saveWrapper() {
-  alert("TODO: implement save")
+async function refreshTags() {
+  if (tagsCombobox.value === null) {
+    throw new Error("Tags combobox is not defined")
+  }
+
+  return tagsCombobox.value.refresh()
 }
 </script>

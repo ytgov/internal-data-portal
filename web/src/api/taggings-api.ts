@@ -47,6 +47,10 @@ export const taggingsApi = {
     const { data } = await http.post("/api/taggings", attributes)
     return data
   },
+  async delete(taggingId: number): Promise<void> {
+    const { data } = await http.delete(`/api/taggings/${taggingId}`)
+    return data
+  },
 }
 
 export default taggingsApi
