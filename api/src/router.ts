@@ -53,7 +53,10 @@ router
   .get(DatasetsController.show)
   .patch(DatasetsController.update)
 
-router.route("/api/dataset-fields").get(DatasetFieldsController.index)
+router
+  .route("/api/dataset-fields")
+  .get(DatasetFieldsController.index)
+  .post(DatasetFieldsController.create)
 
 router
   .route("/api/dataset-stewardships/:datasetStewardshipId")
