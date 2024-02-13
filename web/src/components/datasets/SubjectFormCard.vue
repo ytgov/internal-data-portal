@@ -25,15 +25,15 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs } from "vue"
+import { computed, ref, toRefs, watch } from "vue"
 import { compact, isNil } from "lodash"
 
-import { TaggableTypes } from "@/api/taggings-api"
+import { Tag } from "@/api/tags-api"
+import taggingsApi, { TaggableTypes } from "@/api/taggings-api"
 import useTaggings from "@/use/use-taggings"
 import useDataset from "@/use/use-dataset"
 
 import TagsCombobox from "@/components/tags/TagsCombobox.vue"
-import { watch } from "vue"
 
 const props = defineProps({
   slug: {
@@ -52,7 +52,7 @@ const taggingsQuery = computed(() => ({
   },
 }))
 const { taggings, fetch: fetchTaggings } = useTaggings(taggingsQuery, { immediate: false })
-const selectedTags = computed(() => compact(taggings.value.map((tagging) => tagging.tag)))
+const selectedTags = ref<Tag[]>([])
 
 watch(
   () => dataset.value?.id,
@@ -60,12 +60,19 @@ watch(
     if (isNil(newId)) return
 
     await fetchTaggings()
+    selectedTags.value = compact(taggings.value.map((tagging) => tagging.tag))
   },
   { immediate: true }
 )
 
-function addTagging(tagId: number) {
-  alert(`TODO: implement add tagging for ${tagId}`)
+async function addTagging(tagId: number) {
+  const { tagging } = await taggingsApi.create({
+    tagId,
+    taggableType: TaggableTypes.DATASET,
+    taggableId: dataset.value?.id,
+  })
+  const { tag } = tagging
+  selectedTags.value.push(tag)
 }
 
 function removeTagging(tagId: number) {
