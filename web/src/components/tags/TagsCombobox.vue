@@ -16,6 +16,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from "vue"
 import { differenceBy } from "lodash"
 
 import useTags, { Tag } from "@/use/use-tags"
@@ -34,6 +35,10 @@ const emit = defineEmits<{
   tagCreated: [tagName: string]
   tagAdded: [tagId: number]
 }>()
+
+// TODO: make use of search token to filter results in the back-end
+// Probably best to add a custom /tags/search endpoint?
+const searchToken = ref<string>("")
 
 const { tags, isLoading, refresh } = useTags()
 
@@ -58,7 +63,7 @@ function updateSelectedTags(newSelectedValues: (Tag | string)[]) {
 }
 
 function updateSearch(value: string) {
-  console.log(`TODO: filter tag search from value:`, value)
+  searchToken.value = value
 }
 
 function assertAreTags(values: (Tag | string)[]): asserts values is Tag[] {

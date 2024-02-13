@@ -11,7 +11,7 @@ import BaseController from "@/controllers/base-controller"
 export class TaggingsController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<Tagging>
-    console.log(`where:`, where)
+
     const totalCount = await Tagging.count({ where })
     const taggings = await Tagging.findAll({
       where,
