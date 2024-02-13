@@ -2,7 +2,8 @@ import http from "@/api/http-client"
 
 import { Dataset } from "@/api/datasets-api"
 
-export enum DataTypes {
+// Keep in sync with api/src/models/dataset-field.ts
+export enum DatasetFieldDataTypes {
   INTEGER = "integer",
   TEXT = "text",
 }
@@ -12,7 +13,7 @@ export type DatasetField = {
   datasetId: Dataset["id"]
   name: string
   displayName: string
-  dataType: DataTypes
+  dataType: DatasetFieldDataTypes
   description: string
   note: string
   createdAt: string
@@ -35,6 +36,12 @@ export const datasetFieldsApi = {
     const { data } = await http.get("/api/dataset-fields", {
       params: { where, page, perPage },
     })
+    return data
+  },
+  async create(attributes: Partial<DatasetField>): Promise<{
+    datasetField: DatasetField
+  }> {
+    const { data } = await http.post("/api/dataset-fields", attributes)
     return data
   },
 }

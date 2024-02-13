@@ -16,6 +16,7 @@ import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
 
+// Keep in sync with web/src/api/dataset-fields-api.ts
 export enum DatasetFieldDataTypes {
   INTEGER = "integer",
   TEXT = "text",

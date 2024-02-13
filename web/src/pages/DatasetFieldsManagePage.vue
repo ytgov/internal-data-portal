@@ -1,5 +1,16 @@
 <template>
-  <h4 class="text-h4 mt-4">Fields</h4>
+  <h4 class="d-flex justify-space-between align-end text-h4 mt-4">
+    Fields
+
+    <v-skeleton-loader
+      v-if="isNil(dataset)"
+      type="button"
+    />
+    <DatasetFieldCreateDialog
+      v-else
+      :dataset-id="dataset.id"
+    />
+  </h4>
 
   <v-skeleton-loader
     v-if="isNil(dataset)"
@@ -21,6 +32,7 @@ import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 import { useDataset } from "@/use/use-dataset"
 
 import DatasetFieldsTable from "@/components/dataset-fields/DatasetFieldsTable.vue"
+import DatasetFieldCreateDialog from "@/components/dataset-fields/DatasetFieldCreateDialog.vue"
 
 const props = defineProps({
   slug: {
