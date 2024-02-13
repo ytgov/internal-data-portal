@@ -6,9 +6,10 @@
     label="Tags"
     item-value="id"
     item-title="name"
+    auto-select-first
     chips
-    multiple
     closable-chips
+    multiple
     @update:model-value="updateSelectedTags"
     @update:search="updateSearch"
   ></v-combobox>
