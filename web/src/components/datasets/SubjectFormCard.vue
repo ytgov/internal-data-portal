@@ -1,7 +1,14 @@
 <template>
   <v-card>
-    <v-card-title>Subject</v-card-title>
-
+    <v-card-title class="d-flex justify-space-between align-center">
+      Subject
+      <SaveStateProgress
+        :saving="isLoading"
+        title="Refresh"
+        icon="mdi-cached"
+        @click="refresh"
+      />
+    </v-card-title>
     <v-card-text>
       <v-form class="d-flex flex-column mt-6">
         <v-row>
@@ -30,6 +37,7 @@ import taggingsApi, { TaggableTypes } from "@/api/taggings-api"
 import useTaggings from "@/use/use-taggings"
 import useDataset from "@/use/use-dataset"
 
+import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import TagsCombobox from "@/components/tags/TagsCombobox.vue"
 
 const props = defineProps({
@@ -50,7 +58,11 @@ const taggingsQuery = computed(() => ({
     taggableId: dataset.value?.id,
   },
 }))
-const { taggings, fetch: fetchTaggings } = useTaggings(taggingsQuery, { immediate: false })
+const {
+  taggings,
+  fetch: fetchTaggings,
+  isLoading,
+} = useTaggings(taggingsQuery, { immediate: false })
 const selectedTags = computed(() => compact(taggings.value.map((tagging) => tagging.tag)))
 
 watch(
@@ -100,5 +112,10 @@ async function refreshTags() {
   }
 
   return tagsCombobox.value.refresh()
+}
+
+function refresh() {
+  refreshTags()
+  fetchTaggings()
 }
 </script>

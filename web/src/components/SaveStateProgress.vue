@@ -13,20 +13,34 @@
     variant="outlined"
     rounded="circle"
     size="26"
-    title="Save"
+    :title="title"
     v-bind="$attrs"
   >
-    <v-icon size="18">mdi-check</v-icon>
+    <v-icon size="18">{{ icon }}</v-icon>
   </v-btn>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch } from "vue"
+
 const props = defineProps({
-  saving: Boolean,
+  saving: {
+    type: Boolean,
+    default: false,
+  },
+  icon: {
+    type: String,
+    default: "mdi-check",
+  },
+  title: {
+    type: String,
+    default: "Save",
+  },
 })
+
 const isSaving = ref(props.saving)
 const isInPostSaveStateTemporarily = ref(false)
+
 watch(
   () => props.saving,
   (newValue) => {
