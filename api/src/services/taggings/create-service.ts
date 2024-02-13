@@ -36,7 +36,8 @@ export class CreateService extends BaseService {
           throw new Error("tagAttributes.name is required when tagId was not provided")
         }
 
-        const tag = await Tag.create({ name })
+        const cleanName = name.trim().toLocaleLowerCase()
+        const tag = await Tag.create({ name: cleanName })
 
         if (isNil(tag)) {
           throw new Error("Tag creation failed")
