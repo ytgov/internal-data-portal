@@ -1,5 +1,5 @@
 <template>
-  <h4>Fields</h4>
+  <h4 class="text-h4 mt-4">Fields</h4>
 
   <v-skeleton-loader
     v-if="isNil(dataset)"
