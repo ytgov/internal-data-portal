@@ -3,18 +3,21 @@
     v-if="isSaving"
     indeterminate
     color="primary"
-    size="30"
-    width="4"
+    size="26"
+    width="2"
   />
-  <v-icon
+  <v-btn
     v-else
-    size="30"
-    title="Save"
-    :color="isInPostSaveStateTemporarily ? 'green' : 'light-green'"
+    :color="isInPostSaveStateTemporarily ? 'success' : 'primary'"
     :class="{ pulse: isInPostSaveStateTemporarily }"
+    variant="outlined"
+    rounded="circle"
+    size="26"
+    title="Save"
+    v-bind="$attrs"
   >
-    mdi-check-circle
-  </v-icon>
+    <v-icon size="18">mdi-check</v-icon>
+  </v-btn>
 </template>
 
 <script lang="ts" setup>
@@ -38,7 +41,7 @@ watch(
 
 <style scoped>
 .pulse {
-  animation: pulseAnimation 500ms forwards;
+  animation: pulseAnimation 300ms forwards;
 }
 @keyframes pulseAnimation {
   0%,
@@ -46,7 +49,7 @@ watch(
     transform: scale(1);
   }
   50% {
-    transform: scale(1.3);
+    transform: scale(1.2);
   }
 }
 </style>
