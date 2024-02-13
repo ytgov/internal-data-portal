@@ -14,6 +14,8 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue"
 
+import useDatasetFields from "@/use/use-dataset-fields"
+
 const props = defineProps({
   datasetId: {
     type: Number,
@@ -40,24 +42,7 @@ const datasetsQuery = computed(() => ({
   page: page.value,
 }))
 
-// FAKE
-function useDatasetFields(query: any) {
-  console.log(`query:`, query)
-  return {
-    datasetFields: [],
-    totalCount: 0,
-    isLoading: ref(false),
-    fetch: async () => void 0,
-    refresh: async () => void 0,
-  }
-}
-
-const {
-  datasetFields,
-  totalCount,
-  isLoading,
-  refresh,
-} = useDatasetFields(datasetsQuery)
+const { datasetFields, totalCount, isLoading, refresh } = useDatasetFields(datasetsQuery)
 
 defineExpose({ refresh })
 </script>
