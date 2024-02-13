@@ -1,14 +1,26 @@
 <template>
-  TODO: build out dataset fields manage page.
+  <h4>Fields</h4>
 
-  <pre>{{ dataset }}</pre>
+  <v-skeleton-loader
+    v-if="isNil(dataset)"
+    class="mt-6"
+    type="table"
+  />
+  <DatasetFieldsTable
+    v-else
+    :dataset-id="dataset.id"
+    class="mt-6"
+  />
 </template>
 
 <script setup lang="ts">
 import { toRefs } from "vue"
+import { isNil } from "lodash"
 
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 import { useDataset } from "@/use/use-dataset"
+
+import DatasetFieldsTable from "@/components/dataset-fields/DatasetFieldsTable.vue"
 
 const props = defineProps({
   slug: {
@@ -16,6 +28,9 @@ const props = defineProps({
     required: true,
   },
 })
+
+const { slug } = toRefs(props)
+const { dataset } = useDataset(slug)
 
 const { setBreadcrumbs } = useBreadcrumbs()
 
@@ -41,7 +56,4 @@ setBreadcrumbs([
     },
   },
 ])
-
-const { slug } = toRefs(props)
-const { dataset } = useDataset(slug)
 </script>
