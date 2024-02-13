@@ -4,7 +4,7 @@
       Owner Notes
       <SaveStateProgress
         :saving="isLoading"
-        @click="save"
+        @click="saveAndNotify"
       />
     </v-card-title>
 
@@ -24,7 +24,7 @@
               label="Notes"
               variant="outlined"
               rows="8"
-              @update:model-value="debouncedSave"
+              @update:model-value="debouncedSaveAndNotify"
             />
           </v-col>
         </v-row>
@@ -53,7 +53,7 @@ const { slug } = toRefs(props)
 const { dataset, save, isLoading } = useDataset(slug)
 const snack = useSnack()
 
-const debouncedSave = debounce(async () => {
+async function saveAndNotify() {
   try {
     await save()
     snack.notify("Notes saved", {
@@ -64,5 +64,7 @@ const debouncedSave = debounce(async () => {
       color: "error",
     })
   }
-}, 1000)
+}
+
+const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
 </script>
