@@ -9,7 +9,10 @@
       />
       <v-form
         v-else
+        ref="form"
+        v-model="isValid"
         class="d-flex mt-6"
+        @submit.prevent="saveWrapper"
       >
         <v-row>
           <v-col
@@ -23,8 +26,10 @@
               >
                 <v-text-field
                   v-model="dataset.name"
-                  label="Name"
+                  :rules="[required]"
+                  label="Name *"
                   variant="outlined"
+                  required
                 />
               </v-col>
               <v-col
@@ -42,9 +47,11 @@
               <v-col cols="12">
                 <v-textarea
                   v-model="dataset.description"
-                  label="Description"
+                  :rules="[required]"
+                  label="Description *"
                   variant="outlined"
                   rows="6"
+                  required
                 />
               </v-col>
             </v-row>
@@ -132,12 +139,28 @@
                 class="d-flex justify-end"
               >
                 <v-btn
+                  v-if="isValid"
                   :loading="isLoading"
+                  type="submit"
                   color="primary"
-                  @click="saveWrapper"
                 >
                   Save
                 </v-btn>
+                <v-tooltip v-else>
+                  <template #activator="{ props: tooltipProps }">
+                    <span v-bind="tooltipProps">
+                      <v-btn
+                        disabled
+                        type="submit"
+                        color="primary"
+                      >
+                        Save
+                        <v-icon end>mdi-help-circle-outline</v-icon>
+                      </v-btn>
+                    </span>
+                  </template>
+                  <span class="text-white">Some required fields are blank.</span>
+                </v-tooltip>
               </v-col>
             </v-row>
           </v-col>
@@ -148,9 +171,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs } from "vue"
+import { computed, ref, toRefs } from "vue"
 import { isNil } from "lodash"
 
+import { type VForm } from "vuetify/lib/components/index.mjs"
+
+import { required } from "@/utils/validators"
 import { useSnack } from "@/use/use-snack"
 import { useDataset } from "@/use/use-dataset"
 
@@ -168,6 +194,8 @@ const { slug } = toRefs(props)
 const { dataset, isLoading, save } = useDataset(slug)
 const snack = useSnack()
 
+const form = ref<InstanceType<typeof VForm> | null>(null)
+const isValid = ref(null)
 const isInactive = computed<boolean>(() => !isNil(dataset.value?.deactivatedAt))
 
 function deactivateDataset(value: boolean | null) {
