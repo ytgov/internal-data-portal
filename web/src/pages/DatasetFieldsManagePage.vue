@@ -9,6 +9,7 @@
     <DatasetFieldCreateDialog
       v-else
       :dataset-id="dataset.id"
+      @created="refreshTable"
     />
   </h4>
 
@@ -19,13 +20,14 @@
   />
   <DatasetFieldsTable
     v-else
+    ref="datasetFieldsTable"
     :dataset-id="dataset.id"
     class="mt-6"
   />
 </template>
 
 <script setup lang="ts">
-import { toRefs } from "vue"
+import { ref, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
@@ -43,6 +45,12 @@ const props = defineProps({
 
 const { slug } = toRefs(props)
 const { dataset } = useDataset(slug)
+
+const datasetFieldsTable = ref<InstanceType<typeof DatasetFieldsTable> | null>(null)
+
+function refreshTable() {
+  datasetFieldsTable.value?.refresh()
+}
 
 const { setBreadcrumbs } = useBreadcrumbs()
 
