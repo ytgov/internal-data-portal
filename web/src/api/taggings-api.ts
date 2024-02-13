@@ -37,6 +37,16 @@ export const taggingsApi = {
     })
     return data
   },
+  async create(
+    attributes: Partial<Tagging> & {
+      tagAttributes?: Partial<Tag>
+    }
+  ): Promise<{
+    tagging: Tagging & { tag: Tag }
+  }> {
+    const { data } = await http.post("/api/taggings", attributes)
+    return data
+  },
 }
 
 export default taggingsApi
