@@ -54,7 +54,7 @@ export class CreateService extends BaseService {
         tagId: effectiveTagId,
       })
 
-      // TODO: log creating user?
+      // TODO: log creating user
 
       return tagging.reload({ include: ["tag"] })
     })
