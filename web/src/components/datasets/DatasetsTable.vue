@@ -1,5 +1,5 @@
 <template>
-  <v-data-table
+  <v-data-table-server
     v-model:items-per-page="itemsPerPage"
     v-model:page="page"
     :headers="headers"
@@ -50,7 +50,7 @@
       </template>
       <ColumnRouterLink :slug="slug" />
     </template>
-  </v-data-table>
+  </v-data-table-server>
 </template>
 
 <script lang="ts" setup>
