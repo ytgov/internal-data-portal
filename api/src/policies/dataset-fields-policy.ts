@@ -25,8 +25,16 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
     return this.datasetsPolicy.update()
   }
 
+  destroy(): boolean {
+    return this.datasetsPolicy.update()
+  }
+
   permittedAttributes(): Path[] {
     return ["name", "displayName", "dataType", "description", "note"]
+  }
+
+  permittedAttributesForCreate(): Path[] {
+    return ["datasetId", ...this.permittedAttributes()]
   }
 }
 

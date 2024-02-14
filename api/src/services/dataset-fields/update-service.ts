@@ -16,7 +16,7 @@ export class UpdateService extends BaseService {
   async perform(): Promise<DatasetField> {
     await this.datasetField.update(this.attributes)
 
-    // TODO: log creating user
+    // TODO: log user action
 
     return this.datasetField
   }

@@ -57,7 +57,10 @@ router
   .route("/api/dataset-fields")
   .get(DatasetFieldsController.index)
   .post(DatasetFieldsController.create)
-router.route("/api/dataset-fields/:datasetFieldId").patch(DatasetFieldsController.update)
+router
+  .route("/api/dataset-fields/:datasetFieldId")
+  .patch(DatasetFieldsController.update)
+  .delete(DatasetFieldsController.destroy)
 
 router
   .route("/api/dataset-stewardships/:datasetStewardshipId")
