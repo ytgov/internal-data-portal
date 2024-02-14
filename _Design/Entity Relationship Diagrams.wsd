@@ -13,6 +13,27 @@ entity "access_grants" {
   deleted_at : datetime2(0)
 }
 
+entity "access_requests" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  * access_grant_id : int <<FK>>
+  * requestor_id : int <<FK>>
+  * access_code : nvarchar(255)
+  denier_id : int <<FK>>
+  approver_id : int <<FK>>
+  revoker_id : int <<FK>>
+  project_name: nvarchar(255)
+  project_description: nvarchar(MAX)
+  approved_at : datetime2(0)
+  denied_at : datetime2(0)
+  revoked_at : datetime2(0)
+  denial_reason: nvarchar(MAX)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
 entity "dataset_fields" {
   * id : int <<PK>>
   --
@@ -143,10 +164,12 @@ entity "user_group_memberships" {
 }
 
 ' Define relationships
+access_grants }o--|| access_requests : access_grant_id
 datasets }o--|| access_grants : dataset_id
 datasets }o--|| dataset_fields : dataset_id
 datasets }o--|| taggings : taggable_id, tagging_type
 datasets |o--|| dataset_stewardships : dataset_id
+datasets }o--|| access_requests : dataset_id
 taggings ||--o{ tags : tag_id
 user_groups }o--|| dataset_stewardships : branch_id
 user_groups }o--|| dataset_stewardships : department_id
@@ -158,6 +181,10 @@ user_groups }o--|| user_group_memberships : division_id
 user_groups }o--|| user_group_memberships : unit_id
 users }o--|| access_grants : owner_id
 users }o--|| access_grants : requestor_id
+users }o--|| access_requests : requestor_id
+users }o--|| access_requests : denier_id
+users }o--|| access_requests : approver_id
+users }o--|| access_requests : revoker_id
 users }o--|| dataset_stewardships : owner_id
 users }o--|| dataset_stewardships : support_id
 users }o--|| datasets : creator_id
