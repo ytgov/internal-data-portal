@@ -8,13 +8,46 @@
     :loading="isLoading"
     class="elevation-1"
   >
+    <template #top>
+      <DatasetFieldEditDialog
+        ref="editDialog"
+        @saved="refresh"
+      />
+      <DatasetFieldDeleteDialog
+        ref="deleteDialog"
+        @deleted="refresh"
+      />
+    </template>
+    <template #item.actions="{ item }">
+      <div class="d-flex justify-end align-center">
+        <v-btn
+          color="primary"
+          variant="outlined"
+          @click="showEditDialog(item)"
+        >
+          Edit
+        </v-btn>
+        <v-btn
+          title="Delete"
+          icon="mdi-delete"
+          size="small"
+          class="ml-2"
+          color="error"
+          @click="showDeleteDialog(item)"
+        ></v-btn>
+      </div>
+    </template>
   </v-data-table>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
+import { useRoute } from "vue-router"
+import { isNil } from "lodash"
 
-import useDatasetFields from "@/use/use-dataset-fields"
+import useDatasetFields, { DatasetField } from "@/use/use-dataset-fields"
+
+import DatasetFieldEditDialog from "@/components/dataset-fields/DatasetFieldEditDialog.vue"
 
 const props = defineProps({
   datasetId: {
@@ -32,6 +65,7 @@ const headers = ref([
   { title: "", key: "actions" },
 ])
 
+const route = useRoute()
 const itemsPerPage = ref(10)
 const page = ref(1)
 const datasetsQuery = computed(() => ({
@@ -43,6 +77,40 @@ const datasetsQuery = computed(() => ({
 }))
 
 const { datasetFields, totalCount, isLoading, refresh } = useDatasetFields(datasetsQuery)
+
+const editDialog = ref<InstanceType<typeof DatasetFieldEditDialog> | null>(null)
+const deleteDialog = ref<InstanceType<typeof DatasetFieldDeleteDialog> | null>(null)
+
+function showDeleteDialog(datasetField: DatasetField) {
+  deleteDialog.value.show(datasetField)
+}
+
+function showEditDialog(datasetField: DatasetField) {
+  editDialog.value?.show(datasetField)
+}
+
+function showEditDialogForRouteQuery() {
+  if (typeof route.query.showEdit !== "string") return
+
+  const datasetFieldId = parseInt(route.query.showEdit)
+  if (isNaN(datasetFieldId)) return
+
+  const datasetField = datasetFields.value.find(
+    (datasetField) => datasetField.id === datasetFieldId
+  )
+  if (isNil(datasetField)) return
+
+  showEditDialog(datasetField)
+}
+
+watch(
+  () => datasetFields.value,
+  (datasetFields) => {
+    if (datasetFields.length === 0) return
+
+    showEditDialogForRouteQuery()
+  }
+)
 
 defineExpose({ refresh })
 </script>

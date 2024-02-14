@@ -44,6 +44,15 @@ export const datasetFieldsApi = {
     const { data } = await http.post("/api/dataset-fields", attributes)
     return data
   },
+  async update(
+    datasetFieldId: number,
+    attributes: Partial<DatasetField>
+  ): Promise<{
+    datasetField: DatasetField
+  }> {
+    const { data } = await http.patch(`/api/dataset-fields/${datasetFieldId}`, attributes)
+    return data
+  },
 }
 
 export default datasetFieldsApi
