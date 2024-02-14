@@ -1,14 +1,27 @@
 <template>
-  TODO: build out dataset access manage page.
-
-  <pre>{{ dataset }}</pre>
+  <v-row>
+    <v-col
+      cols="12"
+      md="6"
+    >
+      <DataAccessFormCard :slug="slug" />
+    </v-col>
+    <v-col
+      cols="12"
+      md="6"
+    >
+      <v-skeleton-loader
+        type="card"
+        boilerplate
+      />
+    </v-col>
+  </v-row>
 </template>
 
 <script setup lang="ts">
-import { toRefs } from "vue"
-
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
-import { useDataset } from "@/use/use-dataset"
+
+import DataAccessFormCard from "@/components/datasets/DataAccessFormCard.vue"
 
 const props = defineProps({
   slug: {
@@ -41,7 +54,4 @@ setBreadcrumbs([
     },
   },
 ])
-
-const { slug } = toRefs(props)
-const { dataset } = useDataset(slug)
 </script>
