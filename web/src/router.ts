@@ -58,7 +58,13 @@ const routes: RouteRecordRaw[] = [
             path: "fields/manage",
             component: () => import("@/pages/DatasetFieldsManagePage.vue"),
             props: true,
-          }
+          },
+          {
+            name: "DatasetAccessManagePage",
+            path: "access/manage",
+            component: () => import("@/pages/DatasetAccessManagePage.vue"),
+            props: true,
+          },
         ],
       },
     ],

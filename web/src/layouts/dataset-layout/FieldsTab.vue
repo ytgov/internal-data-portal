@@ -20,6 +20,7 @@ const routeName = computed(() => {
   switch (route.name) {
     case "DatasetDescriptionManagePage":
     case "DatasetFieldsManagePage":
+    case "DatasetAccessManagePage":
       return "DatasetFieldsManagePage"
     default:
       return "DatasetFieldsReadPage"
