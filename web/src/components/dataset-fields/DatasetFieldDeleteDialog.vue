@@ -65,14 +65,14 @@
           <v-spacer></v-spacer>
           <v-btn
             :loading="isLoading"
-            color="error"
+            color="primary"
             @click="close"
           >
             Cancel
           </v-btn>
           <v-btn
             :loading="isLoading"
-            color="primary"
+            color="error"
             type="submit"
           >
             Delete
