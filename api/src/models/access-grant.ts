@@ -120,7 +120,7 @@ export class AccessGrant extends Model<
   }
 
   static establishAssociations() {
-    this.belongsTo(Dataset)
+    this.belongsTo(Dataset, { as: "dataset" })
     this.belongsTo(User, {
       foreignKey: "creatorId",
       as: "creator",

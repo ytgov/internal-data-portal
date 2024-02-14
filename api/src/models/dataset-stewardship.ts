@@ -85,7 +85,7 @@ export class DatasetStewardship extends Model<
   }
 
   static establishAssociations() {
-    this.belongsTo(Dataset)
+    this.belongsTo(Dataset, { as: "dataset" })
     this.belongsTo(User, { as: "owner" })
     this.belongsTo(User, { as: "support" })
     this.belongsTo(UserGroup, { as: "department" })

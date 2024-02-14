@@ -15,6 +15,7 @@
 
     <v-tabs>
       <DescriptionTab :slug="slug" />
+      <FieldsTab :slug="slug" />
       <!-- TODO: add in further tabs -->
     </v-tabs>
 
@@ -29,6 +30,7 @@ import { isNil } from "lodash"
 import { useDataset } from "@/use/use-dataset"
 
 import DescriptionTab from "@/layouts/dataset-layout/DescriptionTab.vue"
+import FieldsTab from "@/layouts/dataset-layout/FieldsTab.vue"
 
 const props = defineProps({
   slug: {

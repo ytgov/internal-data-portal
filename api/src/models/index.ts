@@ -11,6 +11,7 @@ import { Tag } from "@/models/tag"
 import { Tagging } from "@/models/tagging"
 import { AccessGrant } from "@/models/access-grant"
 import { AccessRequest } from "@/models/access-request"
+import { DatasetField } from "@/models/dataset-field"
 
 // Estabilish associations between models, order likely matters
 Role.establishAssociations()
@@ -24,11 +25,13 @@ Tagging.establishAssociations()
 AccessGrant.establishAssociations()
 AccessRequest.establishAssociations()
 DatasetStewardship.establishAssociations()
+DatasetField.establishAssociations()
 
 export {
   AccessGrant,
   AccessRequest,
   Dataset,
+  DatasetField,
   DatasetStewardship,
   Role,
   StewardshipEvolution,

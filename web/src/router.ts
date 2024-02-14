@@ -47,6 +47,18 @@ const routes: RouteRecordRaw[] = [
             component: () => import("@/pages/DatasetDescriptionManagePage.vue"),
             props: true,
           },
+          {
+            name: "DatasetFieldsReadPage",
+            path: "fields/read",
+            component: () => import("@/pages/DatasetFieldsReadPage.vue"),
+            props: true,
+          },
+          {
+            name: "DatasetFieldsManagePage",
+            path: "fields/manage",
+            component: () => import("@/pages/DatasetFieldsManagePage.vue"),
+            props: true,
+          }
         ],
       },
     ],

@@ -19,6 +19,7 @@ import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middl
 
 import {
   CurrentUserController,
+  DatasetFieldsController,
   DatasetsController,
   DatasetStewardshipsController,
   QaScenarios,
@@ -51,6 +52,15 @@ router
   .route("/api/datasets/:datasetIdOrSlug")
   .get(DatasetsController.show)
   .patch(DatasetsController.update)
+
+router
+  .route("/api/dataset-fields")
+  .get(DatasetFieldsController.index)
+  .post(DatasetFieldsController.create)
+router
+  .route("/api/dataset-fields/:datasetFieldId")
+  .patch(DatasetFieldsController.update)
+  .delete(DatasetFieldsController.destroy)
 
 router
   .route("/api/dataset-stewardships/:datasetStewardshipId")

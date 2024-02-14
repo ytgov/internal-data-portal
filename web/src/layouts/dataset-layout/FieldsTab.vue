@@ -1,5 +1,5 @@
 <template>
-  <v-tab :to="{ name: routeName, params: { slug } }"><h3>Description</h3></v-tab>
+  <v-tab :to="{ name: routeName, params: { slug } }"><h3>Fields</h3></v-tab>
 </template>
 
 <script lang="ts" setup>
@@ -20,9 +20,9 @@ const routeName = computed(() => {
   switch (route.name) {
     case "DatasetDescriptionManagePage":
     case "DatasetFieldsManagePage":
-      return "DatasetDescriptionManagePage"
+      return "DatasetFieldsManagePage"
     default:
-      return "DatasetDescriptionReadPage"
+      return "DatasetFieldsReadPage"
   }
 })
 </script>
