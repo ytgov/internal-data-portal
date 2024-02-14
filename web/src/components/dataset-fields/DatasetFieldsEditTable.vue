@@ -30,9 +30,10 @@
         <v-btn
           title="Delete"
           icon="mdi-delete"
-          size="small"
+          size="x-small"
           class="ml-2"
           color="error"
+          variant="outlined"
           @click="showDeleteDialog(item)"
         ></v-btn>
       </div>
@@ -48,6 +49,7 @@ import { isNil } from "lodash"
 import useDatasetFields, { DatasetField } from "@/use/use-dataset-fields"
 
 import DatasetFieldEditDialog from "@/components/dataset-fields/DatasetFieldEditDialog.vue"
+import DatasetFieldDeleteDialog from "@/components/dataset-fields/DatasetFieldDeleteDialog.vue"
 
 const props = defineProps({
   datasetId: {
@@ -103,12 +105,27 @@ function showEditDialogForRouteQuery() {
   showEditDialog(datasetField)
 }
 
+function showDeleteDialogForRouteQuery() {
+  if (typeof route.query.showDelete !== "string") return
+
+  const datasetFieldId = parseInt(route.query.showDelete)
+  if (isNaN(datasetFieldId)) return
+
+  const datasetField = datasetFields.value.find(
+    (datasetField) => datasetField.id === datasetFieldId
+  )
+  if (isNil(datasetField)) return
+
+  showDeleteDialog(datasetField)
+}
+
 watch(
   () => datasetFields.value,
   (datasetFields) => {
     if (datasetFields.length === 0) return
 
     showEditDialogForRouteQuery()
+    showDeleteDialogForRouteQuery()
   }
 )
 

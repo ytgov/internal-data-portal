@@ -53,6 +53,10 @@ export const datasetFieldsApi = {
     const { data } = await http.patch(`/api/dataset-fields/${datasetFieldId}`, attributes)
     return data
   },
+  async delete(datasetFieldId: number): Promise<void> {
+    const { data } = await http.delete(`/api/dataset-fields/${datasetFieldId}`)
+    return data
+  },
 }
 
 export default datasetFieldsApi
