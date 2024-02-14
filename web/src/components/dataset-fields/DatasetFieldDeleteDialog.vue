@@ -110,9 +110,11 @@ const isLoading = ref(false)
 watch(
   () => showDialog.value,
   (value) => {
-    if (route.query.showDelete === datasetFieldId.value?.toString()) return
-
     if (value) {
+      if (route.query.showDelete === datasetFieldId.value?.toString()) {
+        return
+      }
+
       router.push({ query: { showDelete: datasetFieldId.value } })
     } else {
       router.push({ query: { showDelete: undefined } })

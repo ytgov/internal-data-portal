@@ -115,9 +115,11 @@ const isValid = ref(false)
 watch(
   () => showDialog.value,
   (value) => {
-    if (route.query.showEdit === datasetFieldId.value?.toString()) return
-
     if (value) {
+      if (route.query.showEdit === datasetFieldId.value?.toString()) {
+        return
+      }
+
       router.push({ query: { showEdit: datasetFieldId.value } })
     } else {
       router.push({ query: { showEdit: undefined } })
