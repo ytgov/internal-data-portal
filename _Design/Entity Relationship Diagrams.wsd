@@ -48,6 +48,21 @@ entity "dataset_fields" {
   deleted_at : datetime2(0)
 }
 
+entity "dataset_stewardships" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  * owner_id : int <<FK>>
+  * support_id : int <<FK>>
+  * department : int <<FK>>
+  division_id : int <<FK>>
+  branch_id : int <<FK>>
+  unit_id : int <<FK>>
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
 entity "datasets" {
   * id : int <<PK>>
   --
@@ -84,16 +99,12 @@ entity "roles" {
   deleted_at : datetime2(0)
 }
 
-entity "dataset_stewardships" {
+entity "taggings" {
   * id : int <<PK>>
   --
-  * dataset_id : int <<FK>>
-  * owner_id : int <<FK>>
-  * support_id : int <<FK>>
-  * department : int <<FK>>
-  division_id : int <<FK>>
-  branch_id : int <<FK>>
-  unit_id : int <<FK>>
+  * tag_id : int <<FK>>
+  * taggable_id : int - foreign key
+  * taggable_type : nvarchar(255)
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
@@ -108,30 +119,15 @@ entity "tags" {
   deleted_at : datetime2(0)
 }
 
-entity "taggings" {
-  * id : int <<PK>>
-  --
-  * tag_id : int <<FK>>
-  * taggable_id : int - foreign key
-  * taggable_type : nvarchar(255)
-  created_at : datetime2(0)
-  updated_at : datetime2(0)
-  deleted_at : datetime2(0)
-}
 
-entity "users" {
+entity "user_group_memberships" {
   * id : int <<PK>>
   --
-  * email : nvarchar(100)
-  * auth0_subject : nvarchar(100)
-  first_name : nvarchar(100)
-  last_name : nvarchar(100)
-  position : nvarchar(100)
-  department : nvarchar(100)
-  division : nvarchar(100)
-  branch : nvarchar(100)
-  unit : nvarchar(100)
-  last_employee_directory_sync_at: datetime2(0)
+  * userId : int <<FK>>
+  * department_id : int <<FK>>
+  division_id : int <<FK>>
+  branch_id : int <<FK>>
+  unit_id : int <<FK>>
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
@@ -150,14 +146,19 @@ entity "user_groups" {
   deleted_at : datetime2(0)
 }
 
-entity "user_group_memberships" {
+entity "users" {
   * id : int <<PK>>
   --
-  * userId : int <<FK>>
-  * department_id : int <<FK>>
-  division_id : int <<FK>>
-  branch_id : int <<FK>>
-  unit_id : int <<FK>>
+  * email : nvarchar(100)
+  * auth0_subject : nvarchar(100)
+  first_name : nvarchar(100)
+  last_name : nvarchar(100)
+  position : nvarchar(100)
+  department : nvarchar(100)
+  division : nvarchar(100)
+  branch : nvarchar(100)
+  unit : nvarchar(100)
+  last_employee_directory_sync_at: datetime2(0)
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
