@@ -82,7 +82,7 @@ const editDialog = ref<InstanceType<typeof DatasetFieldEditDialog> | null>(null)
 const deleteDialog = ref<InstanceType<typeof DatasetFieldDeleteDialog> | null>(null)
 
 function showDeleteDialog(datasetField: DatasetField) {
-  deleteDialog.value.show(datasetField)
+  deleteDialog.value?.show(datasetField)
 }
 
 function showEditDialog(datasetField: DatasetField) {

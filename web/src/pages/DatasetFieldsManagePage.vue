@@ -18,7 +18,7 @@
     class="mt-6"
     type="table"
   />
-  <DatasetFieldsTable
+  <DatasetFieldsEditTable
     v-else
     ref="datasetFieldsTable"
     :dataset-id="dataset.id"
@@ -33,7 +33,7 @@ import { isNil } from "lodash"
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 import { useDataset } from "@/use/use-dataset"
 
-import DatasetFieldsTable from "@/components/dataset-fields/DatasetFieldsTable.vue"
+import DatasetFieldsEditTable from "@/components/dataset-fields/DatasetFieldsEditTable.vue"
 import DatasetFieldCreateDialog from "@/components/dataset-fields/DatasetFieldCreateDialog.vue"
 
 const props = defineProps({
@@ -46,7 +46,7 @@ const props = defineProps({
 const { slug } = toRefs(props)
 const { dataset } = useDataset(slug)
 
-const datasetFieldsTable = ref<InstanceType<typeof DatasetFieldsTable> | null>(null)
+const datasetFieldsTable = ref<InstanceType<typeof DatasetFieldsEditTable> | null>(null)
 
 function refreshTable() {
   datasetFieldsTable.value?.refresh()
