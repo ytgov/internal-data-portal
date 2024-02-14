@@ -8,7 +8,8 @@ import BaseController from "@/controllers/base-controller"
 export class LinkRandomTagsController extends BaseController {
   async create() {
     try {
-      await Tagging.destroy({ where: {} })
+      await Tagging.destroy({ where: {}, force: true })
+      await Tag.destroy({ where: {}, force: true })
       await this.ensureRandomTags()
       await this.linkRandomTagsToDatasets()
       return this.response
@@ -24,12 +25,8 @@ export class LinkRandomTagsController extends BaseController {
   private async ensureRandomTags() {
     const numberOrTags = 50
     const tagNames = faker.helpers.uniqueArray(faker.word.sample, numberOrTags)
-    const promises = tagNames.map((name) =>
-      Tag.upsert({
-        name,
-      })
-    )
-    return Promise.all(promises)
+    const tagsAttributes = tagNames.map((name) => ({ name }))
+    return Tag.bulkCreate(tagsAttributes)
   }
 
   private async linkRandomTagsToDatasets() {

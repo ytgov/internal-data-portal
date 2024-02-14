@@ -1,9 +1,8 @@
 import { WhereOptions } from "sequelize"
 import { isNil } from "lodash"
 
-import { Dataset, StewardshipEvolution, User } from "@/models"
+import { Dataset } from "@/models"
 import { DatasetsPolicy } from "@/policies"
-import { assertDatasetPolicyRecord, type DatasetPolicyRecord } from "@/policies/datasets-policy"
 import { CreateService, UpdateService } from "@/services/datasets"
 import { TableSerializer } from "@/serializers/datasets"
 
@@ -30,11 +29,11 @@ export class DatasetsController extends BaseController {
             },
           ],
         },
-        "creator",
         {
-          association: "stewardshipEvolutions",
-          order: [["createdAt", "DESC"]],
+          association: "stewardship",
+          include: ["department", "division", "branch", "unit"],
         },
+        "creator",
         "tags",
         "accessGrants",
         "accessRequests",
@@ -105,43 +104,21 @@ export class DatasetsController extends BaseController {
     }
   }
 
-  private async loadDataset(): Promise<DatasetPolicyRecord | null> {
+  private async loadDataset(): Promise<Dataset | null> {
     const dataset = await Dataset.findBySlugOrPk(this.params.datasetIdOrSlug, {
-      include: ["owner", "creator", "stewardshipEvolutions"],
+      include: ["owner", "creator", "stewardship"],
     })
-
-    return dataset as
-      | (Dataset & {
-          owner: User
-          creator: User
-          stewardshipEvolutions: StewardshipEvolution[]
-        })
-      | null
-  }
-
-  private async buildDataset(): Promise<DatasetPolicyRecord> {
-    const attributes = this.request.body
-
-    // Sadly "include" does not work in "build".
-    // And also the "getOwner" function does not inject the owner into the dataset.
-    const dataset = Dataset.build(attributes)
-    dataset.owner = await dataset.getOwner({
-      include: [
-        "roles",
-        {
-          association: "groupMembership",
-          include: ["department", "division", "branch", "unit"],
-        },
-      ],
-    })
-
-    // TypeScript garbage because inline check doesn't change type
-    assertDatasetPolicyRecord(dataset)
 
     return dataset
   }
 
-  private buildPolicy(record: DatasetPolicyRecord): DatasetsPolicy {
+  private async buildDataset(): Promise<Dataset> {
+    const attributes = this.request.body
+    const dataset = Dataset.build(attributes)
+    return dataset
+  }
+
+  private buildPolicy(record: Dataset): DatasetsPolicy {
     return new DatasetsPolicy(this.currentUser, record)
   }
 }

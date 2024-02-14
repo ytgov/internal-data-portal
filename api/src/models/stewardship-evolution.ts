@@ -17,6 +17,11 @@ import sequelize from "@/db/db-client"
 import User from "@/models/user"
 import Dataset from "@/models/dataset"
 
+/**
+ * @deprecated in favor of `DatasetStewardship`.
+ * Avoid removing before 2024-03-09, to help ensure all necessary migrations have been run
+ * in all environments.
+ */
 export class StewardshipEvolution extends Model<
   InferAttributes<StewardshipEvolution>,
   InferCreationAttributes<StewardshipEvolution>

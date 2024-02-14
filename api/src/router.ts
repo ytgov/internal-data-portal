@@ -20,11 +20,14 @@ import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middl
 import {
   CurrentUserController,
   DatasetsController,
-  UsersController,
-  Users,
+  DatasetStewardshipsController,
+  QaScenarios,
+  TaggingsController,
+  TagsController,
   UserGroups,
   UserGroupsController,
-  QaScenarios,
+  Users,
+  UsersController,
 } from "@/controllers"
 
 export const router = Router()
@@ -49,6 +52,10 @@ router
   .get(DatasetsController.show)
   .patch(DatasetsController.update)
 
+router
+  .route("/api/dataset-stewardships/:datasetStewardshipId")
+  .patch(DatasetStewardshipsController.update)
+
 router.route("/api/users").get(UsersController.index)
 router
   .route("/api/users/:userId/yukon-government-directory-sync")
@@ -59,6 +66,10 @@ router
   .route("/api/user-groups/yukon-government-directory-sync")
   .post(UserGroups.YukonGovernmentDirectorySyncController.create)
 
+router.route("/api/taggings").get(TaggingsController.index).post(TaggingsController.create)
+router.route("/api/taggings/:taggingId").delete(TaggingsController.destroy)
+router.route("/api/tags").get(TagsController.index)
+
 // TODO: might want to lock these to only run in non-production environments?
 router.route("/api/qa-scenarios/link-random-tags").post(QaScenarios.LinkRandomTagsController.create)
 router
@@ -67,7 +78,7 @@ router
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {
-  return res.status(404).json({ message: "Not Found" })
+  return res.status(404).json({ message: `Resource not found for ${req.path}` })
 })
 
 // Special error handler for all api errors

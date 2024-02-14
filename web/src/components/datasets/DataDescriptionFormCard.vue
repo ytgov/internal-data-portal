@@ -1,14 +1,22 @@
 <template>
   <v-card>
-    <v-card-title>Data Description</v-card-title>
+    <v-card-title class="d-flex justify-space-between align-center">
+      Data Description
+      <SaveStateProgress
+        :saving="isLoading"
+        @click="saveAndNotify"
+      />
+    </v-card-title>
     <v-card-text>
-      <!-- TODO: make this an external component that matches the form -->
+      <!-- TODO: make the skeleton loader an external component that matches the form -->
       <v-skeleton-loader
         v-if="isNil(dataset)"
         type="card"
       />
       <v-form
         v-else
+        ref="form"
+        v-model="isValid"
         class="d-flex mt-6"
       >
         <v-row>
@@ -23,8 +31,11 @@
               >
                 <v-text-field
                   v-model="dataset.name"
-                  label="Name"
+                  :rules="[required]"
+                  label="Name *"
                   variant="outlined"
+                  required
+                  @update:model-value="debouncedSaveAndNotify"
                 />
               </v-col>
               <v-col
@@ -34,7 +45,7 @@
               >
                 <AddApiDialog
                   v-model="dataset.subscriptionUrl"
-                  @added="saveWrapper"
+                  @added="saveAndNotify"
                 />
               </v-col>
             </v-row>
@@ -42,9 +53,12 @@
               <v-col cols="12">
                 <v-textarea
                   v-model="dataset.description"
-                  label="Description"
+                  :rules="[required]"
+                  label="Description *"
                   variant="outlined"
                   rows="6"
+                  required
+                  @update:model-value="debouncedSaveAndNotify"
                 />
               </v-col>
             </v-row>
@@ -53,6 +67,7 @@
                 <v-checkbox
                   v-model="dataset.isSpatialData"
                   label="Spatial?"
+                  @update:model-value="saveAndNotify"
                 />
               </v-col>
             </v-row>
@@ -64,6 +79,7 @@
                 <v-checkbox
                   v-model="dataset.isLiveData"
                   label="Live data?"
+                  @update:model-value="saveAndNotify"
                 />
               </v-col>
               <v-col
@@ -75,6 +91,7 @@
                   :field-options="{
                     label: 'Date Published',
                   }"
+                  @update:model-value="saveAndNotify"
                 />
               </v-col>
             </v-row>
@@ -91,7 +108,7 @@
                 <v-checkbox
                   :model-value="isInactive"
                   label="inactive"
-                  @update:model-value="deactivateDataset"
+                  @update:model-value="deactivateDatasetAndSaveAndNotify"
                 />
               </v-col>
               <v-col
@@ -103,6 +120,7 @@
                   :field-options="{
                     label: 'Date Deactivated',
                   }"
+                  @update:model-value="saveAndNotify"
                 />
               </v-col>
             </v-row>
@@ -113,6 +131,7 @@
                   label="Terms of Use"
                   variant="outlined"
                   rows="4"
+                  @update:model-value="debouncedSaveAndNotify"
                 />
               </v-col>
             </v-row>
@@ -123,21 +142,8 @@
                   label="Credits"
                   variant="outlined"
                   rows="4"
+                  @update:model-value="debouncedSaveAndNotify"
                 />
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col
-                cols="12"
-                class="d-flex justify-end"
-              >
-                <v-btn
-                  :loading="isLoading"
-                  color="primary"
-                  @click="saveWrapper"
-                >
-                  Save
-                </v-btn>
               </v-col>
             </v-row>
           </v-col>
@@ -148,13 +154,17 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs } from "vue"
-import { isNil } from "lodash"
+import { computed, ref, toRefs } from "vue"
+import { debounce, isNil } from "lodash"
 
+import { type VForm } from "vuetify/lib/components/index.mjs"
+
+import { required } from "@/utils/validators"
 import { useSnack } from "@/use/use-snack"
 import { useDataset } from "@/use/use-dataset"
 
 import DatePicker from "@/components/DatePicker.vue"
+import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import AddApiDialog from "@/components/datasets/data-description-form-card/AddApiDialog.vue"
 
 const props = defineProps({
@@ -168,9 +178,11 @@ const { slug } = toRefs(props)
 const { dataset, isLoading, save } = useDataset(slug)
 const snack = useSnack()
 
+const form = ref<InstanceType<typeof VForm> | null>(null)
+const isValid = ref(null)
 const isInactive = computed<boolean>(() => !isNil(dataset.value?.deactivatedAt))
 
-function deactivateDataset(value: boolean | null) {
+async function deactivateDatasetAndSaveAndNotify(value: boolean | null) {
   if (isNil(dataset.value)) return
 
   if (value) {
@@ -179,9 +191,17 @@ function deactivateDataset(value: boolean | null) {
   } else {
     dataset.value.deactivatedAt = null
   }
+  await saveAndNotify()
 }
 
-async function saveWrapper() {
+async function saveAndNotify() {
+  if (!isValid.value) {
+    snack.notify("Please fill out all required fields", {
+      color: "error",
+    })
+    return
+  }
+
   try {
     await save()
     snack.notify("Dataset saved", {
@@ -193,4 +213,6 @@ async function saveWrapper() {
     })
   }
 }
+
+const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
 </script>
