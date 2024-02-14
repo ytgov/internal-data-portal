@@ -2,16 +2,21 @@
   <v-row>
     <v-col
       cols="12"
-      md="6"
+      md="4"
     >
       <DataAccessFormCard :slug="slug" />
     </v-col>
     <v-col
       cols="12"
-      md="6"
+      md="8"
     >
+      <AccessEditCard :slug="slug" />
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-col cols="12">
       <v-skeleton-loader
-        type="card"
+        type="table"
         boilerplate
       />
     </v-col>
@@ -22,6 +27,7 @@
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 
 import DataAccessFormCard from "@/components/datasets/DataAccessFormCard.vue"
+import AccessEditCard from "@/components/access-grants/AccessEditCard.vue"
 
 const props = defineProps({
   slug: {
