@@ -47,7 +47,7 @@ export class Role extends Model<InferAttributes<Role>, InferCreationAttributes<R
   }
 
   static establishAssociations() {
-    this.belongsTo(User)
+    this.belongsTo(User, { as: "user" })
   }
 }
 

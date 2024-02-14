@@ -53,9 +53,7 @@ export class DatasetField extends Model<
   }
 
   static establishAssociations() {
-    this.belongsTo(Dataset, {
-      as: "dataset",
-    })
+    this.belongsTo(Dataset, { as: "dataset" })
   }
 }
 

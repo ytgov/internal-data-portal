@@ -50,7 +50,7 @@ export class Tag extends Model<InferAttributes<Tag>, InferCreationAttributes<Tag
   }
 
   static establishAssociations() {
-    this.hasMany(Tagging)
+    this.hasMany(Tagging, { as: "taggings" })
   }
 }
 
