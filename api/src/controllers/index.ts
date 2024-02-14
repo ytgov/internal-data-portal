@@ -1,3 +1,4 @@
+export { AccessGrantsController } from "./access-grants-controller"
 export { CurrentUserController } from "./current-user-controller"
 export { DatasetFieldsController } from "./dataset-fields-controller"
 export { DatasetsController } from "./datasets-controller"

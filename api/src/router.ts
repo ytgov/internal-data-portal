@@ -18,6 +18,7 @@ import jwtMiddleware from "@/middlewares/jwt-middleware"
 import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middleware"
 
 import {
+  AccessGrantsController,
   CurrentUserController,
   DatasetFieldsController,
   DatasetsController,
@@ -52,6 +53,15 @@ router
   .route("/api/datasets/:datasetIdOrSlug")
   .get(DatasetsController.show)
   .patch(DatasetsController.update)
+
+router
+  .route("/api/access-grants")
+  .get(AccessGrantsController.index)
+  .post(AccessGrantsController.create)
+router
+  .route("/api/access-grants/:accessGrantId")
+  .patch(AccessGrantsController.update)
+  .delete(AccessGrantsController.destroy)
 
 router
   .route("/api/dataset-fields")
