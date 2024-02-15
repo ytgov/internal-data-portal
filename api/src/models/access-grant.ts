@@ -203,6 +203,23 @@ AccessGrant.init(
   },
   {
     sequelize,
+    validate: {
+      async grantLevelAndAccessTypeAreUnique(this: AccessGrant) {
+        const existingAccessGrant = await AccessGrant.findOne({
+          where: {
+            datasetId: this.datasetId,
+            grantLevel: this.grantLevel,
+            accessType: this.accessType,
+          },
+        })
+
+        if (existingAccessGrant && existingAccessGrant.id !== this.id) {
+          throw new Error(
+            `An access grant with grant level ${this.grantLevel} and access type ${this.accessType} already exists for this dataset`
+          )
+        }
+      },
+    },
     indexes: [
       {
         unique: true,
