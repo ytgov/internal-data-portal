@@ -20,7 +20,6 @@ import {
   InferCreationAttributes,
   Model,
   NonAttribute,
-  Op,
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
@@ -67,7 +66,7 @@ export class AccessGrant extends Model<
   declare id: CreationOptional<number>
   declare datasetId: ForeignKey<Dataset["id"]>
   declare creatorId: ForeignKey<User["id"]>
-  declare requestorId: ForeignKey<User["id"]> | null
+  declare supportId: ForeignKey<User["id"]> | null
   declare grantLevel: GrantLevels
   declare accessType: AccessTypes
   declare isProjectDescriptionRequired: CreationOptional<boolean>
@@ -86,9 +85,9 @@ export class AccessGrant extends Model<
   declare setCreator: BelongsToSetAssociationMixin<User, User["id"]>
   declare createCreator: BelongsToCreateAssociationMixin<User>
 
-  declare getRequestor: BelongsToGetAssociationMixin<User>
-  declare setRequestor: BelongsToSetAssociationMixin<User, User["id"]>
-  declare createRequestor: BelongsToCreateAssociationMixin<User>
+  declare getSupport: BelongsToGetAssociationMixin<User>
+  declare setSupport: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createSupport: BelongsToCreateAssociationMixin<User>
 
   declare getAccessRequests: HasManyGetAssociationsMixin<AccessRequest>
   declare setAccessRequests: HasManySetAssociationsMixin<AccessRequest, AccessRequest["datasetId"]>
@@ -109,13 +108,13 @@ export class AccessGrant extends Model<
 
   declare dataset?: NonAttribute<Dataset>
   declare creator?: NonAttribute<User>
-  declare requestor?: NonAttribute<User>
+  declare support?: NonAttribute<User>
   declare accessRequests?: NonAttribute<AccessRequest[]>
 
   declare static associations: {
     dataset: Association<AccessGrant, Dataset>
     creator: Association<AccessGrant, User>
-    requestor: Association<AccessGrant, User>
+    support: Association<AccessGrant, User>
     accessRequests: Association<Dataset, AccessRequest>
   }
 
@@ -126,8 +125,8 @@ export class AccessGrant extends Model<
       as: "creator",
     })
     this.belongsTo(User, {
-      foreignKey: "requestorId",
-      as: "requestor",
+      foreignKey: "supportId",
+      as: "support",
     })
     this.hasMany(AccessRequest, {
       foreignKey: "datasetId",
@@ -160,7 +159,7 @@ AccessGrant.init(
         key: "id",
       },
     },
-    requestorId: {
+    supportId: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
@@ -210,15 +209,6 @@ AccessGrant.init(
         fields: ["dataset_id", "grant_level", "access_type"],
         name: "unique_access_grants_on_dataset_id_and_grant_level_and_access_type",
         where: {
-          deletedAt: null,
-        },
-      },
-      {
-        unique: true,
-        fields: ["dataset_id", "requestor_id"],
-        name: "unique_access_grants_on_dataset_id_and_requestor_id",
-        where: {
-          requestorId: { [Op.ne]: null },
           deletedAt: null,
         },
       },
