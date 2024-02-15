@@ -30,7 +30,7 @@ export class AccessGrantsPolicy extends BasePolicy<AccessGrantWithDataset> {
   }
 
   permittedAttributes(): Path[] {
-    return ["requestorId", "grantLevel", "accessType", "isProjectDescriptionRequired"]
+    return ["supportId", "grantLevel", "accessType", "isProjectDescriptionRequired"]
   }
 
   permittedAttributesForCreate(): Path[] {

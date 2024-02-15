@@ -35,7 +35,7 @@
           <v-row>
             <v-col>
               <UserAutocomplete
-                v-model="accessGrant.requestorId"
+                v-model="accessGrant.supportId"
                 label="Request Email"
                 clearable
                 auto-select-first

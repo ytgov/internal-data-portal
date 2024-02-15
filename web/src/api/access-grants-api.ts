@@ -31,7 +31,7 @@ export type AccessGrant = {
   id: number
   datasetId: Dataset["id"]
   creatorId: User["id"]
-  requestorId: User["id"] | null
+  supportId: User["id"] | null
   grantLevel: GrantLevels
   accessType: AccessTypes
   isProjectDescriptionRequired: boolean

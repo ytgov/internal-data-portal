@@ -24,9 +24,9 @@
     <template #item.accessType="{ value }">
       {{ formatAccessType(value) }}
     </template>
-    <template #item.requestorId="{ value }">
+    <template #item.supportId="{ value }">
       <template v-if="isNil(value)">
-        <!-- No requestor -->
+        <!-- No supporting user -->
       </template>
       <UserEmailChip
         v-else
@@ -78,13 +78,7 @@ const props = defineProps({
 const headers = ref([
   { title: "Shared With", key: "grantLevel" },
   { title: "Access Type", key: "accessType" },
-  /*
-    TODO: check if requestorId is modeled correclty
-    I think it might actually mean the email that access requests go to
-    so should actually come from somewhere else, like the Dataset#owner.email
-    or DatasetStewardship#support.email or DatasetStewardship#owner.email
-  */
-  { title: "Request Email", key: "requestorId" },
+  { title: "Request Email", key: "supportId" },
   { title: "Project Desciption Required?", key: "projectDescriptionRequired" },
   { title: "", key: "actions" },
 ])

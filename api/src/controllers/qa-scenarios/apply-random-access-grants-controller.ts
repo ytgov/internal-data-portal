@@ -34,7 +34,7 @@ export class ApplyRandomAccessGrantsController extends BaseController {
         (randomGrantLevel) => ({
           datasetId: dataset.id,
           creatorId: dataset.ownerId,
-          // TODO: requestorId: faker.helpers.arrayElement(users - dataset.owner).id,
+          // TODO: supportId: faker.helpers.arrayElement(users - dataset.owner).id,
           grantLevel: randomGrantLevel,
           accessType: faker.helpers.arrayElement(Object.values(AccessTypes)),
           isProjectDescriptionRequired: faker.datatype.boolean(),
