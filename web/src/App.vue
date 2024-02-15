@@ -23,7 +23,7 @@ import AppSnackbar from "@/components/AppSnackbar.vue"
 const route = useRoute()
 const isUnauthenticatedRoute = computed(() => route.meta.requiresAuth === false)
 
-const { isLoading: isLoadingAuth0, isAuthenticated } = useAuth0()
+const { isLoading: isLoadingAuth0, isAuthenticated, logout } = useAuth0()
 const isReadyAuth0 = computed(() => !isLoadingAuth0.value && isAuthenticated.value)
 const { isReady: isReadyCurrentUser, ensure } = useCurrentUser()
 
@@ -39,12 +39,20 @@ watch(
       try {
         await ensure()
       } catch (error) {
-        console.log("Failed to ensure current user:", error)
-        // Toast/snack Please contact support ...
-        // logout?
+        console.log(`Failed to ensure current user: ${error}. Logging out ...`)
+        await logoutWrapper()
       }
     }
   },
   { immediate: true }
 )
+
+async function logoutWrapper() {
+  await logout({
+    logoutParams: {
+      // I would prefer to redirect to /sign-in here, but that doesn't seem to work?
+      returnTo: window.location.origin,
+    },
+  })
+}
 </script>
