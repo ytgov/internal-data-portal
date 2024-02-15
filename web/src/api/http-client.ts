@@ -10,8 +10,12 @@ export const httpClient = axios.create({
     "Content-Type": "application/json",
   },
   paramsSerializer: {
+    // See api/src/app.ts -> app.set("query parser", ...)
     serialize: (params) => {
-      return qs.stringify(params, { arrayFormat: "brackets" })
+      return qs.stringify(params, {
+        arrayFormat: "brackets",
+        strictNullHandling: true,
+      })
     },
   },
 })
