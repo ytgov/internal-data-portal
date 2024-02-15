@@ -15,11 +15,7 @@
   </v-row>
   <v-row>
     <v-col cols="12">
-      TODO: Replace boilderplate with Subscriptions card
-      <v-skeleton-loader
-        type="table"
-        boilerplate
-      />
+      <SubscriptionsManageCard :slug="slug" />
     </v-col>
   </v-row>
 </template>
@@ -29,6 +25,7 @@ import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 
 import DataAccessFormCard from "@/components/datasets/DataAccessFormCard.vue"
 import AccessEditCard from "@/components/access-grants/AccessEditCard.vue"
+import SubscriptionsManageCard from "@/components/access-grants/SubscriptionsManageCard.vue"
 
 const props = defineProps({
   slug: {
