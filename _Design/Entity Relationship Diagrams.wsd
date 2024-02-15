@@ -6,7 +6,7 @@ entity "access_grants" {
   * owner_id : int <<FK>>
   * grant_level : nvarchar(255)
   * access_type : nvarchar(255)
-  requestor_id : int <<FK>>
+  support_id : int <<FK>>
   is_project_description_required : bit
   created_at : datetime2(0)
   updated_at : datetime2(0)
@@ -181,7 +181,7 @@ user_groups }o--|| user_group_memberships : department_id
 user_groups }o--|| user_group_memberships : division_id
 user_groups }o--|| user_group_memberships : unit_id
 users }o--|| access_grants : owner_id
-users }o--|| access_grants : requestor_id
+users }o--|| access_grants : support_id
 users }o--|| access_requests : requestor_id
 users }o--|| access_requests : denier_id
 users }o--|| access_requests : approver_id
