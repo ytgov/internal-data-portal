@@ -15,7 +15,7 @@ export class CreateService extends BaseService {
   }
 
   async perform(): Promise<DatasetField> {
-    const { datasetId, name, displayName, dataType } = this.attributes
+    const { datasetId, name, displayName, dataType, ...optionalAttributes } = this.attributes
 
     if (isNil(datasetId)) {
       throw new Error("datasetId is required")
@@ -38,7 +38,7 @@ export class CreateService extends BaseService {
       name,
       displayName,
       dataType,
-      ...this.attributes,
+      ...optionalAttributes,
     })
 
     // TODO: log creating user

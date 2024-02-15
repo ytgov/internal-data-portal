@@ -6,8 +6,58 @@ entity "access_grants" {
   * owner_id : int <<FK>>
   * grant_level : nvarchar(255)
   * access_type : nvarchar(255)
-  requestor_id : int <<FK>>
+  support_id : int <<FK>>
   is_project_description_required : bit
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "access_requests" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  * access_grant_id : int <<FK>>
+  * requestor_id : int <<FK>>
+  * access_code : nvarchar(255)
+  denier_id : int <<FK>>
+  approver_id : int <<FK>>
+  revoker_id : int <<FK>>
+  project_name: nvarchar(255)
+  project_description: nvarchar(MAX)
+  approved_at : datetime2(0)
+  denied_at : datetime2(0)
+  revoked_at : datetime2(0)
+  denial_reason: nvarchar(MAX)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "dataset_fields" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  * name : nvarchar(255)
+  * display_name : nvarchar(255)
+  * data_type : nvarchar(100)
+  description : nvarchar(1000)
+  note : nvarchar(MAX)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "dataset_stewardships" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  * owner_id : int <<FK>>
+  * support_id : int <<FK>>
+  * department : int <<FK>>
+  division_id : int <<FK>>
+  branch_id : int <<FK>>
+  unit_id : int <<FK>>
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
@@ -49,21 +99,12 @@ entity "roles" {
   deleted_at : datetime2(0)
 }
 
-entity "stewardship_evolutions" {
+entity "taggings" {
   * id : int <<PK>>
   --
-  * dataset_id : int <<FK>>
-  * owner_id : int <<FK>>
-  * support_id : int <<FK>>
-  * owner_name : nvarchar(100)
-  * owner_position : nvarchar(255)
-  * support_name : nvarchar(100)
-  * support_email : nvarchar(100)
-  * support_position : nvarchar(255)
-  department : nvarchar(255)
-  division : nvarchar(255)
-  branch : nvarchar(255)
-  unit : nvarchar(255)
+  * tag_id : int <<FK>>
+  * taggable_id : int - foreign key
+  * taggable_type : nvarchar(255)
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
@@ -78,12 +119,28 @@ entity "tags" {
   deleted_at : datetime2(0)
 }
 
-entity "taggings" {
+
+entity "user_group_memberships" {
   * id : int <<PK>>
   --
-  * tag_id : int <<FK>>
-  * taggable_id : int - foreign key
-  * taggable_type : nvarchar(255)
+  * userId : int <<FK>>
+  * department_id : int <<FK>>
+  division_id : int <<FK>>
+  branch_id : int <<FK>>
+  unit_id : int <<FK>>
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "user_groups" {
+  * id : int <<PK>>
+  --
+  * parent_id : int <<FK>>
+  name: nvarchar(255)
+  type: nvarchar(255)
+  order: number
+  last_division_directory_sync_at: datetime2(0)
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
@@ -107,47 +164,32 @@ entity "users" {
   deleted_at : datetime2(0)
 }
 
-entity "user_groups" {
-  * id : int <<PK>>
-  --
-  * parent_id : int <<FK>>
-  name: nvarchar(255)
-  type: nvarchar(255)
-  order: number
-  last_division_directory_sync_at: datetime2(0)
-  created_at : datetime2(0)
-  updated_at : datetime2(0)
-  deleted_at : datetime2(0)
-}
-
-entity "user_group_memberships" {
-  * id : int <<PK>>
-  --
-  * userId : int <<FK>>
-  * department_id : int <<FK>>
-  division_id : int <<FK>>
-  branch_id : int <<FK>>
-  unit_id : int <<FK>>
-  created_at : datetime2(0)
-  updated_at : datetime2(0)
-  deleted_at : datetime2(0)
-}
-
 ' Define relationships
-users }o--|| roles : user_id
-users }o--|| datasets : owner_id
-users }o--|| datasets : creator_id
-datasets }o--|| stewardship_evolutions : dataset_id
-users }o--|| stewardship_evolutions : owner_id
-users }o--|| stewardship_evolutions : support_id
-users |o--|| user_group_memberships : user_id
+access_grants }o--|| access_requests : access_grant_id
+datasets }o--|| access_grants : dataset_id
+datasets }o--|| dataset_fields : dataset_id
+datasets }o--|| taggings : taggable_id, tagging_type
+datasets |o--|| dataset_stewardships : dataset_id
+datasets }o--|| access_requests : dataset_id
+taggings ||--o{ tags : tag_id
+user_groups }o--|| dataset_stewardships : branch_id
+user_groups }o--|| dataset_stewardships : department_id
+user_groups }o--|| dataset_stewardships : division_id
+user_groups }o--|| dataset_stewardships : unit_id
+user_groups }o--|| user_group_memberships : branch_id
 user_groups }o--|| user_group_memberships : department_id
 user_groups }o--|| user_group_memberships : division_id
-user_groups }o--|| user_group_memberships : branch_id
 user_groups }o--|| user_group_memberships : unit_id
-datasets }o--|| taggings : taggable_id, tagging_type
-taggings ||--o{ tags : tag_id
-datasets }o--|| access_grants : dataset_id
 users }o--|| access_grants : owner_id
-users }o--|| access_grants : requestor_id
+users }o--|| access_grants : support_id
+users }o--|| access_requests : requestor_id
+users }o--|| access_requests : denier_id
+users }o--|| access_requests : approver_id
+users }o--|| access_requests : revoker_id
+users }o--|| dataset_stewardships : owner_id
+users }o--|| dataset_stewardships : support_id
+users }o--|| datasets : creator_id
+users }o--|| datasets : owner_id
+users }o--|| roles : user_id
+users |o--|| user_group_memberships : user_id
 @enduml

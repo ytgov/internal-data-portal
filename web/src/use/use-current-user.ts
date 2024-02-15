@@ -1,7 +1,9 @@
 import { computed, reactive, toRefs } from "vue"
 
 import { sleep } from "@/utils/sleep"
-import usersApi, { User } from "@/api/users-api"
+import usersApi, { RoleTypes, type User } from "@/api/users-api"
+
+export { RoleTypes, User }
 
 // Global state
 const state = reactive<{

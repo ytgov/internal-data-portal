@@ -18,6 +18,7 @@ import jwtMiddleware from "@/middlewares/jwt-middleware"
 import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middleware"
 
 import {
+  AccessGrantsController,
   CurrentUserController,
   DatasetFieldsController,
   DatasetsController,
@@ -54,6 +55,15 @@ router
   .patch(DatasetsController.update)
 
 router
+  .route("/api/access-grants")
+  .get(AccessGrantsController.index)
+  .post(AccessGrantsController.create)
+router
+  .route("/api/access-grants/:accessGrantId")
+  .patch(AccessGrantsController.update)
+  .delete(AccessGrantsController.destroy)
+
+router
   .route("/api/dataset-fields")
   .get(DatasetFieldsController.index)
   .post(DatasetFieldsController.create)
@@ -67,6 +77,7 @@ router
   .patch(DatasetStewardshipsController.update)
 
 router.route("/api/users").get(UsersController.index)
+router.route("/api/users/:userId").get(UsersController.show)
 router
   .route("/api/users/:userId/yukon-government-directory-sync")
   .post(Users.YukonGovernmentDirectorySyncController.create)

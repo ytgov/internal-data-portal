@@ -1,7 +1,9 @@
 import { type Ref, reactive, unref, watch, toRefs } from "vue"
-
-import usersApi, { User } from "@/api/users-api"
 import { isNil } from "lodash"
+
+import usersApi, { type User } from "@/api/users-api"
+
+export { type User }
 
 export function useUser(
   id: Ref<number | undefined>,
