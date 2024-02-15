@@ -44,13 +44,10 @@
           </v-row>
           <v-row>
             <v-col>
-              <!-- <v-select
-                v-model="accessGrant.dataType"
-                :items="accessGrantTypes"
-                :rules="[required]"
-                label="Data Type *"
-                required
-              /> -->
+              <v-checkbox
+                v-model="accessGrant.isProjectDescriptionRequired"
+                label="Project Description Required?"
+              />
             </v-col>
           </v-row>
         </v-card-text>

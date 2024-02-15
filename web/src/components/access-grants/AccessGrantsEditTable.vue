@@ -33,6 +33,11 @@
         :user-id="value"
       />
     </template>
+    <template #item.isProjectDescriptionRequired="{ value }">
+      <div class="d-flex justify-center align-center">
+        <v-chip :color="value ? 'success' : 'error'">{{ value ? "Yes" : "No" }}</v-chip>
+      </div>
+    </template>
     <template #item.actions="{ item }">
       <div class="d-flex justify-end align-center">
         <v-btn
@@ -79,7 +84,7 @@ const headers = ref([
   { title: "Shared With", key: "grantLevel" },
   { title: "Access Type", key: "accessType" },
   { title: "Request Email", key: "supportId" },
-  { title: "Project Desciption Required?", key: "projectDescriptionRequired" },
+  { title: "Project Desciption Required?", key: "isProjectDescriptionRequired" },
   { title: "", key: "actions" },
 ])
 
