@@ -77,6 +77,7 @@ router
   .patch(DatasetStewardshipsController.update)
 
 router.route("/api/users").get(UsersController.index)
+router.route("/api/users/:userId").get(UsersController.show)
 router
   .route("/api/users/:userId/yukon-government-directory-sync")
   .post(Users.YukonGovernmentDirectorySyncController.create)
