@@ -14,12 +14,10 @@
         <v-card-text>
           <v-row>
             <v-col>
-              <!-- TODO: refactor to common component -->
-              <v-select
+              <AccessGrantGrantLevelSelect
                 v-model="accessGrant.grantLevel"
-                :items="Object.values(GrantLevels)"
                 :rules="[required]"
-                label="Grant Level *"
+                label="Shared With *"
                 required
               />
             </v-col>
@@ -86,8 +84,10 @@ import { cloneDeep } from "lodash"
 import { VForm } from "vuetify/lib/components/index.mjs"
 
 import { required } from "@/utils/validators"
-import accessGrantsApi, { AccessGrant, GrantLevels } from "@/api/access-grants-api"
+import accessGrantsApi, { AccessGrant } from "@/api/access-grants-api"
 import useSnack from "@/use/use-snack"
+
+import AccessGrantGrantLevelSelect from "@/components/access-grants/AccessGrantGrantLevelSelect.vue"
 
 const emit = defineEmits(["saved"])
 

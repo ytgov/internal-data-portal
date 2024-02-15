@@ -18,6 +18,9 @@
         @deleted="refresh"
       />
     </template>
+    <template #item.grantLevel="{ value }">
+      {{ formatGrantLevel(value) }}
+    </template>
     <template #item.actions="{ item }">
       <div class="d-flex justify-end align-center">
         <v-btn
@@ -44,6 +47,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue"
 import { useRoute } from "vue-router"
+import { useI18n } from "vue-i18n"
 import { isNil } from "lodash"
 
 import useAccessGrants, { AccessGrant } from "@/use/use-access-grants"
@@ -59,8 +63,14 @@ const props = defineProps({
 })
 
 const headers = ref([
-  { title: "Shared with", key: "grantLevel" },
+  { title: "Shared With", key: "grantLevel" },
   { title: "Access Type", key: "accessType" },
+  /*
+    TODO: check if requestorId is modeled correclty
+    I think it might actually mean the email that access requests go to
+    so should actually come from somewhere else, like the Dataset#owner.email
+    or DatasetStewardship#support.email or DatasetStewardship#owner.email
+  */
   { title: "Request Email", key: "requestorId" },
   { title: "Project Desciption Required?", key: "projectDescriptionRequired" },
   { title: "", key: "actions" },
@@ -76,8 +86,15 @@ const datasetsQuery = computed(() => ({
   perPage: itemsPerPage.value,
   page: page.value,
 }))
-
 const { accessGrants, totalCount, isLoading, refresh } = useAccessGrants(datasetsQuery)
+
+const { t } = useI18n()
+
+function formatGrantLevel(grantLevel: string | undefined) {
+  if (grantLevel === undefined) return
+
+  return t(`access_grants.grant_levels.${grantLevel}`, grantLevel)
+}
 
 const editDialog = ref<InstanceType<typeof AccessGrantEditDialog> | null>(null)
 const deleteDialog = ref<InstanceType<typeof AccessGrantDeleteDialog> | null>(null)
@@ -96,9 +113,7 @@ function showEditDialogForRouteQuery() {
   const accessGrantId = parseInt(route.query.showEdit)
   if (isNaN(accessGrantId)) return
 
-  const accessGrant = accessGrants.value.find(
-    (accessGrant) => accessGrant.id === accessGrantId
-  )
+  const accessGrant = accessGrants.value.find((accessGrant) => accessGrant.id === accessGrantId)
   if (isNil(accessGrant)) return
 
   showEditDialog(accessGrant)
@@ -110,9 +125,7 @@ function showDeleteDialogForRouteQuery() {
   const accessGrantId = parseInt(route.query.showDelete)
   if (isNaN(accessGrantId)) return
 
-  const accessGrant = accessGrants.value.find(
-    (accessGrant) => accessGrant.id === accessGrantId
-  )
+  const accessGrant = accessGrants.value.find((accessGrant) => accessGrant.id === accessGrantId)
   if (isNil(accessGrant)) return
 
   showDeleteDialog(accessGrant)

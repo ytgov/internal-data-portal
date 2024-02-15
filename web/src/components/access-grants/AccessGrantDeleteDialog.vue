@@ -13,11 +13,8 @@
         <v-card-text v-else>
           <v-row>
             <v-col>
-              <!-- TODO: refactor to common component -->
-              <v-select
+              <AccessGrantGrantLevelSelect
                 v-model="accessGrant.grantLevel"
-                :items="Object.values(GrantLevels)"
-                label="Grant Level"
                 readonly
               />
             </v-col>
@@ -82,8 +79,10 @@ import { isNil, cloneDeep } from "lodash"
 
 import { VForm } from "vuetify/lib/components/index.mjs"
 
-import accessGrantsApi, { AccessGrant, GrantLevels } from "@/api/access-grants-api"
+import accessGrantsApi, { AccessGrant } from "@/api/access-grants-api"
 import useSnack from "@/use/use-snack"
+
+import AccessGrantGrantLevelSelect from "@/components/access-grants/AccessGrantGrantLevelSelect.vue"
 
 const emit = defineEmits(["deleted"])
 
