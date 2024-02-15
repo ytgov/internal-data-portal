@@ -1,8 +1,12 @@
 import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
 
-import accessRequestsApi, { type AccessRequest } from "@/api/access-requests-api"
+import accessRequestsApi, {
+  AccessRequestTableStatuses,
+  type AccessRequest,
+  type AccessRequestTableView,
+} from "@/api/access-requests-api"
 
-export { type AccessRequest }
+export { AccessRequestTableStatuses, type AccessRequest, type AccessRequestTableView }
 
 export function useAccessRequests(
   queryOptions: Ref<{
@@ -12,7 +16,7 @@ export function useAccessRequests(
   }> = ref({})
 ) {
   const state = reactive<{
-    accessRequests: AccessRequest[]
+    accessRequests: AccessRequestTableView[]
     totalCount: number
     isLoading: boolean
     isErrored: boolean
@@ -23,7 +27,7 @@ export function useAccessRequests(
     isErrored: false,
   })
 
-  async function fetch(): Promise<AccessRequest[]> {
+  async function fetch(): Promise<AccessRequestTableView[]> {
     state.isLoading = true
     try {
       const { accessRequests, totalCount } = await accessRequestsApi.list(unref(queryOptions))

@@ -27,7 +27,7 @@
     </template>
     <template #item.actions="{ item }">
       <v-btn
-        v-if="item.status === 'access_granted'"
+        v-if="item.status === AccessRequestTableStatuses.ACCESS_GRANTED"
         color="error"
         variant="outlined"
         @click="showRevokeDialog(item)"
@@ -35,7 +35,7 @@
         Revoke
       </v-btn>
       <div
-        v-else-if="item.status === 'access_pending'"
+        v-else-if="item.status === AccessRequestTableStatuses.ACCESS_REQUESTED"
         class="d-flex justify-end align-center"
       >
         <v-btn
@@ -66,7 +66,7 @@ import { useRoute } from "vue-router"
 import { useI18n } from "vue-i18n"
 import { isNil } from "lodash"
 
-import useAccessRequests, { AccessRequest } from "@/use/use-access-requests"
+import useAccessRequests, { type AccessRequestTableView, AccessRequestTableStatuses } from "@/use/use-access-requests"
 
 import AccessRequestRevokeDialog from "@/components/access-requests/AccessRequestRevokeDialog.vue"
 import AccessRequestApproveDialog from "@/components/access-requests/AccessRequestApproveDialog.vue"
@@ -80,14 +80,11 @@ const props = defineProps({
 })
 
 const headers = ref([
-  { title: "First Name", key: "requestorId" },
-  { title: "Last Name", key: "requestorId" },
-  // Department through User -> UserGroupMembership#departmentId -> UserGroup#name
-  { title: "Department", key: "requestorId" },
+  { title: "First Name", key: "requestorFirstName" },
+  { title: "Last Name", key: "requestorLastName" },
+  { title: "Department", key: "requestorDepartmentName" },
   { title: "Use", key: "projectDescription" },
-  // Access Type through AccessRequest#accessGrantId -> AccessGrant#accessType
   { title: "Access Type", key: "accessType" },
-  // Status generated from approvedAt/deniedAt
   { title: "Status", key: "status" },
   { title: "License", key: "accessCode" },
   { title: "", key: "actions" },
@@ -99,6 +96,8 @@ const page = ref(1)
 const datasetsQuery = computed(() => ({
   where: {
     datasetId: props.datasetId,
+    revokedAt: null,
+    deniedAt: null,
   },
   perPage: itemsPerPage.value,
   page: page.value,
@@ -117,15 +116,15 @@ const revokeDialog = ref<InstanceType<typeof AccessRequestRevokeDialog> | null>(
 const approveDialog = ref<InstanceType<typeof AccessRequestApproveDialog> | null>(null)
 const denyDialog = ref<InstanceType<typeof AccessRequestDenyDialog> | null>(null)
 
-function showRevokeDialog(accessRequest: AccessRequest) {
+function showRevokeDialog(accessRequest: AccessRequestTableView) {
   revokeDialog.value?.show(accessRequest)
 }
 
-function showDenyDialog(accessRequest: AccessRequest) {
+function showDenyDialog(accessRequest: AccessRequestTableView) {
   denyDialog.value?.show(accessRequest)
 }
 
-function showApproveDialog(accessRequest: AccessRequest) {
+function showApproveDialog(accessRequest: AccessRequestTableView) {
   approveDialog.value?.show(accessRequest)
 }
 

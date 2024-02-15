@@ -41,15 +41,15 @@ import { computed, nextTick, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { cloneDeep } from "lodash"
 
-import accessRequestsApi, { AccessRequest } from "@/api/access-requests-api"
+import accessRequestsApi, { AccessRequestTableView } from "@/api/access-requests-api"
 import useSnack from "@/use/use-snack"
 
 const emit = defineEmits(["approved"])
 
 const snack = useSnack()
 
-const accessRequest = ref<Partial<AccessRequest>>({})
-const accessRequestId = computed(() => accessRequest.value.id)
+const accessRequest = ref<AccessRequestTableView | null>()
+const accessRequestId = computed(() => accessRequest.value?.id)
 
 const router = useRouter()
 const route = useRoute()
@@ -72,7 +72,7 @@ watch(
   }
 )
 
-function show(newAccessRequest: AccessRequest) {
+function show(newAccessRequest: AccessRequestTableView) {
   accessRequest.value = cloneDeep(newAccessRequest)
   showDialog.value = true
 }
@@ -105,7 +105,7 @@ async function approveAndClose() {
 }
 
 function resetAccessRequest() {
-  accessRequest.value = {}
+  accessRequest.value = null
 }
 
 defineExpose({

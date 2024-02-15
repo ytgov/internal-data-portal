@@ -3,6 +3,7 @@ import http from "@/api/http-client"
 import { AccessGrant } from "@/api/access-grants-api"
 import { Dataset } from "@/api/datasets-api"
 import { User } from "@/api/users-api"
+import { UserGroup } from "@/api/user-groups-api"
 
 export type AccessRequest = {
   id: number
@@ -22,6 +23,22 @@ export type AccessRequest = {
   updatedAt: string
 }
 
+export enum AccessRequestTableStatuses {
+  ACCESS_DENIED = "access_denied",
+  ACCESS_GRANTED = "access_granted",
+  ACCESS_REQUESTED = "access_requested",
+  ACCESS_REVOKED = "access_revoked",
+}
+
+// Keep in sync with api/src/serializers/access-requests/table-serializer.ts
+export type AccessRequestTableView = Pick<AccessRequest, "id" | "createdAt" | "updatedAt"> & {
+  requestorFirstName: User["firstName"]
+  requestorLastName: User["lastName"]
+  requestorDepartmentName: UserGroup["name"]
+  accessType: AccessGrant["accessType"]
+  status: AccessRequestTableStatuses
+}
+
 export const accessRequestsApi = {
   async list({
     where,
@@ -32,7 +49,7 @@ export const accessRequestsApi = {
     page?: number
     perPage?: number
   } = {}): Promise<{
-    accessRequests: AccessRequest[]
+    accessRequests: AccessRequestTableView[]
     totalCount: number
   }> {
     const { data } = await http.get("/api/access-requests", {
