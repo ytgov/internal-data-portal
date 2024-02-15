@@ -19,6 +19,7 @@ import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middl
 
 import {
   AccessGrantsController,
+  AccessRequestsController,
   CurrentUserController,
   DatasetFieldsController,
   DatasetsController,
@@ -62,6 +63,8 @@ router
   .route("/api/access-grants/:accessGrantId")
   .patch(AccessGrantsController.update)
   .delete(AccessGrantsController.destroy)
+
+router.route("/api/access-requests").get(AccessRequestsController.index)
 
 router
   .route("/api/dataset-fields")
