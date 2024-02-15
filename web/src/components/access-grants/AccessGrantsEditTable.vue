@@ -24,6 +24,15 @@
     <template #item.accessType="{ value }">
       {{ formatAccessType(value) }}
     </template>
+    <template #item.requestorId="{ value }">
+      <template v-if="isNil(value)">
+        <!-- No requestor -->
+      </template>
+      <UserEmailChip
+        v-else
+        :user-id="value"
+      />
+    </template>
     <template #item.actions="{ item }">
       <div class="d-flex justify-end align-center">
         <v-btn
@@ -57,6 +66,7 @@ import useAccessGrants, { AccessGrant } from "@/use/use-access-grants"
 
 import AccessGrantEditDialog from "@/components/access-grants/AccessGrantEditDialog.vue"
 import AccessGrantDeleteDialog from "@/components/access-grants/AccessGrantDeleteDialog.vue"
+import UserEmailChip from "@/components/users/UserEmailChip.vue"
 
 const props = defineProps({
   datasetId: {
