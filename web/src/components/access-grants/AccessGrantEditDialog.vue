@@ -34,11 +34,12 @@
           </v-row>
           <v-row>
             <v-col>
-              <!-- <v-textarea
-                v-model="accessGrant.description"
-                label="Field Description"
-                rows="6"
-              /> -->
+              <UserAutocomplete
+                v-model="accessGrant.requestorId"
+                label="Request Email"
+                clearable
+                auto-select-first
+              />
             </v-col>
           </v-row>
           <v-row>
@@ -89,6 +90,7 @@ import useSnack from "@/use/use-snack"
 
 import AccessGrantGrantLevelSelect from "@/components/access-grants/AccessGrantGrantLevelSelect.vue"
 import AccessGrantAccessTypeSelect from "@/components/access-grants/AccessGrantAccessTypeSelect.vue"
+import UserAutocomplete from "@/components/users/UserAutocomplete.vue"
 
 const emit = defineEmits(["saved"])
 
