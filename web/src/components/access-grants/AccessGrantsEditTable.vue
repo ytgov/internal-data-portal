@@ -21,6 +21,9 @@
     <template #item.grantLevel="{ value }">
       {{ formatGrantLevel(value) }}
     </template>
+    <template #item.accessType="{ value }">
+      {{ formatAccessType(value) }}
+    </template>
     <template #item.actions="{ item }">
       <div class="d-flex justify-end align-center">
         <v-btn
@@ -94,6 +97,12 @@ function formatGrantLevel(grantLevel: string | undefined) {
   if (grantLevel === undefined) return
 
   return t(`access_grants.grant_levels.${grantLevel}`, grantLevel)
+}
+
+function formatAccessType(accessType: string | undefined) {
+  if (accessType === undefined) return
+
+  return t(`access_grants.access_types.${accessType}`, accessType)
 }
 
 const editDialog = ref<InstanceType<typeof AccessGrantEditDialog> | null>(null)

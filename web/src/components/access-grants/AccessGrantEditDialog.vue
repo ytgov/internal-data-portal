@@ -24,12 +24,12 @@
           </v-row>
           <v-row>
             <v-col>
-              <!-- <v-text-field
-                v-model="accessGrant.displayName"
+              <AccessGrantAccessTypeSelect
+                v-model="accessGrant.accessType"
                 :rules="[required]"
-                label="Display Name *"
+                label="Access Type *"
                 required
-              /> -->
+              />
             </v-col>
           </v-row>
           <v-row>
@@ -88,6 +88,7 @@ import accessGrantsApi, { AccessGrant } from "@/api/access-grants-api"
 import useSnack from "@/use/use-snack"
 
 import AccessGrantGrantLevelSelect from "@/components/access-grants/AccessGrantGrantLevelSelect.vue"
+import AccessGrantAccessTypeSelect from "@/components/access-grants/AccessGrantAccessTypeSelect.vue"
 
 const emit = defineEmits(["saved"])
 

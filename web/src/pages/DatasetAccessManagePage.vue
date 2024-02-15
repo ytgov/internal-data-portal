@@ -15,6 +15,7 @@
   </v-row>
   <v-row>
     <v-col cols="12">
+      TODO: Replace boilderplate with Subscriptions card
       <v-skeleton-loader
         type="table"
         boilerplate
