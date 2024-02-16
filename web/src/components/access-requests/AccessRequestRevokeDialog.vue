@@ -17,16 +17,17 @@
                 :model-value="accessRequest.requestorId"
                 label="Name"
                 attribute="displayName"
+                variant="outlined"
                 readonly
               />
             </v-col>
           </v-row>
           <v-row>
             <v-col>
-              <!-- Or use UserGroupSelect -> accessRequest.requestor.departmentId -->
               <v-text-field
                 :model-value="accessRequest.requestorDepartmentName"
                 label="Department"
+                variant="outlined"
                 readonly
               />
             </v-col>
@@ -36,15 +37,18 @@
               <v-text-field
                 :model-value="accessRequest.projectName"
                 label="Request on Behalf Of (Program/App)"
+                variant="outlined"
                 readonly
               />
             </v-col>
           </v-row>
           <v-row>
             <v-col>
-              <v-text-field
+              <v-textarea
                 :model-value="accessRequest.projectDescription"
                 label="Project Description"
+                rows="5"
+                variant="outlined"
                 readonly
               />
             </v-col>
@@ -64,6 +68,7 @@
             :loading="isLoading"
             color="error"
             type="submit"
+            variant="elevated"
           >
             Revoke
           </v-btn>

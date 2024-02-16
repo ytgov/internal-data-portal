@@ -7,9 +7,51 @@
       <v-card :loading="isLoading">
         <v-card-title class="text-h5"> Approve Access </v-card-title>
 
-        <v-card-text>
+        <v-card-text v-if="isNil(accessRequest)">
+          <v-skeleton-loader type="card" />
+        </v-card-text>
+        <v-card-text v-else>
           <v-row>
-            <v-col> TODO: add info </v-col>
+            <v-col>
+              <UserAttributeTextField
+                :model-value="accessRequest.requestorId"
+                label="Name"
+                attribute="displayName"
+                variant="outlined"
+                readonly
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-text-field
+                :model-value="accessRequest.requestorDepartmentName"
+                label="Department"
+                variant="outlined"
+                readonly
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-text-field
+                :model-value="accessRequest.projectName"
+                label="Request on Behalf Of (Program/App)"
+                variant="outlined"
+                readonly
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-textarea
+                :model-value="accessRequest.projectDescription"
+                label="Project Description"
+                rows="5"
+                variant="outlined"
+                readonly
+              />
+            </v-col>
           </v-row>
         </v-card-text>
 
@@ -18,7 +60,6 @@
           <v-btn
             :loading="isLoading"
             color="error"
-            variant="outlined"
             @click="close"
           >
             Cancel
@@ -27,6 +68,7 @@
             :loading="isLoading"
             color="success"
             type="submit"
+            variant="elevated"
           >
             Approve
           </v-btn>
@@ -39,10 +81,12 @@
 <script lang="ts" setup>
 import { computed, nextTick, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { cloneDeep } from "lodash"
+import { cloneDeep, isNil } from "lodash"
 
 import accessRequestsApi, { AccessRequestTableView } from "@/api/access-requests-api"
 import useSnack from "@/use/use-snack"
+
+import UserAttributeTextField from "@/components/users/UserAttributeTextField.vue"
 
 const emit = defineEmits(["approved"])
 
