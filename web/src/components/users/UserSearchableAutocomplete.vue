@@ -20,12 +20,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
-import { debounce, isEmpty } from "lodash"
+import { ref, watch } from "vue"
+import { debounce, isEmpty, isNil } from "lodash"
 
 import useUsers from "@/use/use-users"
 
-defineProps<{
+const props = defineProps<{
   modelValue: number | null | undefined
 }>()
 
@@ -34,10 +34,32 @@ const emit = defineEmits<{
 }>()
 
 const searchToken = ref("")
-const usersQuery = ref({
+const usersQuery = ref<{
+  where?: Record<string, unknown>
+  perPage: number
+}>({
   perPage: 5,
 })
-const { users, isLoading, search } = useUsers(usersQuery, { isWatchEnabled: false })
+const { users, isLoading, search, refresh } = useUsers(usersQuery, { isWatchEnabled: false })
+
+watch(
+  () => props.modelValue,
+  async (newValue) => {
+    if (isNil(newValue)) return
+
+    const isExistingUser = users.value.some((user) => user.id === newValue)
+    if (isExistingUser) return
+
+    usersQuery.value.where = {
+      id: newValue,
+    }
+    await refresh()
+    delete usersQuery.value.where
+  },
+  {
+    immediate: true,
+  }
+)
 
 function updateModelValue(value: number | undefined) {
   emit("update:modelValue", value)
