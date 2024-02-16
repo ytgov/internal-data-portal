@@ -33,7 +33,7 @@ export enum AccessRequestTableStatuses {
 // Keep in sync with api/src/serializers/access-requests/table-serializer.ts
 export type AccessRequestTableView = Pick<
   AccessRequest,
-  "id" | "accessCode" | "projectDescription" | "createdAt" | "updatedAt"
+  "id" | "requestorId" | "accessCode" | "projectDescription" | "createdAt" | "updatedAt"
 > & {
   requestorFirstName: User["firstName"]
   requestorLastName: User["lastName"]

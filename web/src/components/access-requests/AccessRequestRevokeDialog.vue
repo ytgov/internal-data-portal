@@ -7,9 +7,19 @@
       <v-card :loading="isLoading">
         <v-card-title class="text-h5"> Revoke Access </v-card-title>
 
-        <v-card-text>
+        <v-card-text v-if="isNil(accessRequest)">
+          <v-skeleton-loader type="card" />
+        </v-card-text>
+        <v-card-text v-else>
           <v-row>
-            <v-col> TODO: add info </v-col>
+            <v-col>
+              <UserAttributeTextField
+                :model-value="accessRequest.requestorId"
+                label="Name"
+                item-title="displayName"
+                readonly
+              />
+            </v-col>
           </v-row>
         </v-card-text>
 
@@ -18,7 +28,6 @@
           <v-btn
             :loading="isLoading"
             color="primary"
-            variant="outlined"
             @click="close"
           >
             Cancel
@@ -39,10 +48,12 @@
 <script lang="ts" setup>
 import { computed, nextTick, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { cloneDeep } from "lodash"
+import { cloneDeep, isNil } from "lodash"
 
 import accessRequestsApi, { AccessRequestTableView } from "@/api/access-requests-api"
 import useSnack from "@/use/use-snack"
+
+import UserAttributeTextField from "@/components/users/UserAttributeTextField.vue"
 
 const emit = defineEmits(["revoked"])
 
