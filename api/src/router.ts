@@ -99,6 +99,9 @@ router.route("/api/qa-scenarios/link-random-tags").post(QaScenarios.LinkRandomTa
 router
   .route("/api/qa-scenarios/apply-random-access-grants")
   .post(QaScenarios.ApplyRandomAccessGrantsController.create)
+router
+  .route("/api/qa-scenarios/add-random-access-requests")
+  .post(QaScenarios.AddRandomAccessRequestsController.create)
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {

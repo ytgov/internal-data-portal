@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    class="mx-auto"
-    max-width="300"
-  >
+  <v-card class="mx-auto">
     <v-card-title>QA Scenarios</v-card-title>
     <v-divider
       :thickness="1"
@@ -52,6 +49,10 @@ const scenarios = ref<Scenario[]>([
     url: "/api/qa-scenarios/apply-random-access-grants",
     label: "Apply Random Access Grants",
   },
+  {
+    url: "/api/qa-scenarios/add-random-access-requests",
+    label: "Add Random Subscriptions (Access Requests)",
+  },
 ])
 
 async function triggerScenario(scenario: Scenario) {
@@ -59,7 +60,7 @@ async function triggerScenario(scenario: Scenario) {
   try {
     const { data } = await http.post(scenario.url)
     snack.notify(data.message, { color: "success" })
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error instanceof Error) {
       console.error(error)
       snack.notify(error.message, { color: "error" })
