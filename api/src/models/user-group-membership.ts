@@ -11,6 +11,7 @@ import {
   NonAttribute,
   Association,
 } from "sequelize"
+import { isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
 
@@ -101,16 +102,6 @@ UserGroupMembership.init(
         key: "id",
       },
       allowNull: true,
-      validate: {
-        async isDepartment(value: number | null) {
-          if (value === null) return
-
-          const department = await UserGroup.findByPk(value)
-          if (department && department.type === UserGroupTypes.DEPARTMENT) return
-
-          throw new Error("departmentId does not reference a valid department")
-        },
-      },
     },
     divisionId: {
       type: DataTypes.INTEGER,
@@ -119,16 +110,6 @@ UserGroupMembership.init(
         key: "id",
       },
       allowNull: true,
-      validate: {
-        async isDivision(value: number | null) {
-          if (value === null) return
-
-          const division = await UserGroup.findByPk(value)
-          if (division && division.type === UserGroupTypes.DIVISION) return
-
-          throw new Error("divisionId does not reference a valid division")
-        },
-      },
     },
     branchId: {
       type: DataTypes.INTEGER,
@@ -137,16 +118,6 @@ UserGroupMembership.init(
         key: "id",
       },
       allowNull: true,
-      validate: {
-        async isBranch(value: number | null) {
-          if (value === null) return
-
-          const branch = await UserGroup.findByPk(value)
-          if (branch && branch.type === UserGroupTypes.BRANCH) return
-
-          throw new Error("branchId does not reference a valid branch")
-        },
-      },
     },
     unitId: {
       type: DataTypes.INTEGER,
@@ -155,16 +126,6 @@ UserGroupMembership.init(
         key: "id",
       },
       allowNull: true,
-      validate: {
-        async isUnit(value: number | null) {
-          if (value === null) return
-
-          const unit = await UserGroup.findByPk(value)
-          if (unit && unit.type === UserGroupTypes.UNIT) return
-
-          throw new Error("unitId does not reference a valid unit")
-        },
-      },
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -181,7 +142,62 @@ UserGroupMembership.init(
       allowNull: true,
     },
   },
-  { sequelize }
+  {
+    sequelize,
+    validate: {
+      async validUserGroupings(this: UserGroupMembership) {
+        if (isNil(this.departmentId)) {
+          throw new Error("departmentId cannot be null")
+        }
+
+        const ids = [this.departmentId, this.divisionId, this.branchId, this.unitId]
+          .map((id) => Number(id))
+          .filter((id) => !isNaN(id) && id > 0)
+        const userGroups = await UserGroup.findAll({
+          where: {
+            id: ids,
+          },
+        })
+        const potentialDepartment = userGroups.find(
+          (userGroup) =>
+            userGroup.id === this.departmentId && userGroup.type === UserGroupTypes.DEPARTMENT
+        )
+        if (isNil(potentialDepartment)) {
+          throw new Error("departmentId does not reference a valid department")
+        }
+
+        if (!isNil(this.division)) {
+          const potentialDivision = userGroups.find(
+            (userGroup) =>
+              userGroup.id === this.divisionId && userGroup.type === UserGroupTypes.DIVISION
+          )
+          if (isNil(potentialDivision) || potentialDivision.parentId !== this.departmentId) {
+            throw new Error("divisionId does not reference a valid division")
+          }
+
+          if (!isNil(this.branchId)) {
+            const potentialBranch = userGroups.find(
+              (userGroup) =>
+                userGroup.id === this.branchId && userGroup.type === UserGroupTypes.BRANCH
+            )
+            if (isNil(potentialBranch) || potentialBranch.parentId !== this.divisionId) {
+              throw new Error("branchId does not reference a valid branch")
+            }
+
+            if (!isNil(this.unitId)) {
+              const potentialUnit = userGroups.find(
+                (userGroup) =>
+                  userGroup.id === this.unitId && userGroup.type === UserGroupTypes.UNIT
+              )
+              if (isNil(potentialUnit) || potentialUnit.parentId !== this.branchId) {
+                throw new Error("unitId does not reference a valid unit")
+              }
+            }
+          }
+        }
+      },
+    },
+  }
 )
 
 export default UserGroupMembership
