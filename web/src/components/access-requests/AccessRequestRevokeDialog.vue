@@ -16,7 +16,7 @@
               <UserAttributeTextField
                 :model-value="accessRequest.requestorId"
                 label="Name"
-                item-title="displayName"
+                attribute="displayName"
                 readonly
               />
             </v-col>

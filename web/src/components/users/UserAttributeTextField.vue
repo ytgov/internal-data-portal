@@ -14,13 +14,15 @@ import { isNil } from "lodash"
 
 import useUser, { type User } from "@/use/use-user"
 
+export type AttributeType = keyof User & ("firstName" | "lastName" | "email" | "displayName")
+
 const props = withDefaults(
   defineProps<{
-    modelValue: number
-    itemTitle: keyof User
+    modelValue: number | null | undefined
+    attribute?: AttributeType
   }>(),
   {
-    itemTitle: "displayName",
+    attribute: "displayName",
   }
 )
 
@@ -36,6 +38,6 @@ const fieldValue = computed(() => {
     return `Unknown User#${props.modelValue}`
   }
 
-  return user.value[props.itemTitle]
+  return user.value[props.attribute]
 })
 </script>
