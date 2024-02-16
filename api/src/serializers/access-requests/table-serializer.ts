@@ -11,7 +11,10 @@ export enum AccessRequestTableStatuses {
 }
 
 // Keep in sync with web/src/api/access-requests-api.ts
-export type AccessRequestTableView = Pick<AccessRequest, "id" | "createdAt" | "updatedAt"> & {
+export type AccessRequestTableView = Pick<
+  AccessRequest,
+  "id" | "projectDescription" | "createdAt" | "updatedAt"
+> & {
   requestorFirstName: User["firstName"]
   requestorLastName: User["lastName"]
   requestorDepartmentName: UserGroup["name"]
@@ -48,7 +51,7 @@ export class TableSerializer extends BaseSerializer<AccessRequest> {
       throw new Error("AccessRequest must include an access grant.")
     }
     return {
-      ...pick(this.record.dataValues, ["id", "createdAt", "updatedAt"]),
+      ...pick(this.record.dataValues, ["id", "projectDescription", "createdAt", "updatedAt"]),
       requestorFirstName: requestor.firstName,
       requestorLastName: requestor.lastName,
       requestorDepartmentName: requestorDepartment.name,
