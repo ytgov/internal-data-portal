@@ -6,11 +6,17 @@
     label="User by Email"
     item-value="id"
     item-title="email"
+    prepend-inner-icon="mdi-magnify"
     auto-select-first
     v-bind="$attrs"
     @update:model-value="updateModelValue"
     @update:search="debouncedSearch"
-  />
+    @click:clear="clearUsers"
+  >
+    <template #prepend-item>
+      <v-list-item><em>Search for a user ...</em></v-list-item>
+    </template>
+  </v-autocomplete>
 </template>
 
 <script lang="ts" setup>
@@ -23,27 +29,31 @@ defineProps<{
   modelValue: number | null | undefined
 }>()
 
-const usersQuery = ref({
-  perPage: 100,
-})
-const { users, isLoading, search, refresh } = useUsers(usersQuery)
-
 const emit = defineEmits<{
   "update:modelValue": [value: number | undefined]
 }>()
+
+const searchToken = ref("")
+const usersQuery = ref({
+  perPage: 5,
+})
+const { users, isLoading, search } = useUsers(usersQuery, { isWatchEnabled: false })
 
 function updateModelValue(value: number | undefined) {
   emit("update:modelValue", value)
 }
 
-const debouncedSearch = debounce((searchToken: string) => {
-  if (isEmpty(searchToken)) {
-    usersQuery.value.perPage = 100
-    refresh()
-    return
-  }
+const debouncedSearch = debounce((newSearchToken: string) => {
+  const isStaleSearch = users.value.some((user) => user.email === newSearchToken)
+  if (isStaleSearch) return
 
-  usersQuery.value.perPage = 10
-  search(searchToken)
+  searchToken.value = newSearchToken
+  if (isEmpty(searchToken.value)) return
+
+  search(searchToken.value)
 }, 300)
+
+function clearUsers() {
+  users.value = []
+}
 </script>

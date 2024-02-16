@@ -7,7 +7,12 @@ export function useUsers(
     where?: Record<string, unknown>
     page?: number
     perPage?: number
-  }> = ref({})
+  }> = ref({}),
+  {
+    isWatchEnabled = true,
+  }: {
+    isWatchEnabled?: boolean
+  } = {}
 ) {
   const state = reactive<{
     users: User[]
@@ -51,13 +56,15 @@ export function useUsers(
     }
   }
 
-  watch(
-    () => unref(options),
-    async () => {
-      await fetch()
-    },
-    { deep: true, immediate: true }
-  )
+  if (isWatchEnabled === true) {
+    watch(
+      () => unref(options),
+      async () => {
+        await fetch()
+      },
+      { deep: true, immediate: true }
+    )
+  }
 
   return {
     ...toRefs(state),
