@@ -21,6 +21,34 @@
               />
             </v-col>
           </v-row>
+          <v-row>
+            <v-col>
+              <!-- Or use UserGroupSelect -> accessRequest.requestor.departmentId -->
+              <v-text-field
+                :model-value="accessRequest.requestorDepartmentName"
+                label="Department"
+                readonly
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-text-field
+                :model-value="accessRequest.projectName"
+                label="Request on Behalf Of (Program/App)"
+                readonly
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-text-field
+                :model-value="accessRequest.projectDescription"
+                label="Project Description"
+                readonly
+              />
+            </v-col>
+          </v-row>
         </v-card-text>
 
         <v-card-actions>
