@@ -2,13 +2,8 @@
   <h4 class="d-flex justify-space-between align-end text-h4 mt-4">
     Fields
 
-    <v-skeleton-loader
-      v-if="isNil(dataset)"
-      type="button"
-    />
     <DatasetFieldCreateDialog
-      v-else
-      :dataset-id="dataset.id"
+      :dataset-id="dataset?.id"
       @created="refreshTable"
     />
   </h4>

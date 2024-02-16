@@ -2,13 +2,8 @@
   <v-card>
     <v-card-title class="d-flex justify-space-between align-end">
       Access
-      <v-skeleton-loader
-        v-if="isNil(dataset)"
-        type="button"
-      />
       <AccessGrantCreateDialog
-        v-else
-        :dataset-id="dataset.id"
+        :dataset-id="dataset?.id"
         @created="refreshTable"
       />
     </v-card-title>

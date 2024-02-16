@@ -99,7 +99,7 @@ import UserSearchableAutocomplete from "@/components/users/UserSearchableAutocom
 const props = defineProps({
   datasetId: {
     type: Number,
-    required: true,
+    default: () => null,
   },
 })
 

@@ -4,10 +4,7 @@
       Subscriptions
 
       <!-- TODO: replace boilerplate with Email Users button -->
-      <v-skeleton-loader
-        type="button"
-        boilerplate
-      />
+      <v-btn @click="emailUsers">TODO: Email Users</v-btn>
     </v-card-title>
     <v-card-text>
       <v-skeleton-loader
@@ -39,4 +36,8 @@ const props = defineProps({
 
 const { slug } = toRefs(props)
 const { dataset } = useDataset(slug)
+
+function emailUsers() {
+  alert("TODO: Email Users")
+}
 </script>
