@@ -77,6 +77,23 @@ export const usersApi = {
     const { data } = await http.get(`/api/users/${id}`)
     return data
   },
+
+  // Special Endpoints
+  async search(
+    searchToken: string,
+    {
+      page,
+      perPage,
+    }: {
+      page?: number
+      perPage?: number
+    } = {}
+  ): Promise<{ users: User[]; totalCount: number }> {
+    const { data } = await http.get(`/api/users/search/${searchToken}`, {
+      params: { page, perPage },
+    })
+    return data
+  },
 }
 
 export default usersApi

@@ -34,7 +34,7 @@
           </v-row>
           <v-row>
             <v-col>
-              <UserAutocomplete
+              <UserSearchableAutocomplete
                 v-model="accessGrant.supportId"
                 label="Request Email"
                 clearable
@@ -87,7 +87,7 @@ import useSnack from "@/use/use-snack"
 
 import AccessGrantGrantLevelSelect from "@/components/access-grants/AccessGrantGrantLevelSelect.vue"
 import AccessGrantAccessTypeSelect from "@/components/access-grants/AccessGrantAccessTypeSelect.vue"
-import UserAutocomplete from "@/components/users/UserAutocomplete.vue"
+import UserSearchableAutocomplete from "@/components/users/UserSearchableAutocomplete.vue"
 
 const emit = defineEmits(["saved"])
 

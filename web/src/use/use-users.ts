@@ -4,7 +4,7 @@ import usersApi, { type User } from "@/api/users-api"
 
 export function useUsers(
   options: Ref<{
-    where?: Record<string, any>
+    where?: Record<string, unknown>
     page?: number
     perPage?: number
   }> = ref({})
@@ -35,6 +35,22 @@ export function useUsers(
     }
   }
 
+  async function search(searchToken: string): Promise<User[]> {
+    state.isLoading = true
+    try {
+      const { users } = await usersApi.search(searchToken, unref(options))
+      state.isErrored = false
+      state.users = users
+      return users
+    } catch (error) {
+      console.error("User search failed:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
   watch(
     () => unref(options),
     async () => {
@@ -47,6 +63,7 @@ export function useUsers(
     ...toRefs(state),
     fetch,
     refresh: fetch,
+    search,
   }
 }
 

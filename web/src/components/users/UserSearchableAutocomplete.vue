@@ -9,18 +9,24 @@
     auto-select-first
     v-bind="$attrs"
     @update:model-value="updateModelValue"
+    @update:search="debouncedSearch"
   />
 </template>
 
 <script lang="ts" setup>
+import { ref } from "vue"
+import { debounce, isEmpty } from "lodash"
+
 import useUsers from "@/use/use-users"
 
 defineProps<{
   modelValue: number | null | undefined
 }>()
 
-// TODO: add user search, currently only loads 10 users.
-const { users, isLoading } = useUsers()
+const usersQuery = ref({
+  perPage: 100,
+})
+const { users, isLoading, search, refresh } = useUsers(usersQuery)
 
 const emit = defineEmits<{
   "update:modelValue": [value: number | undefined]
@@ -29,4 +35,15 @@ const emit = defineEmits<{
 function updateModelValue(value: number | undefined) {
   emit("update:modelValue", value)
 }
+
+const debouncedSearch = debounce((searchToken: string) => {
+  if (isEmpty(searchToken)) {
+    usersQuery.value.perPage = 100
+    refresh()
+    return
+  }
+
+  usersQuery.value.perPage = 10
+  search(searchToken)
+}, 300)
 </script>
