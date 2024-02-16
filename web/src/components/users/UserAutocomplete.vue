@@ -19,6 +19,7 @@ defineProps<{
   modelValue: number | null | undefined
 }>()
 
+// TODO: add user search, currently only loads 10 users.
 const { users, isLoading } = useUsers()
 
 const emit = defineEmits<{
