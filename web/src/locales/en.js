@@ -14,6 +14,14 @@ export default {
       no_access: "No Access",
     },
   },
+  access_requests: {
+    statuses: {
+      access_denied: "Access Denied",
+      access_granted: "Access Granted",
+      access_requested: "Access Requested",
+      access_revoked: "Access Revoked",
+    },
+  },
   datasets: {
     datasets_table: {
       actions: {

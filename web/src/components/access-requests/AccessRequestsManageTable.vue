@@ -25,6 +25,9 @@
     <template #item.accessType="{ value }">
       {{ formatAccessType(value) }}
     </template>
+    <template #item.status="{ value }">
+      {{ formatStatus(value) }}
+    </template>
     <template #item.actions="{ item }">
       <v-btn
         v-if="item.status === AccessRequestTableStatuses.ACCESS_GRANTED"
@@ -66,7 +69,10 @@ import { useRoute } from "vue-router"
 import { useI18n } from "vue-i18n"
 import { isNil } from "lodash"
 
-import useAccessRequests, { type AccessRequestTableView, AccessRequestTableStatuses } from "@/use/use-access-requests"
+import useAccessRequests, {
+  type AccessRequestTableView,
+  AccessRequestTableStatuses,
+} from "@/use/use-access-requests"
 
 import AccessRequestRevokeDialog from "@/components/access-requests/AccessRequestRevokeDialog.vue"
 import AccessRequestApproveDialog from "@/components/access-requests/AccessRequestApproveDialog.vue"
@@ -110,6 +116,12 @@ function formatAccessType(accessType: string | undefined) {
   if (accessType === undefined) return
 
   return t(`access_grants.access_types.${accessType}`, accessType)
+}
+
+function formatStatus(status: string | undefined) {
+  if (status === undefined) return
+
+  return t(`access_requests.statuses.${status}`, status)
 }
 
 const revokeDialog = ref<InstanceType<typeof AccessRequestRevokeDialog> | null>(null)
