@@ -19,6 +19,7 @@ import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middl
 
 import {
   AccessGrantsController,
+  AccessRequests,
   AccessRequestsController,
   CurrentUserController,
   DatasetFieldsController,
@@ -65,6 +66,15 @@ router
   .delete(AccessGrantsController.destroy)
 
 router.route("/api/access-requests").get(AccessRequestsController.index)
+router
+  .route("/api/access-requests/:accessRequestId/approve")
+  .post(AccessRequests.ApproveController.create)
+router
+  .route("/api/access-requests/:accessRequestId/deny")
+  .post(AccessRequests.DenyController.create)
+router
+  .route("/api/access-requests/:accessRequestId/revoke")
+  .post(AccessRequests.RevokeController.create)
 
 router
   .route("/api/dataset-fields")

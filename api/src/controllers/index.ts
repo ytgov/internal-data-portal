@@ -9,6 +9,7 @@ export { TagsController } from "./tags-controller"
 export { UserGroupsController } from "./user-groups-controller"
 export { UsersController } from "./users-controller"
 
+export * as AccessRequests from "./access-requests"
 export * as Users from "./users"
 export * as UserGroups from "./user-groups"
 export * as QaScenarios from "./qa-scenarios"
