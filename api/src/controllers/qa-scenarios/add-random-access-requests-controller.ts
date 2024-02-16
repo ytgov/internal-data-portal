@@ -2,7 +2,14 @@ import { faker } from "@faker-js/faker"
 import { CreationAttributes } from "sequelize"
 import { times } from "lodash"
 
-import { AccessGrant, AccessRequest, Role, User, UserGroup, UserGroupMembership } from "@/models"
+import db, {
+  AccessGrant,
+  AccessRequest,
+  Role,
+  User,
+  UserGroup,
+  UserGroupMembership,
+} from "@/models"
 import { AccessTypes } from "@/models/access-grant"
 
 import BaseController from "@/controllers/base-controller"
@@ -90,25 +97,27 @@ export class AddRandomAccessRequestsController extends BaseController {
     const firstName = faker.person.firstName()
     const lastName = faker.person.lastName()
 
-    const user = await User.create({
-      auth0Subject: `auth0|${faker.string.uuid()}`,
-      email: faker.internet.email({ firstName, lastName }),
-      firstName,
-      lastName,
-      position: faker.person.jobTitle(),
-      lastEmployeeDirectorySyncAt: faker.date.recent(),
-    })
+    return db.transaction(async () => {
+      const user = await User.create({
+        auth0Subject: `auth0|${faker.string.uuid()}`,
+        email: faker.internet.email({ firstName, lastName }),
+        firstName,
+        lastName,
+        position: faker.person.jobTitle(),
+        lastEmployeeDirectorySyncAt: faker.date.recent(),
+      })
 
-    await Role.create({
-      userId: user.id,
-      role: faker.helpers.enumValue(RoleTypes),
-    })
+      await Role.create({
+        userId: user.id,
+        role: faker.helpers.enumValue(RoleTypes),
+      })
 
-    await UserGroupMembership.create({
-      userId: user.id,
-      departmentId: faker.helpers.arrayElement(departments).id,
+      await UserGroupMembership.create({
+        userId: user.id,
+        departmentId: faker.helpers.arrayElement(departments).id,
+      })
+      return user
     })
-    return user
   }
 }
 
