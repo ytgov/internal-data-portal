@@ -58,7 +58,13 @@ export class AddRandomAccessRequestsController extends BaseController {
 
           let requestor = faker.helpers.arrayElement(users)
           if (datasetIdToRequestorIdMap.has(accessGrant.datasetId)) {
-            requestor = await this.createFakeUser(departments)
+            if (users.length > datasetIdToRequestorIdMap.size) {
+              do {
+                requestor = faker.helpers.arrayElement(users)
+              } while (datasetIdToRequestorIdMap.get(accessGrant.datasetId) === requestor.id)
+            } else {
+              requestor = await this.createFakeUser(departments)
+            }
           }
 
           datasetIdToRequestorIdMap.set(accessGrant.datasetId, requestor.id)
