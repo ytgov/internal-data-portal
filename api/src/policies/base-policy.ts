@@ -61,6 +61,22 @@ export class BasePolicy<Model> {
   permittedAttributesForUpdate(): Path[] {
     throw new Error("Not Implemented")
   }
+
+  /**
+   * Add to support return policy information via this.reponse.json({ someObject, policy })
+   *
+   * If this method becomes complex, it should be broken out into a serializer.
+   *
+   * @returns a JSON representation of the policy
+   */
+  toJSON(): Record<Actions, boolean> {
+    return {
+      show: this.show(),
+      create: this.create(),
+      update: this.update(),
+      destroy: this.destroy(),
+    }
+  }
 }
 
 export default BasePolicy

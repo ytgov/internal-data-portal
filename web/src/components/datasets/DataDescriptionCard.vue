@@ -6,7 +6,7 @@
       <div>
         <!-- TODO: add button loader while waiting for policy -->
         <v-btn
-          v-if="policy?.canUpdate"
+          v-if="policy?.update"
           color="primary"
           :to="{
             name: 'DatasetDescriptionManagePage',

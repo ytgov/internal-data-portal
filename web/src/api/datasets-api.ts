@@ -1,7 +1,10 @@
 import http from "@/api/http-client"
 
+import { type Policy } from "@/api/base-api"
 import { type User } from "@/api/users-api"
 import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
+
+export { type Policy }
 
 export enum DatasetErrorTypes {
   OK = "ok",
@@ -37,10 +40,6 @@ export type Dataset = {
   stewardship?: DatasetStewardship
 }
 
-export type DatasetPolicy = {
-  canUpdate: boolean
-}
-
 export type DatasetDetailedResult = Dataset & {
   owner: User
   creator: User
@@ -62,7 +61,7 @@ export const datasetsApi = {
   },
   async get(idOrSlug: number | string): Promise<{
     dataset: DatasetDetailedResult
-    policy: DatasetPolicy
+    policy: Policy
   }> {
     const { data } = await http.get(`/api/datasets/${idOrSlug}`)
     return data

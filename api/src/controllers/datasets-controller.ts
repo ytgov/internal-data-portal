@@ -57,7 +57,7 @@ export class DatasetsController extends BaseController {
         .json({ message: "You are not authorized to view this dataset." })
     }
 
-    return this.response.status(200).json({ dataset })
+    return this.response.status(200).json({ dataset, policy })
   }
 
   async create() {
