@@ -21,10 +21,12 @@ const emit = defineEmits(["update:modelValue"])
 
 const { t } = useI18n()
 
-const ACCESS_TYPE_VALUES = Object.values(AccessTypes).map((value) => ({
-  title: t(`access_grants.access_types.${value}`),
-  value,
-}))
+const ACCESS_TYPE_VALUES = Object.values(AccessTypes)
+  .filter((value) => value !== AccessTypes.NO_ACCESS)
+  .map((value) => ({
+    title: t(`access_grants.access_types.${value}`),
+    value,
+  }))
 
 function updateModelValue(value: AccessTypes | undefined) {
   emit("update:modelValue", value)
