@@ -11,7 +11,11 @@
         Request Access
       </v-btn>
     </template>
-    <v-form @submit.prevent="createAndClose">
+    <v-form
+      ref="form"
+      v-model="isValid"
+      @submit.prevent="createAndClose"
+    >
       <v-card :loading="isLoading">
         <v-card-title class="text-h5"> Request Access </v-card-title>
 
@@ -94,7 +98,9 @@
 <script lang="ts" setup>
 import { nextTick, ref, toRefs, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { isEmpty, isNil } from "lodash"
+import { isNil } from "lodash"
+
+import { VForm } from "vuetify/lib/components/index.mjs"
 
 import { required } from "@/utils/validators"
 import accessRequestsApi, { AccessRequest } from "@/api/access-requests-api"
@@ -131,8 +137,10 @@ const accessRequest = ref<Partial<AccessRequest>>({
 const router = useRouter()
 const route = useRoute()
 
-const showDialog = ref(false)
+const showDialog = ref(route.query.showCreate === "true")
+const form = ref<InstanceType<typeof VForm> | null>(null)
 const isLoading = ref(false)
+const isValid = ref(false)
 
 watch(
   () => [props.datasetId, props.requestorId],
@@ -163,12 +171,15 @@ function close() {
 }
 
 async function createAndClose() {
+  if (!isValid.value) {
+    snack.notify("Please fill out all required fields", {
+      color: "error",
+    })
+    return
+  }
+
   isLoading.value = true
   try {
-    if (isEmpty(accessRequest.value)) {
-      throw new Error("Access request is empty")
-    }
-
     const { accessRequest: newAccessRequest } = await accessRequestsApi.create(accessRequest.value)
     close()
 
