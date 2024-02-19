@@ -34,7 +34,7 @@ export class AccessRequestsController extends BaseController {
       return this.response.json({ accessRequests: serializedAccessRequests, totalCount })
     } catch (error) {
       return this.response
-        .status(422)
+        .status(500)
         .json({ message: `Failed to serialize access requests: ${error}` })
     }
   }
