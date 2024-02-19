@@ -100,6 +100,18 @@ function findNonForeignKeyConstraintQuery(
   `
 }
 
+function findDefaultConstraintQuery(tableName: string, columnName: string) {
+  return `
+    SELECT
+      name as constraintName
+    FROM
+      sys.default_constraints
+    WHERE
+      parent_object_id = OBJECT_ID('${tableName}')
+      AND COL_NAME(parent_object_id, parent_column_id) = '${columnName}';
+  `
+}
+
 export interface RemoveUniqueConstraintOptions extends BaseConstraintOptions {
   type: "unique"
 }
@@ -156,6 +168,8 @@ export async function removeConstraint(
       options.fields[0],
       MSSQL_CONSTRAINT_TYPES.UNIQUE
     )
+  } else if (options.type === "default") {
+    query = findDefaultConstraintQuery(tableName, options.fields[0])
   } else {
     throw new Error(`Constraint type: ${options.type} NOT IMPLEMENTED`)
   }
