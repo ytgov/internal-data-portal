@@ -15,11 +15,11 @@
       />
       <AccessRequestApproveDialog
         ref="approveDialog"
-        @saved="refresh"
+        @approved="refresh"
       />
       <AccessRequestDenyDialog
         ref="denyDialog"
-        @deleted="refresh"
+        @denied="refresh"
       />
     </template>
     <template #item.accessType="{ value }">
