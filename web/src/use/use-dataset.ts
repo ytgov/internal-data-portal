@@ -1,15 +1,17 @@
 import { type Ref, reactive, unref, watch, toRefs } from "vue"
 import { isNil } from "lodash"
 
-import datasetsApi, { Dataset } from "@/api/datasets-api"
+import datasetsApi, { Dataset, DatasetPolicy } from "@/api/datasets-api"
 
 export function useDataset(slug: Ref<string>) {
   const state = reactive<{
     dataset: Dataset | null
+    policy: DatasetPolicy | null
     isLoading: boolean
     isErrored: boolean
   }>({
     dataset: null,
+    policy: null,
     isLoading: false,
     isErrored: false,
   })
@@ -17,8 +19,9 @@ export function useDataset(slug: Ref<string>) {
   async function fetch() {
     state.isLoading = true
     try {
-      const { dataset } = await datasetsApi.get(unref(slug))
+      const { dataset, policy } = await datasetsApi.get(unref(slug))
       state.dataset = dataset
+      state.policy = policy
       state.isErrored = false
       return dataset
     } catch (error) {

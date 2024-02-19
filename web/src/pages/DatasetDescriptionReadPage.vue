@@ -1,24 +1,11 @@
 <template>
-  TODO: build out dataset show page.
-
-  <v-btn
-    color="primary"
-    :to="{
-      name: 'DatasetDescriptionManagePage',
-      params: { slug },
-    }"
-  >
-    Edit
-  </v-btn>
-
-  <pre>{{ dataset }}</pre>
+  <DataDescriptionCard :slug="slug" />
 </template>
 
 <script setup lang="ts">
-import { toRefs } from "vue"
-
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
-import { useDataset } from "@/use/use-dataset"
+
+import DataDescriptionCard from "@/components/datasets/DataDescriptionCard.vue"
 
 const props = defineProps({
   slug: {
@@ -44,7 +31,4 @@ setBreadcrumbs([
     },
   },
 ])
-
-const { slug } = toRefs(props)
-const { dataset } = useDataset(slug)
 </script>

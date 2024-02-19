@@ -37,6 +37,10 @@ export type Dataset = {
   stewardship?: DatasetStewardship
 }
 
+export type DatasetPolicy = {
+  canUpdate: boolean
+}
+
 export type DatasetDetailedResult = Dataset & {
   owner: User
   creator: User
@@ -58,6 +62,7 @@ export const datasetsApi = {
   },
   async get(idOrSlug: number | string): Promise<{
     dataset: DatasetDetailedResult
+    policy: DatasetPolicy
   }> {
     const { data } = await http.get(`/api/datasets/${idOrSlug}`)
     return data
