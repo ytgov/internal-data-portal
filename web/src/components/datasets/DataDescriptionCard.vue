@@ -5,7 +5,7 @@
 
       <div>
         <v-progress-circular
-          v-if="isNil(policy)"
+          v-if="isNil(dataset) || isNil(policy) || isNil(currentUser)"
           indeterminate
           color="primary"
           size="36"
@@ -20,7 +20,11 @@
         >
           Edit
         </v-btn>
-        <v-btn v-else>TODO: Request Access</v-btn>
+        <AccessRequestCreateDialog
+          v-else
+          :requestor-id="currentUser.id"
+          :dataset-id="dataset.id"
+        />
       </div>
     </v-card-title>
     <v-card-text>
@@ -102,8 +106,10 @@ import { isNil } from "lodash"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
 
-// import { useSnack } from "@/use/use-snack"
-import { useDataset } from "@/use/use-dataset"
+import useDataset from "@/use/use-dataset"
+import useCurrentUser from "@/use/use-current-user"
+
+import AccessRequestCreateDialog from "@/components/access-requests/AccessRequestCreateDialog.vue"
 
 const props = defineProps({
   slug: {
@@ -114,5 +120,5 @@ const props = defineProps({
 
 const { slug } = toRefs(props)
 const { dataset, policy } = useDataset(slug)
-// const snack = useSnack()
+const { currentUser } = useCurrentUser()
 </script>
