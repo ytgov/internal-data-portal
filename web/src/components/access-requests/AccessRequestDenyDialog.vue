@@ -53,6 +53,21 @@
               />
             </v-col>
           </v-row>
+          <v-divider
+            :thickness="2"
+            class="mb-4"
+          />
+          <v-row>
+            <v-col>
+              <v-textarea
+                :model-value="denialReason"
+                label="Denial Reason"
+                rows="5"
+                variant="outlined"
+                @update:model-value="updateDenialReason"
+              />
+            </v-col>
+          </v-row>
         </v-card-text>
 
         <v-card-actions>
@@ -81,7 +96,7 @@
 <script lang="ts" setup>
 import { computed, nextTick, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
-import { cloneDeep, isNil } from "lodash"
+import { cloneDeep, isEmpty, isNil } from "lodash"
 
 import accessRequestsApi, { AccessRequestTableView } from "@/api/access-requests-api"
 import useSnack from "@/use/use-snack"
@@ -94,12 +109,21 @@ const snack = useSnack()
 
 const accessRequest = ref<AccessRequestTableView | null>()
 const accessRequestId = computed(() => accessRequest.value?.id)
+const denialReason = ref<string | null>(null)
 
 const router = useRouter()
 const route = useRoute()
 
 const showDialog = ref(false)
 const isLoading = ref(false)
+
+function updateDenialReason(value: string) {
+  if (isEmpty(value)) {
+    denialReason.value = null
+  } else {
+    denialReason.value = value
+  }
+}
 
 watch(
   () => showDialog.value,
@@ -136,7 +160,7 @@ async function denyAndClose() {
     const { accessRequest: newAccessRequest } = await accessRequestsApi.deny(
       accessRequestId.value,
       {
-        denialReason: "TODO: add reason",
+        denialReason: denialReason.value,
       }
     )
     close()
