@@ -4,9 +4,14 @@
       Data Description
 
       <div>
-        <!-- TODO: add button loader while waiting for policy -->
+        <v-progress-circular
+          v-if="isNil(policy)"
+          indeterminate
+          color="primary"
+          size="36"
+        />
         <v-btn
-          v-if="policy?.update"
+          v-else-if="policy.update"
           color="primary"
           :to="{
             name: 'DatasetDescriptionManagePage',
