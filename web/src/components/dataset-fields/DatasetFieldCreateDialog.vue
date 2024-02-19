@@ -106,7 +106,7 @@ import useSnack from "@/use/use-snack"
 const props = defineProps({
   datasetId: {
     type: Number,
-    required: true,
+    default: () => null,
   },
 })
 

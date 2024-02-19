@@ -1,4 +1,5 @@
 export { AccessGrantsController } from "./access-grants-controller"
+export { AccessRequestsController } from "./access-requests-controller"
 export { CurrentUserController } from "./current-user-controller"
 export { DatasetFieldsController } from "./dataset-fields-controller"
 export { DatasetsController } from "./datasets-controller"
@@ -8,6 +9,7 @@ export { TagsController } from "./tags-controller"
 export { UserGroupsController } from "./user-groups-controller"
 export { UsersController } from "./users-controller"
 
+export * as AccessRequests from "./access-requests"
 export * as Users from "./users"
 export * as UserGroups from "./user-groups"
 export * as QaScenarios from "./qa-scenarios"

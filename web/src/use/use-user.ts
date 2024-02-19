@@ -6,7 +6,7 @@ import usersApi, { type User } from "@/api/users-api"
 export { type User }
 
 export function useUser(
-  id: Ref<number | undefined>,
+  id: Ref<number | null | undefined>,
   {
     immediate = true,
   }: {
@@ -46,7 +46,9 @@ export function useUser(
 
   watch(
     () => unref(id),
-    async () => {
+    async (newId) => {
+      if (isNil(newId)) return
+
       await fetch()
     },
     { immediate }

@@ -29,9 +29,10 @@
           </v-row>
           <v-row>
             <v-col>
-              <UserAutocomplete
-                v-model="accessGrant.supportId"
+              <UserAttributeTextField
+                :model-value="accessGrant.supportId"
                 label="Request Email"
+                attribute="email"
                 readonly
               />
             </v-col>
@@ -81,7 +82,7 @@ import useSnack from "@/use/use-snack"
 
 import AccessGrantGrantLevelSelect from "@/components/access-grants/AccessGrantGrantLevelSelect.vue"
 import AccessGrantAccessTypeSelect from "@/components/access-grants/AccessGrantAccessTypeSelect.vue"
-import UserAutocomplete from "@/components/users/UserAutocomplete.vue"
+import UserAttributeTextField from "@/components/users/UserAttributeTextField.vue"
 
 const emit = defineEmits(["deleted"])
 

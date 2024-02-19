@@ -1,20 +1,18 @@
 <template>
   <v-card>
     <v-card-title class="d-flex justify-space-between align-end">
-      Access
-      <AccessGrantCreateDialog
-        :dataset-id="dataset?.id"
-        @created="refreshTable"
-      />
+      Subscriptions
+
+      <!-- TODO: replace boilerplate with Email Users button -->
+      <v-btn @click="emailUsers">TODO: Email Users</v-btn>
     </v-card-title>
     <v-card-text>
       <v-skeleton-loader
         v-if="isNil(dataset)"
         type="table"
       />
-      <AccessGrantsEditTable
+      <AccessRequestsManageTable
         v-else
-        ref="accessGrantsTable"
         :dataset-id="dataset.id"
       />
     </v-card-text>
@@ -22,13 +20,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs } from "vue"
+import { toRefs } from "vue"
 import { isNil } from "lodash"
 
 import useDataset from "@/use/use-dataset"
 
-import AccessGrantCreateDialog from "@/components/access-grants/AccessGrantCreateDialog.vue"
-import AccessGrantsEditTable from "@/components/access-grants/AccessGrantsEditTable.vue"
+import AccessRequestsManageTable from "@/components/access-requests/AccessRequestsManageTable.vue"
 
 const props = defineProps({
   slug: {
@@ -40,9 +37,7 @@ const props = defineProps({
 const { slug } = toRefs(props)
 const { dataset } = useDataset(slug)
 
-const accessGrantsTable = ref<InstanceType<typeof AccessGrantsEditTable> | null>(null)
-
-function refreshTable() {
-  accessGrantsTable.value?.refresh()
+function emailUsers() {
+  alert("TODO: Email Users")
 }
 </script>

@@ -84,13 +84,13 @@ export class AccessRequest extends Model<
   }
 
   static establishAssociations() {
-    this.belongsTo(User, {
-      foreignKey: "accessGrantId",
-      as: "accessGrant",
-    })
     this.belongsTo(Dataset, {
       foreignKey: "datasetId",
       as: "dataset",
+    })
+    this.belongsTo(AccessGrant, {
+      foreignKey: "accessGrantId",
+      as: "accessGrant",
     })
     this.belongsTo(User, {
       foreignKey: "requestorId",

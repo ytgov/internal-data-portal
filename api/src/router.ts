@@ -19,6 +19,8 @@ import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middl
 
 import {
   AccessGrantsController,
+  AccessRequests,
+  AccessRequestsController,
   CurrentUserController,
   DatasetFieldsController,
   DatasetsController,
@@ -63,6 +65,17 @@ router
   .patch(AccessGrantsController.update)
   .delete(AccessGrantsController.destroy)
 
+router.route("/api/access-requests").get(AccessRequestsController.index)
+router
+  .route("/api/access-requests/:accessRequestId/approve")
+  .post(AccessRequests.ApproveController.create)
+router
+  .route("/api/access-requests/:accessRequestId/deny")
+  .post(AccessRequests.DenyController.create)
+router
+  .route("/api/access-requests/:accessRequestId/revoke")
+  .post(AccessRequests.RevokeController.create)
+
 router
   .route("/api/dataset-fields")
   .get(DatasetFieldsController.index)
@@ -77,6 +90,7 @@ router
   .patch(DatasetStewardshipsController.update)
 
 router.route("/api/users").get(UsersController.index)
+router.route("/api/users/search/:searchToken").get(Users.SearchController.index)
 router.route("/api/users/:userId").get(UsersController.show)
 router
   .route("/api/users/:userId/yukon-government-directory-sync")
@@ -96,6 +110,9 @@ router.route("/api/qa-scenarios/link-random-tags").post(QaScenarios.LinkRandomTa
 router
   .route("/api/qa-scenarios/apply-random-access-grants")
   .post(QaScenarios.ApplyRandomAccessGrantsController.create)
+router
+  .route("/api/qa-scenarios/add-random-access-requests")
+  .post(QaScenarios.AddRandomAccessRequestsController.create)
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {

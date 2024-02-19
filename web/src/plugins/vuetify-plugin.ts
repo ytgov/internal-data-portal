@@ -11,12 +11,15 @@ import "@/assets/yk-style.css"
 
 // ComposablesF
 import { createVuetify } from "vuetify"
-import * as labs from "vuetify/labs/components"
+import * as components from "vuetify/components"
+// https://vuetifyjs.com/en/labs/introduction/#usage
+import * as labsComponents from "vuetify/labs/components"
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   components: {
-    ...labs,
+    ...components,
+    ...labsComponents,
   },
   theme: {
     themes: {

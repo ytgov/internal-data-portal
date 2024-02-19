@@ -2,11 +2,20 @@ import express, { type Request, type Response } from "express"
 import cors from "cors"
 import path from "path"
 import helmet from "helmet"
+import qs from "qs"
 
 import { FRONTEND_URL } from "@/config"
 import router from "@/router"
 
 export const app = express()
+
+// For parsing nulls out of query strings
+// See web/src/api/http-client.ts
+app.set("query parser", (params: string) => {
+  return qs.parse(params, {
+    strictNullHandling: true,
+  })
+})
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(
