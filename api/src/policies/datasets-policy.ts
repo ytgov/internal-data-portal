@@ -1,5 +1,4 @@
 import { Dataset, User } from "@/models"
-import { RoleTypes } from "@/models/role"
 
 import { Path } from "@/utils/deep-pick"
 import BasePolicy from "@/policies/base-policy"
@@ -10,19 +9,20 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
   }
 
   show(): boolean {
-    if (this.isSystemAdmin || this.isBusinessAnalyst) {
+    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
       return true
-    } else if (this.isDataOwner && this.record.ownerId === this.user.id) {
+    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
       return true
     }
+    // TODO: need to update this to also show base on access grants
 
     return false
   }
 
   create(): boolean {
-    if (this.isSystemAdmin || this.isBusinessAnalyst) {
+    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
       return true
-    } else if (this.isDataOwner && this.record.ownerId === this.user.id) {
+    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
       return true
     }
 
@@ -30,9 +30,9 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
   }
 
   update(): boolean {
-    if (this.isSystemAdmin || this.isBusinessAnalyst) {
+    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
       return true
-    } else if (this.isDataOwner && this.record.ownerId === this.user.id) {
+    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
       return true
     }
 
@@ -41,7 +41,7 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
 
   permittedAttributes(): Path[] {
     return [
-      ...(this.isSystemAdmin || this.isBusinessAnalyst ? ["ownerId"] : []),
+      ...(this.user.isSystemAdmin || this.user.isBusinessAnalyst ? ["ownerId"] : []),
       "name",
       "description",
       "subscriptionUrl",
@@ -73,18 +73,6 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
         ],
       },
     ]
-  }
-
-  private get isSystemAdmin(): boolean {
-    return this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN)
-  }
-
-  private get isBusinessAnalyst(): boolean {
-    return this.user.roleTypes.includes(RoleTypes.BUSINESS_ANALYST)
-  }
-
-  private get isDataOwner(): boolean {
-    return this.user.roleTypes.includes(RoleTypes.DATA_OWNER)
   }
 }
 

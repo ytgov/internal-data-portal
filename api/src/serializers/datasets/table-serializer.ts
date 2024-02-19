@@ -2,7 +2,11 @@ import { pick } from "lodash"
 
 import { Dataset, User } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
-import { determineAccess, determineActions, type DatasetTableActions } from "@/serializers/datasets/table-helpers"
+import {
+  determineAccess,
+  determineActions,
+  type DatasetTableActions,
+} from "@/serializers/datasets/table-helpers"
 import BaseSerializer from "@/serializers/base-serializer"
 
 export type DatasetTableView = Partial<Dataset> & {
@@ -56,3 +60,5 @@ export class TableSerializer extends BaseSerializer<Dataset> {
     return determineActions(this.record, this.currentUser, accessType)
   }
 }
+
+export default TableSerializer

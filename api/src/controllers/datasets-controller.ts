@@ -4,7 +4,7 @@ import { isNil } from "lodash"
 import { Dataset } from "@/models"
 import { DatasetsPolicy } from "@/policies"
 import { CreateService, UpdateService } from "@/services/datasets"
-import { TableSerializer } from "@/serializers/datasets"
+import { ShowSerializer, TableSerializer } from "@/serializers/datasets"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -40,8 +40,12 @@ export class DatasetsController extends BaseController {
       ],
     })
 
-    const serializedDatasets = TableSerializer.perform(datasets, this.currentUser)
-    return this.response.json({ datasets: serializedDatasets, totalCount })
+    try {
+      const serializedDatasets = TableSerializer.perform(datasets, this.currentUser)
+      return this.response.json({ datasets: serializedDatasets, totalCount })
+    } catch (error) {
+      return this.response.status(500).json({ message: `Dataset serialization failed: ${error}` })
+    }
   }
 
   async show() {
@@ -57,7 +61,15 @@ export class DatasetsController extends BaseController {
         .json({ message: "You are not authorized to view this dataset." })
     }
 
-    return this.response.status(200).json({ dataset, policy })
+    try {
+      const serializedDataset = ShowSerializer.perform(dataset, this.currentUser)
+      return this.response.status(200).json({
+        dataset: serializedDataset,
+        policy,
+      })
+    } catch (error) {
+      return this.response.status(500).json({ message: `Dataset serialization failed: ${error}` })
+    }
   }
 
   async create() {

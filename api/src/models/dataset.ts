@@ -257,6 +257,7 @@ Dataset.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    // TODO: remove this field?
     isSubscribable: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
