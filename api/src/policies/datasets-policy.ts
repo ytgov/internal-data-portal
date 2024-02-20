@@ -1,10 +1,11 @@
-import { ModelStatic, WhereOptions } from "sequelize"
+import { ModelStatic, Op } from "sequelize"
 import { isNil } from "lodash"
 
 import { Path } from "@/utils/deep-pick"
 import { Dataset, User, AccessGrant } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
 import BasePolicy from "@/policies/base-policy"
+import { withAccessibleAccessGrants } from "@/models/datasets"
 
 export class DatasetsPolicy extends BasePolicy<Dataset> {
   private _mostPermissiveAccessGrant: AccessGrant | null = null
@@ -57,11 +58,12 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     }
 
     if (user.isDataOwner) {
-      const where: WhereOptions<Dataset> = {
-        ownerId: user.id,
-      }
-      // TODO: Add support for "OR"ed with accessible access grants scope
-      return modelClass.scope({ where })
+      const accessibleAccessGrantsQuery = withAccessibleAccessGrants(user)
+      return modelClass.scope({
+        where: {
+          [Op.or]: [{ ownerId: user.id }, accessibleAccessGrantsQuery.where],
+        },
+      })
     }
 
     return modelClass.scope({ method: ["withAccessibleAccessGrants", user] })

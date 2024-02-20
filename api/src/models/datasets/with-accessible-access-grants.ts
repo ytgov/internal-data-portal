@@ -1,4 +1,4 @@
-import { literal } from "sequelize"
+import { Op, WhereAttributeHash, literal } from "sequelize"
 import { isNil } from "lodash"
 
 import User from "@/models/user"
@@ -6,12 +6,13 @@ import User from "@/models/user"
 const NON_EXISTENT_ID = -1
 
 // TODO: make this less fragile and more easily testable
-export function withAccessibleAccessGrants(user: User) {
+export function withAccessibleAccessGrants(user: User): {
+  where: WhereAttributeHash
+} {
   const { groupMembership } = user
   if (isNil(groupMembership)) {
     throw new Error("User must have groupMembership to use withAccessibleAccessGrants")
   }
-
 
   const departmentId = groupMembership.departmentId || NON_EXISTENT_ID
   const divisionId = groupMembership.divisionId || NON_EXISTENT_ID
@@ -19,7 +20,7 @@ export function withAccessibleAccessGrants(user: User) {
   const unitId = groupMembership.unitId || NON_EXISTENT_ID
 
   const query = `
-  [Dataset].id IN (
+    (
       SELECT DISTINCT
         datasets.id
       FROM
@@ -81,7 +82,11 @@ export function withAccessibleAccessGrants(user: User) {
     .trim()
 
   return {
-    where: literal(query),
+    where: {
+      id: {
+        [Op.in]: literal(query),
+      },
+    },
   }
 }
 
