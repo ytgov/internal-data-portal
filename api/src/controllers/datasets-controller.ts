@@ -118,7 +118,20 @@ export class DatasetsController extends BaseController {
 
   private async loadDataset(): Promise<Dataset | null> {
     const dataset = await Dataset.findBySlugOrPk(this.params.datasetIdOrSlug, {
-      include: ["owner", "creator", "stewardship"],
+      include: [
+        {
+          association: "owner",
+          include: [
+            {
+              association: "groupMembership",
+              include: ["department", "division", "branch", "unit"],
+            },
+          ],
+        },
+        "creator",
+        "stewardship",
+        "accessGrants",
+      ],
     })
 
     return dataset

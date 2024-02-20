@@ -3,6 +3,8 @@ import { isEmpty, isNil } from "lodash"
 import { Dataset, User, AccessGrant, UserGroupMembership } from "@/models"
 import { AccessTypes, GrantLevels, orderOfAccessType } from "@/models/access-grant"
 
+// TODO: consider if this function should load associations if they were not supplied?
+// Or at least error informatively?
 export function mostPermissiveAccessGrantFor(
   record: Dataset,
   requestingUser: User
