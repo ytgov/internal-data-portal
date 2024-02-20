@@ -1,8 +1,7 @@
-import { pick } from "lodash"
+import { isNil, pick } from "lodash"
 
 import { Dataset, User } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
-import { determineAccess } from "@/serializers/datasets/table-helpers"
 import BaseSerializer from "@/serializers/base-serializer"
 
 export type DatasetShowView = Partial<Dataset> & {
@@ -43,7 +42,7 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
   }
 
   private baseView(extraAttributes: Partial<Dataset> = {}): DatasetShowView {
-    const currentUserAccessType = determineAccess(this.record, this.currentUser)
+    const currentUserAccessType = this.determineAccess()
 
     return {
       ...pick(this.record.dataValues, [
@@ -67,6 +66,15 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
       // magic fields
       currentUserAccessType,
     }
+  }
+
+  private determineAccess() {
+    const accessGrant = this.record.mostPermissiveAccessGrantFor(this.currentUser)
+    if (!isNil(accessGrant)) {
+      return accessGrant.accessType
+    }
+
+    return AccessTypes.NO_ACCESS
   }
 
   // Duplicating the policy logic here as the policy code does not have the same

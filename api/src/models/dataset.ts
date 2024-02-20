@@ -33,6 +33,7 @@ import DatasetStewardship from "@/models/dataset-stewardship"
 import Tag from "@/models/tag"
 import Tagging, { TaggableTypes } from "@/models/tagging"
 import User from "@/models/user"
+import { mostPermissiveAccessGrantFor } from "@/models/datasets"
 
 import BaseModel from "@/models/base-model"
 
@@ -210,6 +211,10 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
       foreignKey: "datasetId",
       as: "accessGrants",
     })
+  }
+
+  public mostPermissiveAccessGrantFor(user: User): NonAttribute<AccessGrant | null> {
+    return mostPermissiveAccessGrantFor(this, user)
   }
 }
 
