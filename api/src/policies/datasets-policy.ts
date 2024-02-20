@@ -1,10 +1,10 @@
-import { Dataset, User } from "@/models"
+import { ModelStatic, WhereOptions } from "sequelize"
+import { isNil } from "lodash"
 
 import { Path } from "@/utils/deep-pick"
-import { AccessGrant } from "@/models"
+import { Dataset, User, AccessGrant } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
 import BasePolicy from "@/policies/base-policy"
-import { isNil } from "lodash"
 
 export class DatasetsPolicy extends BasePolicy<Dataset> {
   private _mostPermissiveAccessGrant: AccessGrant | null = null
@@ -49,6 +49,22 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     }
 
     return false
+  }
+
+  static applyScope(modelClass: ModelStatic<Dataset>, user: User): ModelStatic<Dataset> {
+    if (user.isSystemAdmin || user.isBusinessAnalyst) {
+      return modelClass
+    }
+
+    if (user.isDataOwner) {
+      const where: WhereOptions<Dataset> = {
+        ownerId: user.id,
+      }
+      // TODO: Add support for "OR"ed with accessible access grants scope
+      return modelClass.scope({ where })
+    }
+
+    return modelClass.scope({ method: ["withAccessibleAccessGrants", user] })
   }
 
   permittedAttributes(): Path[] {

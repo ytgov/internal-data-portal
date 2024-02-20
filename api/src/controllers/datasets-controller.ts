@@ -12,10 +12,10 @@ export class DatasetsController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<Dataset>
 
-    // TODO: add query scoping, filter out datasets where the user does not have any access
+    const scopedDatasets = DatasetsPolicy.applyScope(Dataset, this.currentUser)
 
-    const totalCount = await Dataset.count({ where })
-    const datasets = await Dataset.findAll({
+    const totalCount = await scopedDatasets.count({ where })
+    const datasets = await scopedDatasets.findAll({
       where,
       limit: this.pagination.limit,
       offset: this.pagination.offset,
