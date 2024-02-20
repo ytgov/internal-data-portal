@@ -18,10 +18,15 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
       return true
     } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
       return true
-    } else if (this.userAccessType() === AccessTypes.OPEN_ACCESS) {
+    } else if (
+      [
+        AccessTypes.OPEN_ACCESS,
+        AccessTypes.SELF_SERVE_ACCESS,
+        AccessTypes.SCREENED_ACCESS,
+      ].includes(this.userAccessType())
+    ) {
       return true
     }
-    // TODO: need to update this to also show base on access grants
 
     return false
   }
