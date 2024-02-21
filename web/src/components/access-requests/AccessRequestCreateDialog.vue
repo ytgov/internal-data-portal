@@ -117,6 +117,10 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  accessGrantId: {
+    type: Number,
+    required: true,
+  },
   requestorId: {
     type: Number,
     required: true,
@@ -131,6 +135,7 @@ const snack = useSnack()
 
 const accessRequest = ref<Partial<AccessRequest>>({
   datasetId: props.datasetId,
+  accessGrantId: props.accessGrantId,
   requestorId: props.requestorId,
 })
 
@@ -143,7 +148,7 @@ const isLoading = ref(false)
 const isValid = ref(false)
 
 watch(
-  () => [props.datasetId, props.requestorId],
+  () => [props.datasetId, props.accessGrantId, props.requestorId],
   () => {
     resetAccessRequest()
   },
@@ -196,6 +201,7 @@ async function createAndClose() {
 function resetAccessRequest() {
   accessRequest.value = {
     datasetId: props.datasetId,
+    accessGrantId: props.accessGrantId,
     requestorId: props.requestorId,
   }
 }

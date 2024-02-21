@@ -3,6 +3,7 @@ import http from "@/api/http-client"
 import { type Policy } from "@/api/base-api"
 import { type User } from "@/api/users-api"
 import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
+import { type AccessGrant } from "@/api/access-grants-api"
 
 export { type Policy }
 
@@ -38,12 +39,16 @@ export type Dataset = {
   owner?: User
   creator?: User
   stewardship?: DatasetStewardship
+
+  // magic fields
+  accessibleByAccessGrant?: AccessGrant | null
 }
 
 export type DatasetDetailedResult = Dataset & {
   owner: User
   creator: User
   stewardship: DatasetStewardship
+  accessibleByAccessGrant: AccessGrant | null
 }
 
 export const datasetsApi = {

@@ -5,7 +5,12 @@
 
       <div>
         <v-progress-circular
-          v-if="isNil(dataset) || isNil(policy) || isNil(currentUser)"
+          v-if="
+            isNil(dataset) ||
+            isNil(policy) ||
+            isNil(currentUser) ||
+            isNil(dataset.accessibleByAccessGrant)
+          "
           indeterminate
           color="primary"
           size="36"
@@ -22,8 +27,9 @@
         </v-btn>
         <AccessRequestCreateDialog
           v-else
-          :requestor-id="currentUser.id"
           :dataset-id="dataset.id"
+          :access-grant-id="dataset.accessibleByAccessGrant.id"
+          :requestor-id="currentUser.id"
         />
       </div>
     </v-card-title>
