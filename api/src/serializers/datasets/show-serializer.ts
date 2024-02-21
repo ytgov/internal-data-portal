@@ -1,11 +1,11 @@
 import { pick } from "lodash"
 
-import { Dataset, User } from "@/models"
-import AccessGrant from "@/models/access-grant"
+import { AccessGrant, AccessRequest, Dataset, User } from "@/models"
 import BaseSerializer from "@/serializers/base-serializer"
 
 export type DatasetShowView = Partial<Dataset> & {
-  accessibleByAccessGrant: AccessGrant | null
+  currentUserAccessGrant: AccessGrant | null
+  currentUserAccessRequest: AccessRequest | null
 }
 
 export class ShowSerializer extends BaseSerializer<Dataset> {
@@ -42,7 +42,10 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
   }
 
   private baseView(extraAttributes: Partial<Dataset> = {}): DatasetShowView {
-    const accessibleByAccessGrant = this.record.mostPermissiveAccessGrantFor(this.currentUser)
+    const currentUserAccessGrant = this.record.mostPermissiveAccessGrantFor(this.currentUser)
+    const currentUserAccessRequest = this.record.accessRequests?.filter(
+      (accessRequest) => accessRequest.requestorId == this.currentUser.id
+    )[0] || null
 
     return {
       ...pick(this.record.dataValues, [
@@ -64,7 +67,8 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
       tags: this.record.tags,
 
       // magic fields
-      accessibleByAccessGrant,
+      currentUserAccessGrant,
+      currentUserAccessRequest,
     }
   }
 

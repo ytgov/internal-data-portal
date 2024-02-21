@@ -3,6 +3,7 @@
     <v-card-title class="d-flex justify-space-between align-center">
       Data Description
 
+      <!-- TODO: consider making this a separate component -->
       <div>
         <v-progress-circular
           v-if="isNil(dataset) || isNil(policy) || isNil(currentUser)"
@@ -20,24 +21,48 @@
         >
           Edit
         </v-btn>
+        <v-chip
+          v-else-if="
+            !isNil(currentUserAccessGrant) &&
+            currentUserAccessGrant.accessType === AccessTypes.OPEN_ACCESS
+          "
+          color="info"
+        >
+          Open Access
+        </v-chip>
+        <v-chip
+          v-else-if="
+            !isNil(currentUserAccessGrant) &&
+            currentUserAccessGrant.accessType === AccessTypes.SELF_SERVE_ACCESS &&
+            !isNil(currentUserAccessRequest) &&
+            !isNil(currentUserAccessRequest.approvedAt)
+          "
+          color="info"
+        >
+          Subscribed
+        </v-chip>
+        <v-chip
+          v-else-if="!isNil(currentUserAccessRequest) && isNil(currentUserAccessRequest.approvedAt)"
+          color="info"
+        >
+          Request Pending
+        </v-chip>
         <AccessRequestCreateDialog
           v-else-if="
-            !isNil(dataset.accessibleByAccessGrant) &&
+            !isNil(currentUserAccessGrant) &&
             [AccessTypes.SELF_SERVE_ACCESS, AccessTypes.SCREENED_ACCESS].includes(
-              dataset.accessibleByAccessGrant.accessType
+              currentUserAccessGrant.accessType
             )
           "
           :dataset-id="dataset.id"
           :requestor-id="currentUser.id"
-          :access-grant-id="dataset.accessibleByAccessGrant.id"
-          :access-type="dataset.accessibleByAccessGrant.accessType"
-          :is-project-description-required="
-            dataset.accessibleByAccessGrant.isProjectDescriptionRequired
-          "
+          :access-grant-id="currentUserAccessGrant.id"
+          :access-type="currentUserAccessGrant.accessType"
+          :is-project-description-required="currentUserAccessGrant.isProjectDescriptionRequired"
           @created="refresh"
         />
         <template v-else>
-          <!-- open access, so request for access is not required -->
+          <!-- Unexpected edge case for call-to-action button -->
         </template>
       </div>
     </v-card-title>
@@ -115,7 +140,7 @@
 </template>
 
 <script lang="ts" setup>
-import { toRefs } from "vue"
+import { computed, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
@@ -136,6 +161,9 @@ const props = defineProps({
 const { slug } = toRefs(props)
 const { dataset, policy, refresh: refreshDataset } = useDataset(slug)
 const { currentUser, fetch: refreshCurrentUser } = useCurrentUser()
+
+const currentUserAccessGrant = computed(() => dataset.value?.currentUserAccessGrant)
+const currentUserAccessRequest = computed(() => dataset.value?.currentUserAccessRequest)
 
 function refresh() {
   refreshDataset()

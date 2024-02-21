@@ -4,6 +4,7 @@ import { type Policy } from "@/api/base-api"
 import { type User } from "@/api/users-api"
 import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
 import { type AccessGrant } from "@/api/access-grants-api"
+import { type AccessRequest } from "@/api/access-requests-api"
 
 export { type Policy }
 
@@ -41,14 +42,15 @@ export type Dataset = {
   stewardship?: DatasetStewardship
 
   // magic fields
-  accessibleByAccessGrant?: AccessGrant | null
+  currentUserAccessGrant?: AccessGrant | null
+  currentUserAccessRequest?: AccessRequest | null
 }
 
 export type DatasetDetailedResult = Dataset & {
   owner: User
   creator: User
   stewardship: DatasetStewardship
-  accessibleByAccessGrant: AccessGrant | null
+  currentUserAccessGrant: AccessGrant | null
 }
 
 export const datasetsApi = {

@@ -131,6 +131,7 @@ export class DatasetsController extends BaseController {
         "creator",
         "stewardship",
         "accessGrants",
+        "accessRequests",
       ],
     })
 
