@@ -8,6 +8,12 @@
     >
       <OwnerCard :slug="slug" />
     </v-col>
+    <v-col
+      cols="12"
+      md="6"
+    >
+      <SubjectCard :slug="slug" />
+    </v-col>
   </v-row>
 </template>
 
@@ -16,6 +22,7 @@ import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 
 import DataDescriptionCard from "@/components/datasets/DataDescriptionCard.vue"
 import OwnerCard from "@/components/datasets/OwnerCard.vue"
+import SubjectCard from "@/components/datasets/SubjectCard.vue"
 
 const props = defineProps({
   slug: {
