@@ -48,8 +48,12 @@ export class AccessRequestsPolicy extends BasePolicy<
     return this.datasetsPolicy.update()
   }
 
-  permittedAttributes(): Path[] {
+  permittedAttributesForUpdate(): Path[] {
     return ["denialReason"]
+  }
+
+  permittedAttributesForCreate(): Path[] {
+    return ["datasetId", "requestorId", "accessGrantId", "projectName", "projectDescription"]
   }
 }
 
