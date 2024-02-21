@@ -5,7 +5,7 @@ import { Path } from "@/utils/deep-pick"
 import { Dataset, User, AccessGrant } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
 import BasePolicy from "@/policies/base-policy"
-import { withAccessibleAccessGrants } from "@/models/datasets"
+import { accessibleViaAccessGrantsBy } from "@/models/datasets"
 
 export class DatasetsPolicy extends BasePolicy<Dataset> {
   private _mostPermissiveAccessGrant: AccessGrant | null = null
@@ -58,7 +58,7 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     }
 
     if (user.isDataOwner) {
-      const accessibleAccessGrantsQuery = withAccessibleAccessGrants(user)
+      const accessibleAccessGrantsQuery = accessibleViaAccessGrantsBy(user)
       return modelClass.scope({
         where: {
           [Op.or]: [{ ownerId: user.id }, accessibleAccessGrantsQuery.where],
@@ -66,7 +66,7 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
       })
     }
 
-    return modelClass.scope({ method: ["withAccessibleAccessGrants", user] })
+    return modelClass.scope({ method: ["accessibleViaAccessGrantsBy", user] })
   }
 
   permittedAttributes(): Path[] {

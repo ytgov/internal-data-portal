@@ -9,8 +9,8 @@ import {
 } from "@/factories"
 import { AccessTypes, GrantLevels } from "@/models/access-grant"
 
-describe("api/src/models/datasets/with-accessible-access-grants.ts", () => {
-  describe(".withAccessibleAccessGrants Dataset scope", () => {
+describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
+  describe(".accessibleViaAccessGrantsBy Dataset scope", () => {
     test.each([
       { accessType: AccessTypes.OPEN_ACCESS },
       { accessType: AccessTypes.SELF_SERVE_ACCESS },
@@ -66,7 +66,7 @@ describe("api/src/models/datasets/with-accessible-access-grants.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["withAccessibleAccessGrants", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestinUser],
         }).findAll()
 
         // Assert
@@ -113,7 +113,7 @@ describe("api/src/models/datasets/with-accessible-access-grants.ts", () => {
 
       // Act
       const result = await Dataset.scope({
-        method: ["withAccessibleAccessGrants", requestinUser],
+        method: ["accessibleViaAccessGrantsBy", requestinUser],
       }).findAll()
 
       // Assert
@@ -175,7 +175,7 @@ describe("api/src/models/datasets/with-accessible-access-grants.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["withAccessibleAccessGrants", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestinUser],
         }).findAll()
 
         // Assert
@@ -234,7 +234,7 @@ describe("api/src/models/datasets/with-accessible-access-grants.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["withAccessibleAccessGrants", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestinUser],
         }).findAll()
 
         // Assert
@@ -300,7 +300,7 @@ describe("api/src/models/datasets/with-accessible-access-grants.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["withAccessibleAccessGrants", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestinUser],
         }).findAll()
 
         // Assert
@@ -362,7 +362,7 @@ describe("api/src/models/datasets/with-accessible-access-grants.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["withAccessibleAccessGrants", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestinUser],
         }).findAll()
 
         // Assert
@@ -419,7 +419,7 @@ describe("api/src/models/datasets/with-accessible-access-grants.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["withAccessibleAccessGrants", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestinUser],
         }).findAll()
 
         // Assert
@@ -488,7 +488,7 @@ describe("api/src/models/datasets/with-accessible-access-grants.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["withAccessibleAccessGrants", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestinUser],
         }).findAll()
 
         // Assert
@@ -553,7 +553,7 @@ describe("api/src/models/datasets/with-accessible-access-grants.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["withAccessibleAccessGrants", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestinUser],
         }).findAll()
 
         // Assert

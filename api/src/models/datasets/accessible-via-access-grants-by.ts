@@ -6,12 +6,12 @@ import User from "@/models/user"
 const NON_EXISTENT_ID = -1
 
 // TODO: make this less fragile and more easily testable
-export function withAccessibleAccessGrants(user: User): {
+export function accessibleViaAccessGrantsBy(user: User): {
   where: WhereAttributeHash
 } {
   const { groupMembership } = user
   if (isNil(groupMembership)) {
-    throw new Error("User must have groupMembership to use withAccessibleAccessGrants")
+    throw new Error("User must have groupMembership to use accessibleViaAccessGrantsBy")
   }
 
   const departmentId = groupMembership.departmentId || NON_EXISTENT_ID
@@ -90,4 +90,4 @@ export function withAccessibleAccessGrants(user: User): {
   }
 }
 
-export default withAccessibleAccessGrants
+export default accessibleViaAccessGrantsBy
