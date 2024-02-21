@@ -116,6 +116,9 @@ router
 router
   .route("/api/qa-scenarios/add-random-access-requests")
   .post(QaScenarios.AddRandomAccessRequestsController.create)
+router
+  .route("/api/qa-scenarios/cycle-user-role-type")
+  .post(QaScenarios.CycleUserRoleTypeController.create)
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {
