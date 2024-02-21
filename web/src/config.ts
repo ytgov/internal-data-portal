@@ -13,7 +13,7 @@ const CONFIGS: {
   development: {
     API_BASE_URL: "http://localhost:3000",
     AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com",
-    AUTH0_CLIENT_ID: "mS8zklFSgatWX3v1OCQgVpEq5MixCm4k",
+    AUTH0_CLIENT_ID: "ZHjPOeCwYBov6eR1lxGOVYhYi4VPV8eU",
     AUTH0_AUDIENCE: "testing",
   },
   // Make sure that it's still possible to build locally in production mode
@@ -22,7 +22,7 @@ const CONFIGS: {
   production: {
     API_BASE_URL: "",
     AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com",
-    AUTH0_CLIENT_ID: "mS8zklFSgatWX3v1OCQgVpEq5MixCm4k",
+    AUTH0_CLIENT_ID: "ZHjPOeCwYBov6eR1lxGOVYhYi4VPV8eU",
     AUTH0_AUDIENCE: "testing",
   },
 }
