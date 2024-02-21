@@ -51,14 +51,16 @@ const ORDERED_ROLE_TYPES = [
   RoleTypes.SYSTEM_ADMIN,
 ]
 
-const nextRoleType = computed<RoleTypes | null>(() => {
+const currentRoleType = computed<RoleTypes | null>(() => {
   if (isNil(currentUser.value)) return null
 
-  const { roleTypes } = currentUser.value
-  const currentRoleType = roleTypes[0]
-  if (isNil(currentRoleType)) return null
+  return currentUser.value.roleTypes[0] || null
+})
 
-  const currentIndex = ORDERED_ROLE_TYPES.indexOf(currentRoleType)
+const nextRoleType = computed<RoleTypes | null>(() => {
+  if (isNil(currentRoleType.value)) return null
+
+  const currentIndex = ORDERED_ROLE_TYPES.indexOf(currentRoleType.value)
   const nextIndex = (currentIndex + 1) % 4
   return ORDERED_ROLE_TYPES[nextIndex]
 })
@@ -78,7 +80,9 @@ const scenarios = computed<Scenario[]>(() => [
   },
   {
     url: "/api/qa-scenarios/cycle-user-role-type",
-    label: `Cycle User Type To ${nextRoleType.value || "..."}`,
+    label: `Cycle User Type From "${currentRoleType.value || "..."}" To "${
+      nextRoleType.value || "..."
+    }"`,
   },
 ])
 
