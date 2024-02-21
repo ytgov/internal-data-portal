@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 import { CreationAttributes } from "sequelize"
 
-import { Dataset, AccessGrant } from "@/models"
+import { Dataset, AccessGrant, AccessRequest } from "@/models"
 import { AccessTypes, GrantLevels } from "@/models/access-grant"
 
 import BaseController from "@/controllers/base-controller"
@@ -9,6 +9,7 @@ import BaseController from "@/controllers/base-controller"
 export class ApplyRandomAccessGrantsController extends BaseController {
   async create() {
     try {
+      await AccessRequest.destroy({ where: {}, force: true })
       await AccessGrant.destroy({ where: {}, force: true })
       await this.applyRandomAccessGrantsToDatasets()
       return this.response
