@@ -11,6 +11,7 @@ export type AuthorizationRequest = JwtRequest & {
 async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
   const { auth0Subject, email, firstName, lastName } = await auth0Integration.getUserInfo(token)
 
+  // TODO: move to ensure user service
   const [user, created] = await User.findOrCreate({
     where: { auth0Subject },
     defaults: {

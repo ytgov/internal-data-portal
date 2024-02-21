@@ -1,14 +1,21 @@
 import { faker } from "@faker-js/faker"
 import { CreationAttributes } from "sequelize"
 
-import { Dataset, AccessGrant } from "@/models"
+import { Dataset, AccessGrant, AccessRequest } from "@/models"
 import { AccessTypes, GrantLevels } from "@/models/access-grant"
 
 import BaseController from "@/controllers/base-controller"
 
+const AVAILABLE_ACCESS_TYPES = [
+  AccessTypes.OPEN_ACCESS,
+  AccessTypes.SELF_SERVE_ACCESS,
+  AccessTypes.SCREENED_ACCESS,
+]
+
 export class ApplyRandomAccessGrantsController extends BaseController {
   async create() {
     try {
+      await AccessRequest.destroy({ where: {}, force: true })
       await AccessGrant.destroy({ where: {}, force: true })
       await this.applyRandomAccessGrantsToDatasets()
       return this.response
@@ -36,7 +43,7 @@ export class ApplyRandomAccessGrantsController extends BaseController {
           creatorId: dataset.ownerId,
           // TODO: supportId: faker.helpers.arrayElement(users - dataset.owner).id,
           grantLevel: randomGrantLevel,
-          accessType: faker.helpers.arrayElement(Object.values(AccessTypes)),
+          accessType: faker.helpers.arrayElement(AVAILABLE_ACCESS_TYPES),
           isProjectDescriptionRequired: faker.datatype.boolean(),
         })
       )

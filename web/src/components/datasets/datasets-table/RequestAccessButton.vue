@@ -2,14 +2,16 @@
   <v-btn
     color="primary"
     variant="outlined"
-    @click="requestAccess"
+    :to="{
+      name: 'DatasetDescriptionReadPage',
+      params: { slug },
+      query: { showCreateRequest: 'true' },
+    }"
   >
     Request Access
   </v-btn>
 </template>
 
 <script lang="ts" setup>
-function requestAccess() {
-  alert("TODO: Requesting access")
-}
+defineProps<{ slug: string }>()
 </script>

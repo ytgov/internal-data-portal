@@ -35,12 +35,14 @@
     <template #item.actions="{ value: action, item: { slug } }">
       <RequestAccessButton
         v-if="action === DatasetTableActions.REQUEST_ACCESS"
+        :slug="slug"
         class="action-buttons"
         @mouseover="disableRowHighlight"
         @mouseleave="removeDisableRowHighlight"
       />
       <SubscribeToDatasetButton
         v-else-if="action === DatasetTableActions.SUBSCRIBE"
+        :slug="slug"
         class="action-buttons"
         @mouseover="disableRowHighlight"
         @mouseleave="removeDisableRowHighlight"

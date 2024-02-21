@@ -2,14 +2,16 @@
   <v-btn
     color="primary"
     variant="outlined"
-    @click="subscribeToDataset"
+    :to="{
+      name: 'DatasetDescriptionReadPage',
+      params: { slug },
+      query: { showCreateRequest: 'true' },
+    }"
   >
     Subscribe
   </v-btn>
 </template>
 
 <script lang="ts" setup>
-function subscribeToDataset() {
-  alert("TODO: Subscribe to dataset")
-}
+defineProps<{ slug: string }>()
 </script>
