@@ -53,6 +53,7 @@ export class TableSerializer extends BaseSerializer<Dataset> {
       return accessGrant.accessType
     }
 
+    // TODO: add in types access as Owner or System Admin, etc.
     return AccessTypes.NO_ACCESS
   }
 
