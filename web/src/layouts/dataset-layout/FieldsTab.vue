@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO: lock tab when access request is required before viewing -->
   <v-tab :to="{ name: routeName, params: { slug } }"><h3>Fields</h3></v-tab>
 </template>
 
