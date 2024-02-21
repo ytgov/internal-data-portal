@@ -8,7 +8,7 @@
         color="primary"
         v-bind="dialogProps"
       >
-        Request Access
+        {{ accessType === AccessTypes.SELF_SERVE_ACCESS ? "Subscribe" : "Request Access" }}
       </v-btn>
     </template>
     <v-form
@@ -52,7 +52,7 @@
             <v-col>
               <v-text-field
                 v-model="accessRequest.projectName"
-                label="Request on Behalf Of (Program/App)"
+                label="Request on Behalf Of (Program/App) *"
                 :rules="[required]"
                 variant="outlined"
                 required
@@ -61,8 +61,17 @@
           </v-row>
           <v-row>
             <v-col>
-              <!-- TODO: required if project description is required -->
               <v-textarea
+                v-if="isProjectDescriptionRequired"
+                v-model="accessRequest.projectDescription"
+                :rules="[required]"
+                label="Project Description *"
+                rows="5"
+                variant="outlined"
+                required
+              />
+              <v-textarea
+                v-else
                 v-model="accessRequest.projectDescription"
                 label="Project Description"
                 rows="5"
@@ -111,21 +120,20 @@ import UserAttributeTextField from "@/components/users/UserAttributeTextField.vu
 import UserGroupAutocomplete, {
   UserGroupTypes,
 } from "@/components/user-groups/UserGroupAutocomplete.vue"
+import { AccessTypes } from "@/api/access-grants-api"
 
-const props = defineProps({
-  datasetId: {
-    type: Number,
-    required: true,
-  },
-  accessGrantId: {
-    type: Number,
-    required: true,
-  },
-  requestorId: {
-    type: Number,
-    required: true,
-  },
-})
+const props = withDefaults(
+  defineProps<{
+    datasetId: number
+    requestorId: number
+    accessGrantId: number
+    accessType: string
+    isProjectDescriptionRequired?: boolean
+  }>(),
+  {
+    isProjectDescriptionRequired: false,
+  }
+)
 
 const emit = defineEmits(["created"])
 

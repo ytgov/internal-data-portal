@@ -5,12 +5,7 @@
 
       <div>
         <v-progress-circular
-          v-if="
-            isNil(dataset) ||
-            isNil(policy) ||
-            isNil(currentUser) ||
-            isNil(dataset.accessibleByAccessGrant)
-          "
+          v-if="isNil(dataset) || isNil(policy) || isNil(currentUser)"
           indeterminate
           color="primary"
           size="36"
@@ -26,11 +21,23 @@
           Edit
         </v-btn>
         <AccessRequestCreateDialog
-          v-else
+          v-else-if="
+            !isNil(dataset.accessibleByAccessGrant) &&
+            [AccessTypes.SELF_SERVE_ACCESS, AccessTypes.SCREENED_ACCESS].includes(
+              dataset.accessibleByAccessGrant.accessType
+            )
+          "
           :dataset-id="dataset.id"
-          :access-grant-id="dataset.accessibleByAccessGrant.id"
           :requestor-id="currentUser.id"
+          :access-grant-id="dataset.accessibleByAccessGrant.id"
+          :access-type="dataset.accessibleByAccessGrant.accessType"
+          :is-project-description-required="
+            dataset.accessibleByAccessGrant.isProjectDescriptionRequired
+          "
         />
+        <template v-else>
+          <!-- open access, so request for access is not required -->
+        </template>
       </div>
     </v-card-title>
     <v-card-text>
@@ -112,6 +119,7 @@ import { isNil } from "lodash"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
 
+import { AccessTypes } from "@/api/access-grants-api"
 import useDataset from "@/use/use-dataset"
 import useCurrentUser from "@/use/use-current-user"
 
