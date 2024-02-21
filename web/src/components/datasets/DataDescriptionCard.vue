@@ -34,6 +34,7 @@
           :is-project-description-required="
             dataset.accessibleByAccessGrant.isProjectDescriptionRequired
           "
+          @created="refresh"
         />
         <template v-else>
           <!-- open access, so request for access is not required -->
@@ -133,6 +134,11 @@ const props = defineProps({
 })
 
 const { slug } = toRefs(props)
-const { dataset, policy } = useDataset(slug)
-const { currentUser } = useCurrentUser()
+const { dataset, policy, refresh: refreshDataset } = useDataset(slug)
+const { currentUser, fetch: refreshCurrentUser } = useCurrentUser()
+
+function refresh() {
+  refreshDataset()
+  refreshCurrentUser()
+}
 </script>
