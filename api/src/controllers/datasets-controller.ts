@@ -4,7 +4,7 @@ import { isNil } from "lodash"
 import { Dataset } from "@/models"
 import { DatasetsPolicy } from "@/policies"
 import { CreateService, UpdateService } from "@/services/datasets"
-import { TableSerializer } from "@/serializers/datasets"
+import { ShowSerializer, TableSerializer } from "@/serializers/datasets"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -12,10 +12,10 @@ export class DatasetsController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<Dataset>
 
-    // TODO: add query scoping, filter out datasets where the user does not have any access
+    const scopedDatasets = DatasetsPolicy.applyScope(Dataset, this.currentUser)
 
-    const totalCount = await Dataset.count({ where })
-    const datasets = await Dataset.findAll({
+    const totalCount = await scopedDatasets.count({ where })
+    const datasets = await scopedDatasets.findAll({
       where,
       limit: this.pagination.limit,
       offset: this.pagination.offset,
@@ -40,8 +40,12 @@ export class DatasetsController extends BaseController {
       ],
     })
 
-    const serializedDatasets = TableSerializer.perform(datasets, this.currentUser)
-    return this.response.json({ datasets: serializedDatasets, totalCount })
+    try {
+      const serializedDatasets = TableSerializer.perform(datasets, this.currentUser)
+      return this.response.json({ datasets: serializedDatasets, totalCount })
+    } catch (error) {
+      return this.response.status(500).json({ message: `Dataset serialization failed: ${error}` })
+    }
   }
 
   async show() {
@@ -57,7 +61,15 @@ export class DatasetsController extends BaseController {
         .json({ message: "You are not authorized to view this dataset." })
     }
 
-    return this.response.status(200).json({ dataset })
+    try {
+      const serializedDataset = ShowSerializer.perform(dataset, this.currentUser)
+      return this.response.status(200).json({
+        dataset: serializedDataset,
+        policy,
+      })
+    } catch (error) {
+      return this.response.status(500).json({ message: `Dataset serialization failed: ${error}` })
+    }
   }
 
   async create() {
@@ -106,7 +118,21 @@ export class DatasetsController extends BaseController {
 
   private async loadDataset(): Promise<Dataset | null> {
     const dataset = await Dataset.findBySlugOrPk(this.params.datasetIdOrSlug, {
-      include: ["owner", "creator", "stewardship"],
+      include: [
+        {
+          association: "owner",
+          include: [
+            {
+              association: "groupMembership",
+              include: ["department", "division", "branch", "unit"],
+            },
+          ],
+        },
+        "creator",
+        "stewardship",
+        "accessGrants",
+        "accessRequests",
+      ],
     })
 
     return dataset

@@ -66,7 +66,6 @@ export const datasetFactory = DatasetFactory.define(
       description: faker.lorem.paragraph(),
       subscriptionUrl,
       subscriptionAccessCode,
-      isSubscribable: faker.datatype.boolean(0.5),
       isSpatialData: faker.datatype.boolean(0.5),
       isLiveData: faker.datatype.boolean(0.5),
       termsOfUse: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,

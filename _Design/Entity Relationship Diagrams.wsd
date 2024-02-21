@@ -73,7 +73,6 @@ entity "datasets" {
   * description : nvarchar(MAX)
   subscription_url : nvarchar(1000)
   subscription_access_code : nvarchar(255)
-  is_subscribable : bit
   is_spatial_data : bit
   is_live_data : bit
   terms_of_use : nvarchar(MAX)

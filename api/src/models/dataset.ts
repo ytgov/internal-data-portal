@@ -33,6 +33,7 @@ import DatasetStewardship from "@/models/dataset-stewardship"
 import Tag from "@/models/tag"
 import Tagging, { TaggableTypes } from "@/models/tagging"
 import User from "@/models/user"
+import { mostPermissiveAccessGrantFor, accessibleViaAccessGrantsBy } from "@/models/datasets"
 
 import BaseModel from "@/models/base-model"
 
@@ -52,7 +53,6 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
   declare description: string
   declare subscriptionUrl: CreationOptional<string | null>
   declare subscriptionAccessCode: CreationOptional<string | null>
-  declare isSubscribable: CreationOptional<boolean>
   declare isSpatialData: CreationOptional<boolean>
   declare isLiveData: CreationOptional<boolean>
   declare termsOfUse: CreationOptional<string | null>
@@ -211,6 +211,10 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
       as: "accessGrants",
     })
   }
+
+  public mostPermissiveAccessGrantFor(user: User): NonAttribute<AccessGrant | null> {
+    return mostPermissiveAccessGrantFor(this, user)
+  }
 }
 
 Dataset.init(
@@ -256,11 +260,6 @@ Dataset.init(
     subscriptionAccessCode: {
       type: DataTypes.STRING,
       allowNull: true,
-    },
-    isSubscribable: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
     },
     isSpatialData: {
       type: DataTypes.BOOLEAN,
@@ -335,6 +334,9 @@ Dataset.init(
         },
       },
     ],
+    scopes: {
+      accessibleViaAccessGrantsBy,
+    },
   }
 )
 

@@ -14,7 +14,8 @@ import { isNil } from "lodash"
 
 import useUser, { type User } from "@/use/use-user"
 
-export type AttributeType = keyof User & ("firstName" | "lastName" | "email" | "displayName")
+export type AttributeType = keyof User &
+  ("firstName" | "lastName" | "email" | "displayName" | "position")
 
 const props = withDefaults(
   defineProps<{

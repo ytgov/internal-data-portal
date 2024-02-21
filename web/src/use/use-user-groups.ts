@@ -1,6 +1,8 @@
 import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
 
-import userGroupsApi, { type UserGroup } from "@/api/user-groups-api"
+import userGroupsApi, { type UserGroup, UserGroupTypes } from "@/api/user-groups-api"
+
+export { type UserGroup, UserGroupTypes }
 
 export function useUserGroups(
   queryOptions: Ref<{

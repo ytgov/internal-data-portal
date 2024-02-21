@@ -3,34 +3,40 @@ import { isEmpty, isNil } from "lodash"
 import { Dataset, User, AccessGrant, UserGroupMembership } from "@/models"
 import { AccessTypes, GrantLevels, orderOfAccessType } from "@/models/access-grant"
 
-export function determineAccess(record: Dataset, requestingUser: User): AccessTypes {
+// TODO: consider if this function should load associations if they were not supplied?
+// Or at least error informatively?
+export function mostPermissiveAccessGrantFor(
+  record: Dataset,
+  requestingUser: User
+): AccessGrant | null {
   const { accessGrants, owner } = record
 
   if (isNil(accessGrants) || isEmpty(accessGrants) || isNil(owner)) {
-    return AccessTypes.NO_ACCESS
+    return null
   }
 
-  return accessGrants.reduce<AccessTypes>(
-    (currentAccess: AccessTypes, accessGrant: AccessGrant) => {
-      const { accessType } = accessGrant
-      if (orderOfAccessType(currentAccess) > orderOfAccessType(accessType)) {
+  const { groupMembership: ownerGroupMembership } = owner
+  const { groupMembership: requestingUserGroupMembership } = requestingUser
+  if (isNil(ownerGroupMembership) || isNil(requestingUserGroupMembership)) {
+    return null
+  }
+
+  return accessGrants.reduce<AccessGrant | null>(
+    (currentAccess: AccessGrant | null, newAccessGrant: AccessGrant) => {
+      const currentAccessType = currentAccess?.accessType || AccessTypes.NO_ACCESS
+      const { accessType: newAccessType } = newAccessGrant
+      if (orderOfAccessType(currentAccessType) > orderOfAccessType(newAccessType)) {
         return currentAccess
       }
 
-      const { grantLevel } = accessGrant
-      const { groupMembership: ownerGroupMembership } = owner
-      const { groupMembership: requestingUserGroupMembership } = requestingUser
-      if (isNil(ownerGroupMembership) || isNil(requestingUserGroupMembership)) {
-        return currentAccess
-      }
-
-      if (matchesGrantLevel(grantLevel, ownerGroupMembership, requestingUserGroupMembership)) {
-        return accessGrant.accessType
+      const { grantLevel: newGrantLevel } = newAccessGrant
+      if (matchesGrantLevel(newGrantLevel, ownerGroupMembership, requestingUserGroupMembership)) {
+        return newAccessGrant
       }
 
       return currentAccess
     },
-    AccessTypes.NO_ACCESS
+    null
   )
 }
 
@@ -82,4 +88,4 @@ function matchesGrantLevel(
   }
 }
 
-export default determineAccess
+export default mostPermissiveAccessGrantFor

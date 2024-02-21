@@ -21,7 +21,7 @@ export class DenyController extends BaseController {
         .json({ message: "You are not authorized to deny access requests on this dataset." })
     }
 
-    const permittedAttributes = policy.permitAttributes(this.request.body)
+    const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
     try {
       const updatedAccessRequest = await DenyService.perform(
         accessRequest,

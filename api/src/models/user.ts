@@ -127,6 +127,18 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
     return this.roles?.map(({ role }) => role) || []
   }
 
+  get isSystemAdmin(): NonAttribute<boolean> {
+    return this.roleTypes.includes(RoleTypes.SYSTEM_ADMIN)
+  }
+
+  get isBusinessAnalyst(): NonAttribute<boolean> {
+    return this.roleTypes.includes(RoleTypes.BUSINESS_ANALYST)
+  }
+
+  get isDataOwner(): NonAttribute<boolean> {
+    return this.roleTypes.includes(RoleTypes.DATA_OWNER)
+  }
+
   get department(): NonAttribute<UserGroup | undefined> {
     return this.groupMembership?.department
   }

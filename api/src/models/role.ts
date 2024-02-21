@@ -17,10 +17,10 @@ import sequelize from "@/db/db-client"
 import User from "@/models/user"
 
 export enum RoleTypes {
-  DATA_OWNER = "data_owner",
   USER = "user",
-  SYSTEM_ADMIN = "system_admin",
+  DATA_OWNER = "data_owner",
   BUSINESS_ANALYST = "business_analyst",
+  SYSTEM_ADMIN = "system_admin",
 }
 
 export class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
