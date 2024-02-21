@@ -49,7 +49,10 @@ export type DatasetDetailedResult = Dataset & {
   owner: User
   creator: User
   stewardship: DatasetStewardship
+
+  // magic fields
   currentUserAccessGrant: AccessGrant | null
+  currentUserAccessRequest: AccessRequest | null
 }
 
 export const datasetsApi = {
