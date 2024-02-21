@@ -82,6 +82,7 @@
             cols="12"
             md="6"
           >
+            <!-- TODO: replace with readonly variant -->
             <UserGroupAutocomplete
               :model-value="datasetStewardship.departmentId"
               :type="UserGroupTypes.DEPARTMENT"
@@ -97,6 +98,7 @@
             cols="12"
             md="6"
           >
+            <!-- TODO: replace with readonly variant -->
             <UserGroupAutocomplete
               :model-value="datasetStewardship.divisionId"
               :type="UserGroupTypes.DIVISION"
@@ -114,6 +116,7 @@
             cols="12"
             md="6"
           >
+            <!-- TODO: replace with readonly variant -->
             <UserGroupAutocomplete
               :model-value="datasetStewardship.branchId"
               :type="UserGroupTypes.BRANCH"
@@ -129,6 +132,7 @@
             cols="12"
             md="6"
           >
+            <!-- TODO: replace with readonly variant -->
             <UserGroupAutocomplete
               :model-value="datasetStewardship.unitId"
               :type="UserGroupTypes.UNIT"
