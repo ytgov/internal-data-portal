@@ -53,7 +53,6 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
   declare description: string
   declare subscriptionUrl: CreationOptional<string | null>
   declare subscriptionAccessCode: CreationOptional<string | null>
-  declare isSubscribable: CreationOptional<boolean>
   declare isSpatialData: CreationOptional<boolean>
   declare isLiveData: CreationOptional<boolean>
   declare termsOfUse: CreationOptional<string | null>
@@ -261,12 +260,6 @@ Dataset.init(
     subscriptionAccessCode: {
       type: DataTypes.STRING,
       allowNull: true,
-    },
-    // TODO: remove this field?
-    isSubscribable: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
     },
     isSpatialData: {
       type: DataTypes.BOOLEAN,

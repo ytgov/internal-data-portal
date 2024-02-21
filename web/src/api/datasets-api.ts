@@ -22,7 +22,6 @@ export type Dataset = {
   description: string
   subscriptionUrl: string | null
   subscriptionAccessCode: string | null
-  isSubscribable: boolean
   isSpatialData: boolean
   isLiveData: boolean
   termsOfUse: string | null

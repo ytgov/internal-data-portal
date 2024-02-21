@@ -30,7 +30,6 @@ export class TableSerializer extends BaseSerializer<Dataset> {
         "description",
         "subscriptionUrl",
         "subscriptionAccessCode",
-        "isSubscribable",
         "status",
         "publishedAt",
         "deactivatedAt",

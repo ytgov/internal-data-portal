@@ -76,7 +76,6 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
       "description",
       "subscriptionUrl",
       "subscriptionAccessCode",
-      "isSubscribable",
       "isSpatialData",
       "isLiveData",
       "termsOfUse",

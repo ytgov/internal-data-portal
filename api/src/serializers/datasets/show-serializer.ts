@@ -23,7 +23,6 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
           "creatorId",
           "subscriptionUrl",
           "subscriptionAccessCode",
-          "isSubscribable",
           "publishedAt",
           "deactivatedAt",
           "status",
