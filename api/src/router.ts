@@ -65,7 +65,10 @@ router
   .patch(AccessGrantsController.update)
   .delete(AccessGrantsController.destroy)
 
-router.route("/api/access-requests").get(AccessRequestsController.index)
+router
+  .route("/api/access-requests")
+  .get(AccessRequestsController.index)
+  .post(AccessRequestsController.create)
 router
   .route("/api/access-requests/:accessRequestId/approve")
   .post(AccessRequests.ApproveController.create)
