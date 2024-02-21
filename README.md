@@ -35,7 +35,7 @@
    ```bash
    VITE_AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
    VITE_AUTH0_AUDIENCE=testing
-   VITE_AUTH0_CLIENT_ID=mS8zklFSgatWX3v1OCQgVpEq5MixCm4k
+   VITE_AUTH0_CLIENT_ID=ZHjPOeCwYBov6eR1lxGOVYhYi4VPV8eU
    ```
 
 3. Go back to the top level directory.
@@ -268,7 +268,7 @@ Files:
 
    VITE_APPLICATION_NAME=Internal Data Portal
    VITE_AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
-   VITE_AUTH0_CLIENT_ID=mS8zklFSgatWX3v1OCQgVpEq5MixCm4k
+   VITE_AUTH0_CLIENT_ID=ZHjPOeCwYBov6eR1lxGOVYhYi4VPV8eU
    VITE_AUTH0_AUDIENCE=testing
 
    FRONTEND_URL=http://localhost:8080
