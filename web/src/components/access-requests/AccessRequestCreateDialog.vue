@@ -150,7 +150,7 @@ const accessRequest = ref<Partial<AccessRequest>>({
 const router = useRouter()
 const route = useRoute()
 
-const showDialog = ref(route.query.showCreate === "true")
+const showDialog = ref(route.query.showCreateRequest === "true")
 const form = ref<InstanceType<typeof VForm> | null>(null)
 const isLoading = ref(false)
 const isValid = ref(false)
@@ -167,13 +167,13 @@ watch(
   () => showDialog.value,
   (value) => {
     if (value) {
-      if (route.query.showCreate === "true") {
+      if (route.query.showCreateRequest === "true") {
         return
       }
 
-      router.push({ query: { showCreate: "true" } })
+      router.push({ query: { showCreateRequest: "true" } })
     } else {
-      router.push({ query: { showCreate: undefined } })
+      router.push({ query: { showCreateRequest: undefined } })
     }
   }
 )
