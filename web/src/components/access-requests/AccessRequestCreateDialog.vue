@@ -8,7 +8,7 @@
         color="primary"
         v-bind="dialogProps"
       >
-        {{ accessType === AccessTypes.SELF_SERVE_ACCESS ? "Subscribe" : "Request Access" }}
+        {{ panelAndButtonLabel }}
       </v-btn>
     </template>
     <v-form
@@ -17,7 +17,7 @@
       @submit.prevent="createAndClose"
     >
       <v-card :loading="isLoading">
-        <v-card-title class="text-h5"> Request Access </v-card-title>
+        <v-card-title class="text-h5"> {{ panelAndButtonLabel }} </v-card-title>
 
         <v-card-text v-if="isNil(accessRequest)">
           <v-skeleton-loader type="card" />
@@ -96,7 +96,7 @@
             type="submit"
             variant="elevated"
           >
-            Request
+            {{ submitButtonLabel }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -121,6 +121,7 @@ import UserGroupAutocomplete, {
   UserGroupTypes,
 } from "@/components/user-groups/UserGroupAutocomplete.vue"
 import { AccessTypes } from "@/api/access-grants-api"
+import { computed } from "vue"
 
 const props = withDefaults(
   defineProps<{
@@ -154,6 +155,14 @@ const showDialog = ref(route.query.showCreateRequest === "true")
 const form = ref<InstanceType<typeof VForm> | null>(null)
 const isLoading = ref(false)
 const isValid = ref(false)
+
+// TODO: consider breaking the dialog into two separate components
+const panelAndButtonLabel = computed(() => {
+  return props.accessType === AccessTypes.SELF_SERVE_ACCESS ? "Subscribe" : "Request Access"
+})
+const submitButtonLabel = computed(() => {
+  return props.accessType === AccessTypes.SELF_SERVE_ACCESS ? "Subscribe" : "Request"
+})
 
 watch(
   () => [props.datasetId, props.accessGrantId, props.requestorId],
