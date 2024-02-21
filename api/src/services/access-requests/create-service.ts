@@ -2,6 +2,7 @@ import { randomUUID } from "crypto"
 import { isNil } from "lodash"
 
 import { AccessGrant, AccessRequest, User } from "@/models"
+import { AccessTypes } from "@/models/access-grant"
 
 import BaseService from "@/services/base-service"
 
@@ -29,6 +30,14 @@ export class CreateService extends BaseService {
       throw new Error("Access grant not found")
     }
 
+    let approvalAttributes: Partial<AccessRequest> = {}
+    if (accessGrant.accessType === AccessTypes.SELF_SERVE_ACCESS) {
+      approvalAttributes = {
+        approverId: accessGrant.creatorId,
+        approvedAt: new Date(),
+      }
+    }
+
     if (accessGrant.datasetId !== datasetId) {
       throw new Error("Access grant does not belong to the dataset")
     }
@@ -51,6 +60,7 @@ export class CreateService extends BaseService {
       accessGrantId,
       accessCode: randomUUID(),
       ...optionalAttributes,
+      ...approvalAttributes,
     })
 
     // TODO: log user action
