@@ -26,7 +26,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
         const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
           departmentId: department.id,
         })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -66,7 +66,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestingUser],
         }).findAll()
 
         // Assert
@@ -87,7 +87,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
       const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
         departmentId: department.id,
       })
-      const requestinUser = await userFactory
+      const requestingUser = await userFactory
         .transient({
           include: ["groupMembership"],
         })
@@ -113,7 +113,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
 
       // Act
       const result = await Dataset.scope({
-        method: ["accessibleViaAccessGrantsBy", requestinUser],
+        method: ["accessibleViaAccessGrantsBy", requestingUser],
       }).findAll()
 
       // Assert
@@ -135,7 +135,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
         const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
           departmentId: department.id,
         })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -175,7 +175,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestingUser],
         }).findAll()
 
         // Assert
@@ -203,7 +203,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
         const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
           departmentId: otherDepartment.id,
         })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -234,7 +234,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestingUser],
         }).findAll()
 
         // Assert
@@ -260,7 +260,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           departmentId: department.id,
           divisionId: division.id,
         })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -300,7 +300,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestingUser],
         }).findAll()
 
         // Assert
@@ -331,7 +331,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           departmentId: department.id,
           divisionId: otherDivision.id,
         })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -362,7 +362,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestingUser],
         }).findAll()
 
         // Assert
@@ -388,7 +388,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           departmentId: department.id,
           divisionId: division.id,
         })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -419,7 +419,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestingUser],
         }).findAll()
 
         // Assert
@@ -448,7 +448,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           divisionId: division.id,
           branchId: branch.id,
         })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -488,7 +488,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestingUser],
         }).findAll()
 
         // Assert
@@ -522,7 +522,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           divisionId: division.id,
           branchId: otherBranch.id,
         })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -553,7 +553,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
 
         // Act
         const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestinUser],
+          method: ["accessibleViaAccessGrantsBy", requestingUser],
         }).findAll()
 
         // Assert

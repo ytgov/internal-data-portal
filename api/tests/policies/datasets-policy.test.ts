@@ -16,7 +16,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
   describe("DatasetsPolicy", () => {
     describe(".applyScope", () => {
       test.each([{ roleType: RoleTypes.SYSTEM_ADMIN }, { roleType: RoleTypes.BUSINESS_ANALYST }])(
-        "when user role is `$roleType`, it returns the all records",
+        "when user role is `$roleType`, it returns all records",
         async ({ roleType }) => {
           // Arrange
           const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
@@ -27,7 +27,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
             departmentId: department.id,
           })
           const role = roleFactory.build({ role: roleType })
-          const requestinUser = await userFactory
+          const requestingUser = await userFactory
             .transient({
               include: ["groupMembership"],
             })
@@ -47,7 +47,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
             creatorId: datasetOwner.id,
             ownerId: datasetOwner.id,
           })
-          const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestinUser)
+          const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestingUser)
 
           // Act
           const result = await scopedQuery.findAll()
@@ -63,7 +63,6 @@ describe("api/src/policies/datasets-policy.ts", () => {
 
       test("when user has role type user, and no grants available, returns nothing", async () => {
         // Arrange
-        // Arrange
         const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
         const requestingUserGroupMembership = userGroupMembershipFactory.build({
           departmentId: department.id,
@@ -72,7 +71,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
           departmentId: department.id,
         })
         const role = roleFactory.build({ role: RoleTypes.USER })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -92,7 +91,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
           creatorId: datasetOwner.id,
           ownerId: datasetOwner.id,
         })
-        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestinUser)
+        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -112,7 +111,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
           departmentId: department.id,
         })
         const role = roleFactory.build({ role: RoleTypes.USER })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -150,7 +149,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
             creatorId: datasetOwner.id,
             ownerId: datasetOwner.id,
           })
-        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestinUser)
+        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -174,7 +173,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
           departmentId: department.id,
         })
         const role = roleFactory.build({ role: RoleTypes.DATA_OWNER })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -191,15 +190,15 @@ describe("api/src/policies/datasets-policy.ts", () => {
           .create()
 
         const ownedDataset = await datasetFactory.create({
-          creatorId: requestinUser.id,
-          ownerId: requestinUser.id,
+          creatorId: requestingUser.id,
+          ownerId: requestingUser.id,
         })
         // inaccessibleDataset - for control case
         await datasetFactory.create({
           creatorId: otherUser.id,
           ownerId: otherUser.id,
         })
-        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestinUser)
+        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -223,7 +222,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
           departmentId: department.id,
         })
         const role = roleFactory.build({ role: RoleTypes.DATA_OWNER })
-        const requestinUser = await userFactory
+        const requestingUser = await userFactory
           .transient({
             include: ["groupMembership"],
           })
@@ -240,8 +239,8 @@ describe("api/src/policies/datasets-policy.ts", () => {
           .create()
 
         const ownedDataset = await datasetFactory.create({
-          creatorId: requestinUser.id,
-          ownerId: requestinUser.id,
+          creatorId: requestingUser.id,
+          ownerId: requestingUser.id,
         })
         const accessGrant = accessGrantFactory.build({
           creatorId: otherUser.id,
@@ -261,7 +260,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
           creatorId: otherUser.id,
           ownerId: otherUser.id,
         })
-        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestinUser)
+        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
