@@ -2,6 +2,7 @@ import { literal } from "sequelize"
 import { Literal } from "sequelize/types/utils"
 import { isNil } from "lodash"
 
+import { compactSql } from "@/utils/compact-sql"
 import User from "@/models/user"
 
 const NON_EXISTENT_ID = -1
@@ -18,7 +19,7 @@ export function accessibleViaAccessGrantsBy(user: User): Literal {
   const branchId = groupMembership.branchId || NON_EXISTENT_ID
   const unitId = groupMembership.unitId || NON_EXISTENT_ID
 
-  const query = `
+  const query = compactSql(`
     (
       SELECT DISTINCT
         datasets.id
@@ -76,9 +77,7 @@ export function accessibleViaAccessGrantsBy(user: User): Literal {
             AND owner_group_membership.unit_id = ${unitId}
           )
     )
-  `
-    .replace(/\s+/g, " ")
-    .trim()
+  `)
 
   return literal(query)
 }
