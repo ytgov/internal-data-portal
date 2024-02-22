@@ -25,11 +25,18 @@ import { computed, ref, watch } from "vue"
 import { DateTime } from "luxon"
 import { VDatePicker, VTextField } from "vuetify/lib/components/index.mjs"
 
-const props = defineProps<{
-  modelValue: string | null
-  dateOptions?: VDatePicker["$props"]
-  fieldOptions?: VTextField["$props"]
-}>()
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string | null
+    dateOptions?: VDatePicker["$props"] | null
+    fieldOptions?: VTextField["$props"] | null
+  }>(),
+  {
+    modelValue: null,
+    dateOptions: null,
+    fieldOptions: null,
+  }
+)
 
 const emit = defineEmits(["update:modelValue"])
 
