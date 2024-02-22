@@ -1,6 +1,7 @@
-import { ModelStatic, NonAttribute, Op } from "sequelize"
+import { ModelStatic, NonAttribute, Op, literal } from "sequelize"
 
 import { Path } from "@/utils/deep-pick"
+import { compactSql } from "@/utils/compact-sql"
 
 import { Dataset, DatasetField, User } from "@/models"
 import { accessibleViaAccessGrantsBy } from "@/models/datasets"
@@ -36,9 +37,25 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
     }
 
     const accessibleAccessGrantsQuery = accessibleViaAccessGrantsBy(user)
-    // TODO: add filter for data owner
     if (user.isDataOwner) {
-      return modelClass
+      const ownerQuery = literal(
+        compactSql(/* sql */`
+          (
+            SELECT
+              datasets.id
+            FROM
+              datasets
+            WHERE datasets.owner_id = ${user.id}
+          )
+        `)
+      )
+      return modelClass.scope({
+        where: {
+          datasetId: {
+            [Op.in]: ownerQuery,
+          },
+        },
+      })
     }
 
     return modelClass.scope({
