@@ -39,7 +39,7 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
     const accessibleAccessGrantsQuery = accessibleViaAccessGrantsBy(user)
     if (user.isDataOwner) {
       const ownerQuery = literal(
-        compactSql(/* sql */`
+        compactSql(/* sql */ `
           (
             SELECT
               datasets.id
@@ -52,7 +52,7 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
       return modelClass.scope({
         where: {
           datasetId: {
-            [Op.in]: ownerQuery,
+            [Op.or]: [{ [Op.in]: ownerQuery }, { [Op.in]: accessibleAccessGrantsQuery }],
           },
         },
       })

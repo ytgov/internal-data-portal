@@ -162,7 +162,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         ])
       })
 
-      test("when user has role type data owner, and no grants available, returns the datasets owned by the user", async () => {
+      test("when user has role type data owner, and no grants available, returns the fields belonging to the datasets owned by the user", async () => {
         // Arrange
         const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
         const requestingUserGroupMembership = userGroupMembershipFactory.build({
@@ -218,6 +218,82 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         expect(result).toEqual([
           expect.objectContaining({
             id: ownedDatasetField.id,
+          }),
+        ])
+      })
+
+      test("when user has role type data owner, and grants available, returns the fields belonging to the datasets owned by the user and the fields belonging to the accessible datasets", async () => {
+        // Arrange
+        const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const requestingUserGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const otherUserGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const role = roleFactory.build({ role: RoleTypes.DATA_OWNER })
+        const requestingUser = await userFactory
+          .transient({
+            include: ["groupMembership"],
+          })
+          .associations({
+            roles: [role],
+            groupMembership: requestingUserGroupMembership,
+          })
+          .create()
+
+        const otherUser = await userFactory
+          .associations({
+            groupMembership: otherUserGroupMembership,
+          })
+          .create()
+
+        const ownedDataset = await datasetFactory.create({
+          creatorId: requestingUser.id,
+          ownerId: requestingUser.id,
+        })
+        const accessGrant = accessGrantFactory.build({
+          creatorId: otherUser.id,
+          grantLevel: GrantLevels.GOVERNMENT_WIDE,
+          accessType: AccessTypes.OPEN_ACCESS,
+        })
+        const accessibleDataset = await datasetFactory
+          .associations({
+            accessGrants: [accessGrant],
+          })
+          .create({
+            creatorId: otherUser.id,
+            ownerId: otherUser.id,
+          })
+        const inaccessibleDataset = await datasetFactory.create({
+          creatorId: otherUser.id,
+          ownerId: otherUser.id,
+        })
+        const ownedDatasetField = await datasetFieldFactory.create({
+          datasetId: ownedDataset.id,
+        })
+        const accessibleDatasetField = await datasetFieldFactory.create({
+          datasetId: accessibleDataset.id,
+        })
+        // inaccessible dataset field - for control case
+        await datasetFieldFactory.create({
+          datasetId: inaccessibleDataset.id,
+        })
+        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+
+        // Act
+        const result = await scopedQuery.findAll({
+          logging: console.log,
+        })
+
+        // Assert
+        expect(DatasetField.count()).resolves.toBe(3)
+        expect(result).toEqual([
+          expect.objectContaining({
+            id: ownedDatasetField.id,
+          }),
+          expect.objectContaining({
+            id: accessibleDatasetField.id,
           }),
         ])
       })
