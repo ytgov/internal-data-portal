@@ -1,7 +1,12 @@
 import http from "@/api/http-client"
 
+import { type Policy } from "@/api/base-api"
 import { type User } from "@/api/users-api"
 import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
+import { type AccessGrant } from "@/api/access-grants-api"
+import { type AccessRequest } from "@/api/access-requests-api"
+
+export { type Policy }
 
 export enum DatasetErrorTypes {
   OK = "ok",
@@ -17,7 +22,6 @@ export type Dataset = {
   description: string
   subscriptionUrl: string | null
   subscriptionAccessCode: string | null
-  isSubscribable: boolean
   isSpatialData: boolean
   isLiveData: boolean
   termsOfUse: string | null
@@ -35,12 +39,20 @@ export type Dataset = {
   owner?: User
   creator?: User
   stewardship?: DatasetStewardship
+
+  // magic fields
+  currentUserAccessGrant?: AccessGrant | null
+  currentUserAccessRequest?: AccessRequest | null
 }
 
 export type DatasetDetailedResult = Dataset & {
   owner: User
   creator: User
   stewardship: DatasetStewardship
+
+  // magic fields
+  currentUserAccessGrant: AccessGrant | null
+  currentUserAccessRequest: AccessRequest | null
 }
 
 export const datasetsApi = {
@@ -58,6 +70,7 @@ export const datasetsApi = {
   },
   async get(idOrSlug: number | string): Promise<{
     dataset: DatasetDetailedResult
+    policy: Policy
   }> {
     const { data } = await http.get(`/api/datasets/${idOrSlug}`)
     return data

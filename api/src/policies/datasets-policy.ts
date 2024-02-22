@@ -1,18 +1,31 @@
-import { Dataset, User } from "@/models"
-import { RoleTypes } from "@/models/role"
+import { ModelStatic, Op } from "sequelize"
+import { isNil } from "lodash"
 
 import { Path } from "@/utils/deep-pick"
+import { Dataset, User, AccessGrant } from "@/models"
+import { AccessTypes } from "@/models/access-grant"
 import BasePolicy from "@/policies/base-policy"
+import { accessibleViaAccessGrantsBy } from "@/models/datasets"
 
 export class DatasetsPolicy extends BasePolicy<Dataset> {
+  private _mostPermissiveAccessGrant: AccessGrant | null = null
+
   constructor(user: User, record: Dataset) {
     super(user, record)
   }
 
   show(): boolean {
-    if (this.isSystemAdmin || this.isBusinessAnalyst) {
+    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
       return true
-    } else if (this.isDataOwner && this.record.ownerId === this.user.id) {
+    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
+      return true
+    } else if (
+      [
+        AccessTypes.OPEN_ACCESS,
+        AccessTypes.SELF_SERVE_ACCESS,
+        AccessTypes.SCREENED_ACCESS,
+      ].includes(this.userAccessType())
+    ) {
       return true
     }
 
@@ -20,9 +33,9 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
   }
 
   create(): boolean {
-    if (this.isSystemAdmin || this.isBusinessAnalyst) {
+    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
       return true
-    } else if (this.isDataOwner && this.record.ownerId === this.user.id) {
+    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
       return true
     }
 
@@ -30,23 +43,39 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
   }
 
   update(): boolean {
-    if (this.isSystemAdmin || this.isBusinessAnalyst) {
+    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
       return true
-    } else if (this.isDataOwner && this.record.ownerId === this.user.id) {
+    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
       return true
     }
 
     return false
   }
 
+  static applyScope(modelClass: ModelStatic<Dataset>, user: User): ModelStatic<Dataset> {
+    if (user.isSystemAdmin || user.isBusinessAnalyst) {
+      return modelClass
+    }
+
+    if (user.isDataOwner) {
+      const accessibleAccessGrantsQuery = accessibleViaAccessGrantsBy(user)
+      return modelClass.scope({
+        where: {
+          [Op.or]: [{ ownerId: user.id }, accessibleAccessGrantsQuery.where],
+        },
+      })
+    }
+
+    return modelClass.scope({ method: ["accessibleViaAccessGrantsBy", user] })
+  }
+
   permittedAttributes(): Path[] {
     return [
-      ...(this.isSystemAdmin || this.isBusinessAnalyst ? ["ownerId"] : []),
+      ...(this.user.isSystemAdmin || this.user.isBusinessAnalyst ? ["ownerId"] : []),
       "name",
       "description",
       "subscriptionUrl",
       "subscriptionAccessCode",
-      "isSubscribable",
       "isSpatialData",
       "isLiveData",
       "termsOfUse",
@@ -75,16 +104,20 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     ]
   }
 
-  private get isSystemAdmin(): boolean {
-    return this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN)
+  public userAccessType(): AccessTypes {
+    const accessGrant = this.mostPermissiveAccessGrant()
+    if (!isNil(accessGrant)) {
+      return accessGrant.accessType
+    }
+    return AccessTypes.NO_ACCESS
   }
 
-  private get isBusinessAnalyst(): boolean {
-    return this.user.roleTypes.includes(RoleTypes.BUSINESS_ANALYST)
-  }
+  public mostPermissiveAccessGrant(): AccessGrant | null {
+    if (this._mostPermissiveAccessGrant === null) {
+      this._mostPermissiveAccessGrant = this.record.mostPermissiveAccessGrantFor(this.user)
+    }
 
-  private get isDataOwner(): boolean {
-    return this.user.roleTypes.includes(RoleTypes.DATA_OWNER)
+    return this._mostPermissiveAccessGrant
   }
 }
 

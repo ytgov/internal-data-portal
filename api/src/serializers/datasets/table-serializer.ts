@@ -1,8 +1,8 @@
-import { pick } from "lodash"
+import { isNil, pick } from "lodash"
 
 import { Dataset, User } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
-import { determineAccess, determineActions, type DatasetTableActions } from "@/serializers/datasets/table-helpers"
+import { determineActions, type DatasetTableActions } from "@/serializers/datasets/table-helpers"
 import BaseSerializer from "@/serializers/base-serializer"
 
 export type DatasetTableView = Partial<Dataset> & {
@@ -19,7 +19,7 @@ export class TableSerializer extends BaseSerializer<Dataset> {
   }
 
   perform(): DatasetTableView {
-    const accessTypes = this.determineAccess()
+    const accessType = this.determineAccess()
     return {
       ...pick(this.record.dataValues, [
         "id",
@@ -30,7 +30,6 @@ export class TableSerializer extends BaseSerializer<Dataset> {
         "description",
         "subscriptionUrl",
         "subscriptionAccessCode",
-        "isSubscribable",
         "status",
         "publishedAt",
         "deactivatedAt",
@@ -43,16 +42,24 @@ export class TableSerializer extends BaseSerializer<Dataset> {
       tags: this.record.tags,
 
       // magic fields
-      access: accessTypes,
-      actions: this.determineActions(accessTypes),
+      access: accessType,
+      actions: this.determineActions(accessType),
     }
   }
 
   private determineAccess() {
-    return determineAccess(this.record, this.currentUser)
+    const accessGrant = this.record.mostPermissiveAccessGrantFor(this.currentUser)
+    if (!isNil(accessGrant)) {
+      return accessGrant.accessType
+    }
+
+    // TODO: add in types access as Owner or System Admin, etc.
+    return AccessTypes.NO_ACCESS
   }
 
   private determineActions(accessType: AccessTypes) {
     return determineActions(this.record, this.currentUser, accessType)
   }
 }
+
+export default TableSerializer

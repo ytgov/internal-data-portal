@@ -74,41 +74,32 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
   declare countAccessGrants: HasManyCountAssociationsMixin
   declare createAccessGrants: HasManyCreateAssociationMixin<AccessGrant>
 
-  declare getAccessGrantRequests: HasManyGetAssociationsMixin<AccessGrant>
-  declare setAccessGrantRequests: HasManySetAssociationsMixin<
+  declare getAccessGrantSupports: HasManyGetAssociationsMixin<AccessGrant>
+  declare setAccessGrantSupports: HasManySetAssociationsMixin<AccessGrant, AccessGrant["supportId"]>
+  declare hasAccessGrantSupport: HasManyHasAssociationMixin<AccessGrant, AccessGrant["supportId"]>
+  declare hasAccessGrantSupports: HasManyHasAssociationsMixin<AccessGrant, AccessGrant["supportId"]>
+  declare addAccessGrantSupport: HasManyAddAssociationMixin<AccessGrant, AccessGrant["supportId"]>
+  declare addAccessGrantSupports: HasManyAddAssociationsMixin<AccessGrant, AccessGrant["supportId"]>
+  declare removeAccessGrantSupport: HasManyRemoveAssociationMixin<
     AccessGrant,
-    AccessGrant["requestorId"]
+    AccessGrant["supportId"]
   >
-  declare hasAccessGrantRequest: HasManyHasAssociationMixin<AccessGrant, AccessGrant["requestorId"]>
-  declare hasAccessGrantRequests: HasManyHasAssociationsMixin<
+  declare removeAccessGrantSupports: HasManyRemoveAssociationsMixin<
     AccessGrant,
-    AccessGrant["requestorId"]
+    AccessGrant["supportId"]
   >
-  declare addAccessGrantRequest: HasManyAddAssociationMixin<AccessGrant, AccessGrant["requestorId"]>
-  declare addAccessGrantRequests: HasManyAddAssociationsMixin<
-    AccessGrant,
-    AccessGrant["requestorId"]
-  >
-  declare removeAccessGrantRequest: HasManyRemoveAssociationMixin<
-    AccessGrant,
-    AccessGrant["requestorId"]
-  >
-  declare removeAccessGrantRequests: HasManyRemoveAssociationsMixin<
-    AccessGrant,
-    AccessGrant["requestorId"]
-  >
-  declare countAccessGrantRequests: HasManyCountAssociationsMixin
-  declare createAccessGrantRequests: HasManyCreateAssociationMixin<AccessGrant>
+  declare countAccessGrantSupports: HasManyCountAssociationsMixin
+  declare createAccessGrantSupports: HasManyCreateAssociationMixin<AccessGrant>
 
   declare groupMembership?: NonAttribute<UserGroupMembership>
   declare accessGrants?: NonAttribute<AccessGrant[]>
-  declare accessGrantRequests?: NonAttribute<AccessGrant[]>
+  declare accessGrantSupports?: NonAttribute<AccessGrant[]>
   declare roles?: NonAttribute<Role[]>
 
   declare static associations: {
     groupMembership: Association<User, UserGroupMembership>
     accessGrants: Association<User, AccessGrant>
-    accessGrantRequests: Association<User, AccessGrant>
+    accessGrantSupports: Association<User, AccessGrant>
     roles: Association<User, Role>
   }
 
@@ -127,13 +118,25 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
       as: "accessGrants",
     })
     this.hasMany(AccessGrant, {
-      foreignKey: "requestorId",
-      as: "accessGrantRequests",
+      foreignKey: "supportId",
+      as: "accessGrantSupports",
     })
   }
 
   get roleTypes(): NonAttribute<RoleTypes[]> {
     return this.roles?.map(({ role }) => role) || []
+  }
+
+  get isSystemAdmin(): NonAttribute<boolean> {
+    return this.roleTypes.includes(RoleTypes.SYSTEM_ADMIN)
+  }
+
+  get isBusinessAnalyst(): NonAttribute<boolean> {
+    return this.roleTypes.includes(RoleTypes.BUSINESS_ANALYST)
+  }
+
+  get isDataOwner(): NonAttribute<boolean> {
+    return this.roleTypes.includes(RoleTypes.DATA_OWNER)
   }
 
   get department(): NonAttribute<UserGroup | undefined> {

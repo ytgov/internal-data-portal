@@ -11,12 +11,10 @@ import {
   userGroupMembershipFactory,
 } from "@/factories"
 
-import { determineAccess } from "@/serializers/datasets/table-helpers"
-
-describe("api/src/serializers/datasets/table/determine-access.ts", () => {
-  describe(".determineAccess", () => {
+describe("api/src/models/datasets/most-permissive-access-grant-for.ts", () => {
+  describe("Dataset#mostPermissiveAccessGrantFor", () => {
     describe("when datataset has access grant with open access", () => {
-      test("when grant level is government wide, returns open access", async () => {
+      test("when grant level is government wide, returns access grant with open access", async () => {
         // Arrange
         const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
         const otherDepartment = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
@@ -73,14 +71,18 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
           })
 
         // Act
-        const result = determineAccess(dataset, requestingUser)
+        const result = dataset.mostPermissiveAccessGrantFor(requestingUser)
 
         // Assert
-        expect(result).toEqual(AccessTypes.OPEN_ACCESS)
+        expect(result).toEqual(
+          expect.objectContaining({
+            accessType: AccessTypes.OPEN_ACCESS,
+          })
+        )
       })
 
       describe("when grant level is department", () => {
-        test("when user group membership matches access grant owner group membership, returns open access", async () => {
+        test("when user group membership matches access grant owner group membership, returns access grant with open access", async () => {
           // Arrange
           const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
           const requestingUserGroupMembership = userGroupMembershipFactory.build({
@@ -136,13 +138,17 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             })
 
           // Act
-          const result = determineAccess(dataset, requestingUser)
+          const result = dataset.mostPermissiveAccessGrantFor(requestingUser)
 
           // Assert
-          expect(result).toEqual(AccessTypes.OPEN_ACCESS)
+          expect(result).toEqual(
+            expect.objectContaining({
+              accessType: AccessTypes.OPEN_ACCESS,
+            })
+          )
         })
 
-        test("when user group membership does not match access grant owner group membership, returns no access", async () => {
+        test("when user group membership does not match access grant owner group membership, returns null", async () => {
           // Arrange
           const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
           const otherDepartment = await userGroupFactory.create({
@@ -201,15 +207,15 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             })
 
           // Act
-          const result = determineAccess(dataset, requestingUser)
+          const result = dataset.mostPermissiveAccessGrantFor(requestingUser)
 
           // Assert
-          expect(result).toEqual(AccessTypes.NO_ACCESS)
+          expect(result).toEqual(null)
         })
       })
 
       describe("when grant level is division", () => {
-        test("when user group membership matches access grant owner group membership, returns open access", async () => {
+        test("when user group membership matches access grant owner group membership, returns access grant with open access", async () => {
           // Arrange
           const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
           const division = await userGroupFactory.create({ type: UserGroupTypes.DIVISION })
@@ -268,13 +274,17 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             })
 
           // Act
-          const result = determineAccess(dataset, requestingUser)
+          const result = dataset.mostPermissiveAccessGrantFor(requestingUser)
 
           // Assert
-          expect(result).toEqual(AccessTypes.OPEN_ACCESS)
+          expect(result).toEqual(
+            expect.objectContaining({
+              accessType: AccessTypes.OPEN_ACCESS,
+            })
+          )
         })
 
-        test("when user group membership division does not matches access grant owner group membership, returns open access", async () => {
+        test("when user group membership division does not matches access grant owner group membership, returns access grant with open access", async () => {
           // Arrange
           const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
           const division = await userGroupFactory.create({ type: UserGroupTypes.DIVISION })
@@ -334,13 +344,13 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             })
 
           // Act
-          const result = determineAccess(dataset, requestingUser)
+          const result = dataset.mostPermissiveAccessGrantFor(requestingUser)
 
           // Assert
-          expect(result).toEqual(AccessTypes.NO_ACCESS)
+          expect(result).toEqual(null)
         })
 
-        test("when user group membership department does not match access grant owner group membership, returns no access", async () => {
+        test("when user group membership department does not match access grant owner group membership, returns null", async () => {
           // Arrange
           const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
           const otherDepartment = await userGroupFactory.create({
@@ -402,16 +412,16 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
             })
 
           // Act
-          const result = determineAccess(dataset, requestingUser)
+          const result = dataset.mostPermissiveAccessGrantFor(requestingUser)
 
           // Assert
-          expect(result).toEqual(AccessTypes.NO_ACCESS)
+          expect(result).toEqual(null)
         })
       })
     })
 
     describe("when datataset has access grant with self-serve access", () => {
-      test("when only access grant level is government wide, returns self-serve access", async () => {
+      test("when only access grant level is government wide, returns access grant with self-serve access", async () => {
         // Arrange
         const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
         const otherDepartment = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
@@ -468,13 +478,17 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
           })
 
         // Act
-        const result = determineAccess(dataset, requestingUser)
+        const result = dataset.mostPermissiveAccessGrantFor(requestingUser)
 
         // Assert
-        expect(result).toEqual(AccessTypes.SELF_SERVE_ACCESS)
+        expect(result).toEqual(
+          expect.objectContaining({
+            accessType: AccessTypes.SELF_SERVE_ACCESS,
+          })
+        )
       })
 
-      test("when access types of open and self-serve access exist with grant levels government wide, prefers open access", async () => {
+      test("when access types of open and self-serve access exist with grant levels government wide, prefers access grant with open access", async () => {
         // Arrange
         const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
         const otherDepartment = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
@@ -537,13 +551,17 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
           })
 
         // Act
-        const result = determineAccess(dataset, requestingUser)
+        const result = dataset.mostPermissiveAccessGrantFor(requestingUser)
 
         // Assert
-        expect(result).toEqual(AccessTypes.OPEN_ACCESS)
+        expect(result).toEqual(
+          expect.objectContaining({
+            accessType: AccessTypes.OPEN_ACCESS,
+          })
+        )
       })
 
-      test("when access types of self-serve and screened access exist with grant levels government wide, prefers self-serve access", async () => {
+      test("when access types of self-serve and screened access exist with grant levels government wide, prefers access grant with self-serve access", async () => {
         // Arrange
         const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
         const otherDepartment = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
@@ -606,10 +624,14 @@ describe("api/src/serializers/datasets/table/determine-access.ts", () => {
           })
 
         // Act
-        const result = determineAccess(dataset, requestingUser)
+        const result = dataset.mostPermissiveAccessGrantFor(requestingUser)
 
         // Assert
-        expect(result).toEqual(AccessTypes.SELF_SERVE_ACCESS)
+        expect(result).toEqual(
+          expect.objectContaining({
+            accessType: AccessTypes.SELF_SERVE_ACCESS,
+          })
+        )
       })
     })
   })

@@ -28,10 +28,12 @@ import sequelize from "@/db/db-client"
 
 import AccessGrant from "@/models/access-grant"
 import AccessRequest from "@/models/access-request"
+import DatasetField from "@/models/dataset-field"
 import DatasetStewardship from "@/models/dataset-stewardship"
 import Tag from "@/models/tag"
 import Tagging, { TaggableTypes } from "@/models/tagging"
 import User from "@/models/user"
+import { mostPermissiveAccessGrantFor, accessibleViaAccessGrantsBy } from "@/models/datasets"
 
 import BaseModel from "@/models/base-model"
 
@@ -51,7 +53,6 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
   declare description: string
   declare subscriptionUrl: CreationOptional<string | null>
   declare subscriptionAccessCode: CreationOptional<string | null>
-  declare isSubscribable: CreationOptional<boolean>
   declare isSpatialData: CreationOptional<boolean>
   declare isLiveData: CreationOptional<boolean>
   declare termsOfUse: CreationOptional<string | null>
@@ -112,6 +113,17 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
   declare countAccessRequests: HasManyCountAssociationsMixin
   declare createAccessRequest: HasManyCreateAssociationMixin<AccessRequest>
 
+  declare getFields: HasManyGetAssociationsMixin<DatasetField>
+  declare setFields: HasManySetAssociationsMixin<DatasetField, DatasetField["id"]>
+  declare hasField: HasManyHasAssociationMixin<DatasetField, DatasetField["id"]>
+  declare hasFields: HasManyHasAssociationsMixin<DatasetField, DatasetField["id"]>
+  declare addField: HasManyAddAssociationMixin<DatasetField, DatasetField["id"]>
+  declare addFields: HasManyAddAssociationsMixin<DatasetField, DatasetField["id"]>
+  declare removeField: HasManyRemoveAssociationMixin<DatasetField, DatasetField["id"]>
+  declare removeFields: HasManyRemoveAssociationsMixin<DatasetField, DatasetField["id"]>
+  declare countFields: HasManyCountAssociationsMixin
+  declare createField: HasManyCreateAssociationMixin<DatasetField>
+
   declare getTaggings: HasManyGetAssociationsMixin<Tagging>
   declare setTaggings: HasManySetAssociationsMixin<Tagging, Tagging["taggableId"]>
   declare hasTagging: HasManyHasAssociationMixin<Tagging, Tagging["taggableId"]>
@@ -139,6 +151,7 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
   declare stewardship?: NonAttribute<DatasetStewardship>
   declare accessGrants?: NonAttribute<AccessGrant[]>
   declare accessRequests?: NonAttribute<AccessRequest[]>
+  declare fields?: NonAttribute<DatasetField[]>
   declare taggings?: NonAttribute<Tagging[]>
   declare tags?: NonAttribute<Tag[]>
 
@@ -146,6 +159,7 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
     accessGrants: Association<Dataset, AccessGrant>
     accessRequests: Association<Dataset, AccessRequest>
     creator: Association<Dataset, User>
+    fields: Association<Dataset, DatasetField>
     owner: Association<Dataset, User>
     stewardship: Association<Dataset, DatasetStewardship>
     taggings: Association<Dataset, Tagging>
@@ -168,6 +182,10 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
     this.hasMany(AccessRequest, {
       foreignKey: "datasetId",
       as: "accessRequests",
+    })
+    this.hasMany(DatasetField, {
+      foreignKey: "datasetId",
+      as: "fields",
     })
     this.hasMany(Tagging, {
       foreignKey: "taggableId",
@@ -192,6 +210,10 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
       foreignKey: "datasetId",
       as: "accessGrants",
     })
+  }
+
+  public mostPermissiveAccessGrantFor(user: User): NonAttribute<AccessGrant | null> {
+    return mostPermissiveAccessGrantFor(this, user)
   }
 }
 
@@ -238,11 +260,6 @@ Dataset.init(
     subscriptionAccessCode: {
       type: DataTypes.STRING,
       allowNull: true,
-    },
-    isSubscribable: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
     },
     isSpatialData: {
       type: DataTypes.BOOLEAN,
@@ -317,6 +334,9 @@ Dataset.init(
         },
       },
     ],
+    scopes: {
+      accessibleViaAccessGrantsBy,
+    },
   }
 )
 

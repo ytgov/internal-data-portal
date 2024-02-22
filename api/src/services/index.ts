@@ -1,3 +1,6 @@
+export * as AccessGrants from "./access-grants"
+export * as AccessRequests from "./access-requests"
+export * as DatasetFields from "./dataset-fields"
 export * as Datasets from "./datasets"
 export * as DatasetStewardships from "./dataset-stewardships"
 export * as Taggings from "./taggings"

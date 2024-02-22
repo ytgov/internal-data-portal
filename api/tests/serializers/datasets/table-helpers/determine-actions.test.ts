@@ -1,5 +1,4 @@
 import { accessGrantFactory, accessRequestFactory, datasetFactory, userFactory } from "@/factories"
-import { AccessRequest } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
 
 import { DatasetTableActions, determineActions } from "@/serializers/datasets/table-helpers"

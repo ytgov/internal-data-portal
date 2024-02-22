@@ -1,5 +1,5 @@
 <template>
-  <v-data-table
+  <v-data-table-server
     v-model:items-per-page="itemsPerPage"
     v-model:page="page"
     :headers="headers"
@@ -35,12 +35,14 @@
     <template #item.actions="{ value: action, item: { slug } }">
       <RequestAccessButton
         v-if="action === DatasetTableActions.REQUEST_ACCESS"
+        :slug="slug"
         class="action-buttons"
         @mouseover="disableRowHighlight"
         @mouseleave="removeDisableRowHighlight"
       />
       <SubscribeToDatasetButton
         v-else-if="action === DatasetTableActions.SUBSCRIBE"
+        :slug="slug"
         class="action-buttons"
         @mouseover="disableRowHighlight"
         @mouseleave="removeDisableRowHighlight"
@@ -50,7 +52,7 @@
       </template>
       <ColumnRouterLink :slug="slug" />
     </template>
-  </v-data-table>
+  </v-data-table-server>
 </template>
 
 <script lang="ts" setup>
