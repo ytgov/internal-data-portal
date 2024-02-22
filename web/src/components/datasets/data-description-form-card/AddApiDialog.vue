@@ -47,9 +47,14 @@
 import { ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
-const props = defineProps<{
-  modelValue: string | null
-}>()
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string | null
+  }>(),
+  {
+    modelValue: null,
+  }
+)
 
 const emit = defineEmits(["update:modelValue", "added"])
 
