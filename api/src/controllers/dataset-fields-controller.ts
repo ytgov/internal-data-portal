@@ -12,8 +12,10 @@ export class DatasetFieldsController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<DatasetField>
 
-    const totalCount = await DatasetField.count({ where })
-    const datasetFields = await DatasetField.findAll({
+    const scopedDatasetFields = DatasetFieldsPolicy.applyScope(DatasetField, this.currentUser)
+
+    const totalCount = await scopedDatasetFields.count({ where })
+    const datasetFields = await scopedDatasetFields.findAll({
       where,
       limit: this.pagination.limit,
       offset: this.pagination.offset,

@@ -1,4 +1,4 @@
-import { NonAttribute } from "sequelize"
+import { ModelStatic, NonAttribute } from "sequelize"
 
 import { Path } from "@/utils/deep-pick"
 
@@ -27,6 +27,20 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
 
   destroy(): boolean {
     return this.datasetsPolicy.update()
+  }
+
+  static applyScope(modelClass: ModelStatic<DatasetField>, user: User): ModelStatic<DatasetField> {
+    if (user.isSystemAdmin || user.isBusinessAnalyst) {
+      return modelClass
+    }
+
+    // TODO: add filter for data owner
+    if (user.isDataOwner) {
+      return modelClass
+    }
+
+    // TODO: add filter for user
+    return modelClass
   }
 
   permittedAttributes(): Path[] {

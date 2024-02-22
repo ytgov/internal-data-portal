@@ -2,6 +2,7 @@
 export { accessGrantFactory } from "./access-grant-factory"
 export { accessRequestFactory } from "./access-request-factory"
 export { datasetFactory } from "./dataset-factory"
+export { datasetFieldFactory } from "./dataset-field-factory"
 export { roleFactory } from "./role-factory"
 export { userFactory } from "./user-factory"
 export { userGroupFactory } from "./user-group-factory"
