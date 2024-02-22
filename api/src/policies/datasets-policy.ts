@@ -1,4 +1,4 @@
-import { ModelStatic, Op } from "sequelize"
+import { ModelStatic, Op, literal } from "sequelize"
 import { isNil } from "lodash"
 
 import { Path } from "@/utils/deep-pick"
@@ -59,9 +59,22 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
 
     if (user.isDataOwner) {
       const accessibleAccessGrantsQuery = accessibleViaAccessGrantsBy(user)
+      const ownerQuery = literal(
+        `
+        (
+          SELECT
+            datasets.id
+          FROM
+            datasets
+          WHERE datasets.owner_id = ${user.id}
+        )
+        `
+      )
       return modelClass.scope({
         where: {
-          [Op.or]: [{ ownerId: user.id }, accessibleAccessGrantsQuery.where],
+          id: {
+            [Op.or]: [{ [Op.in]: ownerQuery }, { [Op.in]: accessibleAccessGrantsQuery }],
+          },
         },
       })
     }

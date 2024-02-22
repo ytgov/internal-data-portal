@@ -1,4 +1,5 @@
-import { Op, WhereAttributeHash, literal } from "sequelize"
+import { literal } from "sequelize"
+import { Literal } from "sequelize/types/utils"
 import { isNil } from "lodash"
 
 import User from "@/models/user"
@@ -6,9 +7,7 @@ import User from "@/models/user"
 const NON_EXISTENT_ID = -1
 
 // TODO: make this less fragile and more easily testable
-export function accessibleViaAccessGrantsBy(user: User): {
-  where: WhereAttributeHash
-} {
+export function accessibleViaAccessGrantsBy(user: User): Literal {
   const { groupMembership } = user
   if (isNil(groupMembership)) {
     throw new Error("User must have groupMembership to use accessibleViaAccessGrantsBy")
@@ -81,13 +80,7 @@ export function accessibleViaAccessGrantsBy(user: User): {
     .replace(/\s+/g, " ")
     .trim()
 
-  return {
-    where: {
-      id: {
-        [Op.in]: literal(query),
-      },
-    },
-  }
+  return literal(query)
 }
 
 export default accessibleViaAccessGrantsBy

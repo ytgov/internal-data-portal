@@ -22,6 +22,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   NonAttribute,
+  Op,
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
@@ -335,7 +336,15 @@ Dataset.init(
       },
     ],
     scopes: {
-      accessibleViaAccessGrantsBy,
+      accessibleViaAccessGrantsBy(user: User) {
+        return {
+          where: {
+            id: {
+              [Op.in]: accessibleViaAccessGrantsBy(user),
+            },
+          },
+        }
+      },
     },
   }
 )
