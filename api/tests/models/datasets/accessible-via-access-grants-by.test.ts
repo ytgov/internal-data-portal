@@ -117,7 +117,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
       }).findAll()
 
       // Assert
-      expect(result).toEqual([])
+      expect(result).toHaveLength(0)
     })
 
     test.each([
@@ -238,7 +238,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
         }).findAll()
 
         // Assert
-        expect(result).toEqual([])
+        expect(result).toHaveLength(0)
       }
     )
 
@@ -366,7 +366,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
         }).findAll()
 
         // Assert
-        expect(result).toEqual([])
+        expect(result).toHaveLength(0)
       }
     )
 
@@ -423,7 +423,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
         }).findAll()
 
         // Assert
-        expect(result).toEqual([])
+        expect(result).toHaveLength(0)
       }
     )
 
@@ -557,7 +557,7 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
         }).findAll()
 
         // Assert
-        expect(result).toEqual([])
+        expect(result).toHaveLength(0)
       }
     )
   })

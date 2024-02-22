@@ -98,7 +98,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
 
         // Assert
         expect(Dataset.count()).resolves.toBe(1)
-        expect(result).toEqual([])
+        expect(result).toHaveLength(0)
       })
 
       test("when user has role type user, and grants available, returns the accessible datasets", async () => {
