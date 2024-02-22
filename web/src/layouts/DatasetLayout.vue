@@ -46,7 +46,7 @@ const props = defineProps({
 })
 
 const { slug } = toRefs(props)
-const { dataset, isLoading } = useDataset(slug)
+const { dataset, isLoading, policy } = useDataset(slug)
 
 const { currentUser } = useCurrentUser()
 
@@ -64,6 +64,12 @@ type TabComponents = {
   }
 }
 
+const isDataOwnerAccessTabLocked = computed(() => {
+  return policy.value?.update !== true
+})
+
+// TODO: consider return fields policy in dataset policy
+// e.g. policy.value?.fields.show or something
 const isUserFieldsTabLocked = computed(() => {
   if (dataset.value?.currentUserAccessGrant?.accessType === AccessTypes.OPEN_ACCESS) {
     return false
@@ -78,7 +84,7 @@ const tabImports = computed<{
   [RoleTypes.DATA_OWNER]: [
     { component: DescriptionTab, attributes: { locked: false } },
     { component: FieldsTab, attributes: { locked: false } },
-    { component: AccessTab, attributes: { locked: false } },
+    { component: AccessTab, attributes: { locked: isDataOwnerAccessTabLocked.value } },
   ],
   [RoleTypes.SYSTEM_ADMIN]: [
     { component: DescriptionTab, attributes: { locked: false } },
