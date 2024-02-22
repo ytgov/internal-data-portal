@@ -19,7 +19,7 @@ export function accessibleViaAccessGrantsBy(user: User): Literal {
   const branchId = groupMembership.branchId || NON_EXISTENT_ID
   const unitId = groupMembership.unitId || NON_EXISTENT_ID
 
-  const query = compactSql(`
+  const query = compactSql(/* sql */ `
     (
       SELECT DISTINCT
         datasets.id

@@ -61,7 +61,7 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     if (user.isDataOwner) {
       const accessibleAccessGrantsQuery = accessibleViaAccessGrantsBy(user)
       const ownerQuery = literal(
-        compactSql(`
+        compactSql(/* sql */`
           (
             SELECT
               datasets.id
