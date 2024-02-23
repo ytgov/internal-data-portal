@@ -5,6 +5,7 @@ import { DatasetFieldsPolicy } from "@/policies"
 
 import {
   accessGrantFactory,
+  accessRequestFactory,
   datasetFactory,
   datasetFieldFactory,
   roleFactory,
@@ -93,7 +94,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         expect(result).toHaveLength(0)
       })
 
-      test("when user has role type user, and field belongs to dataset with accessible grants, returns the datasets fields", async () => {
+      test("when user has role type user, and field belongs to dataset with accessible open access grants, returns the datasets fields", async () => {
         // Arrange
         const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
         const requestingUserGroupMembership = userGroupMembershipFactory.build({
@@ -143,6 +144,148 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
 
         const accessibleDatasetField = await datasetFieldFactory.create({
           datasetId: accessibleDataset.id,
+        })
+        // inaccessible dataset field - for control case
+        await datasetFieldFactory.create({
+          datasetId: inaccessibleDataset.id,
+        })
+        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+
+        // Act
+        const result = await scopedQuery.findAll()
+
+        // Assert
+        expect(DatasetField.count()).resolves.toBe(2)
+        expect(result).toEqual([
+          expect.objectContaining({
+            id: accessibleDatasetField.id,
+          }),
+        ])
+      })
+
+      test("when user has role type user, and field belongs to dataset with accessible screened access grants, without an approved request, restricts the datasets fields", async () => {
+        // Arrange
+        const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const requestingUserGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const role = roleFactory.build({ role: RoleTypes.USER })
+        const requestingUser = await userFactory
+          .transient({
+            include: ["groupMembership"],
+          })
+          .associations({
+            roles: [role],
+            groupMembership: requestingUserGroupMembership,
+          })
+          .create()
+
+        const datasetOwner = await userFactory
+          .associations({
+            groupMembership: datasetOwnerGroupMembership,
+          })
+          .create()
+
+        const accessGrant = accessGrantFactory.build({
+          creatorId: datasetOwner.id,
+          grantLevel: GrantLevels.GOVERNMENT_WIDE,
+          accessType: AccessTypes.SCREENED_ACCESS,
+        })
+        const screenedDataset = await datasetFactory
+          .associations({
+            accessGrants: [accessGrant],
+          })
+          .create({
+            creatorId: datasetOwner.id,
+            ownerId: datasetOwner.id,
+          })
+        const inaccessibleDataset = await datasetFactory
+          .associations({
+            accessGrants: [],
+          })
+          .create({
+            creatorId: datasetOwner.id,
+            ownerId: datasetOwner.id,
+          })
+
+        // inaccessible dataset field - via screened access
+        await datasetFieldFactory.create({
+          datasetId: screenedDataset.id,
+        })
+        // inaccessible dataset field - for control case
+        await datasetFieldFactory.create({
+          datasetId: inaccessibleDataset.id,
+        })
+        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+
+        // Act
+        const result = await scopedQuery.findAll()
+
+        // Assert
+        expect(DatasetField.count()).resolves.toBe(2)
+        expect(result).toHaveLength(0)
+      })
+
+      test("when user has role type user, and field belongs to dataset with accessible screened access grants, with an approved request, returns the datasets fields", async () => {
+        // Arrange
+        const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const requestingUserGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const role = roleFactory.build({ role: RoleTypes.USER })
+        const requestingUser = await userFactory
+          .transient({
+            include: ["groupMembership"],
+          })
+          .associations({
+            roles: [role],
+            groupMembership: requestingUserGroupMembership,
+          })
+          .create()
+
+        const datasetOwner = await userFactory
+          .associations({
+            groupMembership: datasetOwnerGroupMembership,
+          })
+          .create()
+
+        const screenedAccessGrant = accessGrantFactory.build({
+          creatorId: datasetOwner.id,
+          grantLevel: GrantLevels.GOVERNMENT_WIDE,
+          accessType: AccessTypes.SCREENED_ACCESS,
+        })
+        const screenedDataset = await datasetFactory
+          .associations({
+            accessGrants: [screenedAccessGrant],
+          })
+          .create({
+            creatorId: datasetOwner.id,
+            ownerId: datasetOwner.id,
+          })
+        await accessRequestFactory.create({
+          datasetId: screenedDataset.id,
+          accessGrantId: screenedAccessGrant.id,
+          requestorId: requestingUser.id,
+          approvedAt: new Date(),
+        })
+        const inaccessibleDataset = await datasetFactory
+          .associations({
+            accessGrants: [],
+          })
+          .create({
+            creatorId: datasetOwner.id,
+            ownerId: datasetOwner.id,
+          })
+
+        // via screened access with approved request
+        const accessibleDatasetField = await datasetFieldFactory.create({
+          datasetId: screenedDataset.id,
         })
         // inaccessible dataset field - for control case
         await datasetFieldFactory.create({
@@ -282,9 +425,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
 
         // Act
-        const result = await scopedQuery.findAll({
-          logging: console.log,
-        })
+        const result = await scopedQuery.findAll()
 
         // Assert
         expect(DatasetField.count()).resolves.toBe(3)

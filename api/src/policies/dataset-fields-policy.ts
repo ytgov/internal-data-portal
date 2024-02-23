@@ -4,6 +4,7 @@ import { Path } from "@/utils/deep-pick"
 import { compactSql } from "@/utils/compact-sql"
 
 import { Dataset, DatasetField, User } from "@/models"
+import { AccessTypes } from "@/models/access-grant"
 import { accessibleViaAccessGrantsBy } from "@/models/datasets"
 import DatasetsPolicy from "@/policies/datasets-policy"
 
@@ -36,9 +37,28 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
       return modelClass
     }
 
-    const accessibleAccessGrantsQuery = accessibleViaAccessGrantsBy(user)
+    const datasetsAccessibleViaOpenAccessGrantsByQuery = accessibleViaAccessGrantsBy(user, [
+      AccessTypes.OPEN_ACCESS,
+    ])
+    // TODO: Consider refactoring this to a function fore easier testing.
+    const datasetsWithApprovedAccessRequestsQuery = literal(
+      compactSql(/* sql */ `
+        (
+          SELECT
+            datasets.id
+          FROM
+            datasets
+          INNER JOIN access_requests ON
+            access_requests.deleted_at IS NULL
+            AND access_requests.dataset_id = datasets.id
+          WHERE
+            access_requests.requestor_id = ${user.id}
+            AND access_requests.approved_at IS NOT NULL
+        )
+      `)
+    )
     if (user.isDataOwner) {
-      const ownerQuery = literal(
+      const datasetsAccessibleViaOwnerQuery = literal(
         compactSql(/* sql */ `
           (
             SELECT
@@ -52,7 +72,11 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
       return modelClass.scope({
         where: {
           datasetId: {
-            [Op.or]: [{ [Op.in]: ownerQuery }, { [Op.in]: accessibleAccessGrantsQuery }],
+            [Op.or]: [
+              { [Op.in]: datasetsAccessibleViaOwnerQuery },
+              { [Op.in]: datasetsWithApprovedAccessRequestsQuery },
+              { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByQuery },
+            ],
           },
         },
       })
@@ -61,7 +85,10 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
     return modelClass.scope({
       where: {
         datasetId: {
-          [Op.in]: accessibleAccessGrantsQuery,
+          [Op.or]: [
+            { [Op.in]: datasetsWithApprovedAccessRequestsQuery },
+            { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByQuery },
+          ],
         },
       },
     })
