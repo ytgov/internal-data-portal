@@ -3,7 +3,7 @@ import { Literal } from "sequelize/types/utils"
 import { isNil } from "lodash"
 
 import { compactSql } from "@/utils/compact-sql"
-import { arrayToSqlInClause } from "@/utils/array-to-sql-in-clause"
+import { arrayToSqlList } from "@/utils/array-to-sql-list"
 import User from "@/models/user"
 import { AccessTypes } from "@/models/access-grant"
 
@@ -28,7 +28,7 @@ export function accessibleViaAccessGrantsBy(
     AccessTypes.SELF_SERVE_ACCESS,
     AccessTypes.SCREENED_ACCESS,
   ]
-  const accessTypesInClause = arrayToSqlInClause(accessTypes)
+  const accessTypesInClause = arrayToSqlList(accessTypes)
 
   const departmentId = groupMembership.departmentId || NON_EXISTENT_ID
   const divisionId = groupMembership.divisionId || NON_EXISTENT_ID

@@ -1,7 +1,7 @@
-import { arrayToSqlInClause } from "@/utils/array-to-sql-in-clause"
+import { arrayToSqlList } from "@/utils/array-to-sql-list"
 
-describe("api/src/utils/array-to-sql-in-clause.ts", () => {
-  describe(".arrayToSqlInClause", () => {
+describe("api/src/utils/array-to-sql-list.ts", () => {
+  describe(".arrayToSqlList", () => {
     test.each([
       {
         input: ["a"],
@@ -17,7 +17,7 @@ describe("api/src/utils/array-to-sql-in-clause.ts", () => {
       },
     ])("when given $input, returns $output", ({ input, output}) => {
       // Act
-      const result = arrayToSqlInClause(input)
+      const result = arrayToSqlList(input)
 
       // Assert
       expect(result).toEqual(output)
