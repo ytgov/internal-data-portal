@@ -1,12 +1,11 @@
-import { ModelStatic, Op, literal } from "sequelize"
+import { ModelStatic, Op } from "sequelize"
 import { isNil } from "lodash"
 
 import { Path } from "@/utils/deep-pick"
-import { compactSql } from "@/utils/compact-sql"
 import { Dataset, User, AccessGrant } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
 import BasePolicy from "@/policies/base-policy"
-import { datasetsAccessibleViaAccessGrantsBy } from "@/models/datasets"
+import { datasetsAccessibleViaAccessGrantsBy, datasetsAccessibleViaOwner } from "@/models/datasets"
 
 export class DatasetsPolicy extends BasePolicy<Dataset> {
   private _mostPermissiveAccessGrant: AccessGrant | null = null
@@ -60,22 +59,12 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
 
     if (user.isDataOwner) {
       const datasetsAccessibleViaAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(user)
-      const ownerQuery = literal(
-        compactSql(/* sql */ `
-          (
-            SELECT
-              datasets.id
-            FROM
-              datasets
-            WHERE datasets.owner_id = ${user.id}
-          )
-        `)
-      )
+      const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
       return modelClass.scope({
         where: {
           id: {
             [Op.or]: [
-              { [Op.in]: ownerQuery },
+              { [Op.in]: datasetsAccessibleViaOwnerQuery },
               { [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery },
             ],
           },

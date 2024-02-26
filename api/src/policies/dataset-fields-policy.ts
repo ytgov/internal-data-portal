@@ -5,7 +5,7 @@ import { compactSql } from "@/utils/compact-sql"
 
 import { Dataset, DatasetField, User } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
-import { datasetsAccessibleViaAccessGrantsBy } from "@/models/datasets"
+import { datasetsAccessibleViaAccessGrantsBy, datasetsAccessibleViaOwner } from "@/models/datasets"
 import DatasetsPolicy from "@/policies/datasets-policy"
 
 import BasePolicy from "@/policies/base-policy"
@@ -37,9 +37,10 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
       return modelClass
     }
 
-    const datasetsAccessibleViaOpenAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(user, [
-      AccessTypes.OPEN_ACCESS,
-    ])
+    const datasetsAccessibleViaOpenAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(
+      user,
+      [AccessTypes.OPEN_ACCESS]
+    )
     // TODO: Consider refactoring this to a function fore easier testing.
     const datasetsWithApprovedAccessRequestsQuery = literal(
       compactSql(/* sql */ `
@@ -58,17 +59,7 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
       `)
     )
     if (user.isDataOwner) {
-      const datasetsAccessibleViaOwnerQuery = literal(
-        compactSql(/* sql */ `
-          (
-            SELECT
-              datasets.id
-            FROM
-              datasets
-            WHERE datasets.owner_id = ${user.id}
-          )
-        `)
-      )
+      const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
       return modelClass.scope({
         where: {
           datasetId: {
