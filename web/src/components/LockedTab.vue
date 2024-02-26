@@ -6,16 +6,10 @@
           disabled
           append-icon="mdi-lock"
         >
-          <!-- The typescript error here doesn't seem to cause any problems, so you can ignore it -->
-          <template
-            v-for="(_, slotName, index) of $slots"
-            :key="`${slotName}-${index}`"
-            #[slotName]="slotProps"
-            ><slot
-              :name="slotName"
-              v-bind="slotProps || {}"
-            ></slot
-          ></template>
+          <template #append><slot name="append"></slot></template>
+          <template #default><slot name="default"></slot></template>
+          <template #loader><slot name="loader"></slot></template>
+          <template #prepend><slot name="prepend"></slot></template>
         </v-tab>
       </span>
     </template>
