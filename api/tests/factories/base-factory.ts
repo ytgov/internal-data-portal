@@ -1,4 +1,4 @@
-import { BuildOptions, DeepPartial, Factory, OnCreateFn } from "fishery"
+import { BuildOptions, DeepPartial, Factory } from "fishery"
 import { Model } from "sequelize"
 
 // Must keep type signature in sync with fishery's Factory type

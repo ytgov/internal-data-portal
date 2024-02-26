@@ -1,11 +1,17 @@
-import { NonAttribute } from "sequelize"
+import { ModelStatic, NonAttribute, Op } from "sequelize"
 
 import { Path } from "@/utils/deep-pick"
 
 import { Dataset, DatasetField, User } from "@/models"
+import { AccessTypes } from "@/models/access-grant"
+import {
+  datasetsAccessibleViaAccessGrantsBy,
+  datasetsAccessibleViaOwner,
+  datasetsWithApprovedAccessRequestsFor,
+} from "@/models/datasets"
+import DatasetsPolicy from "@/policies/datasets-policy"
 
 import BasePolicy from "@/policies/base-policy"
-import DatasetsPolicy from "@/policies/datasets-policy"
 
 export type DatasetFieldWithDataset = DatasetField & { dataset: NonAttribute<Dataset> }
 
@@ -27,6 +33,44 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
 
   destroy(): boolean {
     return this.datasetsPolicy.update()
+  }
+
+  static applyScope(modelClass: ModelStatic<DatasetField>, user: User): ModelStatic<DatasetField> {
+    if (user.isSystemAdmin || user.isBusinessAnalyst) {
+      return modelClass
+    }
+
+    const datasetsAccessibleViaOpenAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(
+      user,
+      [AccessTypes.OPEN_ACCESS]
+    )
+    const datasetsWithApprovedAccessRequestsForUserQuery =
+      datasetsWithApprovedAccessRequestsFor(user)
+    if (user.isDataOwner) {
+      const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
+      return modelClass.scope({
+        where: {
+          datasetId: {
+            [Op.or]: [
+              { [Op.in]: datasetsAccessibleViaOwnerQuery },
+              { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
+              { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
+            ],
+          },
+        },
+      })
+    }
+
+    return modelClass.scope({
+      where: {
+        datasetId: {
+          [Op.or]: [
+            { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
+            { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
+          ],
+        },
+      },
+    })
   }
 
   permittedAttributes(): Path[] {

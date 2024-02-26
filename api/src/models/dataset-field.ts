@@ -29,7 +29,7 @@ export class DatasetField extends Model<
   static readonly DataTypes = DatasetFieldDataTypes
 
   declare id: CreationOptional<number>
-  declare datasetId: ForeignKey<Dataset>
+  declare datasetId: ForeignKey<Dataset["id"]>
   declare name: string
   declare displayName: string
   declare dataType: DatasetFieldDataTypes
