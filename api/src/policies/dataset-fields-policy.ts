@@ -1,11 +1,14 @@
-import { ModelStatic, NonAttribute, Op, literal } from "sequelize"
+import { ModelStatic, NonAttribute, Op } from "sequelize"
 
 import { Path } from "@/utils/deep-pick"
-import { compactSql } from "@/utils/compact-sql"
 
 import { Dataset, DatasetField, User } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
-import { datasetsAccessibleViaAccessGrantsBy, datasetsAccessibleViaOwner } from "@/models/datasets"
+import {
+  datasetsAccessibleViaAccessGrantsBy,
+  datasetsAccessibleViaOwner,
+  datasetsWithApprovedAccessRequestsFor,
+} from "@/models/datasets"
 import DatasetsPolicy from "@/policies/datasets-policy"
 
 import BasePolicy from "@/policies/base-policy"
@@ -41,23 +44,8 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
       user,
       [AccessTypes.OPEN_ACCESS]
     )
-    // TODO: Consider refactoring this to a function fore easier testing.
-    const datasetsWithApprovedAccessRequestsQuery = literal(
-      compactSql(/* sql */ `
-        (
-          SELECT
-            datasets.id
-          FROM
-            datasets
-          INNER JOIN access_requests ON
-            access_requests.deleted_at IS NULL
-            AND access_requests.dataset_id = datasets.id
-          WHERE
-            access_requests.requestor_id = ${user.id}
-            AND access_requests.approved_at IS NOT NULL
-        )
-      `)
-    )
+    const datasetsWithApprovedAccessRequestsForUserQuery =
+      datasetsWithApprovedAccessRequestsFor(user)
     if (user.isDataOwner) {
       const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
       return modelClass.scope({
@@ -65,7 +53,7 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
           datasetId: {
             [Op.or]: [
               { [Op.in]: datasetsAccessibleViaOwnerQuery },
-              { [Op.in]: datasetsWithApprovedAccessRequestsQuery },
+              { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
               { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
             ],
           },
@@ -77,7 +65,7 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
       where: {
         datasetId: {
           [Op.or]: [
-            { [Op.in]: datasetsWithApprovedAccessRequestsQuery },
+            { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
             { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
           ],
         },
