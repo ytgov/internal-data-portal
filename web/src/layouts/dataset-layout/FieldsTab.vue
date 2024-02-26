@@ -32,6 +32,7 @@ const routeName = computed(() => {
     case "DatasetDescriptionManagePage":
     case "DatasetFieldsManagePage":
     case "DatasetAccessManagePage":
+    case "DatasetVisualizeManagePage":
       return "DatasetFieldsManagePage"
     default:
       return "DatasetFieldsReadPage"
