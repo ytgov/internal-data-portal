@@ -6,10 +6,12 @@
           disabled
           append-icon="mdi-lock"
         >
-          <template #append><slot name="append"></slot></template>
-          <template #default><slot name="default"></slot></template>
-          <template #loader><slot name="loader"></slot></template>
-          <template #prepend><slot name="prepend"></slot></template>
+          <template
+            v-for="(slotName, index) of slotNames"
+            :key="`${slotName}-${index}`"
+            #[slotName]
+            ><slot :name="slotName"></slot
+          ></template>
         </v-tab>
       </span>
     </template>
@@ -17,4 +19,12 @@
   </v-tooltip>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { useSlots } from "vue"
+
+import { VTab } from "vuetify/lib/components/index.mjs"
+
+const slots = useSlots()
+
+const slotNames = Object.keys(slots) as Array<keyof VTab["$slots"]>
+</script>
