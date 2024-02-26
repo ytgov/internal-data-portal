@@ -8,10 +8,10 @@ export function datasetsAccessibleViaOwner(user: User): Literal {
   const query = compactSql(/* sql */ `
     (
       SELECT
-          datasets.id
-        FROM
-          datasets
-        WHERE datasets.owner_id = ${user.id}
+        datasets.id
+      FROM
+        datasets
+      WHERE datasets.owner_id = ${user.id}
     )
   `)
 
