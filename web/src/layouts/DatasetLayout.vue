@@ -56,6 +56,7 @@ const DescriptionTab = defineAsyncComponent(
 const FieldsTab = defineAsyncComponent(() => import("@/layouts/dataset-layout/FieldsTab.vue"))
 // TODO: access tab only has manage view, which is a bit confusing
 const AccessTab = defineAsyncComponent(() => import("@/layouts/dataset-layout/AccessTab.vue"))
+const VisualizeTab = defineAsyncComponent(() => import("@/layouts/dataset-layout/VisualizeTab.vue"))
 
 type TabComponents = {
   component: typeof DescriptionTab | typeof FieldsTab | typeof AccessTab
@@ -64,18 +65,18 @@ type TabComponents = {
   }
 }
 
-const isDataOwnerAccessTabLocked = computed(() => {
-  return policy.value?.update !== true
+const canUpdateDataset = computed(() => {
+  return policy.value?.update === true
 })
 
 // TODO: consider return fields policy in dataset policy
 // e.g. policy.value?.fields.show or something
-const isUserFieldsTabLocked = computed(() => {
+const isReadableByUser = computed(() => {
   if (dataset.value?.currentUserAccessGrant?.accessType === AccessTypes.OPEN_ACCESS) {
-    return false
+    return true
   }
 
-  return isNil(dataset.value?.currentUserAccessRequest?.approvedAt)
+  return !isNil(dataset.value?.currentUserAccessRequest?.approvedAt)
 })
 
 const tabImports = computed<{
@@ -84,21 +85,25 @@ const tabImports = computed<{
   [RoleTypes.DATA_OWNER]: [
     { component: DescriptionTab, attributes: { locked: false } },
     { component: FieldsTab, attributes: { locked: false } },
-    { component: AccessTab, attributes: { locked: isDataOwnerAccessTabLocked.value } },
+    { component: AccessTab, attributes: { locked: !canUpdateDataset.value } },
+    { component: VisualizeTab, attributes: { locked: !canUpdateDataset.value } },
   ],
   [RoleTypes.SYSTEM_ADMIN]: [
     { component: DescriptionTab, attributes: { locked: false } },
     { component: FieldsTab, attributes: { locked: false } },
     { component: AccessTab, attributes: { locked: false } },
+    { component: VisualizeTab, attributes: { locked: false } },
   ],
   [RoleTypes.BUSINESS_ANALYST]: [
     { component: DescriptionTab, attributes: { locked: false } },
     { component: FieldsTab, attributes: { locked: false } },
     { component: AccessTab, attributes: { locked: false } },
+    { component: VisualizeTab, attributes: { locked: false } },
   ],
   [RoleTypes.USER]: [
     { component: DescriptionTab, attributes: { locked: false } },
-    { component: FieldsTab, attributes: { locked: isUserFieldsTabLocked.value } },
+    { component: FieldsTab, attributes: { locked: !isReadableByUser.value } },
+    { component: VisualizeTab, attributes: { locked: !isReadableByUser.value } },
   ],
 }))
 
