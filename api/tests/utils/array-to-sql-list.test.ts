@@ -5,15 +5,15 @@ describe("api/src/utils/array-to-sql-list.ts", () => {
     test.each([
       {
         input: ["a"],
-        output: `'a'`,
+        output: `('a')`,
       },
       {
         input: ["a", "b"],
-        output: `'a', 'b'`,
+        output: `('a', 'b')`,
       },
       {
         input: ["a", "b", "c"],
-        output: `'a', 'b', 'c'`,
+        output: `('a', 'b', 'c')`,
       },
     ])("when given $input, returns $output", ({ input, output}) => {
       // Act

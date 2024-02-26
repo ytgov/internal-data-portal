@@ -28,7 +28,7 @@ export function accessibleViaAccessGrantsBy(
     AccessTypes.SELF_SERVE_ACCESS,
     AccessTypes.SCREENED_ACCESS,
   ]
-  const accessTypesInClause = arrayToSqlList(accessTypes)
+  const accessTypesSqlList = arrayToSqlList(accessTypes)
 
   const departmentId = groupMembership.departmentId || NON_EXISTENT_ID
   const divisionId = groupMembership.divisionId || NON_EXISTENT_ID
@@ -49,19 +49,19 @@ export function accessibleViaAccessGrantsBy(
         AND access_grants.dataset_id = datasets.id
       WHERE
         (
-          access_grants.access_type IN (${accessTypesInClause})
+          access_grants.access_type IN ${accessTypesSqlList}
           AND access_grants.grant_level = 'government_wide'
         )
         OR
           (
-            access_grants.access_type IN (${accessTypesInClause})
+            access_grants.access_type IN ${accessTypesSqlList}
             AND access_grants.grant_level = 'department'
             AND owner_group_membership.department_id IS NOT NULL
             AND owner_group_membership.department_id = ${departmentId}
           )
         OR
           (
-            access_grants.access_type IN (${accessTypesInClause})
+            access_grants.access_type IN ${accessTypesSqlList}
             AND access_grants.grant_level = 'division'
             AND owner_group_membership.department_id IS NOT NULL
             AND owner_group_membership.division_id IS NOT NULL
@@ -70,7 +70,7 @@ export function accessibleViaAccessGrantsBy(
           )
         OR
           (
-            access_grants.access_type IN (${accessTypesInClause})
+            access_grants.access_type IN ${accessTypesSqlList}
             AND access_grants.grant_level = 'branch'
             AND owner_group_membership.department_id IS NOT NULL
             AND owner_group_membership.division_id IS NOT NULL
@@ -81,7 +81,7 @@ export function accessibleViaAccessGrantsBy(
           )
         OR
           (
-            access_grants.access_type IN (${accessTypesInClause})
+            access_grants.access_type IN ${accessTypesSqlList}
             AND access_grants.grant_level = 'unit'
             AND owner_group_membership.department_id IS NOT NULL
             AND owner_group_membership.division_id IS NOT NULL
