@@ -14,7 +14,7 @@ type POSSIBLE_ACCESS_TYPES =
   | AccessTypes.SELF_SERVE_ACCESS
   | AccessTypes.SCREENED_ACCESS
 
-export function accessibleViaAccessGrantsBy(
+export function datasetsAccessibleViaAccessGrantsBy(
   user: User,
   accessTypes?: POSSIBLE_ACCESS_TYPES[]
 ): Literal {
@@ -98,4 +98,4 @@ export function accessibleViaAccessGrantsBy(
   return literal(query)
 }
 
-export default accessibleViaAccessGrantsBy
+export default datasetsAccessibleViaAccessGrantsBy

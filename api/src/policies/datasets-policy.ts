@@ -6,7 +6,7 @@ import { compactSql } from "@/utils/compact-sql"
 import { Dataset, User, AccessGrant } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
 import BasePolicy from "@/policies/base-policy"
-import { accessibleViaAccessGrantsBy } from "@/models/datasets"
+import { datasetsAccessibleViaAccessGrantsBy } from "@/models/datasets"
 
 export class DatasetsPolicy extends BasePolicy<Dataset> {
   private _mostPermissiveAccessGrant: AccessGrant | null = null
@@ -59,9 +59,9 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     }
 
     if (user.isDataOwner) {
-      const accessibleAccessGrantsQuery = accessibleViaAccessGrantsBy(user)
+      const datasetsAccessibleViaAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(user)
       const ownerQuery = literal(
-        compactSql(/* sql */`
+        compactSql(/* sql */ `
           (
             SELECT
               datasets.id
@@ -74,7 +74,10 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
       return modelClass.scope({
         where: {
           id: {
-            [Op.or]: [{ [Op.in]: ownerQuery }, { [Op.in]: accessibleAccessGrantsQuery }],
+            [Op.or]: [
+              { [Op.in]: ownerQuery },
+              { [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery },
+            ],
           },
         },
       })

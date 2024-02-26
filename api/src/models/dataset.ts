@@ -34,7 +34,7 @@ import DatasetStewardship from "@/models/dataset-stewardship"
 import Tag from "@/models/tag"
 import Tagging, { TaggableTypes } from "@/models/tagging"
 import User from "@/models/user"
-import { mostPermissiveAccessGrantFor, accessibleViaAccessGrantsBy } from "@/models/datasets"
+import { mostPermissiveAccessGrantFor, datasetsAccessibleViaAccessGrantsBy } from "@/models/datasets"
 
 import BaseModel from "@/models/base-model"
 
@@ -340,7 +340,7 @@ Dataset.init(
         return {
           where: {
             id: {
-              [Op.in]: accessibleViaAccessGrantsBy(user),
+              [Op.in]: datasetsAccessibleViaAccessGrantsBy(user),
             },
           },
         }

@@ -1,5 +1,10 @@
+import { Op } from "sequelize"
+
+import { AccessTypes, GrantLevels } from "@/models/access-grant"
 import { Dataset } from "@/models"
+import { datasetsAccessibleViaAccessGrantsBy } from "@/models/datasets"
 import { UserGroupTypes } from "@/models/user-groups"
+
 import {
   accessGrantFactory,
   datasetFactory,
@@ -7,10 +12,9 @@ import {
   userGroupFactory,
   userGroupMembershipFactory,
 } from "@/factories"
-import { AccessTypes, GrantLevels } from "@/models/access-grant"
 
-describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
-  describe(".accessibleViaAccessGrantsBy Dataset scope", () => {
+describe("api/src/models/datasets/datasets-accessible-via-access-grants-by.ts", () => {
+  describe(".datasetsAccessibleViaAccessGrantsBy", () => {
     test.each([
       { accessType: AccessTypes.OPEN_ACCESS },
       { accessType: AccessTypes.SELF_SERVE_ACCESS },
@@ -65,9 +69,9 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           })
 
         // Act
-        const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestingUser],
-        }).findAll()
+        const query = datasetsAccessibleViaAccessGrantsBy(requestingUser)
+        const scope = Dataset.scope({ where: { id: { [Op.in]: query } } })
+        const result = await scope.findAll()
 
         // Assert
         expect(result).toEqual([
@@ -112,9 +116,9 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
         })
 
       // Act
-      const result = await Dataset.scope({
-        method: ["accessibleViaAccessGrantsBy", requestingUser],
-      }).findAll()
+      const query = datasetsAccessibleViaAccessGrantsBy(requestingUser)
+      const scope = Dataset.scope({ where: { id: { [Op.in]: query } } })
+      const result = await scope.findAll()
 
       // Assert
       expect(result).toHaveLength(0)
@@ -174,9 +178,9 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           })
 
         // Act
-        const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestingUser],
-        }).findAll()
+        const query = datasetsAccessibleViaAccessGrantsBy(requestingUser)
+        const scope = Dataset.scope({ where: { id: { [Op.in]: query } } })
+        const result = await scope.findAll()
 
         // Assert
         expect(result).toEqual([
@@ -233,9 +237,9 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           })
 
         // Act
-        const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestingUser],
-        }).findAll()
+        const query = datasetsAccessibleViaAccessGrantsBy(requestingUser)
+        const scope = Dataset.scope({ where: { id: { [Op.in]: query } } })
+        const result = await scope.findAll()
 
         // Assert
         expect(result).toHaveLength(0)
@@ -299,9 +303,9 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           })
 
         // Act
-        const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestingUser],
-        }).findAll()
+        const query = datasetsAccessibleViaAccessGrantsBy(requestingUser)
+        const scope = Dataset.scope({ where: { id: { [Op.in]: query } } })
+        const result = await scope.findAll()
 
         // Assert
         expect(result).toEqual([
@@ -361,9 +365,9 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           })
 
         // Act
-        const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestingUser],
-        }).findAll()
+        const query = datasetsAccessibleViaAccessGrantsBy(requestingUser)
+        const scope = Dataset.scope({ where: { id: { [Op.in]: query } } })
+        const result = await scope.findAll()
 
         // Assert
         expect(result).toHaveLength(0)
@@ -418,9 +422,9 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           })
 
         // Act
-        const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestingUser],
-        }).findAll()
+        const query = datasetsAccessibleViaAccessGrantsBy(requestingUser)
+        const scope = Dataset.scope({ where: { id: { [Op.in]: query } } })
+        const result = await scope.findAll()
 
         // Assert
         expect(result).toHaveLength(0)
@@ -487,9 +491,9 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           })
 
         // Act
-        const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestingUser],
-        }).findAll()
+        const query = datasetsAccessibleViaAccessGrantsBy(requestingUser)
+        const scope = Dataset.scope({ where: { id: { [Op.in]: query } } })
+        const result = await scope.findAll()
 
         // Assert
         expect(result).toEqual([
@@ -552,9 +556,9 @@ describe("api/src/models/datasets/accessible-via-access-grants-by.ts", () => {
           })
 
         // Act
-        const result = await Dataset.scope({
-          method: ["accessibleViaAccessGrantsBy", requestingUser],
-        }).findAll()
+        const query = datasetsAccessibleViaAccessGrantsBy(requestingUser)
+        const scope = Dataset.scope({ where: { id: { [Op.in]: query } } })
+        const result = await scope.findAll()
 
         // Assert
         expect(result).toHaveLength(0)

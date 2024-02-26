@@ -5,7 +5,7 @@ import { compactSql } from "@/utils/compact-sql"
 
 import { Dataset, DatasetField, User } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
-import { accessibleViaAccessGrantsBy } from "@/models/datasets"
+import { datasetsAccessibleViaAccessGrantsBy } from "@/models/datasets"
 import DatasetsPolicy from "@/policies/datasets-policy"
 
 import BasePolicy from "@/policies/base-policy"
@@ -37,7 +37,7 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
       return modelClass
     }
 
-    const datasetsAccessibleViaOpenAccessGrantsByQuery = accessibleViaAccessGrantsBy(user, [
+    const datasetsAccessibleViaOpenAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(user, [
       AccessTypes.OPEN_ACCESS,
     ])
     // TODO: Consider refactoring this to a function fore easier testing.
@@ -75,7 +75,7 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
             [Op.or]: [
               { [Op.in]: datasetsAccessibleViaOwnerQuery },
               { [Op.in]: datasetsWithApprovedAccessRequestsQuery },
-              { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByQuery },
+              { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
             ],
           },
         },
@@ -87,7 +87,7 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
         datasetId: {
           [Op.or]: [
             { [Op.in]: datasetsWithApprovedAccessRequestsQuery },
-            { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByQuery },
+            { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
           ],
         },
       },
