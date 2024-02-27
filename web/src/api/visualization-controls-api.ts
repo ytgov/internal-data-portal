@@ -5,7 +5,11 @@ import { type Dataset } from "@/api/datasets-api"
 export type VisualizationControl = {
   id: number
   datasetId: Dataset["id"]
-  // TODO: add extra fields
+  isDowloadableAsCsv: boolean
+  hasSearchRestrictions: boolean
+  hasSearchFieldRestrictions: boolean
+  hasSearchRowLimits: boolean
+  searchRowLimitMaximum: number | null
   createdAt: string
   updatedAt: string
 }

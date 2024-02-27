@@ -1,6 +1,4 @@
 <template>
-  TODO: build DatasetVisualizeManagePage
-
   <v-skeleton-loader
     v-if="isNil(dataset)"
     type="card"
@@ -9,6 +7,8 @@
     v-else
     :visualization-control-id="dataset.visualizationControl.id"
   />
+
+  TODO: Add DatasetEntriesCard
 </template>
 
 <script setup lang="ts">

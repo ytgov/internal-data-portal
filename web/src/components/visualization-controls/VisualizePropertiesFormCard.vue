@@ -15,15 +15,95 @@
       />
       <v-form
         v-else
-        class="d-flex mt-6"
+        class="mt-6"
       >
         <v-row>
-          <v-col cols="12">
+          <v-col
+            cols="12"
+            md="3"
+            class="py-0"
+          >
             <v-checkbox
               v-model="visualizationControl.isDowloadableAsCsv"
               label="Allow Download to CSV?"
+              @update:model-value="saveAndNotify"
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="9"
+            class="py-0"
+          >
+            <v-checkbox
+              v-model="visualizationControl.hasSearchRestrictions"
+              label="Limit data view on search?"
+              @update:model-value="saveAndNotify"
+            />
+          </v-col>
+        </v-row>
+        <v-row class="ml-md-6">
+          <v-col
+            cols="0"
+            md="3"
+            class="py-0"
+          />
+          <v-col
+            cols="12"
+            md="2"
+            class="py-0"
+          >
+            <v-checkbox
+              v-model="visualizationControl.hasSearchFieldRestrictions"
+              label="Fields"
+              @update:model-value="saveAndNotify"
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="2"
+            class="py-0"
+          >
+            Exclude: TODO: add select
+            <!-- <v-select
+                v-model="visualizationControl.searchFieldExclusions"
+                :items="visualizationControl.searchFieldRestrictionsOptions"
+                multiple
+                chips
+                label="Fields"
+                @change="debouncedSaveAndNotify"
+              /> -->
+          </v-col>
+        </v-row>
+        <v-row class="ml-md-6">
+          <v-col
+            cols="0"
+            md="3"
+            class="py-0"
+          />
+          <v-col
+            cols="12"
+            md="2"
+            class="py-0"
+          >
+            <v-checkbox
+              v-model="visualizationControl.hasSearchRowLimits"
+              label="Rows"
+              @update:model-value="saveAndNotify"
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="2"
+            class="py-0"
+          >
+            <v-text-field
+              v-model="visualizationControl.searchRowLimitMaximum"
+              label="Limit"
+              type="number"
               variant="outlined"
-              @update:model-value="debouncedSaveAndNotify"
+              clearable
+              @input="debouncedSaveAndNotify"
+              @click:clear="saveAndNotify"
             />
           </v-col>
         </v-row>
@@ -56,11 +136,11 @@ const snack = useSnack()
 async function saveAndNotify() {
   try {
     await save()
-    snack.notify("Notes saved", {
+    snack.notify("Visualization properties saved", {
       color: "success",
     })
   } catch (error) {
-    snack.notify("Error saving notes", {
+    snack.notify("Error saving visualization properties", {
       color: "error",
     })
   }
@@ -68,3 +148,11 @@ async function saveAndNotify() {
 
 const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
 </script>
+
+<style scoped>
+.no-vertical-padding > .v-row,
+.no-vertical-padding > .v-row > .v-col {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+</style>
