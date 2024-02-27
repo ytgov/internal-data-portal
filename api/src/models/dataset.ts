@@ -42,6 +42,7 @@ import {
 } from "@/models/datasets"
 
 import BaseModel from "@/models/base-model"
+import VisualizationControl from "./visualization-control"
 
 export enum DatasetErrorTypes {
   OK = "ok",
@@ -90,6 +91,13 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
     DatasetStewardship["datasetId"]
   >
   declare createStewardship: HasOneCreateAssociationMixin<DatasetStewardship>
+
+  declare getVisualizationControl: HasOneGetAssociationMixin<VisualizationControl>
+  declare setVisualizationControl: HasOneSetAssociationMixin<
+    VisualizationControl,
+    VisualizationControl["datasetId"]
+  >
+  declare createVisualizationControl: HasOneCreateAssociationMixin<VisualizationControl>
 
   declare getAccessGrants: HasManyGetAssociationsMixin<AccessGrant>
   declare setAccessGrants: HasManySetAssociationsMixin<AccessGrant, AccessGrant["datasetId"]>
@@ -155,6 +163,7 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
   declare owner?: NonAttribute<User>
   declare creator?: NonAttribute<User>
   declare stewardship?: NonAttribute<DatasetStewardship>
+  declare visualizationControl?: NonAttribute<VisualizationControl>
   declare accessGrants?: NonAttribute<AccessGrant[]>
   declare accessRequests?: NonAttribute<AccessRequest[]>
   declare fields?: NonAttribute<DatasetField[]>
@@ -170,6 +179,7 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
     stewardship: Association<Dataset, DatasetStewardship>
     taggings: Association<Dataset, Tagging>
     tags: Association<Dataset, Tag>
+    visualizationControl: Association<Dataset, VisualizationControl>
   }
 
   static establishAssociations() {
@@ -184,6 +194,10 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
     this.hasOne(DatasetStewardship, {
       foreignKey: "datasetId",
       as: "stewardship",
+    })
+    this.hasOne(VisualizationControl, {
+      foreignKey: "datasetId",
+      as: "visualizationControl",
     })
     this.hasMany(AccessRequest, {
       foreignKey: "datasetId",

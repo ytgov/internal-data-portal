@@ -2,7 +2,7 @@ import { CreationAttributes, Op } from "sequelize"
 import { isEmpty, isNil } from "lodash"
 import slugify from "slugify"
 
-import db, { Dataset, User, DatasetStewardship } from "@/models"
+import db, { Dataset, User, DatasetStewardship, VisualizationControl } from "@/models"
 
 import BaseService from "@/services/base-service"
 
@@ -51,6 +51,7 @@ export class CreateService extends BaseService {
         dataset.id
       )
       await DatasetStewardship.create(processedStewardshipAttributes)
+      await VisualizationControl.create({ datasetId: dataset.id })
 
       return dataset.reload({ include: ["owner", "creator", "stewardship"] })
     })
