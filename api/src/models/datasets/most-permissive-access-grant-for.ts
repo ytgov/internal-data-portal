@@ -1,7 +1,8 @@
 import { isEmpty, isNil } from "lodash"
 
-import { Dataset, User, AccessGrant, UserGroupMembership } from "@/models"
-import { AccessTypes, GrantLevels, orderOfAccessType } from "@/models/access-grant"
+import { Dataset, User, AccessGrant } from "@/models"
+import { AccessTypes, orderOfAccessType } from "@/models/access-grant"
+import { matchesGrantLevel } from "@/models/access-grants"
 
 // TODO: consider if this function should load associations if they were not supplied?
 // Or at least error informatively?
@@ -38,54 +39,6 @@ export function mostPermissiveAccessGrantFor(
     },
     null
   )
-}
-
-function matchesGrantLevel(
-  grantLevel: GrantLevels,
-  ownerGroupMembership: UserGroupMembership,
-  requestingUserGroupMembership: UserGroupMembership
-): boolean {
-  if (grantLevel === GrantLevels.GOVERNMENT_WIDE) {
-    return true
-  } else if (
-    grantLevel === GrantLevels.DEPARTMENT &&
-    !isNil(ownerGroupMembership.departmentId) &&
-    ownerGroupMembership.departmentId === requestingUserGroupMembership.departmentId
-  ) {
-    return true
-  } else if (
-    grantLevel === GrantLevels.DIVISION &&
-    !isNil(ownerGroupMembership.departmentId) &&
-    !isNil(ownerGroupMembership.divisionId) &&
-    ownerGroupMembership.departmentId === requestingUserGroupMembership.departmentId &&
-    ownerGroupMembership.divisionId === requestingUserGroupMembership.divisionId
-  ) {
-    return true
-  } else if (
-    grantLevel === GrantLevels.BRANCH &&
-    !isNil(ownerGroupMembership.departmentId) &&
-    !isNil(ownerGroupMembership.divisionId) &&
-    !isNil(ownerGroupMembership.branchId) &&
-    ownerGroupMembership.departmentId === requestingUserGroupMembership.departmentId &&
-    ownerGroupMembership.divisionId === requestingUserGroupMembership.divisionId &&
-    ownerGroupMembership.branchId === requestingUserGroupMembership.branchId
-  ) {
-    return true
-  } else if (
-    grantLevel === GrantLevels.UNIT &&
-    !isNil(ownerGroupMembership.divisionId) &&
-    !isNil(ownerGroupMembership.departmentId) &&
-    !isNil(ownerGroupMembership.branchId) &&
-    !isNil(ownerGroupMembership.unitId) &&
-    ownerGroupMembership.departmentId === requestingUserGroupMembership.departmentId &&
-    ownerGroupMembership.divisionId === requestingUserGroupMembership.divisionId &&
-    ownerGroupMembership.branchId === requestingUserGroupMembership.branchId &&
-    ownerGroupMembership.unitId === requestingUserGroupMembership.unitId
-  ) {
-    return true
-  } else {
-    return false
-  }
 }
 
 export default mostPermissiveAccessGrantFor

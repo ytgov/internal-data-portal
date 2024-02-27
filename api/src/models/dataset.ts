@@ -34,7 +34,11 @@ import DatasetStewardship from "@/models/dataset-stewardship"
 import Tag from "@/models/tag"
 import Tagging, { TaggableTypes } from "@/models/tagging"
 import User from "@/models/user"
-import { mostPermissiveAccessGrantFor, datasetsAccessibleViaAccessGrantsBy } from "@/models/datasets"
+import {
+  datasetIsAccessibleViaOpenAccessGrantBy,
+  datasetsAccessibleViaAccessGrantsBy,
+  mostPermissiveAccessGrantFor,
+} from "@/models/datasets"
 
 import BaseModel from "@/models/base-model"
 
@@ -215,6 +219,10 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
 
   public mostPermissiveAccessGrantFor(user: User): NonAttribute<AccessGrant | null> {
     return mostPermissiveAccessGrantFor(this, user)
+  }
+
+  public isAccessibleViaOpenAccessGrantBy(user: User): NonAttribute<boolean> {
+    return datasetIsAccessibleViaOpenAccessGrantBy(this, user)
   }
 }
 
