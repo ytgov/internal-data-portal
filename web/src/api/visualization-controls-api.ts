@@ -2,6 +2,14 @@ import http from "@/api/http-client"
 
 import { type Dataset } from "@/api/datasets-api"
 
+export type SearchFieldExclusion = {
+  id: number
+  visualizationControlId: number
+  datasetFieldId: number
+  createdAt: string
+  updatedAt: string
+}
+
 export type VisualizationControl = {
   id: number
   datasetId: Dataset["id"]
@@ -12,6 +20,9 @@ export type VisualizationControl = {
   searchRowLimitMaximum: number | null
   createdAt: string
   updatedAt: string
+
+  // associations
+  searchFieldExclusions: SearchFieldExclusion[]
 }
 
 export const visualizationControlsApi = {

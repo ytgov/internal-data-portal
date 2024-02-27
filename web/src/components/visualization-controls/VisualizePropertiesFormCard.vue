@@ -60,18 +60,16 @@
           </v-col>
           <v-col
             cols="12"
-            md="2"
+            md="7"
             class="py-0"
           >
-            Exclude: TODO: add select
-            <!-- <v-select
-                v-model="visualizationControl.searchFieldExclusions"
-                :items="visualizationControl.searchFieldRestrictionsOptions"
-                multiple
-                chips
-                label="Fields"
-                @change="debouncedSaveAndNotify"
-              /> -->
+            <SearchFieldExclusionsSelect
+              :model-value="searchFieldExclusionsDatasetFieldIds"
+              :dataset-id="visualizationControl.datasetId"
+              label="Fields"
+              variant="outlined"
+              @update:model-value="saveSearchFieldExclusionsAndNotify"
+            />
           </v-col>
         </v-row>
         <v-row class="ml-md-6">
@@ -113,13 +111,14 @@
 </template>
 
 <script lang="ts" setup>
-import { toRefs } from "vue"
+import { computed, toRefs } from "vue"
 import { debounce, isNil } from "lodash"
 
 import useSnack from "@/use/use-snack"
 import useVisualizationControl from "@/use/use-visualization-control"
 
 import SaveStateProgress from "@/components/SaveStateProgress.vue"
+import SearchFieldExclusionsSelect from "@/components/search-field-exclusions/SearchFieldExclusionsSelect.vue"
 
 const props = defineProps({
   visualizationControlId: {
@@ -130,6 +129,16 @@ const props = defineProps({
 
 const { visualizationControlId } = toRefs(props)
 const { visualizationControl, save, isLoading } = useVisualizationControl(visualizationControlId)
+
+const searchFieldExclusionsDatasetFieldIds = computed(() => {
+  if (isNil(visualizationControl.value)) {
+    return []
+  }
+
+  return visualizationControl.value.searchFieldExclusions.map(
+    (searchFieldExclusion) => searchFieldExclusion.datasetFieldId
+  )
+})
 
 const snack = useSnack()
 
@@ -147,12 +156,8 @@ async function saveAndNotify() {
 }
 
 const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
-</script>
 
-<style scoped>
-.no-vertical-padding > .v-row,
-.no-vertical-padding > .v-row > .v-col {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+function saveSearchFieldExclusionsAndNotify(datasetFieldIds: number[]) {
+  console.log(`datasetFieldIds:`, datasetFieldIds)
 }
-</style>
+</script>

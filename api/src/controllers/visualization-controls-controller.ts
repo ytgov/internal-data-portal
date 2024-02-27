@@ -3,6 +3,7 @@ import { isNil } from "lodash"
 import { VisualizationControl } from "@/models"
 import { VisualizationControlsPolicy } from "@/policies"
 import { UpdateService } from "@/services/visualization-controls"
+import { ShowSerializer } from "@/serializers/visualization-controls"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -20,7 +21,19 @@ export class VisualizationControlsController extends BaseController {
         .json({ message: "You are not authorized to view this visualization control." })
     }
 
-    return this.response.status(200).json({ visualizationControl })
+    try {
+      const serializedVisualizationControl = ShowSerializer.perform(
+        visualizationControl,
+        this.currentUser
+      )
+      return this.response
+        .status(200)
+        .json({ visualizationControl: serializedVisualizationControl })
+    } catch (error) {
+      return this.response
+        .status(500)
+        .json({ message: `Visualization controller serialization failed: ${error}` })
+    }
   }
 
   async update() {
@@ -37,17 +50,32 @@ export class VisualizationControlsController extends BaseController {
     }
 
     const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
+
+    let updatedVisualizationControl: VisualizationControl
     try {
-      const updatedVisualizationControl = await UpdateService.perform(
+      updatedVisualizationControl = await UpdateService.perform(
         visualizationControl,
         permittedAttributes,
         this.currentUser
       )
-      return this.response.status(200).json({ visualizationControl: updatedVisualizationControl })
     } catch (error) {
       return this.response
         .status(422)
         .json({ message: `Visualization control update failed: ${error}` })
+    }
+
+    try {
+      const serializedVisualizationControl = ShowSerializer.perform(
+        updatedVisualizationControl,
+        this.currentUser
+      )
+      return this.response
+        .status(200)
+        .json({ visualizationControl: serializedVisualizationControl })
+    } catch (error) {
+      return this.response
+        .status(500)
+        .json({ message: `Visualization controller serialization failed: ${error}` })
     }
   }
 
@@ -65,6 +93,7 @@ export class VisualizationControlsController extends BaseController {
             "accessRequests",
           ],
         },
+        "searchFieldExclusions",
       ],
     })
   }
