@@ -66,6 +66,7 @@
             <SearchFieldExclusionsSelect
               :model-value="searchFieldExclusionsDatasetFieldIds"
               :dataset-id="visualizationControl.datasetId"
+              :is-saving="isLoading"
               label="Fields"
               variant="outlined"
               @update:model-value="saveSearchFieldExclusionsAndNotify"

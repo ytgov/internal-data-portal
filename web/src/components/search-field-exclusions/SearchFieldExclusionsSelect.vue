@@ -10,7 +10,19 @@
     closable-chips
     multiple
     @update:model-value="updateSelectedDatasetFields"
-  ></v-select>
+  >
+    <template
+      v-if="isSaving"
+      #append-inner
+    >
+      <v-progress-circular
+        size="20"
+        width="2"
+        color="yg-blue"
+        indeterminate
+      />
+    </template>
+  </v-select>
 </template>
 
 <script lang="ts" setup>
@@ -23,9 +35,11 @@ const props = withDefaults(
   defineProps<{
     modelValue: DatasetField["id"][]
     datasetId: number
+    isSaving?: boolean
   }>(),
   {
     modelValue: () => [],
+    isSaving: false,
   }
 )
 
