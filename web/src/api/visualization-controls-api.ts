@@ -25,6 +25,12 @@ export type VisualizationControl = {
   searchFieldExclusions: SearchFieldExclusion[]
 }
 
+export type SearchFieldExclusionsAttributes = Pick<SearchFieldExclusion, "datasetFieldId">[]
+
+export type VisualizationControlUpdate = Partial<VisualizationControl> & {
+  searchFieldExclusionsAttributes?: SearchFieldExclusionsAttributes
+}
+
 export const visualizationControlsApi = {
   async get(id: number): Promise<{
     visualizationControl: VisualizationControl
@@ -34,7 +40,7 @@ export const visualizationControlsApi = {
   },
   async update(
     id: number,
-    visualizationControl: Partial<VisualizationControl>
+    visualizationControl: VisualizationControlUpdate
   ): Promise<{
     visualizationControl: VisualizationControl
   }> {

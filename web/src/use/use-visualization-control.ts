@@ -1,7 +1,11 @@
 import { type Ref, reactive, unref, watch, toRefs } from "vue"
-import { isNil } from "lodash"
 
-import visualizationControlsApi, { VisualizationControl } from "@/api/visualization-controls-api"
+import visualizationControlsApi, {
+  type VisualizationControl,
+  type VisualizationControlUpdate,
+} from "@/api/visualization-controls-api"
+
+export { type VisualizationControl, type VisualizationControlUpdate }
 
 export function useVisualizationControl(visualizationControlId: Ref<number>) {
   const state = reactive<{
@@ -32,16 +36,17 @@ export function useVisualizationControl(visualizationControlId: Ref<number>) {
     }
   }
 
-  async function save() {
-    if (isNil(state.visualizationControl)) {
-      throw new Error("No visualization control to save")
+  async function save(customAttributes?: VisualizationControlUpdate) {
+    const attributes = {
+      ...state.visualizationControl,
+      ...customAttributes,
     }
 
     state.isLoading = true
     try {
       const { visualizationControl } = await visualizationControlsApi.update(
         unref(visualizationControlId),
-        state.visualizationControl
+        attributes
       )
       state.visualizationControl = visualizationControl
       state.isErrored = false

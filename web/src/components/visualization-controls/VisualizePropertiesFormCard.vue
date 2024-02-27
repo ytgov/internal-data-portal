@@ -135,6 +135,10 @@ const searchFieldExclusionsDatasetFieldIds = computed(() => {
     return []
   }
 
+  if (isNil(visualizationControl.value.searchFieldExclusions)) {
+    return []
+  }
+
   return visualizationControl.value.searchFieldExclusions.map(
     (searchFieldExclusion) => searchFieldExclusion.datasetFieldId
   )
@@ -157,7 +161,23 @@ async function saveAndNotify() {
 
 const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
 
-function saveSearchFieldExclusionsAndNotify(datasetFieldIds: number[]) {
-  console.log(`datasetFieldIds:`, datasetFieldIds)
+async function saveSearchFieldExclusionsAndNotify(datasetFieldIds: number[]) {
+  const searchFieldExclusionsAttributes = datasetFieldIds.map((datasetFieldId) => ({
+    visualizationControlId: props.visualizationControlId,
+    datasetFieldId,
+  }))
+
+  try {
+    await save({
+      searchFieldExclusionsAttributes,
+    })
+    snack.notify("Visualization properties saved", {
+      color: "success",
+    })
+  } catch (error) {
+    snack.notify("Error saving visualization properties", {
+      color: "error",
+    })
+  }
 }
 </script>
