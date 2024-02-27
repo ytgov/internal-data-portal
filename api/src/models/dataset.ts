@@ -35,6 +35,7 @@ import Tag from "@/models/tag"
 import Tagging, { TaggableTypes } from "@/models/tagging"
 import User from "@/models/user"
 import {
+  datasetHasApprovedAccessRequestFor,
   datasetIsAccessibleViaOpenAccessGrantBy,
   datasetsAccessibleViaAccessGrantsBy,
   mostPermissiveAccessGrantFor,
@@ -223,6 +224,10 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
 
   public isAccessibleViaOpenAccessGrantBy(user: User): NonAttribute<boolean> {
     return datasetIsAccessibleViaOpenAccessGrantBy(this, user)
+  }
+
+  public hasApprovedAccessRequestFor(user: User): NonAttribute<boolean> {
+    return datasetHasApprovedAccessRequestFor(this, user)
   }
 }
 

@@ -12,27 +12,27 @@ export type VisualizationControlWithDataset = VisualizationControl & {
 }
 
 export class VisualizationControlsPolicy extends BasePolicy<VisualizationControlWithDataset> {
+  private readonly dataset: Dataset
   private readonly datasetsPolicy: DatasetsPolicy
 
   constructor(user: User, record: VisualizationControlWithDataset) {
     super(user, record)
+    this.dataset = record.dataset
     this.datasetsPolicy = new DatasetsPolicy(this.user, this.record.dataset)
   }
 
   show(): boolean {
-    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
+    if (this.datasetsPolicy.update()) {
       return true
     }
 
-    if (this.user.isDataOwner && this.record.dataset.ownerId === this.user.id) {
+    if (this.dataset.isAccessibleViaOpenAccessGrantBy(this.user)) {
       return true
     }
 
-    if (this.record.dataset.isAccessibleViaOpenAccessGrantBy(this.user)) {
+    if (this.dataset.hasApprovedAccessRequestFor(this.user)) {
       return true
     }
-
-    // TODO: return true if the user has an approved access request for the dataset
 
     return false
   }
