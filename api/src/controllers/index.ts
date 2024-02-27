@@ -8,6 +8,7 @@ export { TaggingsController } from "./taggings-controller"
 export { TagsController } from "./tags-controller"
 export { UserGroupsController } from "./user-groups-controller"
 export { UsersController } from "./users-controller"
+export { VisualizationControlsController } from "./visualization-controls-controller"
 
 export * as AccessRequests from "./access-requests"
 export * as Users from "./users"

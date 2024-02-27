@@ -32,6 +32,7 @@ import {
   UserGroupsController,
   Users,
   UsersController,
+  VisualizationControlsController,
 } from "@/controllers"
 
 export const router = Router()
@@ -107,6 +108,11 @@ router
 router.route("/api/taggings").get(TaggingsController.index).post(TaggingsController.create)
 router.route("/api/taggings/:taggingId").delete(TaggingsController.destroy)
 router.route("/api/tags").get(TagsController.index)
+
+router
+  .route("/api/visualization-controls/:visualizationControlId")
+  .get(VisualizationControlsController.show)
+  .patch(VisualizationControlsController.update)
 
 // TODO: might want to lock these to only run in non-production environments?
 router.route("/api/qa-scenarios/link-random-tags").post(QaScenarios.LinkRandomTagsController.create)
