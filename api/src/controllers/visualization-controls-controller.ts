@@ -2,7 +2,6 @@ import { isNil } from "lodash"
 
 import { VisualizationControl } from "@/models"
 import { VisualizationControlsPolicy } from "@/policies"
-import { VisualizationControlWithDataset } from "@/policies/visualization-controls-policy"
 import { UpdateService } from "@/services/visualization-controls"
 
 import BaseController from "@/controllers/base-controller"
@@ -52,17 +51,25 @@ export class VisualizationControlsController extends BaseController {
     }
   }
 
-  private async loadVisualizationControl(): Promise<VisualizationControlWithDataset | null> {
-    const visualizationControl = await VisualizationControl.findByPk(
-      this.params.visualizationControlId,
-      {
-        include: ["dataset"],
-      }
-    )
-    return visualizationControl as VisualizationControlWithDataset | null
+  private async loadVisualizationControl(): Promise<VisualizationControl | null> {
+    return VisualizationControl.findByPk(this.params.visualizationControlId, {
+      include: [
+        {
+          association: "dataset",
+          include: [
+            {
+              association: "owner",
+              include: ["groupMembership"],
+            },
+            "accessGrants",
+            "accessRequests",
+          ],
+        },
+      ],
+    })
   }
 
-  private buildPolicy(record: VisualizationControlWithDataset): VisualizationControlsPolicy {
+  private buildPolicy(record: VisualizationControl): VisualizationControlsPolicy {
     return new VisualizationControlsPolicy(this.currentUser, record)
   }
 }

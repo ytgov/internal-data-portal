@@ -1,4 +1,4 @@
-import { NonAttribute } from "sequelize"
+import { isUndefined } from "lodash"
 
 import { Path } from "@/utils/deep-pick"
 
@@ -7,18 +7,9 @@ import DatasetsPolicy from "@/policies/datasets-policy"
 
 import BasePolicy from "@/policies/base-policy"
 
-export type VisualizationControlWithDataset = VisualizationControl & {
-  dataset: NonAttribute<Dataset>
-}
-
-export class VisualizationControlsPolicy extends BasePolicy<VisualizationControlWithDataset> {
-  private readonly dataset: Dataset
-  private readonly datasetsPolicy: DatasetsPolicy
-
-  constructor(user: User, record: VisualizationControlWithDataset) {
+export class VisualizationControlsPolicy extends BasePolicy<VisualizationControl> {
+  constructor(user: User, record: VisualizationControl) {
     super(user, record)
-    this.dataset = record.dataset
-    this.datasetsPolicy = new DatasetsPolicy(this.user, this.record.dataset)
   }
 
   show(): boolean {
@@ -49,6 +40,18 @@ export class VisualizationControlsPolicy extends BasePolicy<VisualizationControl
       "hasSearchRowLimits",
       "searchRowLimitMaximum",
     ]
+  }
+
+  private get dataset(): Dataset {
+    if (isUndefined(this.record.dataset)) {
+      throw new Error("Expected record to have a dataset association")
+    }
+
+    return this.record.dataset
+  }
+
+  private get datasetsPolicy(): DatasetsPolicy {
+    return new DatasetsPolicy(this.user, this.dataset)
   }
 }
 

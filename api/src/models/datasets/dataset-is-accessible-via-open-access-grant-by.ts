@@ -1,4 +1,4 @@
-import { isEmpty, isNil } from "lodash"
+import { isEmpty, isNil, isUndefined } from "lodash"
 
 import { AccessTypes } from "@/models/access-grant"
 import { matchesGrantLevel } from "@/models/access-grants"
@@ -10,6 +10,22 @@ export function datasetIsAccessibleViaOpenAccessGrantBy(
   requestingUser: User
 ): boolean {
   const { accessGrants, owner } = record
+
+  if (isUndefined(owner)) {
+    throw new Error("Expected record to have owner association")
+  }
+
+  if (isUndefined(owner.groupMembership)) {
+    throw new Error("Expected record to have owner.groupMembership association")
+  }
+
+  if (isUndefined(requestingUser.groupMembership)) {
+    throw new Error("Expected requestingUser to have groupMembership association")
+  }
+
+  if (isUndefined(accessGrants)) {
+    throw new Error("Expected record to have accessGrants association")
+  }
 
   if (isNil(accessGrants) || isEmpty(accessGrants) || isNil(owner)) {
     return false
