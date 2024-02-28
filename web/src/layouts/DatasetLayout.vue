@@ -16,11 +16,12 @@
       {{ dataset.name }}
     </h2>
 
-    <v-tabs>
+    <v-tabs v-model="activeTab">
       <component
         :is="component"
-        v-for="{ component, attributes } in availableTabs"
-        :key="component.name"
+        v-for="({ component, attributes }, index) in availableTabs"
+        :key="index"
+        :value="index"
         :slug="slug"
         v-bind="attributes"
       />
@@ -31,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs, defineAsyncComponent } from "vue"
+import { computed, toRefs, defineAsyncComponent, ref } from "vue"
 import { isNil } from "lodash"
 
 import useCurrentUser, { RoleTypes } from "@/use/use-current-user"
@@ -49,6 +50,8 @@ const { slug } = toRefs(props)
 const { dataset, isLoading, policy } = useDataset(slug)
 
 const { currentUser } = useCurrentUser()
+
+const activeTab = ref(null)
 
 const DescriptionTab = defineAsyncComponent(
   () => import("@/layouts/dataset-layout/DescriptionTab.vue")
