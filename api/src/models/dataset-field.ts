@@ -42,8 +42,8 @@ export class DatasetField extends Model<
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getDatasets: BelongsToGetAssociationMixin<Dataset>
-  declare setDatasets: BelongsToSetAssociationMixin<Dataset, Dataset["id"]>
+  declare getDataset: BelongsToGetAssociationMixin<Dataset>
+  declare setDataset: BelongsToSetAssociationMixin<Dataset, Dataset["id"]>
   declare createDataset: BelongsToCreateAssociationMixin<Dataset>
 
   declare dataset?: NonAttribute<Dataset>
