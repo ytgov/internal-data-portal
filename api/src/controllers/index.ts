@@ -1,6 +1,7 @@
 export { AccessGrantsController } from "./access-grants-controller"
 export { AccessRequestsController } from "./access-requests-controller"
 export { CurrentUserController } from "./current-user-controller"
+export { DatasetEntriesController } from "./dataset-entries-controller"
 export { DatasetFieldsController } from "./dataset-fields-controller"
 export { DatasetsController } from "./datasets-controller"
 export { DatasetStewardshipsController } from "./dataset-stewardships-controller"

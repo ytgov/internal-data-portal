@@ -22,6 +22,7 @@ import {
   AccessRequests,
   AccessRequestsController,
   CurrentUserController,
+  DatasetEntriesController,
   DatasetFieldsController,
   DatasetsController,
   DatasetStewardshipsController,
@@ -79,6 +80,8 @@ router
 router
   .route("/api/access-requests/:accessRequestId/revoke")
   .post(AccessRequests.RevokeController.create)
+
+router.route("/api/dataset-entries").get(DatasetEntriesController.index)
 
 router
   .route("/api/dataset-fields")
