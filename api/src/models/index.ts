@@ -12,6 +12,8 @@ import { Tagging } from "@/models/tagging"
 import { AccessGrant } from "@/models/access-grant"
 import { AccessRequest } from "@/models/access-request"
 import { DatasetField } from "@/models/dataset-field"
+import { VisualizationControl } from "@/models/visualization-control"
+import { SearchFieldExclusion } from "@/models/search-field-exclusion"
 
 // Estabilish associations between models, order likely matters
 Role.establishAssociations()
@@ -26,6 +28,8 @@ AccessGrant.establishAssociations()
 AccessRequest.establishAssociations()
 DatasetStewardship.establishAssociations()
 DatasetField.establishAssociations()
+VisualizationControl.establishAssociations()
+SearchFieldExclusion.establishAssociations()
 
 export {
   AccessGrant,
@@ -40,6 +44,8 @@ export {
   User,
   UserGroup,
   UserGroupMembership,
+  VisualizationControl,
+  SearchFieldExclusion,
 }
 
 // special db instance that has access to all models.

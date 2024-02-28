@@ -16,11 +16,12 @@
       {{ dataset.name }}
     </h2>
 
-    <v-tabs>
+    <v-tabs v-model="activeTab">
       <component
         :is="component"
-        v-for="{ component, attributes } in availableTabs"
-        :key="component.name"
+        v-for="({ component, attributes }, index) in availableTabs"
+        :key="index"
+        :value="index"
         :slug="slug"
         v-bind="attributes"
       />
@@ -31,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs, defineAsyncComponent } from "vue"
+import { computed, toRefs, defineAsyncComponent, ref } from "vue"
 import { isNil } from "lodash"
 
 import useCurrentUser, { RoleTypes } from "@/use/use-current-user"
@@ -50,12 +51,15 @@ const { dataset, isLoading, policy } = useDataset(slug)
 
 const { currentUser } = useCurrentUser()
 
+const activeTab = ref(null)
+
 const DescriptionTab = defineAsyncComponent(
   () => import("@/layouts/dataset-layout/DescriptionTab.vue")
 )
 const FieldsTab = defineAsyncComponent(() => import("@/layouts/dataset-layout/FieldsTab.vue"))
 // TODO: access tab only has manage view, which is a bit confusing
 const AccessTab = defineAsyncComponent(() => import("@/layouts/dataset-layout/AccessTab.vue"))
+const VisualizeTab = defineAsyncComponent(() => import("@/layouts/dataset-layout/VisualizeTab.vue"))
 
 type TabComponents = {
   component: typeof DescriptionTab | typeof FieldsTab | typeof AccessTab
@@ -64,18 +68,18 @@ type TabComponents = {
   }
 }
 
-const isDataOwnerAccessTabLocked = computed(() => {
-  return policy.value?.update !== true
+const canUpdateDataset = computed(() => {
+  return policy.value?.update === true
 })
 
 // TODO: consider return fields policy in dataset policy
 // e.g. policy.value?.fields.show or something
-const isUserFieldsTabLocked = computed(() => {
+const isReadableByUser = computed(() => {
   if (dataset.value?.currentUserAccessGrant?.accessType === AccessTypes.OPEN_ACCESS) {
-    return false
+    return true
   }
 
-  return isNil(dataset.value?.currentUserAccessRequest?.approvedAt)
+  return !isNil(dataset.value?.currentUserAccessRequest?.approvedAt)
 })
 
 const tabImports = computed<{
@@ -84,21 +88,25 @@ const tabImports = computed<{
   [RoleTypes.DATA_OWNER]: [
     { component: DescriptionTab, attributes: { locked: false } },
     { component: FieldsTab, attributes: { locked: false } },
-    { component: AccessTab, attributes: { locked: isDataOwnerAccessTabLocked.value } },
+    { component: AccessTab, attributes: { locked: !canUpdateDataset.value } },
+    { component: VisualizeTab, attributes: { locked: !canUpdateDataset.value } },
   ],
   [RoleTypes.SYSTEM_ADMIN]: [
     { component: DescriptionTab, attributes: { locked: false } },
     { component: FieldsTab, attributes: { locked: false } },
     { component: AccessTab, attributes: { locked: false } },
+    { component: VisualizeTab, attributes: { locked: false } },
   ],
   [RoleTypes.BUSINESS_ANALYST]: [
     { component: DescriptionTab, attributes: { locked: false } },
     { component: FieldsTab, attributes: { locked: false } },
     { component: AccessTab, attributes: { locked: false } },
+    { component: VisualizeTab, attributes: { locked: false } },
   ],
   [RoleTypes.USER]: [
     { component: DescriptionTab, attributes: { locked: false } },
-    { component: FieldsTab, attributes: { locked: isUserFieldsTabLocked.value } },
+    { component: FieldsTab, attributes: { locked: !isReadableByUser.value } },
+    { component: VisualizeTab, attributes: { locked: !isReadableByUser.value } },
   ],
 }))
 

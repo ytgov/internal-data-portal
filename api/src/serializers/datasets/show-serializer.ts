@@ -31,6 +31,7 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
           "ownerNotes",
         ]),
         creator: this.record.creator,
+        visualizationControl: this.record.visualizationControl,
       })
     }
 

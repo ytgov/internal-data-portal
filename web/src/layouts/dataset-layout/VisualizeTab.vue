@@ -1,9 +1,9 @@
 <template>
-  <LockedTab v-if="locked">Fields</LockedTab>
+  <LockedTab v-if="locked">Visualize</LockedTab>
   <v-tab
     v-else
     :to="{ name: routeName, params: { slug } }"
-    ><h3>Fields</h3></v-tab
+    ><h3>Visualize</h3></v-tab
   >
 </template>
 
@@ -33,9 +33,9 @@ const routeName = computed(() => {
     case "DatasetFieldsManagePage":
     case "DatasetAccessManagePage":
     case "DatasetVisualizeManagePage":
-      return "DatasetFieldsManagePage"
+      return "DatasetVisualizeManagePage"
     default:
-      return "DatasetFieldsReadPage"
+      return "DatasetVisualizeReadPage"
   }
 })
 </script>

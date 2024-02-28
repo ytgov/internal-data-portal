@@ -5,6 +5,7 @@ import { type User } from "@/api/users-api"
 import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
 import { type AccessGrant } from "@/api/access-grants-api"
 import { type AccessRequest } from "@/api/access-requests-api"
+import { type VisualizationControl } from "@/api/visualization-controls-api"
 
 export { type Policy }
 
@@ -39,6 +40,7 @@ export type Dataset = {
   owner?: User
   creator?: User
   stewardship?: DatasetStewardship
+  visualizationControl?: VisualizationControl
 
   // magic fields
   currentUserAccessGrant?: AccessGrant | null
@@ -49,6 +51,7 @@ export type DatasetDetailedResult = Dataset & {
   owner: User
   creator: User
   stewardship: DatasetStewardship
+  visualizationControl: VisualizationControl
 
   // magic fields
   currentUserAccessGrant: AccessGrant | null
