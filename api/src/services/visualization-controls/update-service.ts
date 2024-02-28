@@ -18,10 +18,9 @@ export class UpdateService extends BaseService {
 
   async perform(): Promise<VisualizationControl> {
     return db.transaction(async () => {
-      this.visualizationControl.update(this.attributes)
+      await this.visualizationControl.update(this.attributes)
 
       const { searchFieldExclusionsAttributes } = this.attributes
-      console.log(`searchFieldExclusionsAttributes:`, searchFieldExclusionsAttributes)
       if (searchFieldExclusionsAttributes) {
         await this.bulkReplaceSearchFieldExclusions(searchFieldExclusionsAttributes)
       }
