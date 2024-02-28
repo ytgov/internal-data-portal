@@ -17,6 +17,7 @@ import sequelize from "@/db/db-client"
 import DatasetField from "@/models/dataset-field"
 import VisualizationControl from "@/models/visualization-control"
 
+// TODO: consider simply adding a DatasetField#isExcludedFromSearch boolean field instead of this model
 export class SearchFieldExclusion extends Model<
   InferAttributes<SearchFieldExclusion>,
   InferCreationAttributes<SearchFieldExclusion>
