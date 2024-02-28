@@ -14,6 +14,7 @@ import { AccessRequest } from "@/models/access-request"
 import { DatasetField } from "@/models/dataset-field"
 import { VisualizationControl } from "@/models/visualization-control"
 import { SearchFieldExclusion } from "@/models/search-field-exclusion"
+import { DatasetEntry } from "@/models/dataset-entry"
 
 // Estabilish associations between models, order likely matters
 Role.establishAssociations()
@@ -30,14 +31,17 @@ DatasetStewardship.establishAssociations()
 DatasetField.establishAssociations()
 VisualizationControl.establishAssociations()
 SearchFieldExclusion.establishAssociations()
+DatasetEntry.establishAssociations()
 
 export {
   AccessGrant,
   AccessRequest,
   Dataset,
+  DatasetEntry,
   DatasetField,
   DatasetStewardship,
   Role,
+  SearchFieldExclusion,
   StewardshipEvolution,
   Tag,
   Tagging,
@@ -45,7 +49,6 @@ export {
   UserGroup,
   UserGroupMembership,
   VisualizationControl,
-  SearchFieldExclusion,
 }
 
 // special db instance that has access to all models.
