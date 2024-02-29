@@ -8,7 +8,16 @@
     :visualization-control-id="dataset.visualizationControl.id"
   />
 
-  TODO: Add DatasetEntriesCard
+  <v-spacer class="mt-6" />
+  TODO: add data entries search and various Download To .. buttons
+  <v-skeleton-loader
+    v-if="isNil(dataset)"
+    type="table"
+  />
+  <DatasetEntriesTable
+    v-else
+    :dataset-id="dataset.id"
+  />
 </template>
 
 <script setup lang="ts">
@@ -18,6 +27,7 @@ import { isNil } from "lodash"
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 import { useDataset } from "@/use/use-dataset"
 
+import DatasetEntriesTable from "@/components/dataset-entries/DatasetEntriesTable.vue"
 import VisualizePropertiesFormCard from "@/components/visualization-controls/VisualizePropertiesFormCard.vue"
 
 const props = defineProps({
