@@ -79,6 +79,13 @@ const routes: RouteRecordRaw[] = [
           },
         ],
       },
+      // TODO: Make this page a tab in the DatasetLayout, after I make that pattern more flexible
+      {
+        path: "datasets/:slug/api/manage",
+        name: "DatasetApiManagePage",
+        component: () => import("@/pages/DatasetApiManagePage.vue"),
+        props: true,
+      },
     ],
   },
   {
