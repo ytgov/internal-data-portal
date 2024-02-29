@@ -126,9 +126,6 @@ async function fetchApiResults() {
     throw new Error("Header Key is required")
   }
 
-  console.log(`externalApiUrl:`, externalApiUrl)
-  console.log(`externalApiHeaderKey:`, externalApiHeaderKey)
-  console.log(`externalApiHeaderValue:`, externalApiHeaderValue)
   try {
     const { data } = await http.post("/api/preview", {
       externalApiUrl,

@@ -13,6 +13,7 @@ export class PreviewController extends BaseController {
       })
       return this.response.status(201).json(data)
     } catch (error) {
+      console.error(error)
       return this.response.status(422).json({ message: `Preview generation failed: ${error}` })
     }
   }
