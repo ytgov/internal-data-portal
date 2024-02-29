@@ -7,8 +7,8 @@ export type VisualizationControl = {
   id: number
   datasetId: Dataset["id"]
   isDowloadableAsCsv: boolean
-  hasSearchRestrictions: boolean
-  hasSearchFieldRestrictions: boolean
+  hasSearchCustomizations: boolean
+  hasFieldsExcludedFromSearch: boolean
   hasSearchRowLimits: boolean
   searchRowLimitMaximum: number | null
   createdAt: string

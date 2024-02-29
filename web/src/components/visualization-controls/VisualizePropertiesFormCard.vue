@@ -35,7 +35,7 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.hasSearchRestrictions"
+              v-model="visualizationControl.hasSearchCustomizations"
               label="Customize search?"
               @update:model-value="saveAndNotify"
             />
@@ -53,7 +53,7 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.hasSearchFieldRestrictions"
+              v-model="visualizationControl.hasFieldsExcludedFromSearch"
               label="Exclude Fields from Search?"
               @update:model-value="saveAndNotify"
             />

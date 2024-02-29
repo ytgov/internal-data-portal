@@ -34,8 +34,8 @@ export class VisualizationControl extends Model<
   declare id: CreationOptional<number>
   declare datasetId: ForeignKey<Dataset["id"]>
   declare isDowloadableAsCsv: CreationOptional<boolean>
-  declare hasSearchRestrictions: CreationOptional<boolean>
-  declare hasSearchFieldRestrictions: CreationOptional<boolean>
+  declare hasSearchCustomizations: CreationOptional<boolean>
+  declare hasFieldsExcludedFromSearch: CreationOptional<boolean>
   declare hasSearchRowLimits: CreationOptional<boolean>
   declare searchRowLimitMaximum: CreationOptional<number | null>
   declare createdAt: CreationOptional<Date>
@@ -123,12 +123,12 @@ VisualizationControl.init(
       allowNull: false,
       defaultValue: false,
     },
-    hasSearchRestrictions: {
+    hasSearchCustomizations: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
-    hasSearchFieldRestrictions: {
+    hasFieldsExcludedFromSearch: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
