@@ -36,7 +36,7 @@
           >
             <v-checkbox
               v-model="visualizationControl.hasSearchCustomizations"
-              label="Customize search?"
+              label="Enable search customization?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -54,7 +54,7 @@
           >
             <v-checkbox
               v-model="visualizationControl.hasFieldsExcludedFromSearch"
-              label="Exclude Fields from Search?"
+              label="Exclude fields from search?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -86,7 +86,7 @@
           >
             <v-checkbox
               v-model="visualizationControl.hasSearchRowLimits"
-              label="Limit Search Results?"
+              label="Limit search results?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -97,7 +97,7 @@
           >
             <v-text-field
               v-model="visualizationControl.searchRowLimitMaximum"
-              label="Result Limit"
+              label="Max Results"
               type="number"
               variant="outlined"
               clearable
