@@ -86,7 +86,7 @@
           >
             <v-checkbox
               v-model="visualizationControl.hasSearchRowLimits"
-              label="Rows"
+              label="Limit Search Results?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -97,7 +97,7 @@
           >
             <v-text-field
               v-model="visualizationControl.searchRowLimitMaximum"
-              label="Limit"
+              label="Result Limit"
               type="number"
               variant="outlined"
               clearable
