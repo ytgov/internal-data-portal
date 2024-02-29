@@ -54,7 +54,7 @@
           color="primary"
           @click="fetchApiResults"
         >
-          Test API
+          Test Integration
         </v-btn>
       </v-col>
     </v-row>
@@ -67,7 +67,49 @@
         <v-textarea
           :model-value="apiResultPreview"
           rows="10"
+          variant="outlined"
           readonly
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          v-model="externalApiJmesPathParsingExpression"
+          label="JMESPath Parsing Expression"
+          placeholder="e.g. divisions"
+          variant="outlined"
+        >
+          <template #details>
+            See
+            <a
+              class="mx-1"
+              href="https://jmespath.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >JMESPath</a
+            >
+            for more information.
+          </template>
+        </v-text-field>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <h3>API Parsed Result Preview</h3>
+        <v-textarea
+          :model-value="apiParsedResultPreview"
+          hint="Result must be an array for API to integrate correctly."
+          rows="10"
+          variant="outlined"
+          readonly
+          persistent-hint
         />
       </v-col>
     </v-row>
@@ -89,8 +131,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, toRefs } from "vue"
-import { isNil } from "lodash"
+import { computed, ref, toRefs } from "vue"
+import { isEmpty, isNil } from "lodash"
+import jmespath from "jmespath"
 
 import http from "@/api/http-client"
 import useDataset from "@/use/use-dataset"
@@ -108,6 +151,28 @@ const { slug } = toRefs(props)
 const { dataset } = useDataset(slug)
 
 const apiResultPreview = ref<string | null>(null)
+const externalApiJmesPathParsingExpression = ref<string | null>(null)
+
+const apiParsedResultPreview = computed(() => {
+  if (
+    isNil(apiResultPreview.value) ||
+    isEmpty(apiResultPreview.value) ||
+    isNil(externalApiJmesPathParsingExpression.value) ||
+    isEmpty(externalApiJmesPathParsingExpression.value)
+  ) {
+    return null
+  }
+
+  try {
+    const parsedResult = jmespath.search(
+      JSON.parse(apiResultPreview.value),
+      externalApiJmesPathParsingExpression.value
+    )
+    return JSON.stringify(parsedResult, null, 2)
+  } catch (error) {
+    return JSON.stringify(error, null, 2)
+  }
+})
 
 // TODO: save and send to back-end, have back end fetch results and return
 // to bypass CORS issues
