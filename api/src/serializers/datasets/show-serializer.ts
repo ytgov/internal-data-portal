@@ -21,6 +21,9 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
       return this.baseView({
         ...pick(this.record.dataValues, [
           "creatorId",
+          "externalApiUrl",
+          "externalApiHeaderKey",
+          "externalApiHeaderValue",
           "subscriptionUrl",
           "subscriptionAccessCode",
           "publishedAt",

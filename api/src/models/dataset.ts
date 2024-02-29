@@ -58,6 +58,11 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
   declare slug: string
   declare name: string
   declare description: string
+  declare externalApiUrl: CreationOptional<string | null>
+  // Move to separate table if multiple header entries are ever needed
+  declare externalApiHeaderKey: CreationOptional<string | null>
+  declare externalApiHeaderValue: CreationOptional<string | null>
+  // TODO: consider removing subscriptionUrl and subscriptionAccessCode
   declare subscriptionUrl: CreationOptional<string | null>
   declare subscriptionAccessCode: CreationOptional<string | null>
   declare isSpatialData: CreationOptional<boolean>
@@ -283,6 +288,18 @@ Dataset.init(
     },
     subscriptionUrl: {
       type: DataTypes.STRING(1000),
+      allowNull: true,
+    },
+    externalApiUrl: {
+      type: DataTypes.STRING(1024),
+      allowNull: true,
+    },
+    externalApiHeaderKey: {
+      type: DataTypes.STRING(1024),
+      allowNull: true,
+    },
+    externalApiHeaderValue: {
+      type: DataTypes.STRING(4000),
       allowNull: true,
     },
     subscriptionAccessCode: {

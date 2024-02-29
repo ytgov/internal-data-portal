@@ -21,6 +21,9 @@ export type Dataset = {
   slug: string
   name: string
   description: string
+  externalApiUrl: string | null
+  externalApiHeaderKey: string | null
+  externalApiHeaderValue: string | null
   subscriptionUrl: string | null
   subscriptionAccessCode: string | null
   isSpatialData: boolean
