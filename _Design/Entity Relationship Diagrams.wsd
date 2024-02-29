@@ -3,9 +3,9 @@ entity "access_grants" {
   * id : int <<PK>>
   --
   * dataset_id : int <<FK>>
-  * owner_id : int <<FK>>
   * grant_level : nvarchar(255)
   * access_type : nvarchar(255)
+  creator_id : int <<FK>>
   support_id : int <<FK>>
   is_project_description_required : bit
   created_at : datetime2(0)
@@ -43,6 +43,7 @@ entity "dataset_fields" {
   * data_type : nvarchar(100)
   description : nvarchar(1000)
   note : nvarchar(MAX)
+  is_excluded_from_search : bit
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
@@ -122,7 +123,7 @@ entity "tags" {
 entity "user_group_memberships" {
   * id : int <<PK>>
   --
-  * userId : int <<FK>>
+  * user_id : int <<FK>>
   * department_id : int <<FK>>
   division_id : int <<FK>>
   branch_id : int <<FK>>
@@ -163,13 +164,28 @@ entity "users" {
   deleted_at : datetime2(0)
 }
 
+entity "visualization_controls" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  is_downloadable_as_csv : bit
+  has_search_row_limits : bit
+  search_row_limit_maximum : int
+  has_search_customizations : bit
+  has_fields_excluded_from_search : bit
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
 ' Define relationships
 access_grants }o--|| access_requests : access_grant_id
 datasets }o--|| access_grants : dataset_id
 datasets }o--|| dataset_fields : dataset_id
-datasets }o--|| taggings : taggable_id, tagging_type
+datasets }o--|| taggings : taggable_id, tagging_type = 'Dataset'
 datasets |o--|| dataset_stewardships : dataset_id
 datasets }o--|| access_requests : dataset_id
+datasets }o--|| visualization_controls : dataset_id
 taggings ||--o{ tags : tag_id
 user_groups }o--|| dataset_stewardships : branch_id
 user_groups }o--|| dataset_stewardships : department_id
@@ -179,8 +195,8 @@ user_groups }o--|| user_group_memberships : branch_id
 user_groups }o--|| user_group_memberships : department_id
 user_groups }o--|| user_group_memberships : division_id
 user_groups }o--|| user_group_memberships : unit_id
-users }o--|| access_grants : owner_id
 users }o--|| access_grants : support_id
+users }o--|| access_grants : creator_id
 users }o--|| access_requests : requestor_id
 users }o--|| access_requests : denier_id
 users }o--|| access_requests : approver_id
