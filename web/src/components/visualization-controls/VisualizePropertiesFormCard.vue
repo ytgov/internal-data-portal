@@ -24,7 +24,7 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.isDowloadableAsCsv"
+              v-model="visualizationControl.isDownloadableAsCsv"
               label="Allow Download to CSV?"
               @update:model-value="saveAndNotify"
             />

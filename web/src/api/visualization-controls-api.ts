@@ -6,7 +6,7 @@ import { type DatasetField } from "@/api/dataset-fields-api"
 export type VisualizationControl = {
   id: number
   datasetId: Dataset["id"]
-  isDowloadableAsCsv: boolean
+  isDownloadableAsCsv: boolean
   hasSearchCustomizations: boolean
   hasFieldsExcludedFromSearch: boolean
   hasSearchRowLimits: boolean

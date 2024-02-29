@@ -24,7 +24,7 @@ export class ShowSerializer extends BaseSerializer<VisualizationControl> {
       ...pick(this.record.dataValues, [
         "id",
         "datasetId",
-        "isDowloadableAsCsv",
+        "isDownloadableAsCsv",
         "hasSearchCustomizations",
         "hasFieldsExcludedFromSearch",
         "hasSearchRowLimits",

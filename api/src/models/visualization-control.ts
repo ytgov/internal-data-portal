@@ -33,7 +33,7 @@ export class VisualizationControl extends Model<
 > {
   declare id: CreationOptional<number>
   declare datasetId: ForeignKey<Dataset["id"]>
-  declare isDowloadableAsCsv: CreationOptional<boolean>
+  declare isDownloadableAsCsv: CreationOptional<boolean>
   declare hasSearchCustomizations: CreationOptional<boolean>
   declare hasFieldsExcludedFromSearch: CreationOptional<boolean>
   declare hasSearchRowLimits: CreationOptional<boolean>
@@ -118,7 +118,7 @@ VisualizationControl.init(
         key: "id",
       },
     },
-    isDowloadableAsCsv: {
+    isDownloadableAsCsv: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,

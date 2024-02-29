@@ -34,7 +34,7 @@ export class VisualizationControlsPolicy extends BasePolicy<VisualizationControl
 
   permittedAttributes(): Path[] {
     return [
-      "isDowloadableAsCsv",
+      "isDownloadableAsCsv",
       "hasSearchCustomizations",
       "hasFieldsExcludedFromSearch",
       "hasSearchRowLimits",
