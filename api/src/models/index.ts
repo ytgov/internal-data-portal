@@ -12,7 +12,6 @@ import { AccessGrant } from "@/models/access-grant"
 import { AccessRequest } from "@/models/access-request"
 import { DatasetField } from "@/models/dataset-field"
 import { VisualizationControl } from "@/models/visualization-control"
-import { SearchFieldExclusion } from "@/models/search-field-exclusion"
 import { DatasetEntry } from "@/models/dataset-entry"
 
 // Estabilish associations between models, order likely matters
@@ -28,7 +27,6 @@ AccessRequest.establishAssociations()
 DatasetStewardship.establishAssociations()
 DatasetField.establishAssociations()
 VisualizationControl.establishAssociations()
-SearchFieldExclusion.establishAssociations()
 DatasetEntry.establishAssociations()
 
 export {
@@ -39,7 +37,6 @@ export {
   DatasetField,
   DatasetStewardship,
   Role,
-  SearchFieldExclusion,
   Tag,
   Tagging,
   User,

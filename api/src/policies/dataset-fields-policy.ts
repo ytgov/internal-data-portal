@@ -74,7 +74,7 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
   }
 
   permittedAttributes(): Path[] {
-    return ["name", "displayName", "dataType", "description", "note"]
+    return ["name", "displayName", "dataType", "description", "note", "isExcludedFromSearch"]
   }
 
   permittedAttributesForCreate(): Path[] {

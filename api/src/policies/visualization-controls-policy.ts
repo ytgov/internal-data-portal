@@ -39,7 +39,7 @@ export class VisualizationControlsPolicy extends BasePolicy<VisualizationControl
       "hasSearchFieldRestrictions",
       "hasSearchRowLimits",
       "searchRowLimitMaximum",
-      { searchFieldExclusionsAttributes: ["datasetFieldId"] },
+      { searchExcludedDatasetFieldsAttributes: ["id", "isExcludedFromSearch"] },
     ]
   }
 

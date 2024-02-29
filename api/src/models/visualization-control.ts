@@ -25,7 +25,7 @@ import {
 import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
-import SearchFieldExclusion from "@/models/search-field-exclusion"
+import DatasetField from "@/models/dataset-field"
 
 export class VisualizationControl extends Model<
   InferAttributes<VisualizationControl>,
@@ -49,49 +49,56 @@ export class VisualizationControl extends Model<
   declare setDataset: BelongsToSetAssociationMixin<Dataset, Dataset["id"]>
   declare createDataset: BelongsToCreateAssociationMixin<Dataset>
 
-  declare getSearchFieldExclusions: HasManyGetAssociationsMixin<SearchFieldExclusion>
-  declare setSearchFieldExclusions: HasManySetAssociationsMixin<
-    SearchFieldExclusion,
-    SearchFieldExclusion["visualizationControlId"]
+  declare getSearchExcludedDatasetFields: HasManyGetAssociationsMixin<DatasetField>
+  declare setSearchExcludedDatasetFields: HasManySetAssociationsMixin<
+    DatasetField,
+    DatasetField["datasetId"]
   >
-  declare hasSearchFieldExclusion: HasManyHasAssociationMixin<
-    SearchFieldExclusion,
-    SearchFieldExclusion["visualizationControlId"]
+  declare hasSearchExcludedDatasetField: HasManyHasAssociationMixin<
+    DatasetField,
+    DatasetField["datasetId"]
   >
-  declare hasSearchFieldExclusions: HasManyHasAssociationsMixin<
-    SearchFieldExclusion,
-    SearchFieldExclusion["visualizationControlId"]
+  declare hasSearchExcludedDatasetFields: HasManyHasAssociationsMixin<
+    DatasetField,
+    DatasetField["datasetId"]
   >
-  declare addSearchFieldExclusion: HasManyAddAssociationMixin<
-    SearchFieldExclusion,
-    SearchFieldExclusion["visualizationControlId"]
+  declare addSearchExcludedDatasetField: HasManyAddAssociationMixin<
+    DatasetField,
+    DatasetField["datasetId"]
   >
-  declare addSearchFieldExclusions: HasManyAddAssociationsMixin<
-    SearchFieldExclusion,
-    SearchFieldExclusion["visualizationControlId"]
+  declare addSearchExcludedDatasetFields: HasManyAddAssociationsMixin<
+    DatasetField,
+    DatasetField["datasetId"]
   >
-  declare removeSearchFieldExclusion: HasManyRemoveAssociationMixin<
-    SearchFieldExclusion,
-    SearchFieldExclusion["visualizationControlId"]
+  declare removeSearchExcludedDatasetField: HasManyRemoveAssociationMixin<
+    DatasetField,
+    DatasetField["datasetId"]
   >
-  declare removeSearchFieldExclusions: HasManyRemoveAssociationsMixin<
-    SearchFieldExclusion,
-    SearchFieldExclusion["visualizationControlId"]
+  declare removeSearchExcludedDatasetFields: HasManyRemoveAssociationsMixin<
+    DatasetField,
+    DatasetField["datasetId"]
   >
-  declare countSearchFieldExclusions: HasManyCountAssociationsMixin
-  declare createSearchFieldExclusion: HasManyCreateAssociationMixin<SearchFieldExclusion>
+  declare countSearchExcludedDatasetFields: HasManyCountAssociationsMixin
+  declare createSearchExcludedDatasetField: HasManyCreateAssociationMixin<DatasetField>
 
   declare dataset?: NonAttribute<Dataset>
-  declare searchFieldExclusions?: NonAttribute<SearchFieldExclusion[]>
+  declare searchExcludedDatasetFields?: NonAttribute<DatasetField[]>
 
   declare static associations: {
     dataset: Association<VisualizationControl, Dataset>
-    searchFieldExclusions: Association<VisualizationControl, SearchFieldExclusion>
+    searchExcludedDatasetFields: Association<VisualizationControl, DatasetField>
   }
 
   static establishAssociations() {
     this.belongsTo(Dataset, { as: "dataset" })
-    this.hasMany(SearchFieldExclusion, { as: "searchFieldExclusions" })
+    this.hasMany(DatasetField, {
+      as: "searchExcludedDatasetFields",
+      sourceKey: "datasetId",
+      foreignKey: "datasetId",
+      scope: {
+        isExcludedFromSearch: true,
+      },
+    })
   }
 }
 

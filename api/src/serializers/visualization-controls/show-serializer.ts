@@ -1,10 +1,10 @@
 import { isUndefined, pick } from "lodash"
 
-import { SearchFieldExclusion, User, VisualizationControl } from "@/models"
+import { DatasetField, User, VisualizationControl } from "@/models"
 import BaseSerializer from "@/serializers/base-serializer"
 
 export type VisualizationControlShowView = Partial<VisualizationControl> & {
-  searchFieldExclusions: SearchFieldExclusion[]
+  searchExcludedDatasetFields: DatasetField[]
 }
 
 export class ShowSerializer extends BaseSerializer<VisualizationControl> {
@@ -16,8 +16,8 @@ export class ShowSerializer extends BaseSerializer<VisualizationControl> {
   }
 
   perform(): VisualizationControlShowView {
-    if (isUndefined(this.record.searchFieldExclusions)) {
-      throw new Error("Expected record to have a searchFieldExclusions association")
+    if (isUndefined(this.record.searchExcludedDatasetFields)) {
+      throw new Error("Expected record to have a searchExcludedDatasetFields association")
     }
 
     return {
@@ -32,7 +32,7 @@ export class ShowSerializer extends BaseSerializer<VisualizationControl> {
         "createdAt",
         "updatedAt",
       ]),
-      searchFieldExclusions: this.record.searchFieldExclusions,
+      searchExcludedDatasetFields: this.record.searchExcludedDatasetFields,
     }
   }
 }

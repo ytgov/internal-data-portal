@@ -35,6 +35,7 @@ export class DatasetField extends Model<
   declare dataType: DatasetFieldDataTypes
   declare description: CreationOptional<string | null>
   declare note: CreationOptional<string | null>
+  declare isExcludedFromSearch: CreationOptional<boolean>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>
@@ -95,6 +96,11 @@ DatasetField.init(
     note: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    isExcludedFromSearch: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     createdAt: {
       type: DataTypes.DATE,
