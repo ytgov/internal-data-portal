@@ -27,19 +27,6 @@ export type DatasetIntegration = {
 }
 
 export const datasetIntegrationsApi = {
-  // TODO: remove this method and use create/update instead?
-  async preview(
-    externalApiUrl: string,
-    externalApiHeaderKey: string,
-    externalApiHeaderValue: string
-  ): Promise<unknown> {
-    const { data } = await http.post("/api/preview", {
-      externalApiUrl,
-      externalApiHeaderKey,
-      externalApiHeaderValue,
-    })
-    return data
-  },
   async get(datasetIntegrationId: number): Promise<{
     datasetIntegration: DatasetIntegration
   }> {

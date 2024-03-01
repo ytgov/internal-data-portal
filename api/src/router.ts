@@ -27,7 +27,6 @@ import {
   DatasetIntegrationsController,
   DatasetsController,
   DatasetStewardshipsController,
-  PreviewController,
   QaScenarios,
   TaggingsController,
   TagsController,
@@ -103,8 +102,6 @@ router
 router
   .route("/api/dataset-stewardships/:datasetStewardshipId")
   .patch(DatasetStewardshipsController.update)
-
-router.route("/api/preview").post(PreviewController.create)
 
 router.route("/api/users").get(UsersController.index)
 router.route("/api/users/search/:searchToken").get(Users.SearchController.index)
