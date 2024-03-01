@@ -21,19 +21,11 @@ export type Dataset = {
   slug: string
   name: string
   description: string
-  externalApiUrl: string | null
-  externalApiHeaderKey: string | null
-  externalApiHeaderValue: string | null
-  subscriptionUrl: string | null
-  subscriptionAccessCode: string | null
   isSpatialData: boolean
   isLiveData: boolean
   termsOfUse: string | null
   credits: string | null
   ownerNotes: string | null
-  status: DatasetErrorTypes
-  errorCode: string | null
-  errorDetails: string | null
   publishedAt: string | null
   deactivatedAt: string | null
   createdAt: string

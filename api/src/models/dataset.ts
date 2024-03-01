@@ -44,35 +44,18 @@ import {
 import BaseModel from "@/models/base-model"
 import VisualizationControl from "./visualization-control"
 
-export enum DatasetErrorTypes {
-  OK = "ok",
-  ERRORED = "errored",
-}
-
 export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAttributes<Dataset>> {
-  static readonly ErrorTypes = DatasetErrorTypes
-
   declare id: CreationOptional<number>
   declare ownerId: ForeignKey<User["id"]>
   declare creatorId: ForeignKey<User["id"]>
   declare slug: string
   declare name: string
   declare description: string
-  declare externalApiUrl: CreationOptional<string | null>
-  // Move to separate table if multiple header entries are ever needed
-  declare externalApiHeaderKey: CreationOptional<string | null>
-  declare externalApiHeaderValue: CreationOptional<string | null>
-  // TODO: consider removing subscriptionUrl and subscriptionAccessCode
-  declare subscriptionUrl: CreationOptional<string | null>
-  declare subscriptionAccessCode: CreationOptional<string | null>
   declare isSpatialData: CreationOptional<boolean>
   declare isLiveData: CreationOptional<boolean>
   declare termsOfUse: CreationOptional<string | null>
   declare credits: CreationOptional<string | null>
   declare ownerNotes: CreationOptional<string | null>
-  declare status: CreationOptional<DatasetErrorTypes>
-  declare errorCode: CreationOptional<string | null>
-  declare errorDetails: CreationOptional<string | null>
   declare publishedAt: CreationOptional<Date | null>
   declare deactivatedAt: CreationOptional<Date | null>
   declare createdAt: CreationOptional<Date>
@@ -286,26 +269,6 @@ Dataset.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    subscriptionUrl: {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
-    },
-    externalApiUrl: {
-      type: DataTypes.STRING(1024),
-      allowNull: true,
-    },
-    externalApiHeaderKey: {
-      type: DataTypes.STRING(1024),
-      allowNull: true,
-    },
-    externalApiHeaderValue: {
-      type: DataTypes.STRING(4000),
-      allowNull: true,
-    },
-    subscriptionAccessCode: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
     isSpatialData: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -325,22 +288,6 @@ Dataset.init(
       allowNull: true,
     },
     ownerNotes: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    status: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: DatasetErrorTypes.OK,
-      validate: {
-        isIn: [Object.values(DatasetErrorTypes)],
-      },
-    },
-    errorCode: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
-    errorDetails: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
