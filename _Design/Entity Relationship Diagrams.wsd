@@ -3,9 +3,9 @@ entity "access_grants" {
   * id : int <<PK>>
   --
   * dataset_id : int <<FK>>
-  * owner_id : int <<FK>>
   * grant_level : nvarchar(255)
   * access_type : nvarchar(255)
+  creator_id : int <<FK>>
   support_id : int <<FK>>
   is_project_description_required : bit
   created_at : datetime2(0)
@@ -43,6 +43,27 @@ entity "dataset_fields" {
   * data_type : nvarchar(100)
   description : nvarchar(1000)
   note : nvarchar(MAX)
+  is_excluded_from_search : bit
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "dataset_integrations" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  * url : nvarchar(1024)
+  header_key : nvarchar(1024)
+  header_value : nvarchar(4000)
+  jmes_path_transform : nvarchar(1024)
+  raw_json_data : nvarchar(MAX)
+  parsed_json_data : nvarchar(MAX)
+  status : nvarchar(100)
+  error_code : nvarchar(100)
+  error_details : nvarchar(MAX)
+  last_success_at : datetime2(0)
+  last_failure_at : datetime2(0)
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
@@ -71,16 +92,11 @@ entity "datasets" {
   * slug : nvarchar(255)
   * name : nvarchar(255)
   * description : nvarchar(MAX)
-  subscription_url : nvarchar(1000)
-  subscription_access_code : nvarchar(255)
   is_spatial_data : bit
   is_live_data : bit
   terms_of_use : nvarchar(MAX)
   credits : nvarchar(MAX)
   owner_notes : nvarchar(MAX)
-  status : nvarchar(100)
-  error_code : nvarchar(100)
-  error_details : nvarchar(MAX)
   published_at : datetime2(0)
   deactivated_at : datetime2(0)
   created_at : datetime2(0)
@@ -122,7 +138,7 @@ entity "tags" {
 entity "user_group_memberships" {
   * id : int <<PK>>
   --
-  * userId : int <<FK>>
+  * user_id : int <<FK>>
   * department_id : int <<FK>>
   division_id : int <<FK>>
   branch_id : int <<FK>>
@@ -163,13 +179,29 @@ entity "users" {
   deleted_at : datetime2(0)
 }
 
+entity "visualization_controls" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  is_downloadable_as_csv : bit
+  has_search_row_limits : bit
+  search_row_limit_maximum : int
+  has_search_customizations : bit
+  has_fields_excluded_from_search : bit
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
 ' Define relationships
 access_grants }o--|| access_requests : access_grant_id
 datasets }o--|| access_grants : dataset_id
 datasets }o--|| dataset_fields : dataset_id
-datasets }o--|| taggings : taggable_id, tagging_type
+datasets }o--|| dataset_integrations : dataset_id
+datasets }o--|| taggings : taggable_id, tagging_type = 'Dataset'
 datasets |o--|| dataset_stewardships : dataset_id
 datasets }o--|| access_requests : dataset_id
+datasets }o--|| visualization_controls : dataset_id
 taggings ||--o{ tags : tag_id
 user_groups }o--|| dataset_stewardships : branch_id
 user_groups }o--|| dataset_stewardships : department_id
@@ -179,8 +211,8 @@ user_groups }o--|| user_group_memberships : branch_id
 user_groups }o--|| user_group_memberships : department_id
 user_groups }o--|| user_group_memberships : division_id
 user_groups }o--|| user_group_memberships : unit_id
-users }o--|| access_grants : owner_id
 users }o--|| access_grants : support_id
+users }o--|| access_grants : creator_id
 users }o--|| access_requests : requestor_id
 users }o--|| access_requests : denier_id
 users }o--|| access_requests : approver_id

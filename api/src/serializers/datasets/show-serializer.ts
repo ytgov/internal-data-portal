@@ -1,9 +1,13 @@
 import { pick } from "lodash"
 
-import { AccessGrant, AccessRequest, Dataset, User } from "@/models"
+import { AccessGrant, AccessRequest, Dataset, DatasetIntegration, User } from "@/models"
 import BaseSerializer from "@/serializers/base-serializer"
 
-export type DatasetShowView = Partial<Dataset> & {
+export type DatasetShowView = Omit<Partial<Dataset>, "integration"> & {
+  // associations
+  integration?: Partial<DatasetIntegration>
+
+  // magic fields
   currentUserAccessGrant: AccessGrant | null
   currentUserAccessRequest: AccessRequest | null
 }
@@ -21,31 +25,35 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
       return this.baseView({
         ...pick(this.record.dataValues, [
           "creatorId",
-          "subscriptionUrl",
-          "subscriptionAccessCode",
           "publishedAt",
           "deactivatedAt",
-          "status",
-          "errorCode",
-          "errorDetails",
           "ownerNotes",
         ]),
         creator: this.record.creator,
+        integration: pick(this.record.integration, [
+          "id",
+          "url",
+          "headerKey",
+          "headerValue",
+          "jmesPathTransform",
+        ]),
         visualizationControl: this.record.visualizationControl,
       })
     }
 
-    // TODO: might need to include subscriptionUrl in the future
-    // or in a "limited access" view
-
     return this.baseView()
   }
 
-  private baseView(extraAttributes: Partial<Dataset> = {}): DatasetShowView {
+  private baseView(
+    extraAttributes: Omit<Partial<Dataset>, "integration"> & {
+      integration?: Partial<DatasetIntegration>
+    } = {}
+  ): DatasetShowView {
     const currentUserAccessGrant = this.record.mostPermissiveAccessGrantFor(this.currentUser)
-    const currentUserAccessRequest = this.record.accessRequests?.filter(
-      (accessRequest) => accessRequest.requestorId == this.currentUser.id
-    )[0] || null
+    const currentUserAccessRequest =
+      this.record.accessRequests?.filter(
+        (accessRequest) => accessRequest.requestorId == this.currentUser.id
+      )[0] || null
 
     return {
       ...pick(this.record.dataValues, [

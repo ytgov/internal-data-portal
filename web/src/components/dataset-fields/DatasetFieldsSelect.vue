@@ -3,7 +3,7 @@
     :model-value="selectedDatasetFields"
     :items="datasetFields"
     :loading="isLoading"
-    label="Search Field Exclusions"
+    label="Dataset Fields"
     item-value="id"
     item-title="displayName"
     chips

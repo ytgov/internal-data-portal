@@ -1,41 +1,18 @@
-import { ModelStatic, NonAttribute, Op } from "sequelize"
+import { ModelStatic, Op } from "sequelize"
 
-import { Path } from "@/utils/deep-pick"
-
-import { Dataset, DatasetField, User } from "@/models"
+import { DatasetEntry, User } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
 import {
   datasetsAccessibleViaAccessGrantsBy,
   datasetsAccessibleViaOwner,
   datasetsWithApprovedAccessRequestsFor,
 } from "@/models/datasets"
-import DatasetsPolicy from "@/policies/datasets-policy"
 
 import BasePolicy from "@/policies/base-policy"
 
-export type DatasetFieldWithDataset = DatasetField & { dataset: NonAttribute<Dataset> }
-
-export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
-  private readonly datasetsPolicy: DatasetsPolicy
-
-  constructor(user: User, record: DatasetFieldWithDataset) {
-    super(user, record)
-    this.datasetsPolicy = new DatasetsPolicy(this.user, this.record.dataset)
-  }
-
-  create(): boolean {
-    return this.datasetsPolicy.update()
-  }
-
-  update(): boolean {
-    return this.datasetsPolicy.update()
-  }
-
-  destroy(): boolean {
-    return this.datasetsPolicy.update()
-  }
-
-  static applyScope(modelClass: ModelStatic<DatasetField>, user: User): ModelStatic<DatasetField> {
+export class DatasetEntriesPolicy extends BasePolicy<DatasetEntry> {
+  // TODO: move this code to a shared location, somewhere
+  static applyScope(modelClass: ModelStatic<DatasetEntry>, user: User): ModelStatic<DatasetEntry> {
     if (user.isSystemAdmin || user.isBusinessAnalyst) {
       return modelClass
     }
@@ -72,14 +49,6 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
       },
     })
   }
-
-  permittedAttributes(): Path[] {
-    return ["name", "displayName", "dataType", "description", "note", "isExcludedFromSearch"]
-  }
-
-  permittedAttributesForCreate(): Path[] {
-    return ["datasetId", ...this.permittedAttributes()]
-  }
 }
 
-export default DatasetFieldsPolicy
+export default DatasetEntriesPolicy

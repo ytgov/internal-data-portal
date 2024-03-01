@@ -1,10 +1,10 @@
-import db, { SearchFieldExclusion, User, VisualizationControl } from "@/models"
+import db, { DatasetField, User, VisualizationControl } from "@/models"
 
 import BaseService from "@/services/base-service"
 
-type SearchFieldExclusionsAttributes = Pick<SearchFieldExclusion, "datasetFieldId">[]
+type DatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromSearch">[]
 type Attributes = Partial<VisualizationControl> & {
-  searchFieldExclusionsAttributes?: SearchFieldExclusionsAttributes
+  searchExcludedDatasetFieldsAttributes?: DatasetFieldsAttributes
 }
 
 export class UpdateService extends BaseService {
@@ -20,28 +20,44 @@ export class UpdateService extends BaseService {
     return db.transaction(async () => {
       await this.visualizationControl.update(this.attributes)
 
-      const { searchFieldExclusionsAttributes } = this.attributes
-      if (searchFieldExclusionsAttributes) {
-        await this.bulkReplaceSearchFieldExclusions(searchFieldExclusionsAttributes)
+      const { searchExcludedDatasetFieldsAttributes } = this.attributes
+      if (searchExcludedDatasetFieldsAttributes) {
+        await this.bulkReplaceSearchExcludeOnDatasetFields(searchExcludedDatasetFieldsAttributes)
       }
 
       // TODO: log user action
 
       return this.visualizationControl.reload({
-        include: ["searchFieldExclusions"],
+        include: ["searchExcludedDatasetFields"],
       })
     })
   }
 
-  private async bulkReplaceSearchFieldExclusions(attributes: SearchFieldExclusionsAttributes) {
-    await SearchFieldExclusion.destroy({
-      where: { visualizationControlId: this.visualizationControl.id },
-    })
-    const secureAttributes = attributes.map((attributes) => ({
-      ...attributes,
-      visualizationControlId: this.visualizationControl.id,
-    }))
-    await SearchFieldExclusion.bulkCreate(secureAttributes)
+  private async bulkReplaceSearchExcludeOnDatasetFields(attributes: DatasetFieldsAttributes) {
+    await DatasetField.update(
+      {
+        isExcludedFromSearch: false,
+      },
+      {
+        where: {
+          datasetId: this.visualizationControl.datasetId,
+          isExcludedFromSearch: true,
+        },
+      }
+    )
+    const datasetFieldIds = attributes
+      .filter((attributes) => attributes.isExcludedFromSearch)
+      .map((attributes) => attributes.id)
+    await DatasetField.update(
+      {
+        isExcludedFromSearch: true,
+      },
+      {
+        where: {
+          id: datasetFieldIds,
+        },
+      }
+    )
   }
 }
 

@@ -24,7 +24,7 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.isDowloadableAsCsv"
+              v-model="visualizationControl.isDownloadableAsCsv"
               label="Allow Download to CSV?"
               @update:model-value="saveAndNotify"
             />
@@ -35,8 +35,8 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.hasSearchRestrictions"
-              label="Limit data view on search?"
+              v-model="visualizationControl.hasSearchCustomizations"
+              label="Enable search customization?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -53,8 +53,8 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.hasSearchFieldRestrictions"
-              label="Fields"
+              v-model="visualizationControl.hasFieldsExcludedFromSearch"
+              label="Exclude fields from search?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -63,13 +63,13 @@
             md="7"
             class="py-0"
           >
-            <SearchFieldExclusionsSelect
-              :model-value="searchFieldExclusionsDatasetFieldIds"
+            <DatasetFieldsSelect
+              :model-value="searchExcludedDatasetFieldsIds"
               :dataset-id="visualizationControl.datasetId"
               :is-saving="isLoading"
-              label="Fields"
+              label="Excluded Fields"
               variant="outlined"
-              @update:model-value="saveSearchFieldExclusionsAndNotify"
+              @update:model-value="saveSearchExcludedDatasetFieldsAndNotify"
             />
           </v-col>
         </v-row>
@@ -86,7 +86,7 @@
           >
             <v-checkbox
               v-model="visualizationControl.hasSearchRowLimits"
-              label="Rows"
+              label="Limit search results?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -97,7 +97,7 @@
           >
             <v-text-field
               v-model="visualizationControl.searchRowLimitMaximum"
-              label="Limit"
+              label="Max Results"
               type="number"
               variant="outlined"
               clearable
@@ -119,7 +119,7 @@ import useSnack from "@/use/use-snack"
 import useVisualizationControl from "@/use/use-visualization-control"
 
 import SaveStateProgress from "@/components/SaveStateProgress.vue"
-import SearchFieldExclusionsSelect from "@/components/search-field-exclusions/SearchFieldExclusionsSelect.vue"
+import DatasetFieldsSelect from "@/components/dataset-fields/DatasetFieldsSelect.vue"
 
 const props = defineProps({
   visualizationControlId: {
@@ -130,18 +130,17 @@ const props = defineProps({
 
 const { visualizationControlId } = toRefs(props)
 const { visualizationControl, save, isLoading } = useVisualizationControl(visualizationControlId)
-
-const searchFieldExclusionsDatasetFieldIds = computed(() => {
+const searchExcludedDatasetFieldsIds = computed(() => {
   if (isNil(visualizationControl.value)) {
     return []
   }
 
-  if (isNil(visualizationControl.value.searchFieldExclusions)) {
+  if (isNil(visualizationControl.value.searchExcludedDatasetFields)) {
     return []
   }
 
-  return visualizationControl.value.searchFieldExclusions.map(
-    (searchFieldExclusion) => searchFieldExclusion.datasetFieldId
+  return visualizationControl.value.searchExcludedDatasetFields.map(
+    (datasetField) => datasetField.id
   )
 })
 
@@ -162,15 +161,15 @@ async function saveAndNotify() {
 
 const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
 
-async function saveSearchFieldExclusionsAndNotify(datasetFieldIds: number[]) {
-  const searchFieldExclusionsAttributes = datasetFieldIds.map((datasetFieldId) => ({
-    visualizationControlId: props.visualizationControlId,
-    datasetFieldId,
+async function saveSearchExcludedDatasetFieldsAndNotify(datasetFieldIds: number[]) {
+  const searchExcludedDatasetFieldsAttributes = datasetFieldIds.map((datasetFieldId) => ({
+    id: datasetFieldId,
+    isExcludedFromSearch: true,
   }))
 
   try {
     await save({
-      searchFieldExclusionsAttributes,
+      searchExcludedDatasetFieldsAttributes,
     })
     snack.notify("Visualization properties saved", {
       color: "success",

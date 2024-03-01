@@ -80,8 +80,6 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
       ...(this.user.isSystemAdmin || this.user.isBusinessAnalyst ? ["ownerId"] : []),
       "name",
       "description",
-      "subscriptionUrl",
-      "subscriptionAccessCode",
       "isSpatialData",
       "isLiveData",
       "termsOfUse",

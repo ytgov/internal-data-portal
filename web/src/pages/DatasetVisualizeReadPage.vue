@@ -1,7 +1,6 @@
 <template>
-  TODO: build DatasetVisualizeReadPage
-
-  <v-progress-circular
+  <div class="d-flex justify-end">
+    <v-progress-circular
       v-if="isNil(dataset) || isNil(policy)"
       indeterminate
       color="primary"
@@ -20,6 +19,17 @@
     <template v-else>
       <!-- user does not have edit rights for dataset fields -->
     </template>
+  </div>
+
+  <v-spacer class="mt-6"/>
+  <v-skeleton-loader
+    v-if="isNil(dataset)"
+    type="table"
+  />
+  <DatasetEntriesTable
+    v-else
+    :dataset-id="dataset.id"
+  />
 </template>
 
 <script setup lang="ts">
@@ -28,6 +38,8 @@ import { isNil } from "lodash"
 
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 import { useDataset } from "@/use/use-dataset"
+
+import DatasetEntriesTable from "@/components/dataset-entries/DatasetEntriesTable.vue"
 
 const props = defineProps({
   slug: {

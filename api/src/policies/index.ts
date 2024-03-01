@@ -1,6 +1,8 @@
 export { AccessGrantsPolicy } from "./access-grants-policy"
 export { AccessRequestsPolicy } from "./access-requests-policy"
+export { DatasetEntriesPolicy } from "./dataset-entries-policy"
 export { DatasetFieldsPolicy } from "./dataset-fields-policy"
+export { DatasetIntegrationsPolicy } from "./dataset-integrations-policy"
 export { DatasetsPolicy } from "./datasets-policy"
 export { DatasetStewardshipsPolicy } from "./dataset-stewardships-policy"
 export { UserGroupsPolicy } from "./user-groups-policy"

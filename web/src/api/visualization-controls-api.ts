@@ -1,34 +1,27 @@
 import http from "@/api/http-client"
 
 import { type Dataset } from "@/api/datasets-api"
-
-export type SearchFieldExclusion = {
-  id: number
-  visualizationControlId: number
-  datasetFieldId: number
-  createdAt: string
-  updatedAt: string
-}
+import { type DatasetField } from "@/api/dataset-fields-api"
 
 export type VisualizationControl = {
   id: number
   datasetId: Dataset["id"]
-  isDowloadableAsCsv: boolean
-  hasSearchRestrictions: boolean
-  hasSearchFieldRestrictions: boolean
+  isDownloadableAsCsv: boolean
+  hasSearchCustomizations: boolean
+  hasFieldsExcludedFromSearch: boolean
   hasSearchRowLimits: boolean
   searchRowLimitMaximum: number | null
   createdAt: string
   updatedAt: string
 
-  // associations
-  searchFieldExclusions: SearchFieldExclusion[]
+  // Associations
+  searchExcludedDatasetFields: DatasetField[]
 }
 
-export type SearchFieldExclusionsAttributes = Pick<SearchFieldExclusion, "datasetFieldId">[]
+export type searchExcludedDatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromSearch">
 
 export type VisualizationControlUpdate = Partial<VisualizationControl> & {
-  searchFieldExclusionsAttributes?: SearchFieldExclusionsAttributes
+  searchExcludedDatasetFieldsAttributes: searchExcludedDatasetFieldsAttributes[]
 }
 
 export const visualizationControlsApi = {

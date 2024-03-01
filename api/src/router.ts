@@ -22,7 +22,9 @@ import {
   AccessRequests,
   AccessRequestsController,
   CurrentUserController,
+  DatasetEntriesController,
   DatasetFieldsController,
+  DatasetIntegrationsController,
   DatasetsController,
   DatasetStewardshipsController,
   QaScenarios,
@@ -80,6 +82,8 @@ router
   .route("/api/access-requests/:accessRequestId/revoke")
   .post(AccessRequests.RevokeController.create)
 
+router.route("/api/dataset-entries").get(DatasetEntriesController.index)
+
 router
   .route("/api/dataset-fields")
   .get(DatasetFieldsController.index)
@@ -88,6 +92,12 @@ router
   .route("/api/dataset-fields/:datasetFieldId")
   .patch(DatasetFieldsController.update)
   .delete(DatasetFieldsController.destroy)
+
+router.route("/api/dataset-integrations").post(DatasetIntegrationsController.create)
+router
+  .route("/api/dataset-integrations/:datasetIntegrationId")
+  .get(DatasetIntegrationsController.show)
+  .patch(DatasetIntegrationsController.update)
 
 router
   .route("/api/dataset-stewardships/:datasetStewardshipId")

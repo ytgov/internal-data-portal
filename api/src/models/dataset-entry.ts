@@ -15,27 +15,19 @@ import {
 import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
+import { DatasetFieldDataTypes } from "@/models/dataset-field"
 
-// Keep in sync with web/src/api/dataset-fields-api.ts
-export enum DatasetFieldDataTypes {
-  INTEGER = "integer",
-  TEXT = "text",
-}
+export type DatasetEntryRawJsonDataType = Record<string, unknown>
+export type DatasetEntryJsonDataType = Record<string, DatasetFieldDataTypes>
 
-export class DatasetField extends Model<
-  InferAttributes<DatasetField>,
-  InferCreationAttributes<DatasetField>
+export class DatasetEntry extends Model<
+  InferAttributes<DatasetEntry>,
+  InferCreationAttributes<DatasetEntry>
 > {
-  static readonly DataTypes = DatasetFieldDataTypes
-
   declare id: CreationOptional<number>
   declare datasetId: ForeignKey<Dataset["id"]>
-  declare name: string
-  declare displayName: string
-  declare dataType: DatasetFieldDataTypes
-  declare description: CreationOptional<string | null>
-  declare note: CreationOptional<string | null>
-  declare isExcludedFromSearch: CreationOptional<boolean>
+  declare rawJsonData: DatasetEntryRawJsonDataType
+  declare jsonData: DatasetEntryJsonDataType
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>
@@ -50,7 +42,7 @@ export class DatasetField extends Model<
   declare dataset?: NonAttribute<Dataset>
 
   declare static associations: {
-    dataset: Association<DatasetField, Dataset>
+    dataset: Association<DatasetEntry, Dataset>
   }
 
   static establishAssociations() {
@@ -58,7 +50,7 @@ export class DatasetField extends Model<
   }
 }
 
-DatasetField.init(
+DatasetEntry.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -74,33 +66,31 @@ DatasetField.init(
         key: "id",
       },
     },
-    name: {
-      type: DataTypes.STRING(255),
+    rawJsonData: {
+      type: DataTypes.TEXT,
       allowNull: false,
-    },
-    displayName: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    dataType: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      validate: {
-        isIn: [Object.values(DatasetFieldDataTypes)],
+      get() {
+        const value = this.getDataValue("rawJsonData") as unknown as string
+        return JSON.parse(value)
+      },
+      set(value: string) {
+        this.setDataValue(
+          "rawJsonData",
+          JSON.stringify(value) as unknown as DatasetEntryRawJsonDataType
+        )
       },
     },
-    description: {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
-    },
-    note: {
+    jsonData: {
       type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    isExcludedFromSearch: {
-      type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      get() {
+        const value = this.getDataValue("jsonData") as unknown as string
+        return JSON.parse(value)
+      },
+      set(value: string) {
+        // TODO: assert value matches schema
+        this.setDataValue("jsonData", JSON.stringify(value) as unknown as DatasetEntryJsonDataType)
+      },
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -121,23 +111,10 @@ DatasetField.init(
     sequelize,
     indexes: [
       {
-        unique: true,
-        fields: ["dataset_id", "name"],
-        name: "unique_dataset_fields_on_dataset_id_and_name",
-        where: {
-          deleted_at: null,
-        },
-      },
-      {
-        unique: true,
-        fields: ["dataset_id", "display_name"],
-        name: "unique_dataset_fields_on_dataset_id_and_display_name",
-        where: {
-          deleted_at: null,
-        },
+        fields: ["datasetId"],
       },
     ],
   }
 )
 
-export default DatasetField
+export default DatasetEntry

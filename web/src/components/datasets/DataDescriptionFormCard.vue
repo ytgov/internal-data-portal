@@ -43,10 +43,15 @@
                 md="4"
                 class="d-flex justify-center mt-3"
               >
-                <AddApiDialog
-                  v-model="dataset.subscriptionUrl"
-                  @added="saveAndNotify"
-                />
+                <v-btn
+                  color="primary"
+                  :to="{
+                    name: 'DatasetApiManagePage',
+                    params: { slug },
+                  }"
+                >
+                  {{ !isNil(dataset.integration.id) ? "Manage API Link" : "Add API Link" }}
+                </v-btn>
               </v-col>
             </v-row>
             <v-row>
@@ -165,7 +170,6 @@ import { useDataset } from "@/use/use-dataset"
 
 import DatePicker from "@/components/DatePicker.vue"
 import SaveStateProgress from "@/components/SaveStateProgress.vue"
-import AddApiDialog from "@/components/datasets/data-description-form-card/AddApiDialog.vue"
 
 const props = defineProps({
   slug: {
