@@ -17,6 +17,7 @@ import sequelize from "@/db/db-client"
 import Dataset from "@/models/dataset"
 import { DatasetFieldDataTypes } from "@/models/dataset-field"
 
+export type DatasetEntryRawJsonDataType = Record<string, unknown>
 export type DatasetEntryJsonDataType = Record<string, DatasetFieldDataTypes>
 
 export class DatasetEntry extends Model<
@@ -25,7 +26,7 @@ export class DatasetEntry extends Model<
 > {
   declare id: CreationOptional<number>
   declare datasetId: ForeignKey<Dataset["id"]>
-  declare rawJsonData: string
+  declare rawJsonData: DatasetEntryRawJsonDataType
   declare jsonData: DatasetEntryJsonDataType
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
@@ -68,6 +69,16 @@ DatasetEntry.init(
     rawJsonData: {
       type: DataTypes.TEXT,
       allowNull: false,
+      get() {
+        const value = this.getDataValue("rawJsonData") as unknown as string
+        return JSON.parse(value)
+      },
+      set(value: string) {
+        this.setDataValue(
+          "rawJsonData",
+          JSON.stringify(value) as unknown as DatasetEntryRawJsonDataType
+        )
+      },
     },
     jsonData: {
       type: DataTypes.TEXT,

@@ -22,6 +22,9 @@ export enum DatasetIntegrationStatusTypes {
   ERRORED = "errored",
 }
 
+export type DatasetIntegrationRawJsonDataType = Record<string, unknown>
+export type DatasetIntegrationParsedJsonDataType = Record<string, unknown>[]
+
 export class DatasetIntegration extends Model<
   InferAttributes<DatasetIntegration>,
   InferCreationAttributes<DatasetIntegration>
@@ -34,8 +37,8 @@ export class DatasetIntegration extends Model<
   declare headerKey: CreationOptional<string | null>
   declare headerValue: CreationOptional<string | null>
   declare jmesPathTransform: CreationOptional<string | null>
-  declare rawJsonData: CreationOptional<string | null>
-  declare parsedJsonData: CreationOptional<string | null>
+  declare rawJsonData: CreationOptional<DatasetIntegrationRawJsonDataType | null>
+  declare parsedJsonData: CreationOptional<DatasetIntegrationParsedJsonDataType | null>
   declare status: DatasetIntegrationStatusTypes
   declare errorCode: CreationOptional<string | null>
   declare errorDetails: CreationOptional<string | null>
@@ -98,10 +101,30 @@ DatasetIntegration.init(
     rawJsonData: {
       type: DataTypes.TEXT,
       allowNull: true,
+      get() {
+        const value = this.getDataValue("rawJsonData") as unknown as string
+        return JSON.parse(value)
+      },
+      set(value: string) {
+        this.setDataValue(
+          "rawJsonData",
+          JSON.stringify(value) as unknown as DatasetIntegrationRawJsonDataType
+        )
+      },
     },
     parsedJsonData: {
       type: DataTypes.TEXT,
       allowNull: true,
+      get() {
+        const value = this.getDataValue("parsedJsonData") as unknown as string
+        return JSON.parse(value)
+      },
+      set(value: string) {
+        this.setDataValue(
+          "parsedJsonData",
+          JSON.stringify(value) as unknown as DatasetIntegrationParsedJsonDataType
+        )
+      },
     },
     status: {
       type: DataTypes.STRING(100),

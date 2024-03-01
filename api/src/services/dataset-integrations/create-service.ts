@@ -2,9 +2,12 @@ import { isNil } from "lodash"
 import axios from "axios"
 
 import { DatasetIntegration, User } from "@/models"
+import {
+  DatasetIntegrationRawJsonDataType,
+  DatasetIntegrationStatusTypes,
+} from "@/models/dataset-integration"
 
 import BaseService from "@/services/base-service"
-import { DatasetIntegrationStatusTypes } from "@/models/dataset-integration"
 
 type Attributes = Partial<DatasetIntegration>
 
@@ -35,7 +38,7 @@ export class CreateService extends BaseService {
     }
 
     let status: DatasetIntegrationStatusTypes
-    let rawJsonData: string | null = null
+    let rawJsonData: DatasetIntegrationRawJsonDataType | null = null
     let lastSuccessAt: Date | null = null
     try {
       rawJsonData = await this.fetchRawIntegrationData(url, headers)
@@ -62,12 +65,12 @@ export class CreateService extends BaseService {
   private async fetchRawIntegrationData(
     url: string,
     headers?: Record<string, string>
-  ): Promise<string> {
+  ): Promise<DatasetIntegrationRawJsonDataType> {
     const { data } = await axios.get(url, {
       headers,
     })
 
-    return JSON.stringify(data)
+    return data
   }
 }
 
