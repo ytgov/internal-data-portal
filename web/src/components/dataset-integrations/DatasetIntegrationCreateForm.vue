@@ -77,6 +77,7 @@
     </v-row>
     <v-row>
       <v-col>
+        <!-- TODO: enforce presence and array-ness of result -->
         <v-textarea
           :model-value="datasetIntegration.parsedJsonData"
           label="API Parsed Result Preview"
