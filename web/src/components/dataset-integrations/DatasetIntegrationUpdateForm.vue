@@ -172,7 +172,8 @@ watch(
       isNil(datasetIntegration.value.jmesPathTransform) ||
       isEmpty(datasetIntegration.value.jmesPathTransform)
     ) {
-      return null
+      datasetIntegration.value.parsedJsonData = datasetIntegration.value.rawJsonData
+      return
     }
 
     try {
