@@ -38,9 +38,6 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
       })
     }
 
-    // TODO: might need to include subscriptionUrl in the future
-    // or in a "limited access" view
-
     return this.baseView()
   }
 

@@ -1,12 +1,6 @@
 <template>
   <v-card>
-    <v-card-title class="d-flex justify-space-between align-center">
-      Data Access
-      <SaveStateProgress
-        :saving="isLoading"
-        @click="saveAndNotify"
-      />
-    </v-card-title>
+    <v-card-title> Data Access </v-card-title>
     <v-card-text>
       <v-skeleton-loader
         v-if="isNil(dataset)"
@@ -19,20 +13,21 @@
         <v-row>
           <v-col cols="12">
             <v-text-field
-              v-model="dataset.subscriptionUrl"
+              :model-value="dataset.integration.url"
               label="API URL"
+              append-inner-icon="mdi-lock"
               variant="outlined"
-              @update:model-value="debouncedSaveAndNotify"
+              readonly
             />
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="12">
-            <v-text-field
-              v-model="dataset.subscriptionAccessCode"
+            <PasswordTextField
+              :model-value="dataset.integration.headerValue"
               label="Subscription License"
               variant="outlined"
-              @update:model-value="debouncedSaveAndNotify"
+              readonly
             />
           </v-col>
         </v-row>
@@ -43,12 +38,11 @@
 
 <script lang="ts" setup>
 import { toRefs } from "vue"
-import { debounce, isNil } from "lodash"
+import { isNil } from "lodash"
 
 import useDataset from "@/use/use-dataset"
-import useSnack from "@/use/use-snack"
 
-import SaveStateProgress from "@/components/SaveStateProgress.vue"
+import PasswordTextField from "@/components/PasswordTextField.vue"
 
 const props = defineProps({
   slug: {
@@ -57,23 +51,6 @@ const props = defineProps({
   },
 })
 
-const snack = useSnack()
-
 const { slug } = toRefs(props)
-const { dataset, isLoading, save } = useDataset(slug)
-
-async function saveAndNotify() {
-  try {
-    await save()
-    snack.notify("Dataset saved", {
-      color: "success",
-    })
-  } catch (error) {
-    snack.notify("Error saving dataset", {
-      color: "error",
-    })
-  }
-}
-
-const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
+const { dataset } = useDataset(slug)
 </script>
