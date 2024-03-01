@@ -8,6 +8,11 @@ import DatasetsPolicy from "@/policies/datasets-policy"
 import BasePolicy from "@/policies/base-policy"
 
 export class DatasetIntegrationsPolicy extends BasePolicy<DatasetIntegration> {
+  // TODO: investigate if this is correct
+  show(): boolean {
+    return this.datasetsPolicy.update()
+  }
+
   create(): boolean {
     return this.datasetsPolicy.update()
   }

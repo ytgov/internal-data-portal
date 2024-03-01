@@ -45,7 +45,7 @@
     <v-row>
       <v-col>
         <v-textarea
-          :model-value="datasetIntegration.rawJsonData"
+          :model-value="prettifiedRawJsonData"
           label="API Result Preview"
           append-inner-icon="mdi-lock"
           rows="10"
@@ -80,7 +80,7 @@
       <v-col>
         <!-- TODO: enforce presence and array-ness of result -->
         <v-textarea
-          :model-value="datasetIntegration.parsedJsonData"
+          :model-value="prettifiedParsedJsonData"
           label="API Parsed Result Preview"
           hint="Result must be an array for API to integrate correctly."
           append-inner-icon="mdi-lock"
@@ -97,7 +97,7 @@
           :variant="isPersisted ? 'elevated' : 'outlined'"
           :loading="isLoading"
           color="primary"
-          @click="saveAndReturn"
+          @click="updateDatasetIntegration"
         >
           Save and Return
         </v-btn>
@@ -107,8 +107,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, ref, watch } from "vue"
-import { useRouter } from "vue-router"
+import { computed, ref, watch } from "vue"
 import { isEmpty, isNil, pick } from "lodash"
 import jmespath from "jmespath"
 
@@ -123,9 +122,14 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  datasetIntegrationId: {
+    type: Number,
+    default: null,
+  },
 })
 
-const router = useRouter()
+const emit = defineEmits(["completed"])
+
 const snack = useSnack()
 
 const isLoading = ref(false)
@@ -134,6 +138,28 @@ const datasetIntegration = ref<Partial<DatasetIntegration>>({
   datasetId: props.datasetId,
 })
 const isPersisted = computed(() => !isNil(datasetIntegration.value.id))
+const prettifiedRawJsonData = computed(() => {
+  if (isNil(datasetIntegration.value.rawJsonData)) {
+    return ""
+  }
+
+  try {
+    return JSON.stringify(JSON.parse(datasetIntegration.value.rawJsonData), null, 2)
+  } catch (error) {
+    return JSON.stringify(error, null, 2)
+  }
+})
+const prettifiedParsedJsonData = computed(() => {
+  if (isNil(datasetIntegration.value.parsedJsonData)) {
+    return ""
+  }
+
+  try {
+    return JSON.stringify(JSON.parse(datasetIntegration.value.parsedJsonData), null, 2)
+  } catch (error) {
+    return JSON.stringify(error, null, 2)
+  }
+})
 
 watch(
   () => props.datasetId,
@@ -141,6 +167,17 @@ watch(
     datasetIntegration.value = {
       datasetId: newDatasetId,
     }
+  }
+)
+
+watch(
+  () => props.datasetIntegrationId,
+  async (newDatasetIntegrationId) => {
+    if (isNil(newDatasetIntegrationId)) {
+      return
+    }
+
+    await fetchDatasetIntegration()
   }
 )
 
@@ -162,12 +199,31 @@ watch(
         rawJsonDataAsJson,
         datasetIntegration.value.jmesPathTransform
       )
-      datasetIntegration.value.parsedJsonData = JSON.stringify(parsedResult, null, 2)
+      datasetIntegration.value.parsedJsonData = JSON.stringify(parsedResult)
     } catch (error) {
-      datasetIntegration.value.parsedJsonData = JSON.stringify(error, null, 2)
+      datasetIntegration.value.parsedJsonData = JSON.stringify(error)
     }
   }
 )
+
+async function fetchDatasetIntegration() {
+  if (isNil(props.datasetIntegrationId)) {
+    throw new Error("id is required")
+  }
+
+  isLoading.value = true
+  try {
+    const { datasetIntegration: newDatasetIntegration } = await datasetIntegrationsApi.get(
+      props.datasetIntegrationId
+    )
+    datasetIntegration.value = newDatasetIntegration
+  } catch (error) {
+    console.error("Failed to fetch dataset integration:", error)
+    throw error
+  } finally {
+    isLoading.value = false
+  }
+}
 
 async function createIntegration() {
   if (!isValid.value) {
@@ -192,7 +248,11 @@ async function createIntegration() {
       color: "success",
     })
   } catch (error) {
-    datasetIntegration.value.rawJsonData = JSON.stringify(error.message, null, 2)
+    if (error instanceof Error) {
+      datasetIntegration.value.rawJsonData = JSON.stringify(error.message)
+    } else {
+      datasetIntegration.value.rawJsonData = `Unknown error occurred: ${error}`
+    }
     snack.notify("Error creating dataset integration.", {
       color: "error",
     })
@@ -201,7 +261,7 @@ async function createIntegration() {
   }
 }
 
-async function saveAndReturn() {
+async function updateDatasetIntegration() {
   if (!isValid.value) {
     snack.notify("Please fill out all required fields", {
       color: "error",
@@ -218,24 +278,19 @@ async function saveAndReturn() {
   }
 
   isLoading.value = true
+  const attributes = pick(datasetIntegration.value, ["jmesPathTransform"])
   try {
     const { datasetIntegration: newDatasetIntegration } = await datasetIntegrationsApi.update(
       datasetIntegrationId,
-      datasetIntegration.value
+      attributes
     )
     datasetIntegration.value = newDatasetIntegration
     snack.notify("Dataset integration saved! Redirecting ...", {
       color: "success",
     })
-
-    await nextTick()
-
-    router.push({
-      name: "DatasetDescriptionManagePage",
-      params: { slug: props.slug },
-    })
+    emit("completed")
   } catch (error) {
-    datasetIntegration.value.rawJsonData = JSON.stringify(error, null, 2)
+    datasetIntegration.value.rawJsonData = JSON.stringify(error)
     snack.notify("Error saving dataset integration", {
       color: "error",
     })

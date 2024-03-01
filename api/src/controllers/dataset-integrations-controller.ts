@@ -7,6 +7,22 @@ import { CreateService, UpdateService } from "@/services/dataset-integrations"
 import BaseController from "@/controllers/base-controller"
 
 export class DatasetIntegrationsController extends BaseController {
+  async show() {
+    const datasetIntegration = await this.loadDatasetIntegration()
+    if (isNil(datasetIntegration)) {
+      return this.response.status(404).json({ message: "dataset integration not found." })
+    }
+
+    const policy = this.buildPolicy(datasetIntegration)
+    if (!policy.show()) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to view this visualization control." })
+    }
+
+    return this.response.status(200).json({ datasetIntegration })
+  }
+
   async create() {
     const datasetIntegration = await this.buildDatasetIntegration()
     if (isNil(datasetIntegration)) {
@@ -25,7 +41,9 @@ export class DatasetIntegrationsController extends BaseController {
       const datasetIntegration = await CreateService.perform(permittedAttributes, this.currentUser)
       return this.response.status(201).json({ datasetIntegration })
     } catch (error) {
-      return this.response.status(422).json({ message: `Dataset integration creation failed: ${error}` })
+      return this.response
+        .status(422)
+        .json({ message: `Dataset integration creation failed: ${error}` })
     }
   }
 
@@ -51,7 +69,9 @@ export class DatasetIntegrationsController extends BaseController {
       )
       return this.response.status(200).json({ datasetIntegration: updatedDatasetIntegration })
     } catch (error) {
-      return this.response.status(422).json({ message: `Dataset integration update failed: ${error}` })
+      return this.response
+        .status(422)
+        .json({ message: `Dataset integration update failed: ${error}` })
     }
   }
 

@@ -27,9 +27,11 @@
           v-if="isNil(dataset)"
           type="card"
         />
-        <LinkExternalApiForm
+        <DatasetIntegrationUpsertForm
           v-else
           :dataset-id="dataset.id"
+          :dataset-integration-id="dataset.datasetIntegration?.id"
+          @completed="returnToParentPage"
         />
       </v-col>
     </v-row>
@@ -38,12 +40,13 @@
 
 <script lang="ts" setup>
 import { toRefs } from "vue"
+import { useRouter } from "vue-router"
 import { isNil } from "lodash"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useDataset from "@/use/use-dataset"
 
-import LinkExternalApiForm from "@/components/dataset-integrations/DatasetIntegrationCreateForm.vue"
+import DatasetIntegrationUpsertForm from "@/components/dataset-integrations/DatasetIntegrationUpsertForm.vue"
 
 const props = defineProps({
   slug: {
@@ -54,6 +57,14 @@ const props = defineProps({
 
 const { slug } = toRefs(props)
 const { dataset } = useDataset(slug)
+const router = useRouter()
+
+function returnToParentPage() {
+  router.push({
+    name: "DatasetDescriptionManagePage",
+    params: { slug: props.slug },
+  })
+}
 
 const { setBreadcrumbs } = useBreadcrumbs()
 

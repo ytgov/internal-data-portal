@@ -40,6 +40,12 @@ export const datasetIntegrationsApi = {
     })
     return data
   },
+  async get(datasetIntegrationId: number): Promise<{
+    datasetIntegration: DatasetIntegration
+  }> {
+    const { data } = await http.get(`/api/dataset-integrations/${datasetIntegrationId}`)
+    return data
+  },
   async create(attributes: Partial<DatasetIntegration>): Promise<{
     datasetIntegration: DatasetIntegration
   }> {
