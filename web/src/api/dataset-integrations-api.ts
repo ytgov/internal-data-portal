@@ -8,6 +8,9 @@ export enum DatasetIntegrationStatusTypes {
   ERRORED = "errored",
 }
 
+export type DatasetIntegrationRawJsonDataType = Record<string, unknown>
+export type DatasetIntegrationParsedJsonDataType = Record<string, unknown>[]
+
 export type DatasetIntegration = {
   id: number
   datasetId: Dataset["id"]
@@ -15,8 +18,8 @@ export type DatasetIntegration = {
   headerKey: string | null
   headerValue: string | null
   jmesPathTransform: string | null
-  rawJsonData: string | null
-  parsedJsonData: string | null
+  rawJsonData: DatasetIntegrationRawJsonDataType | null
+  parsedJsonData: DatasetIntegrationParsedJsonDataType | null
   status: string
   errorCode: string | null
   errorDetails: string | null

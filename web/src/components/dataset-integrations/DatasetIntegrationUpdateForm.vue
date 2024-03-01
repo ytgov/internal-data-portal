@@ -134,7 +134,7 @@ const prettifiedRawJsonData = computed(() => {
   }
 
   try {
-    return JSON.stringify(JSON.parse(datasetIntegration.value.rawJsonData), null, 2)
+    return JSON.stringify(datasetIntegration.value.rawJsonData, null, 2)
   } catch (error) {
     return JSON.stringify(error, null, 2)
   }
@@ -145,7 +145,7 @@ const prettifiedParsedJsonData = computed(() => {
   }
 
   try {
-    return JSON.stringify(JSON.parse(datasetIntegration.value.parsedJsonData), null, 2)
+    return JSON.stringify(datasetIntegration.value.parsedJsonData, null, 2)
   } catch (error) {
     return JSON.stringify(error, null, 2)
   }
@@ -172,19 +172,19 @@ watch(
       isNil(datasetIntegration.value.jmesPathTransform) ||
       isEmpty(datasetIntegration.value.jmesPathTransform)
     ) {
+      // @ts-expect-error - I'm passing an invalid type for convenience
       datasetIntegration.value.parsedJsonData = datasetIntegration.value.rawJsonData
       return
     }
 
     try {
-      const rawJsonDataAsJson = JSON.parse(datasetIntegration.value.rawJsonData)
       const parsedResult = jmespath.search(
-        rawJsonDataAsJson,
+        datasetIntegration.value.rawJsonData,
         datasetIntegration.value.jmesPathTransform
       )
-      datasetIntegration.value.parsedJsonData = JSON.stringify(parsedResult)
+      datasetIntegration.value.parsedJsonData = parsedResult
     } catch (error) {
-      datasetIntegration.value.parsedJsonData = JSON.stringify(error)
+      console.error("Failed to search JSON data:", error)
     }
   }
 )
@@ -246,8 +246,7 @@ async function updateDatasetIntegration() {
       color: "success",
     })
   } catch (error) {
-    datasetIntegration.value.rawJsonData = JSON.stringify(error)
-    snack.notify("Error saving dataset integration", {
+    snack.notify(`Error saving dataset integration: ${error}`, {
       color: "error",
     })
   } finally {

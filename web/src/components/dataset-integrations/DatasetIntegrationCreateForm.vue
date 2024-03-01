@@ -103,12 +103,7 @@ async function createIntegration() {
     })
     emit("completed")
   } catch (error) {
-    if (error instanceof Error) {
-      datasetIntegration.value.rawJsonData = JSON.stringify(error.message)
-    } else {
-      datasetIntegration.value.rawJsonData = `Unknown error occurred: ${error}`
-    }
-    snack.notify("Error creating dataset integration.", {
+    snack.notify(`Error creating dataset integration: ${error}.`, {
       color: "error",
     })
   } finally {
