@@ -24,6 +24,7 @@ import {
   CurrentUserController,
   DatasetEntriesController,
   DatasetFieldsController,
+  DatasetIntegrationsController,
   DatasetsController,
   DatasetStewardshipsController,
   PreviewController,
@@ -92,6 +93,11 @@ router
   .route("/api/dataset-fields/:datasetFieldId")
   .patch(DatasetFieldsController.update)
   .delete(DatasetFieldsController.destroy)
+
+router.route("/api/dataset-integrations").post(DatasetIntegrationsController.create)
+router
+  .route("/api/dataset-integrations/:datasetIntegrationId")
+  .patch(DatasetIntegrationsController.update)
 
 router
   .route("/api/dataset-stewardships/:datasetStewardshipId")
