@@ -3,11 +3,14 @@ import http from "@/api/http-client"
 import { Dataset } from "@/api/datasets-api"
 import { DatasetFieldDataTypes } from "@/api/dataset-fields-api"
 
+export type DatasetEntryRawJsonDataType = Record<string, unknown>
+export type DatasetEntryJsonDataType = Record<string, DatasetFieldDataTypes>
+
 export type DatasetEntry = {
   id: number
   datasetId: Dataset["id"]
-  // datasetSchemaId: ???
-  data: Record<string, DatasetFieldDataTypes>
+  rawJsonData: DatasetEntryRawJsonDataType
+  jsonData: DatasetEntryJsonDataType
   createdAt: string
   updatedAt: string
 }

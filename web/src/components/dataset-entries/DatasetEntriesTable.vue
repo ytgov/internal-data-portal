@@ -3,7 +3,7 @@
     v-model:items-per-page="itemsPerPage"
     v-model:page="page"
     :headers="headers"
-    :items="datasetEntries"
+    :items="datasetEntriesData"
     :items-length="totalCount"
     :loading="isLoadingDatasetFields || isLoadingDatasetEntries"
     class="elevation-1"
@@ -16,7 +16,7 @@
 import { computed, ref } from "vue"
 
 import useDatasetFields from "@/use/use-dataset-fields"
-import useDatasetEntries from "@/use/use-dataset-entries"
+import useDatasetEntries, { DatasetEntry } from "@/use/use-dataset-entries"
 
 const props = defineProps({
   datasetId: {
@@ -33,7 +33,7 @@ const datasetFieldsQuery = computed(() => ({
     datasetId: props.datasetId,
   },
   // TODO: figure out a better solution than using max page size
-  perPage: 1000, // max field size
+  perPage: 1000, // max page size
 }))
 
 const { datasetFields, isLoading: isLoadingDatasetFields } = useDatasetFields(datasetFieldsQuery)
@@ -59,4 +59,10 @@ const {
   totalCount,
   isLoading: isLoadingDatasetEntries,
 } = useDatasetEntries(datasetEntriesQuery)
+
+const datasetEntriesData = computed<DatasetEntry["jsonData"][]>(() => {
+  return datasetEntries.value.map(({ jsonData }) => {
+    return jsonData
+  })
+})
 </script>
