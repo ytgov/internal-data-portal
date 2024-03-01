@@ -43,7 +43,7 @@ export class UpdateService extends BaseService {
         status = DatasetIntegrationStatusTypes.OK
         lastSuccessAt = new Date()
       } catch (error) {
-        throw new Error(`Failed to estblish integration with ${url}: ${error}`)
+        throw new Error(`Failed to establish integration with ${url}: ${error}`)
       }
     }
 
