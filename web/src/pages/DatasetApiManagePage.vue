@@ -36,6 +36,7 @@
         <DatasetIntegrationCreateForm
           v-else
           :dataset-id="dataset.id"
+          @completed="refresh"
         />
       </v-col>
     </v-row>
@@ -61,7 +62,7 @@ const props = defineProps({
 })
 
 const { slug } = toRefs(props)
-const { dataset } = useDataset(slug)
+const { dataset, refresh } = useDataset(slug)
 const router = useRouter()
 
 function returnToParentPage() {

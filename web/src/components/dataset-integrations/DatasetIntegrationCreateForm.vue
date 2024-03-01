@@ -60,6 +60,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(["completed"])
+
 const snack = useSnack()
 
 const isLoading = ref(false)
@@ -99,6 +101,7 @@ async function createIntegration() {
     snack.notify("Dataset integration created", {
       color: "success",
     })
+    emit("completed")
   } catch (error) {
     if (error instanceof Error) {
       datasetIntegration.value.rawJsonData = JSON.stringify(error.message)
