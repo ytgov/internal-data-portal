@@ -25,10 +25,6 @@ export class DatasetIntegrationsController extends BaseController {
 
   async create() {
     const datasetIntegration = await this.buildDatasetIntegration()
-    if (isNil(datasetIntegration)) {
-      return this.response.status(404).json({ message: "Dataset not found." })
-    }
-
     const policy = this.buildPolicy(datasetIntegration)
     if (!policy.create()) {
       return this.response
@@ -75,20 +71,18 @@ export class DatasetIntegrationsController extends BaseController {
     }
   }
 
-  private async buildDatasetIntegration(): Promise<DatasetIntegration | null> {
+  private async buildDatasetIntegration(): Promise<DatasetIntegration> {
     const datasetIntegration = DatasetIntegration.build(this.request.body)
-    if (isNil(datasetIntegration)) return null
 
     const { datasetId } = this.request.body
-    if (isNil(datasetId)) return null
+    if (isNil(datasetId)) return datasetIntegration
 
     const dataset = await Dataset.findByPk(datasetId)
-    if (isNil(dataset)) return null
+    if (isNil(dataset)) return datasetIntegration
 
     datasetIntegration.dataset = dataset
 
-    // TODO: figure out how to make this type cast unneccessary
-    return datasetIntegration as DatasetIntegration
+    return datasetIntegration
   }
 
   private async loadDatasetIntegration(): Promise<DatasetIntegration | null> {
