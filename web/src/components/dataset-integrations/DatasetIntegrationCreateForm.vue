@@ -1,20 +1,12 @@
 <template>
-  <!-- TODO: make the skeleton loader an external component that matches the form -->
-  <v-skeleton-loader
-    v-if="isNil(dataset)"
-    type="card"
-  />
-  <v-form
-    v-else
-    @submit.prevent="saveAndReturn"
-  >
+  <v-form @submit.prevent="saveAndReturn">
     <v-row>
       <v-col
         cols="12"
         md="6"
       >
         <v-text-field
-          v-model="dataset.externalApiUrl"
+          v-model="datasetIntegration.url"
           label="API Link"
           variant="outlined"
         />
@@ -26,7 +18,7 @@
         md="6"
       >
         <v-text-field
-          v-model="dataset.externalApiHeaderKey"
+          v-model="datasetIntegration.headerKey"
           label="Header Key"
           variant="outlined"
         />
@@ -38,7 +30,7 @@
         md="6"
       >
         <PasswordTextField
-          v-model="dataset.externalApiHeaderValue"
+          v-model="datasetIntegration.headerValue"
           label="Header Value"
           placeholder="Enter your access token"
           variant="outlined"
@@ -65,7 +57,7 @@
       >
         <h3>API Result Preview</h3>
         <v-textarea
-          :model-value="apiResultPreview"
+          :model-value="datasetIntegration.rawJsonData"
           rows="10"
           variant="outlined"
           readonly
@@ -78,7 +70,7 @@
         md="6"
       >
         <v-text-field
-          v-model="externalApiJmesPathParsingExpression"
+          v-model="datasetIntegration.jmesPathTransform"
           label="JMESPath Parsing Expression"
           placeholder="e.g. divisions"
           variant="outlined"
@@ -104,7 +96,7 @@
       >
         <h3>API Parsed Result Preview</h3>
         <v-textarea
-          :model-value="apiParsedResultPreview"
+          :model-value="datasetIntegration.parsedJsonData"
           hint="Result must be an array for API to integrate correctly."
           rows="10"
           variant="outlined"
@@ -131,75 +123,84 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, toRefs } from "vue"
+import { ref } from "vue"
 import { isEmpty, isNil } from "lodash"
 import jmespath from "jmespath"
 
-import http from "@/api/http-client"
-import useDataset from "@/use/use-dataset"
+import datasetIntegrationsApi, { DatasetIntegration } from "@/api/dataset-integrations-api"
 
 import PasswordTextField from "@/components/PasswordTextField.vue"
+import { watch } from "vue"
 
 const props = defineProps({
-  slug: {
-    type: String,
+  datasetId: {
+    type: Number,
     required: true,
   },
 })
 
-const { slug } = toRefs(props)
-const { dataset } = useDataset(slug)
-
-const apiResultPreview = ref<string | null>(null)
-const externalApiJmesPathParsingExpression = ref<string | null>(null)
-
-const apiParsedResultPreview = computed(() => {
-  if (
-    isNil(apiResultPreview.value) ||
-    isEmpty(apiResultPreview.value) ||
-    isNil(externalApiJmesPathParsingExpression.value) ||
-    isEmpty(externalApiJmesPathParsingExpression.value)
-  ) {
-    return null
-  }
-
-  try {
-    const parsedResult = jmespath.search(
-      JSON.parse(apiResultPreview.value),
-      externalApiJmesPathParsingExpression.value
-    )
-    return JSON.stringify(parsedResult, null, 2)
-  } catch (error) {
-    return JSON.stringify(error, null, 2)
-  }
+const datasetIntegration = ref<Partial<DatasetIntegration>>({
+  datasetId: props.datasetId,
 })
+
+watch(
+  () => props.datasetId,
+  (newDatasetId) => {
+    datasetIntegration.value.datasetId = newDatasetId
+  }
+)
+
+watch(
+  () => [datasetIntegration.value.rawJsonData, datasetIntegration.value.jmesPathTransform],
+  () => {
+    if (
+      isNil(datasetIntegration.value.rawJsonData) ||
+      isEmpty(datasetIntegration.value.rawJsonData) ||
+      isNil(datasetIntegration.value.jmesPathTransform) ||
+      isEmpty(datasetIntegration.value.jmesPathTransform)
+    ) {
+      return null
+    }
+
+    try {
+      const rawJsonDataAsJson = JSON.parse(datasetIntegration.value.rawJsonData)
+      const parsedResult = jmespath.search(
+        rawJsonDataAsJson,
+        datasetIntegration.value.jmesPathTransform
+      )
+      datasetIntegration.value.parsedJsonData = JSON.stringify(parsedResult, null, 2)
+    } catch (error) {
+      datasetIntegration.value.parsedJsonData = JSON.stringify(error, null, 2)
+    }
+  }
+)
 
 // TODO: save and send to back-end, have back end fetch results and return
 // to bypass CORS issues
 async function fetchApiResults() {
-  if (isNil(dataset.value)) {
+  if (isNil(datasetIntegration.value)) {
     throw new Error("Dataset is not loaded")
   }
 
-  const { externalApiUrl, externalApiHeaderKey, externalApiHeaderValue } = dataset.value
+  const { url, headerKey, headerValue } = datasetIntegration.value
 
-  if (isNil(externalApiUrl)) {
+  if (isNil(url)) {
     throw new Error("API Link is required")
   }
 
-  if (isNil(externalApiHeaderKey)) {
+  if (isNil(headerKey)) {
     throw new Error("Header Key is required")
   }
 
+  if (isNil(headerValue)) {
+    throw new Error("Header Value is required")
+  }
+
   try {
-    const { data } = await http.post("/api/preview", {
-      externalApiUrl,
-      externalApiHeaderKey,
-      externalApiHeaderValue,
-    })
-    apiResultPreview.value = JSON.stringify(data, null, 2)
+    const data = await datasetIntegrationsApi.preview(url, headerKey, headerValue)
+    datasetIntegration.value.rawJsonData = JSON.stringify(data, null, 2)
   } catch (error) {
-    apiResultPreview.value = JSON.stringify(error, null, 2)
+    datasetIntegration.value.rawJsonData = JSON.stringify(error, null, 2)
   }
 }
 
