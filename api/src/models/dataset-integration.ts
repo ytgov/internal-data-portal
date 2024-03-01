@@ -116,11 +116,11 @@ DatasetIntegration.init(
       allowNull: true,
     },
     lastSuccessAt: {
-      type: DataTypes.NOW,
+      type: DataTypes.DATE,
       allowNull: true,
     },
     lastFailureAt: {
-      type: DataTypes.NOW,
+      type: DataTypes.DATE,
       allowNull: true,
     },
     createdAt: {
