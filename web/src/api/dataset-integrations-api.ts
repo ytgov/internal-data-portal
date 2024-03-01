@@ -44,13 +44,17 @@ export const datasetIntegrationsApi = {
   },
   async update(
     datasetIntegrationId: number,
-    attributes: Partial<DatasetIntegration>
+    attributes: Partial<DatasetIntegration>,
+    controlFlags: { isPreview?: boolean } = {}
   ): Promise<{
     datasetIntegration: DatasetIntegration
   }> {
     const { data } = await http.patch(
       `/api/dataset-integrations/${datasetIntegrationId}`,
-      attributes
+      attributes,
+      {
+        params: controlFlags,
+      }
     )
     return data
   },

@@ -30,6 +30,17 @@
       </v-col>
     </v-row>
     <v-row>
+      <v-col class="d-flex justify-end">
+        <v-btn
+          variant="outlined"
+          color="primary"
+          @click="updateDatasetIntegration({ isPreview: true })"
+        >
+          Update Preview
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col>
         <v-textarea
           :model-value="prettifiedRawJsonData"
@@ -213,7 +224,7 @@ function updateAndCompleteIntegration() {
   emit("completed")
 }
 
-async function updateDatasetIntegration() {
+async function updateDatasetIntegration({ isPreview = false }: { isPreview?: boolean } = {}) {
   if (!isValid.value) {
     snack.notify("Please fill out all required fields", {
       color: "error",
@@ -239,7 +250,8 @@ async function updateDatasetIntegration() {
   try {
     const { datasetIntegration: newDatasetIntegration } = await datasetIntegrationsApi.update(
       datasetIntegrationId,
-      attributes
+      attributes,
+      { isPreview }
     )
     datasetIntegration.value = newDatasetIntegration
     snack.notify("Dataset integration saved!", {

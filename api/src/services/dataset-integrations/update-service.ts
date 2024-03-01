@@ -18,6 +18,7 @@ export class UpdateService extends BaseService {
   constructor(
     private datasetIntegration: DatasetIntegration,
     private attributes: Attributes,
+    private isPreview: boolean,
     private currentUser: User
   ) {
     super()
@@ -61,8 +62,10 @@ export class UpdateService extends BaseService {
         lastSuccessAt,
       })
 
-      await this.parseJsonData(this.datasetIntegration)
-      await this.bulkReplaceDatasetEntries(this.datasetIntegration)
+      if (this.isPreview !== true) {
+        await this.parseJsonData(this.datasetIntegration)
+        await this.bulkReplaceDatasetEntries(this.datasetIntegration)
+      }
 
       // TODO: log user action
 
