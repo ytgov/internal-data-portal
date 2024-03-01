@@ -186,8 +186,8 @@ async function createIntegration() {
       color: "success",
     })
   } catch (error) {
-    datasetIntegration.value.rawJsonData = JSON.stringify(error, null, 2)
-    snack.notify("Error creating dataset integration", {
+    datasetIntegration.value.rawJsonData = JSON.stringify(error.message, null, 2)
+    snack.notify("Error creating dataset integration.", {
       color: "error",
     })
   } finally {

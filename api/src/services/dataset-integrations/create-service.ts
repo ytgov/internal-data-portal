@@ -1,5 +1,5 @@
 import { isNil } from "lodash"
-import axios, { AxiosError } from "axios"
+import axios from "axios"
 
 import { DatasetIntegration, User } from "@/models"
 
@@ -36,26 +36,13 @@ export class CreateService extends BaseService {
 
     let status: DatasetIntegrationStatusTypes
     let rawJsonData: string | null = null
-    let errorCode: string | null = null
-    let errorDetails: string | null = null
     let lastSuccessAt: Date | null = null
-    let lastFailureAt: Date | null = null
     try {
       rawJsonData = await this.fetchRawIntegrationData(url, headers)
       status = DatasetIntegrationStatusTypes.OK
       lastSuccessAt = new Date()
     } catch (error) {
-      if (error instanceof AxiosError) {
-        status = DatasetIntegrationStatusTypes.ERRORED
-        errorCode = error.response?.status.toString() || null
-        errorDetails = error.response?.statusText || null
-        lastFailureAt = new Date()
-      } else {
-        status = DatasetIntegrationStatusTypes.ERRORED
-        errorCode = "500"
-        errorDetails = `Unexpected error: ${error}`
-        lastFailureAt = new Date()
-      }
+      throw new Error(`Failed to estblish integration with ${url}: ${error}`)
     }
 
     const datasetIntegration = await DatasetIntegration.create({
@@ -64,10 +51,7 @@ export class CreateService extends BaseService {
       ...optionalAttributes,
       status,
       rawJsonData,
-      errorCode,
-      errorDetails,
       lastSuccessAt,
-      lastFailureAt,
     })
 
     // TODO: log creating user
