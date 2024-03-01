@@ -13,6 +13,7 @@ import { AccessRequest } from "@/models/access-request"
 import { DatasetField } from "@/models/dataset-field"
 import { VisualizationControl } from "@/models/visualization-control"
 import { DatasetEntry } from "@/models/dataset-entry"
+import { DatasetIntegration } from "@/models/dataset-integration"
 
 // Estabilish associations between models, order likely matters
 Role.establishAssociations()
@@ -28,6 +29,7 @@ DatasetStewardship.establishAssociations()
 DatasetField.establishAssociations()
 VisualizationControl.establishAssociations()
 DatasetEntry.establishAssociations()
+DatasetIntegration.establishAssociations()
 
 export {
   AccessGrant,
@@ -35,6 +37,7 @@ export {
   Dataset,
   DatasetEntry,
   DatasetField,
+  DatasetIntegration,
   DatasetStewardship,
   Role,
   Tag,
