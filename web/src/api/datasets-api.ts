@@ -2,6 +2,7 @@ import http from "@/api/http-client"
 
 import { type Policy } from "@/api/base-api"
 import { type User } from "@/api/users-api"
+import { type DatasetIntegration } from "@/api/dataset-integrations-api"
 import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
 import { type AccessGrant } from "@/api/access-grants-api"
 import { type AccessRequest } from "@/api/access-requests-api"
@@ -34,6 +35,7 @@ export type Dataset = {
   // associations
   owner?: User
   creator?: User
+  integration?: DatasetIntegration
   stewardship?: DatasetStewardship
   visualizationControl?: VisualizationControl
 
@@ -45,6 +47,7 @@ export type Dataset = {
 export type DatasetDetailedResult = Dataset & {
   owner: User
   creator: User
+  integration: DatasetIntegration
   stewardship: DatasetStewardship
   visualizationControl: VisualizationControl
 

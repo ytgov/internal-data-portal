@@ -97,6 +97,7 @@ router
 router.route("/api/dataset-integrations").post(DatasetIntegrationsController.create)
 router
   .route("/api/dataset-integrations/:datasetIntegrationId")
+  .get(DatasetIntegrationsController.show)
   .patch(DatasetIntegrationsController.update)
 
 router

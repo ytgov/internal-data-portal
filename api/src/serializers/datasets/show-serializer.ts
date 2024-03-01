@@ -1,6 +1,6 @@
 import { pick } from "lodash"
 
-import { AccessGrant, AccessRequest, Dataset, User } from "@/models"
+import { AccessGrant, AccessRequest, Dataset, DatasetIntegration, User } from "@/models"
 import BaseSerializer from "@/serializers/base-serializer"
 
 export type DatasetShowView = Partial<Dataset> & {
@@ -26,6 +26,14 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
           "ownerNotes",
         ]),
         creator: this.record.creator,
+        // TODO: switch to using Integrations.ShowSerializer
+        integration: pick(this.record.integration, [
+          "id",
+          "url",
+          "headerKey",
+          "headerValue",
+          "jmesPathTransform",
+        ]) as DatasetIntegration, // TODO: figure out how to avoid needing this cast
         visualizationControl: this.record.visualizationControl,
       })
     }
@@ -38,9 +46,10 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
 
   private baseView(extraAttributes: Partial<Dataset> = {}): DatasetShowView {
     const currentUserAccessGrant = this.record.mostPermissiveAccessGrantFor(this.currentUser)
-    const currentUserAccessRequest = this.record.accessRequests?.filter(
-      (accessRequest) => accessRequest.requestorId == this.currentUser.id
-    )[0] || null
+    const currentUserAccessRequest =
+      this.record.accessRequests?.filter(
+        (accessRequest) => accessRequest.requestorId == this.currentUser.id
+      )[0] || null
 
     return {
       ...pick(this.record.dataValues, [

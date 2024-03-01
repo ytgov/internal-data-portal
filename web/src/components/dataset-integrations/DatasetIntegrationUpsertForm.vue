@@ -178,7 +178,8 @@ watch(
     }
 
     await fetchDatasetIntegration()
-  }
+  },
+  { immediate: true }
 )
 
 watch(

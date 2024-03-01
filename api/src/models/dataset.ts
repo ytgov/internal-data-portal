@@ -30,6 +30,7 @@ import sequelize from "@/db/db-client"
 import AccessGrant from "@/models/access-grant"
 import AccessRequest from "@/models/access-request"
 import DatasetField from "@/models/dataset-field"
+import DatasetIntegration from "@/models/dataset-integration"
 import DatasetStewardship from "@/models/dataset-stewardship"
 import Tag from "@/models/tag"
 import Tagging, { TaggableTypes } from "@/models/tagging"
@@ -40,9 +41,9 @@ import {
   datasetsAccessibleViaAccessGrantsBy,
   mostPermissiveAccessGrantFor,
 } from "@/models/datasets"
+import VisualizationControl from "@/models/visualization-control"
 
 import BaseModel from "@/models/base-model"
-import VisualizationControl from "./visualization-control"
 
 export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAttributes<Dataset>> {
   declare id: CreationOptional<number>
@@ -72,6 +73,13 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
   declare getCreator: BelongsToGetAssociationMixin<User>
   declare setCreator: BelongsToSetAssociationMixin<User, User["id"]>
   declare createCreator: BelongsToCreateAssociationMixin<User>
+
+  declare getIntegration: HasOneGetAssociationMixin<DatasetIntegration>
+  declare setIntegration: HasOneSetAssociationMixin<
+    DatasetIntegration,
+    DatasetIntegration["datasetId"]
+  >
+  declare createIntegration: HasOneCreateAssociationMixin<DatasetIntegration>
 
   declare getStewardship: HasOneGetAssociationMixin<DatasetStewardship>
   declare setStewardship: HasOneSetAssociationMixin<
@@ -150,6 +158,7 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
 
   declare owner?: NonAttribute<User>
   declare creator?: NonAttribute<User>
+  declare integration?: NonAttribute<DatasetIntegration>
   declare stewardship?: NonAttribute<DatasetStewardship>
   declare visualizationControl?: NonAttribute<VisualizationControl>
   declare accessGrants?: NonAttribute<AccessGrant[]>
@@ -162,6 +171,7 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
     accessGrants: Association<Dataset, AccessGrant>
     accessRequests: Association<Dataset, AccessRequest>
     creator: Association<Dataset, User>
+    integration: Association<Dataset, DatasetIntegration>
     fields: Association<Dataset, DatasetField>
     owner: Association<Dataset, User>
     stewardship: Association<Dataset, DatasetStewardship>
@@ -178,6 +188,10 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
     this.belongsTo(User, {
       foreignKey: "creatorId",
       as: "creator",
+    })
+    this.hasOne(DatasetIntegration, {
+      foreignKey: "datasetId",
+      as: "integration",
     })
     this.hasOne(DatasetStewardship, {
       foreignKey: "datasetId",

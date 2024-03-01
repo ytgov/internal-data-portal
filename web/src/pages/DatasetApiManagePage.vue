@@ -30,7 +30,7 @@
         <DatasetIntegrationUpsertForm
           v-else
           :dataset-id="dataset.id"
-          :dataset-integration-id="dataset.datasetIntegration?.id"
+          :dataset-integration-id="dataset.integration?.id"
           @completed="returnToParentPage"
         />
       </v-col>
