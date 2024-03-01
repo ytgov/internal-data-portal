@@ -50,7 +50,7 @@
                     params: { slug },
                   }"
                 >
-                  Add API Link
+                  {{ !isNil(dataset.integration.id) ? "Manage API Link" : "Add API Link" }}
                 </v-btn>
               </v-col>
             </v-row>
