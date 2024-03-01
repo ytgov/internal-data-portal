@@ -28,7 +28,6 @@ export class TableSerializer extends BaseSerializer<Dataset> {
         "slug",
         "name",
         "description",
-        "status",
         "publishedAt",
         "deactivatedAt",
         "createdAt",
