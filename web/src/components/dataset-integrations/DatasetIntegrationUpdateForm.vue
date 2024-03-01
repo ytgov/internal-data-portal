@@ -32,6 +32,7 @@
     <v-row>
       <v-col class="d-flex justify-end">
         <v-btn
+          :loading="isLoading"
           variant="outlined"
           color="primary"
           @click="updateDatasetIntegration({ isPreview: true })"
