@@ -27,11 +27,15 @@
           v-if="isNil(dataset)"
           type="card"
         />
-        <DatasetIntegrationUpsertForm
+        <DatasetIntegrationUpdateForm
+          v-else-if="!isNil(dataset.integration.id)"
+          :dataset-id="dataset.id"
+          :dataset-integration-id="dataset.integration.id"
+          @completed="returnToParentPage"
+        />
+        <DatasetIntegrationCreateForm
           v-else
           :dataset-id="dataset.id"
-          :dataset-integration-id="dataset.integration?.id"
-          @completed="returnToParentPage"
         />
       </v-col>
     </v-row>
@@ -46,7 +50,8 @@ import { isNil } from "lodash"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useDataset from "@/use/use-dataset"
 
-import DatasetIntegrationUpsertForm from "@/components/dataset-integrations/DatasetIntegrationUpsertForm.vue"
+import DatasetIntegrationCreateForm from "@/components/dataset-integrations/DatasetIntegrationCreateForm.vue"
+import DatasetIntegrationUpdateForm from "@/components/dataset-integrations/DatasetIntegrationUpdateForm.vue"
 
 const props = defineProps({
   slug: {

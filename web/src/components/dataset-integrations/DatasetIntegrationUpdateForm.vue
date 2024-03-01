@@ -30,18 +30,6 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col class="d-flex justify-end">
-        <v-btn
-          :variant="isPersisted ? 'outlined' : 'elevated'"
-          :loading="isLoading"
-          color="primary"
-          @click="createOrUpdateIntegration"
-        >
-          {{ isPersisted ? "Update and Review" : "Create and Review" }}
-        </v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
       <v-col>
         <v-textarea
           :model-value="prettifiedRawJsonData"
@@ -77,15 +65,16 @@
     </v-row>
     <v-row>
       <v-col>
-        <!-- TODO: enforce presence and array-ness of result -->
         <v-textarea
           :model-value="prettifiedParsedJsonData"
-          label="API Parsed Result Preview"
+          :rules="[required, parsesToArray]"
+          label="API Parsed Result Preview *"
           hint="Result must be an array for API to integrate correctly."
           append-inner-icon="mdi-lock"
           rows="10"
           variant="outlined"
           readonly
+          required
           persistent-hint
         />
       </v-col>
@@ -93,12 +82,11 @@
     <v-row>
       <v-col class="d-flex justify-end">
         <v-btn
-          :variant="isPersisted ? 'elevated' : 'outlined'"
           :loading="isLoading"
           color="primary"
           @click="updateAndCompleteIntegration"
         >
-          Save and Return
+          Import Dataset and Return
         </v-btn>
       </v-col>
     </v-row>
@@ -117,10 +105,6 @@ import useSnack from "@/use/use-snack"
 import PasswordTextField from "@/components/PasswordTextField.vue"
 
 const props = defineProps({
-  datasetId: {
-    type: Number,
-    required: true,
-  },
   datasetIntegrationId: {
     type: Number,
     default: null,
@@ -133,10 +117,17 @@ const snack = useSnack()
 
 const isLoading = ref(false)
 const isValid = ref(false)
-const datasetIntegration = ref<Partial<DatasetIntegration>>({
-  datasetId: props.datasetId,
-})
-const isPersisted = computed(() => !isNil(datasetIntegration.value.id))
+const datasetIntegration = ref<Partial<DatasetIntegration>>({})
+
+const parsesToArray = (value: string) => {
+  try {
+    const parsedValue = JSON.parse(value)
+    return Array.isArray(parsedValue) || "Must be a valid JSON array"
+  } catch (error) {
+    return "Must be a valid JSON array"
+  }
+}
+
 const prettifiedRawJsonData = computed(() => {
   if (isNil(datasetIntegration.value.rawJsonData)) {
     return ""
@@ -159,15 +150,6 @@ const prettifiedParsedJsonData = computed(() => {
     return JSON.stringify(error, null, 2)
   }
 })
-
-watch(
-  () => props.datasetId,
-  (newDatasetId) => {
-    datasetIntegration.value = {
-      datasetId: newDatasetId,
-    }
-  }
-)
 
 watch(
   () => props.datasetIntegrationId,
@@ -225,53 +207,9 @@ async function fetchDatasetIntegration() {
   }
 }
 
-function createOrUpdateIntegration() {
-  if (isPersisted.value) {
-    updateDatasetIntegration()
-  } else {
-    createIntegration()
-  }
-}
-
 function updateAndCompleteIntegration() {
   updateDatasetIntegration()
   emit("completed")
-}
-
-async function createIntegration() {
-  if (!isValid.value) {
-    snack.notify("Please fill out all required fields", {
-      color: "error",
-    })
-    return
-  }
-
-  isLoading.value = true
-  const attributes = pick(datasetIntegration.value, [
-    "datasetId",
-    "url",
-    "headerKey",
-    "headerValue",
-  ])
-  try {
-    const { datasetIntegration: newDatasetIntegration } =
-      await datasetIntegrationsApi.create(attributes)
-    datasetIntegration.value = newDatasetIntegration
-    snack.notify("Dataset integration created", {
-      color: "success",
-    })
-  } catch (error) {
-    if (error instanceof Error) {
-      datasetIntegration.value.rawJsonData = JSON.stringify(error.message)
-    } else {
-      datasetIntegration.value.rawJsonData = `Unknown error occurred: ${error}`
-    }
-    snack.notify("Error creating dataset integration.", {
-      color: "error",
-    })
-  } finally {
-    isLoading.value = false
-  }
 }
 
 async function updateDatasetIntegration() {
