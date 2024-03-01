@@ -1,5 +1,5 @@
 <template>
-  <v-form @submit.prevent="saveAndReturn">
+  <v-form v-model="isValid">
     <v-row>
       <v-col
         cols="12"
@@ -7,7 +7,8 @@
       >
         <v-text-field
           v-model="datasetIntegration.url"
-          label="API Link"
+          label="API Link *"
+          :rules="[required]"
           variant="outlined"
         />
       </v-col>
@@ -43,10 +44,12 @@
         md="6"
       >
         <v-btn
+          :variant="isPersisted ? 'outlined' : 'elevated'"
+          :loading="isLoading"
           color="primary"
-          @click="fetchApiResults"
+          @click="createIntegration"
         >
-          Test Integration
+          Create and Review Integration
         </v-btn>
       </v-col>
     </v-row>
@@ -55,9 +58,10 @@
         cols="12"
         md="6"
       >
-        <h3>API Result Preview</h3>
         <v-textarea
           :model-value="datasetIntegration.rawJsonData"
+          label="API Result Preview"
+          append-inner-icon="mdi-lock"
           rows="10"
           variant="outlined"
           readonly
@@ -94,10 +98,11 @@
         cols="12"
         md="6"
       >
-        <h3>API Parsed Result Preview</h3>
         <v-textarea
           :model-value="datasetIntegration.parsedJsonData"
+          label="API Parsed Result Preview"
           hint="Result must be an array for API to integrate correctly."
+          append-inner-icon="mdi-lock"
           rows="10"
           variant="outlined"
           readonly
@@ -111,9 +116,10 @@
         md="6"
       >
         <v-btn
+          :variant="isPersisted ? 'elevated' : 'outlined'"
+          :loading="isLoading"
           color="primary"
-          type="submit"
-          variant="outlined"
+          @click="saveAndReturn"
         >
           Save and Return
         </v-btn>
@@ -123,14 +129,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
+import { computed, nextTick, ref, watch } from "vue"
+import { useRouter } from "vue-router"
 import { isEmpty, isNil } from "lodash"
 import jmespath from "jmespath"
 
+import { required } from "@/utils/validators"
 import datasetIntegrationsApi, { DatasetIntegration } from "@/api/dataset-integrations-api"
+import useSnack from "@/use/use-snack"
 
 import PasswordTextField from "@/components/PasswordTextField.vue"
-import { watch } from "vue"
 
 const props = defineProps({
   datasetId: {
@@ -139,14 +147,22 @@ const props = defineProps({
   },
 })
 
+const router = useRouter()
+const snack = useSnack()
+
+const isLoading = ref(false)
+const isValid = ref(false)
 const datasetIntegration = ref<Partial<DatasetIntegration>>({
   datasetId: props.datasetId,
 })
+const isPersisted = computed(() => !isNil(datasetIntegration.value.id))
 
 watch(
   () => props.datasetId,
   (newDatasetId) => {
-    datasetIntegration.value.datasetId = newDatasetId
+    datasetIntegration.value = {
+      datasetId: newDatasetId,
+    }
   }
 )
 
@@ -175,36 +191,73 @@ watch(
   }
 )
 
-// TODO: save and send to back-end, have back end fetch results and return
-// to bypass CORS issues
-async function fetchApiResults() {
-  if (isNil(datasetIntegration.value)) {
-    throw new Error("Dataset is not loaded")
+async function createIntegration() {
+  if (!isValid.value) {
+    snack.notify("Please fill out all required fields", {
+      color: "error",
+    })
+    return
   }
 
-  const { url, headerKey, headerValue } = datasetIntegration.value
-
-  if (isNil(url)) {
-    throw new Error("API Link is required")
-  }
-
-  if (isNil(headerKey)) {
-    throw new Error("Header Key is required")
-  }
-
-  if (isNil(headerValue)) {
-    throw new Error("Header Value is required")
-  }
-
+  isLoading.value = true
   try {
-    const data = await datasetIntegrationsApi.preview(url, headerKey, headerValue)
-    datasetIntegration.value.rawJsonData = JSON.stringify(data, null, 2)
+    const { datasetIntegration: newDatasetIntegration } = await datasetIntegrationsApi.create(
+      datasetIntegration.value
+    )
+    datasetIntegration.value = newDatasetIntegration
+    snack.notify("Dataset integration created", {
+      color: "success",
+    })
   } catch (error) {
     datasetIntegration.value.rawJsonData = JSON.stringify(error, null, 2)
+    snack.notify("Error creating dataset integration", {
+      color: "error",
+    })
+  } finally {
+    isLoading.value = false
   }
 }
 
-function saveAndReturn() {
-  alert("TODO: return to dataset description manage page")
+async function saveAndReturn() {
+  if (!isValid.value) {
+    snack.notify("Please fill out all required fields", {
+      color: "error",
+    })
+    return
+  }
+
+  const datasetIntegrationId = datasetIntegration.value.id
+  if (isNil(datasetIntegrationId)) {
+    snack.notify("Please create the dataset integration first", {
+      color: "error",
+    })
+    return
+  }
+
+  isLoading.value = true
+  try {
+    const { datasetIntegration: newDatasetIntegration } = await datasetIntegrationsApi.update(
+      datasetIntegrationId,
+      datasetIntegration.value
+    )
+    datasetIntegration.value = newDatasetIntegration
+    snack.notify("Dataset integration saved! Redirecting ...", {
+      color: "success",
+    })
+
+    await nextTick()
+
+    router.push({
+      name: "DatasetDescriptionManagePage",
+      params: { slug: props.slug },
+    })
+  } catch (error) {
+    datasetIntegration.value.rawJsonData = JSON.stringify(error, null, 2)
+    snack.notify("Error saving dataset integration", {
+      color: "error",
+    })
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
