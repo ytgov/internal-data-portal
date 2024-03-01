@@ -21,6 +21,7 @@
     </template>
   </div>
 
+  <v-spacer class="mt-6"/>
   <v-skeleton-loader
     v-if="isNil(dataset)"
     type="table"
