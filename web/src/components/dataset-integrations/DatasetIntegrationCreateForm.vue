@@ -34,6 +34,7 @@
         <v-btn
           :variant="isPersisted ? 'outlined' : 'elevated'"
           :loading="isLoading"
+          :disabled="isPersisted"
           color="primary"
           @click="createIntegration"
         >
@@ -108,7 +109,7 @@
 <script lang="ts" setup>
 import { computed, nextTick, ref, watch } from "vue"
 import { useRouter } from "vue-router"
-import { isEmpty, isNil } from "lodash"
+import { isEmpty, isNil, pick } from "lodash"
 import jmespath from "jmespath"
 
 import { required } from "@/utils/validators"
@@ -177,10 +178,15 @@ async function createIntegration() {
   }
 
   isLoading.value = true
+  const attributes = pick(datasetIntegration.value, [
+    "datasetId",
+    "url",
+    "headerKey",
+    "headerValue",
+  ])
   try {
-    const { datasetIntegration: newDatasetIntegration } = await datasetIntegrationsApi.create(
-      datasetIntegration.value
-    )
+    const { datasetIntegration: newDatasetIntegration } =
+      await datasetIntegrationsApi.create(attributes)
     datasetIntegration.value = newDatasetIntegration
     snack.notify("Dataset integration created", {
       color: "success",
