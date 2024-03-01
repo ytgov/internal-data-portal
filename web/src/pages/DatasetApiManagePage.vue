@@ -1,16 +1,38 @@
 <template>
   <v-container>
-    <h2 class="mb-6">Link External API</h2>
+    <v-row>
+      <v-col
+        cols="0"
+        md="3"
+      ></v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <h2>Link External API</h2>
+      </v-col>
+    </v-row>
 
-    <!-- TODO: make the skeleton loader an external component that matches the form -->
-    <v-skeleton-loader
-      v-if="isNil(dataset)"
-      type="card"
-    />
-    <LinkExternalApiForm
-      v-else
-      :dataset-id="dataset.id"
-    />
+    <v-row>
+      <v-col
+        cols="0"
+        md="3"
+      ></v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <!-- TODO: make the skeleton loader an external component that matches the form -->
+        <v-skeleton-loader
+          v-if="isNil(dataset)"
+          type="card"
+        />
+        <LinkExternalApiForm
+          v-else
+          :dataset-id="dataset.id"
+        />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

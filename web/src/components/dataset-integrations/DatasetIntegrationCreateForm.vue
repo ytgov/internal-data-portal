@@ -1,10 +1,7 @@
 <template>
   <v-form v-model="isValid">
     <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col>
         <v-text-field
           v-model="datasetIntegration.url"
           label="API Link *"
@@ -14,10 +11,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col>
         <v-text-field
           v-model="datasetIntegration.headerKey"
           label="Header Key"
@@ -26,10 +20,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col>
         <PasswordTextField
           v-model="datasetIntegration.headerValue"
           label="Header Value"
@@ -39,25 +30,19 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col class="d-flex justify-end">
         <v-btn
           :variant="isPersisted ? 'outlined' : 'elevated'"
           :loading="isLoading"
           color="primary"
           @click="createIntegration"
         >
-          Create and Review Integration
+          Create and Review
         </v-btn>
       </v-col>
     </v-row>
     <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col>
         <v-textarea
           :model-value="datasetIntegration.rawJsonData"
           label="API Result Preview"
@@ -69,10 +54,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col>
         <v-text-field
           v-model="datasetIntegration.jmesPathTransform"
           label="JMESPath Parsing Expression"
@@ -94,10 +76,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col>
         <v-textarea
           :model-value="datasetIntegration.parsedJsonData"
           label="API Parsed Result Preview"
@@ -111,10 +90,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col
-        cols="12"
-        md="6"
-      >
+      <v-col class="d-flex justify-end">
         <v-btn
           :variant="isPersisted ? 'elevated' : 'outlined'"
           :loading="isLoading"
