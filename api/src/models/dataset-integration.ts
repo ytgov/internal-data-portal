@@ -36,7 +36,7 @@ export class DatasetIntegration extends Model<
   declare jmesPathTransform: CreationOptional<string | null>
   declare rawJsonData: CreationOptional<string | null>
   declare parsedJsonData: CreationOptional<string | null>
-  declare status: string
+  declare status: DatasetIntegrationStatusTypes
   declare errorCode: CreationOptional<string | null>
   declare errorDetails: CreationOptional<string | null>
   declare lastSuccessAt: CreationOptional<Date | null>

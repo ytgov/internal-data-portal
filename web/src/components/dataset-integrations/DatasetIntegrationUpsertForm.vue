@@ -34,11 +34,10 @@
         <v-btn
           :variant="isPersisted ? 'outlined' : 'elevated'"
           :loading="isLoading"
-          :disabled="isPersisted"
           color="primary"
-          @click="createIntegration"
+          @click="createOrUpdateIntegration"
         >
-          Create and Review
+          {{ isPersisted ? "Update and Review" : "Create and Review" }}
         </v-btn>
       </v-col>
     </v-row>
@@ -97,7 +96,7 @@
           :variant="isPersisted ? 'elevated' : 'outlined'"
           :loading="isLoading"
           color="primary"
-          @click="updateDatasetIntegration"
+          @click="updateAndCompleteIntegration"
         >
           Save and Return
         </v-btn>
@@ -226,6 +225,19 @@ async function fetchDatasetIntegration() {
   }
 }
 
+function createOrUpdateIntegration() {
+  if (isPersisted.value) {
+    updateDatasetIntegration()
+  } else {
+    createIntegration()
+  }
+}
+
+function updateAndCompleteIntegration() {
+  updateDatasetIntegration()
+  emit("completed")
+}
+
 async function createIntegration() {
   if (!isValid.value) {
     snack.notify("Please fill out all required fields", {
@@ -279,17 +291,21 @@ async function updateDatasetIntegration() {
   }
 
   isLoading.value = true
-  const attributes = pick(datasetIntegration.value, ["jmesPathTransform"])
+  const attributes = pick(datasetIntegration.value, [
+    "url",
+    "headerKey",
+    "headerValue",
+    "jmesPathTransform",
+  ])
   try {
     const { datasetIntegration: newDatasetIntegration } = await datasetIntegrationsApi.update(
       datasetIntegrationId,
       attributes
     )
     datasetIntegration.value = newDatasetIntegration
-    snack.notify("Dataset integration saved! Redirecting ...", {
+    snack.notify("Dataset integration saved!", {
       color: "success",
     })
-    emit("completed")
   } catch (error) {
     datasetIntegration.value.rawJsonData = JSON.stringify(error)
     snack.notify("Error saving dataset integration", {
