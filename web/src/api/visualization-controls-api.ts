@@ -21,7 +21,7 @@ export type VisualizationControl = {
 export type searchExcludedDatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromSearch">
 
 export type VisualizationControlUpdate = Partial<VisualizationControl> & {
-  searchExcludedDatasetFieldsAttributes: searchExcludedDatasetFieldsAttributes[]
+  searchExcludedDatasetFieldsAttributes?: searchExcludedDatasetFieldsAttributes[]
 }
 
 export const visualizationControlsApi = {
