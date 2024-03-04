@@ -1,6 +1,7 @@
 // Factories
 export { accessGrantFactory } from "./access-grant-factory"
 export { accessRequestFactory } from "./access-request-factory"
+export { datasetEntryFactory } from "./dataset-entry-factory"
 export { datasetFactory } from "./dataset-factory"
 export { datasetFieldFactory } from "./dataset-field-factory"
 export { roleFactory } from "./role-factory"

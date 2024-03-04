@@ -3,6 +3,11 @@ import { Literal } from "sequelize/types/utils"
 
 import { compactSql } from "@/utils/compact-sql"
 
+/**
+ * Requires replacements to be passed in to query.
+ * e.g. { replacements: { searchTokenWildcard: `%${searchToken}%`, searchToken }
+ *
+ */
 export function datasetEntriesSearch(): Literal {
   const query = compactSql(/*sql*/ `
     (

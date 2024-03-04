@@ -16,11 +16,10 @@ import {
 import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
-import { DatasetFieldDataTypes } from "@/models/dataset-field"
 import { datasetEntriesSearch } from "@/models/dataset-entries"
 
 export type DatasetEntryRawJsonDataType = Record<string, unknown>
-export type DatasetEntryJsonDataType = Record<string, DatasetFieldDataTypes>
+export type DatasetEntryJsonDataType = Record<string, string | number>
 
 export class DatasetEntry extends Model<
   InferAttributes<DatasetEntry>,
