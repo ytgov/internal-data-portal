@@ -1,4 +1,5 @@
 import { faker } from "@faker-js/faker"
+import { startCase, toLower } from "lodash"
 import { type DeepPartial } from "fishery"
 
 import { DatasetField } from "@/models"
@@ -20,14 +21,17 @@ export const datasetFieldFactory = BaseFactory.define<DatasetField>(
 
     assertParamsHasDatasetId(params)
 
+    const name = faker.database.column()
+    const displayName = startCase(toLower(name));
+
     const description = faker.datatype.boolean(0.4) ? faker.lorem.sentence() : null
     const note = faker.datatype.boolean(0.1) ? faker.lorem.paragraph() : null
 
     return DatasetField.build({
       id: sequence,
       datasetId: params.datasetId,
-      name: faker.database.column(),
-      displayName: faker.database.column(),
+      name,
+      displayName,
       dataType: faker.helpers.enumValue(DatasetFieldDataTypes),
       description,
       note,

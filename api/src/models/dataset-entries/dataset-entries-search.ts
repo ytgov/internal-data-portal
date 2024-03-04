@@ -15,7 +15,7 @@ export function datasetEntriesSearch(): Literal {
         DISTINCT dataset_entries.id
       FROM
         dataset_entries
-        INNER JOIN dataset_fields ON dataset_entries.dataset_id = dataset_fields.dataset_id
+      INNER JOIN dataset_fields ON dataset_entries.dataset_id = dataset_fields.dataset_id
         AND dataset_fields.deleted_at IS NULL
         AND dataset_fields.is_excluded_from_search = 0
       WHERE
