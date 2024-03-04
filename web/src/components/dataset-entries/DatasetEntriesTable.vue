@@ -9,11 +9,30 @@
     class="elevation-1"
     loading-text="Loading... this might take a while"
   >
+    <template #top>
+      <v-row class="ma-1">
+        <v-col
+          cols="12"
+          md="4"
+        >
+          <v-text-field
+            :model-value="searchToken"
+            prepend-inner-icon="mdi-magnify"
+            label="Search"
+            variant="outlined"
+            hide-details
+            @update:model-value="debouncedUpdateSearchToken"
+          />
+        </v-col>
+        <v-col> TODO: add various Download To .. buttons </v-col>
+      </v-row>
+    </template>
   </v-data-table-server>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from "vue"
+import { debounce } from "lodash"
 
 import useDatasetFields from "@/use/use-dataset-fields"
 import useDatasetEntries, { DatasetEntry } from "@/use/use-dataset-entries"
@@ -25,6 +44,7 @@ const props = defineProps({
   },
 })
 
+const searchToken = ref("")
 const itemsPerPage = ref(10)
 const page = ref(1)
 
@@ -51,6 +71,7 @@ const datasetEntriesQuery = computed(() => ({
   where: {
     datasetId: props.datasetId,
   },
+  searchToken: searchToken.value,
   perPage: itemsPerPage.value,
   page: page.value,
 }))
@@ -65,4 +86,10 @@ const datasetEntriesData = computed<DatasetEntry["jsonData"][]>(() => {
     return jsonData
   })
 })
+
+function updateSearchToken(value: string) {
+  searchToken.value = value
+}
+
+const debouncedUpdateSearchToken = debounce(updateSearchToken, 1000)
 </script>

@@ -9,7 +9,6 @@
   />
 
   <v-spacer class="mt-6" />
-  TODO: add data entries search and various Download To .. buttons
   <v-skeleton-loader
     v-if="isNil(dataset)"
     type="table"
