@@ -21,8 +21,8 @@ export const datasetFieldFactory = BaseFactory.define<DatasetField>(
 
     assertParamsHasDatasetId(params)
 
-    const name = faker.database.column()
-    const displayName = startCase(toLower(name));
+    const name = `${faker.database.column()}-${sequence}`
+    const displayName = startCase(toLower(name))
 
     const description = faker.datatype.boolean(0.4) ? faker.lorem.sentence() : null
     const note = faker.datatype.boolean(0.1) ? faker.lorem.paragraph() : null

@@ -7,7 +7,7 @@ import { DatasetEntryJsonDataType } from "@/models/dataset-entry"
 
 export const datasetEntryFactory = BaseFactory.define<DatasetEntry>(
   ({ sequence, params, onCreate }) => {
-    onCreate((datasetField) => datasetField.save())
+    onCreate((datasetEntry) => datasetEntry.save())
 
     assertParamsHasDatasetId(params)
     assertParamsHasJsonData(params)

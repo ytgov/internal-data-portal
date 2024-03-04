@@ -1,6 +1,12 @@
 import { DatasetField, DatasetEntry } from "@/models"
 
-import { datasetEntryFactory, datasetFactory, datasetFieldFactory, userFactory } from "@/factories"
+import {
+  datasetEntryFactory,
+  datasetFactory,
+  datasetFieldFactory,
+  userFactory,
+  visualizationControlFactory,
+} from "@/factories"
 
 describe("api/src/models/dataset-entry.ts", () => {
   describe("DatasetEntry", () => {
@@ -11,6 +17,9 @@ describe("api/src/models/dataset-entry.ts", () => {
         const dataset = await datasetFactory.create({
           creatorId: user.id,
           ownerId: user.id,
+        })
+        await visualizationControlFactory.create({
+          datasetId: dataset.id,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
