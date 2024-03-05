@@ -5,6 +5,7 @@
     :headers="headers"
     :items="datasetEntriesData"
     :items-length="totalCount"
+    :items-per-page-options="itemsPerPageOptions"
     :loading="isLoadingDatasetFields || isLoadingDatasetEntries"
     class="elevation-1"
     loading-text="Loading... this might take a while"
@@ -46,8 +47,16 @@ const props = defineProps({
 })
 
 const searchToken = ref("")
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(5)
 const page = ref(1)
+
+const itemsPerPageOptions = [
+  { value: 5, title: "5" },
+  { value: 10, title: "10" },
+  { value: 50, title: "50" },
+  { value: 100, title: "100" },
+  { value: -1, title: "$vuetify.dataFooter.itemsPerPageAll" },
+]
 
 const datasetFieldsQuery = computed(() => ({
   where: {
@@ -96,6 +105,6 @@ function updateSearchToken(value: string) {
 const debouncedUpdateSearchToken = debounce(updateSearchToken, 1000)
 
 defineExpose({
-  refresh
+  refresh,
 })
 </script>
