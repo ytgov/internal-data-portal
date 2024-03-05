@@ -7,7 +7,7 @@ export function temporaryAccessCookieHoistMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  const temporaryAccessToken = req.cookies.get(TEMPORARY_ACCESS_COOKIE_NAME)
+  const temporaryAccessToken = req.cookies?.[TEMPORARY_ACCESS_COOKIE_NAME]
   if (temporaryAccessToken && !req.headers.authorization) {
     req.headers.authorization = `Bearer ${temporaryAccessToken}`
   }
