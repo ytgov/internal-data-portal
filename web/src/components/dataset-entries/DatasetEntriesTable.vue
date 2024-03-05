@@ -63,6 +63,7 @@ const datasetFieldsQuery = computed(() => ({
     datasetId: props.datasetId,
   },
   // TODO: figure out a better solution than using max page size
+  // Using a paginated iterator for datasetFields would be pretty slick.
   perPage: MAX_PER_PAGE,
 }))
 

@@ -10,6 +10,9 @@ import { compactSql } from "@/utils/compact-sql"
 export function datasetEntriesSearch(): Literal {
   /**
    * Only applies search field exclusions when enabled.
+   *
+   * TODO: add ability to inject early filtering,
+   * or at least early filtering on dataset_id, as this will vastly speed up the query.
    */
   const query = compactSql(/*sql*/ `
     (
