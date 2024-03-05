@@ -6,6 +6,7 @@
   <VisualizePropertiesFormCard
     v-else
     :visualization-control-id="dataset.visualizationControl.id"
+    @saved="refreshTable"
   />
 
   <v-spacer class="mt-6" />
@@ -15,12 +16,13 @@
   />
   <DatasetEntriesTable
     v-else
+    ref="datasetEntriesTable"
     :dataset-id="dataset.id"
   />
 </template>
 
 <script setup lang="ts">
-import { toRefs } from "vue"
+import { ref, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
@@ -38,6 +40,16 @@ const props = defineProps({
 
 const { slug } = toRefs(props)
 const { dataset } = useDataset(slug)
+
+const datasetEntriesTable = ref<InstanceType<typeof DatasetEntriesTable> | null>(null)
+
+function refreshTable() {
+  if (isNil(datasetEntriesTable.value)) {
+    return
+  }
+
+  datasetEntriesTable.value.refresh()
+}
 
 const { setBreadcrumbs } = useBreadcrumbs()
 

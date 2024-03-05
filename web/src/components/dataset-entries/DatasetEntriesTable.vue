@@ -79,6 +79,7 @@ const {
   datasetEntries,
   totalCount,
   isLoading: isLoadingDatasetEntries,
+  refresh,
 } = useDatasetEntries(datasetEntriesQuery)
 
 const datasetEntriesData = computed<DatasetEntry["jsonData"][]>(() => {
@@ -92,4 +93,8 @@ function updateSearchToken(value: string) {
 }
 
 const debouncedUpdateSearchToken = debounce(updateSearchToken, 1000)
+
+defineExpose({
+  refresh
+})
 </script>

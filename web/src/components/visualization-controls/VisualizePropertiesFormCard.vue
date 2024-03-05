@@ -128,6 +128,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(["saved"])
+
 const { visualizationControlId } = toRefs(props)
 const { visualizationControl, save, isLoading } = useVisualizationControl(visualizationControlId)
 const searchExcludedDatasetFieldsIds = computed(() => {
@@ -149,6 +151,7 @@ const snack = useSnack()
 async function saveAndNotify() {
   try {
     await save()
+    emit("saved")
     snack.notify("Visualization properties saved", {
       color: "success",
     })
@@ -171,6 +174,7 @@ async function saveSearchExcludedDatasetFieldsAndNotify(datasetFieldIds: number[
     await save({
       searchExcludedDatasetFieldsAttributes,
     })
+    emit("saved")
     snack.notify("Visualization properties saved", {
       color: "success",
     })
