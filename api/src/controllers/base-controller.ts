@@ -8,6 +8,9 @@ type ControllerRequest = Request & {
   currentUser: User
 }
 
+const MAX_PER_PAGE = 1000
+const DEFAULT_PER_PAGE = 10
+
 // See https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions
 export class BaseController {
   protected request: ControllerRequest
@@ -101,8 +104,8 @@ export class BaseController {
 
   get pagination() {
     const page = parseInt(this.query.page?.toString() || "") || 1
-    const perPage = parseInt(this.query.perPage?.toString() || "") || 10
-    const limit = Math.max(10, Math.min(perPage, 1000)) // restrict max limit to 1000 for safety
+    const perPage = parseInt(this.query.perPage?.toString() || "") || DEFAULT_PER_PAGE
+    const limit = this.determineLimit(perPage)
     const offset = (page - 1) * limit
     return {
       page,
@@ -110,6 +113,15 @@ export class BaseController {
       limit,
       offset,
     }
+  }
+
+  private determineLimit(perPage: number) {
+    if (perPage === -1) {
+      return MAX_PER_PAGE
+    }
+
+
+    return Math.min(perPage, MAX_PER_PAGE)
   }
 }
 
