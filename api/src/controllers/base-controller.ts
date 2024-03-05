@@ -6,6 +6,7 @@ export type Actions = "index" | "show" | "new" | "edit" | "create" | "update" | 
 
 type ControllerRequest = Request & {
   currentUser: User
+  format?: string
 }
 
 // Keep in sync with web/src/api/base-api.ts
@@ -93,6 +94,10 @@ export class BaseController {
   // and return undefined
   get currentUser(): User {
     return this.request.currentUser
+  }
+
+  get format() {
+    return this.request.format
   }
 
   get params() {

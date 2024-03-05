@@ -16,6 +16,7 @@ import { APPLICATION_NAME, GIT_COMMIT_HASH, NODE_ENV, RELEASE_TAG } from "@/conf
 
 import jwtMiddleware from "@/middlewares/jwt-middleware"
 import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middleware"
+import pathFormatMiddleware from "@/middlewares/path-format-middleware"
 
 import {
   AccessGrantsController,
@@ -48,7 +49,7 @@ router.route("/_status").get((req: Request, res: Response) => {
 })
 
 // api routes
-router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser)
+router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser, pathFormatMiddleware)
 
 // Add all the standard api controller routes here
 router.route("/api/current-user").get(CurrentUserController.show)
