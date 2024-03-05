@@ -624,6 +624,68 @@ describe("api/src/models/dataset-entries/dataset-entries-search.ts", () => {
           }),
         ])
       })
+
+      test("when search row limit is enabled, and multiple fields exist, does not limit the results to much", async () => {
+        // Arrange
+        const user = await userFactory.create()
+        const dataset = await datasetFactory.create({
+          creatorId: user.id,
+          ownerId: user.id,
+        })
+        await visualizationControlFactory.create({
+          datasetId: dataset.id,
+          hasSearchCustomizations: true,
+          hasSearchRowLimits: true,
+          searchRowLimitMaximum: 2,
+        })
+        await datasetFieldFactory.create({
+          datasetId: dataset.id,
+          name: "email",
+          dataType: DatasetField.DataTypes.TEXT,
+        })
+        await datasetFieldFactory.create({
+          datasetId: dataset.id,
+          name: "firstName",
+          dataType: DatasetField.DataTypes.TEXT,
+        })
+        const datasetEntry1 = await datasetEntryFactory.create({
+          datasetId: dataset.id,
+          jsonData: { email: "Marlen@test.com", firstName: "Marlen" },
+        })
+        const datasetEntry2 = await datasetEntryFactory.create({
+          datasetId: dataset.id,
+          jsonData: { email: "Mark@test.com", firstName: "Mark" },
+        })
+        await datasetEntryFactory.create({
+          datasetId: dataset.id,
+          jsonData: { email: "Marten@test.com", firstName: "Marten" },
+        })
+
+        // Act
+        const searchToken = "mar"
+        const query = datasetEntriesSearch()
+        const scope = DatasetEntry.scope({
+          where: { id: { [Op.in]: query } },
+        })
+        const result = await scope.findAll({
+          replacements: { searchTokenWildcard: `%${searchToken}%`, searchToken },
+        })
+
+        // Assert
+        expect.assertions(1)
+        expect(result).toEqual([
+          expect.objectContaining({
+            jsonData: expect.objectContaining({
+              email: datasetEntry1.jsonData.email,
+            }),
+          }),
+          expect.objectContaining({
+            jsonData: expect.objectContaining({
+              email: datasetEntry2.jsonData.email,
+            }),
+          }),
+        ])
+      })
     })
   })
 })
