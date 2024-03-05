@@ -25,7 +25,9 @@
             @update:model-value="debouncedUpdateSearchToken"
           />
         </v-col>
-        <v-col> TODO: add various Download To .. buttons </v-col>
+        <v-col class="d-flex justify-end align-center">
+          <DownloadAsCsvButton :query="datasetEntriesQuery" />
+        </v-col>
       </v-row>
     </template>
   </v-data-table-server>
@@ -38,6 +40,8 @@ import { debounce } from "lodash"
 import { MAX_PER_PAGE } from "@/api/base-api"
 import useDatasetFields from "@/use/use-dataset-fields"
 import useDatasetEntries, { DatasetEntry } from "@/use/use-dataset-entries"
+
+import DownloadAsCsvButton from "@/components/dataset-entries/DownloadAsCsvButton.vue"
 
 const props = defineProps({
   datasetId: {
