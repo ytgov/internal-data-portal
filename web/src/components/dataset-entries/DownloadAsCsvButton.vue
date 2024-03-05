@@ -1,5 +1,6 @@
 <template>
   <v-btn
+    :loading="isLoading"
     color="primary"
     @click.prevent="setCookie"
     >Download to CSV</v-btn
@@ -7,11 +8,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue"
+import { computed, ref } from "vue"
 
 import { API_BASE_URL } from "@/config"
 import { paramsSerializer } from "@/api/base-api"
-import http from "@/api/http-client"
+import temporaryCookieAccessApi from "@/api/temporary-cookie-access-api"
+import useSnack from "@/use/use-snack"
 
 const props = defineProps({
   query: {
@@ -20,20 +22,28 @@ const props = defineProps({
   },
 })
 
+const snack = useSnack()
+
+const isLoading = ref(false)
+
 const downloadUrl = computed(() => {
   const serializedParams = paramsSerializer(props.query)
   return `${API_BASE_URL}/api/dataset-entries.csv?${serializedParams}`
 })
 
 async function setCookie() {
+  isLoading.value = true
   try {
-    await http.post("/api/temporary-access-cookie", undefined, {
-      withCredentials: true,
-    })
+    await temporaryCookieAccessApi.create()
 
     window.open(downloadUrl.value, "_blank")
   } catch (error) {
     console.error("Error fetching the CSV:", error)
+    snack.notify("Error fetching csv. Please try again.", {
+      color: "error",
+    })
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
