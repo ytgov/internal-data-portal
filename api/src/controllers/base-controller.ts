@@ -8,6 +8,7 @@ type ControllerRequest = Request & {
   currentUser: User
 }
 
+// Keep in sync with web/src/api/base-api.ts
 const MAX_PER_PAGE = 1000
 const DEFAULT_PER_PAGE = 10
 

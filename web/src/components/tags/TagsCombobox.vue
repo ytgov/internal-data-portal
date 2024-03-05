@@ -19,6 +19,7 @@
 import { computed, ref } from "vue"
 import { differenceBy } from "lodash"
 
+import { MAX_PER_PAGE } from "@/api/base-api"
 import useTags, { Tag } from "@/use/use-tags"
 
 const props = withDefaults(
@@ -42,7 +43,7 @@ const searchToken = ref<string>("")
 
 // TODO: once search is implemented, this should be removed.
 const tagsQuery = computed(() => ({
-  perPage: 1000,
+  perPage: MAX_PER_PAGE,
 }))
 const { tags, isLoading, refresh } = useTags(tagsQuery)
 

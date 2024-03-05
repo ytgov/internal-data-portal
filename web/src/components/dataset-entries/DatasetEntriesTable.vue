@@ -34,6 +34,7 @@
 import { computed, ref } from "vue"
 import { debounce } from "lodash"
 
+import { MAX_PER_PAGE } from "@/api/base-api"
 import useDatasetFields from "@/use/use-dataset-fields"
 import useDatasetEntries, { DatasetEntry } from "@/use/use-dataset-entries"
 
@@ -53,7 +54,7 @@ const datasetFieldsQuery = computed(() => ({
     datasetId: props.datasetId,
   },
   // TODO: figure out a better solution than using max page size
-  perPage: 1000, // max page size
+  perPage: MAX_PER_PAGE,
 }))
 
 const { datasetFields, isLoading: isLoadingDatasetFields } = useDatasetFields(datasetFieldsQuery)
