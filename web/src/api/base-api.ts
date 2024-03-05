@@ -1,3 +1,13 @@
+import qs from "qs"
+
+// See api/src/app.ts -> app.set("query parser", ...)
+export function paramsSerializer(params: unknown) {
+  return qs.stringify(params, {
+    arrayFormat: "brackets",
+    strictNullHandling: true,
+  })
+}
+
 export type Policy = {
   show: boolean
   create: boolean
