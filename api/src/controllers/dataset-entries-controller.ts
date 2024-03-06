@@ -36,6 +36,10 @@ export class DatasetEntriesController extends BaseController {
   }
 
   // TODO: move this to a service
+  // This should write all content to a local file on the server, and only once complete
+  // stream the fie to the client
+  // that way I will get better error handling and as I'll only send the headers once
+  // I've confirmed that the CSV was built correctly.
   private async respondWithCsv(
     datasetEntriesScope: ModelStatic<DatasetEntry>,
     where: WhereOptions<DatasetEntry>
