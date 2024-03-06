@@ -48,6 +48,7 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue"
+import { type LocationQueryRaw } from "vue-router";
 
 import TagsCombobox, { Tag } from "@/components/tags/TagsCombobox.vue"
 import UserGroupAutocomplete, {
@@ -57,12 +58,15 @@ import UserGroupAutocomplete, {
 const keywords = ref<Tag[]>([])
 const departmentId = ref<number>()
 
+/**
+ * As we are parsing with Qs, we are ignoring the invalid type information
+ */
 const searchQuery = computed(() => {
   return {
     where: {
       departmentId: departmentId.value,
       keywords: keywords.value,
     },
-  }
+  } as unknown as LocationQueryRaw
 })
 </script>

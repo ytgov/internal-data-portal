@@ -11,7 +11,7 @@
 import { computed, ref } from "vue"
 
 import { API_BASE_URL } from "@/config"
-import { paramsSerializer } from "@/api/base-api"
+import { stringifyQuery } from "@/api/base-api"
 import temporaryCookieAccessApi from "@/api/temporary-cookie-access-api"
 import useSnack from "@/use/use-snack"
 
@@ -27,7 +27,7 @@ const snack = useSnack()
 const isLoading = ref(false)
 
 const downloadUrl = computed(() => {
-  const serializedParams = paramsSerializer(props.query)
+  const serializedParams = stringifyQuery(props.query)
   return `${API_BASE_URL}/api/dataset-entries.csv?${serializedParams}`
 })
 
