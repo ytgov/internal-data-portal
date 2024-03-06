@@ -11,7 +11,7 @@ export class TemporaryAccessCookieController extends BaseController {
       const token = authHeader.substring(7, authHeader.length)
 
       const secure = process.env.NODE_ENV !== "development"
-      this.response.cookie(TEMPORARY_ACCESS_COOKIE_NAME, token, {
+      this.response.status(201).cookie(TEMPORARY_ACCESS_COOKIE_NAME, token, {
         httpOnly: true,
         secure,
         sameSite: "strict",
