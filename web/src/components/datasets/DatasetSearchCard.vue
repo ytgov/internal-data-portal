@@ -5,8 +5,8 @@
       <v-form>
         <v-row>
           <v-col>
-            <TagsCombobox
-              v-model="keywords"
+            <TagsAutocomplete
+              v-model="tags"
               label="Keywords"
               variant="outlined"
             />
@@ -48,22 +48,26 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue"
-import { type LocationQueryRaw } from "vue-router";
+import { type LocationQueryRaw } from "vue-router"
 
-import TagsCombobox, { Tag } from "@/components/tags/TagsCombobox.vue"
+import TagsAutocomplete, { Tag } from "@/components/tags/TagsAutocomplete.vue"
 import UserGroupAutocomplete, {
   UserGroupTypes,
 } from "@/components/user-groups/UserGroupAutocomplete.vue"
 
-const keywords = ref<Tag[]>([])
+const tags = ref<Tag[]>([])
 const departmentId = ref<number>()
+
+const keywords = computed(() => {
+  return tags.value.map(({ name }) => name)
+})
 
 /**
  * As we are parsing with Qs, we are ignoring the invalid type information
  */
 const searchQuery = computed(() => {
   return {
-    where: {
+    filter: {
       departmentId: departmentId.value,
       keywords: keywords.value,
     },
