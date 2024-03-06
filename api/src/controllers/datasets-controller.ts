@@ -129,9 +129,11 @@ export class DatasetsController extends BaseController {
           ],
         },
         "creator",
+        "integration",
         "stewardship",
         "accessGrants",
         "accessRequests",
+        "visualizationControl",
       ],
     })
 

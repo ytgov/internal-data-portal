@@ -29,12 +29,13 @@ export class DatasetField extends Model<
   static readonly DataTypes = DatasetFieldDataTypes
 
   declare id: CreationOptional<number>
-  declare datasetId: ForeignKey<Dataset>
+  declare datasetId: ForeignKey<Dataset["id"]>
   declare name: string
   declare displayName: string
   declare dataType: DatasetFieldDataTypes
   declare description: CreationOptional<string | null>
   declare note: CreationOptional<string | null>
+  declare isExcludedFromSearch: CreationOptional<boolean>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>
@@ -42,8 +43,8 @@ export class DatasetField extends Model<
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getDatasets: BelongsToGetAssociationMixin<Dataset>
-  declare setDatasets: BelongsToSetAssociationMixin<Dataset, Dataset["id"]>
+  declare getDataset: BelongsToGetAssociationMixin<Dataset>
+  declare setDataset: BelongsToSetAssociationMixin<Dataset, Dataset["id"]>
   declare createDataset: BelongsToCreateAssociationMixin<Dataset>
 
   declare dataset?: NonAttribute<Dataset>
@@ -95,6 +96,11 @@ DatasetField.init(
     note: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    isExcludedFromSearch: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     createdAt: {
       type: DataTypes.DATE,

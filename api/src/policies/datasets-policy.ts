@@ -5,7 +5,7 @@ import { Path } from "@/utils/deep-pick"
 import { Dataset, User, AccessGrant } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
 import BasePolicy from "@/policies/base-policy"
-import { accessibleViaAccessGrantsBy } from "@/models/datasets"
+import { datasetsAccessibleViaAccessGrantsBy, datasetsAccessibleViaOwner } from "@/models/datasets"
 
 export class DatasetsPolicy extends BasePolicy<Dataset> {
   private _mostPermissiveAccessGrant: AccessGrant | null = null
@@ -58,10 +58,16 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     }
 
     if (user.isDataOwner) {
-      const accessibleAccessGrantsQuery = accessibleViaAccessGrantsBy(user)
+      const datasetsAccessibleViaAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(user)
+      const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
       return modelClass.scope({
         where: {
-          [Op.or]: [{ ownerId: user.id }, accessibleAccessGrantsQuery.where],
+          id: {
+            [Op.or]: [
+              { [Op.in]: datasetsAccessibleViaOwnerQuery },
+              { [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery },
+            ],
+          },
         },
       })
     }
@@ -74,8 +80,6 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
       ...(this.user.isSystemAdmin || this.user.isBusinessAnalyst ? ["ownerId"] : []),
       "name",
       "description",
-      "subscriptionUrl",
-      "subscriptionAccessCode",
       "isSpatialData",
       "isLiveData",
       "termsOfUse",

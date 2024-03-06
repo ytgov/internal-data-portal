@@ -21,9 +21,9 @@ const CONFIGS: {
   // docker-compose.yml or some other method
   production: {
     API_BASE_URL: "",
-    AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com",
-    AUTH0_CLIENT_ID: "ZHjPOeCwYBov6eR1lxGOVYhYi4VPV8eU",
-    AUTH0_AUDIENCE: "testing",
+    AUTH0_DOMAIN: "https://yukon.eu.auth0.com",
+    AUTH0_CLIENT_ID: "kbp3mBBVji9nIJUvLbq13ypfWZnUbU5j",
+    AUTH0_AUDIENCE: "generic-production",
   },
 }
 

@@ -6,7 +6,13 @@ export type Actions = "index" | "show" | "new" | "edit" | "create" | "update" | 
 
 type ControllerRequest = Request & {
   currentUser: User
+  format?: string
 }
+
+// Keep in sync with web/src/api/base-api.ts
+const MAX_PER_PAGE = 1000
+const MAX_PER_PAGE_EQUIVALENT = -1
+const DEFAULT_PER_PAGE = 10
 
 // See https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions
 export class BaseController {
@@ -61,23 +67,23 @@ export class BaseController {
     }
   }
 
-  index(): Promise<any> {
+  index(): Promise<unknown> {
     throw new Error("Not Implemented")
   }
 
-  create(): Promise<any> {
+  create(): Promise<unknown> {
     throw new Error("Not Implemented")
   }
 
-  show(): Promise<any> {
+  show(): Promise<unknown> {
     throw new Error("Not Implemented")
   }
 
-  update(): Promise<any> {
+  update(): Promise<unknown> {
     throw new Error("Not Implemented")
   }
 
-  destroy(): Promise<any> {
+  destroy(): Promise<unknown> {
     throw new Error("Not Implemented")
   }
 
@@ -91,6 +97,10 @@ export class BaseController {
     return this.request.currentUser
   }
 
+  get format() {
+    return this.request.format
+  }
+
   get params() {
     return this.request.params
   }
@@ -101,8 +111,8 @@ export class BaseController {
 
   get pagination() {
     const page = parseInt(this.query.page?.toString() || "") || 1
-    const perPage = parseInt(this.query.perPage?.toString() || "") || 10
-    const limit = Math.max(10, Math.min(perPage, 1000)) // restrict max limit to 1000 for safety
+    const perPage = parseInt(this.query.perPage?.toString() || "") || DEFAULT_PER_PAGE
+    const limit = this.determineLimit(perPage)
     const offset = (page - 1) * limit
     return {
       page,
@@ -110,6 +120,15 @@ export class BaseController {
       limit,
       offset,
     }
+  }
+
+  private determineLimit(perPage: number) {
+    if (perPage === MAX_PER_PAGE_EQUIVALENT) {
+      return MAX_PER_PAGE
+    }
+
+
+    return Math.min(perPage, MAX_PER_PAGE)
   }
 }
 

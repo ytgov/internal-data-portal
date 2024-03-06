@@ -4,17 +4,17 @@ import { authGuard } from "@auth0/auth0-vue"
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
-    redirect: "/dashboard",
-  },
-  {
-    name: "DashboardPage",
-    path: "/dashboard",
-    component: () => import("@/pages/DashboardPage.vue"),
-  },
-  {
-    path: "/",
     component: () => import("@/layouts/BaseLayout.vue"),
     children: [
+      {
+        path: "",
+        redirect: "/dashboard",
+      },
+      {
+        name: "DashboardPage",
+        path: "/dashboard",
+        component: () => import("@/pages/DashboardPage.vue"),
+      },
       {
         name: "DatasetsPage",
         path: "datasets",
@@ -65,7 +65,26 @@ const routes: RouteRecordRaw[] = [
             component: () => import("@/pages/DatasetAccessManagePage.vue"),
             props: true,
           },
+          {
+            name: "DatasetVisualizeReadPage",
+            path: "visualize/read",
+            component: () => import("@/pages/DatasetVisualizeReadPage.vue"),
+            props: true,
+          },
+          {
+            name: "DatasetVisualizeManagePage",
+            path: "visualize/manage",
+            component: () => import("@/pages/DatasetVisualizeManagePage.vue"),
+            props: true,
+          },
         ],
+      },
+      // TODO: Make this page a tab in the DatasetLayout, after I make that pattern more flexible
+      {
+        path: "datasets/:slug/api/manage",
+        name: "DatasetApiManagePage",
+        component: () => import("@/pages/DatasetApiManagePage.vue"),
+        props: true,
       },
     ],
   },

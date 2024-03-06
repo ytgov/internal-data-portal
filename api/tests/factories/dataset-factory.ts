@@ -56,24 +56,16 @@ export const datasetFactory = DatasetFactory.define(
     const name = faker.lorem.words({ min: 3, max: 5 })
     const slug = faker.helpers.slugify(name).toLowerCase()
 
-    const subscriptionUrl = faker.datatype.boolean(0.5) ? faker.internet.url() : null
-    const subscriptionAccessCode = subscriptionUrl ? faker.string.alphanumeric(32) : null
-
     return Dataset.build({
       id: sequence,
       slug,
       name,
       description: faker.lorem.paragraph(),
-      subscriptionUrl,
-      subscriptionAccessCode,
       isSpatialData: faker.datatype.boolean(0.5),
       isLiveData: faker.datatype.boolean(0.5),
       termsOfUse: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
       credits: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
       ownerNotes: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
-      status: Dataset.ErrorTypes.OK,
-      errorCode: null,
-      errorDetails: null,
       publishedAt: null,
       deactivatedAt: null,
     })

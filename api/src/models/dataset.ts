@@ -22,6 +22,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   NonAttribute,
+  Op,
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
@@ -29,38 +30,33 @@ import sequelize from "@/db/db-client"
 import AccessGrant from "@/models/access-grant"
 import AccessRequest from "@/models/access-request"
 import DatasetField from "@/models/dataset-field"
+import DatasetIntegration from "@/models/dataset-integration"
 import DatasetStewardship from "@/models/dataset-stewardship"
 import Tag from "@/models/tag"
 import Tagging, { TaggableTypes } from "@/models/tagging"
 import User from "@/models/user"
-import { mostPermissiveAccessGrantFor, accessibleViaAccessGrantsBy } from "@/models/datasets"
+import {
+  datasetHasApprovedAccessRequestFor,
+  datasetIsAccessibleViaOpenAccessGrantBy,
+  datasetsAccessibleViaAccessGrantsBy,
+  mostPermissiveAccessGrantFor,
+} from "@/models/datasets"
+import VisualizationControl from "@/models/visualization-control"
 
 import BaseModel from "@/models/base-model"
 
-export enum DatasetErrorTypes {
-  OK = "ok",
-  ERRORED = "errored",
-}
-
 export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAttributes<Dataset>> {
-  static readonly ErrorTypes = DatasetErrorTypes
-
   declare id: CreationOptional<number>
   declare ownerId: ForeignKey<User["id"]>
   declare creatorId: ForeignKey<User["id"]>
   declare slug: string
   declare name: string
   declare description: string
-  declare subscriptionUrl: CreationOptional<string | null>
-  declare subscriptionAccessCode: CreationOptional<string | null>
   declare isSpatialData: CreationOptional<boolean>
   declare isLiveData: CreationOptional<boolean>
   declare termsOfUse: CreationOptional<string | null>
   declare credits: CreationOptional<string | null>
   declare ownerNotes: CreationOptional<string | null>
-  declare status: CreationOptional<DatasetErrorTypes>
-  declare errorCode: CreationOptional<string | null>
-  declare errorDetails: CreationOptional<string | null>
   declare publishedAt: CreationOptional<Date | null>
   declare deactivatedAt: CreationOptional<Date | null>
   declare createdAt: CreationOptional<Date>
@@ -78,12 +74,26 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
   declare setCreator: BelongsToSetAssociationMixin<User, User["id"]>
   declare createCreator: BelongsToCreateAssociationMixin<User>
 
+  declare getIntegration: HasOneGetAssociationMixin<DatasetIntegration>
+  declare setIntegration: HasOneSetAssociationMixin<
+    DatasetIntegration,
+    DatasetIntegration["datasetId"]
+  >
+  declare createIntegration: HasOneCreateAssociationMixin<DatasetIntegration>
+
   declare getStewardship: HasOneGetAssociationMixin<DatasetStewardship>
   declare setStewardship: HasOneSetAssociationMixin<
     DatasetStewardship,
     DatasetStewardship["datasetId"]
   >
   declare createStewardship: HasOneCreateAssociationMixin<DatasetStewardship>
+
+  declare getVisualizationControl: HasOneGetAssociationMixin<VisualizationControl>
+  declare setVisualizationControl: HasOneSetAssociationMixin<
+    VisualizationControl,
+    VisualizationControl["datasetId"]
+  >
+  declare createVisualizationControl: HasOneCreateAssociationMixin<VisualizationControl>
 
   declare getAccessGrants: HasManyGetAssociationsMixin<AccessGrant>
   declare setAccessGrants: HasManySetAssociationsMixin<AccessGrant, AccessGrant["datasetId"]>
@@ -148,7 +158,9 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
 
   declare owner?: NonAttribute<User>
   declare creator?: NonAttribute<User>
+  declare integration?: NonAttribute<DatasetIntegration>
   declare stewardship?: NonAttribute<DatasetStewardship>
+  declare visualizationControl?: NonAttribute<VisualizationControl>
   declare accessGrants?: NonAttribute<AccessGrant[]>
   declare accessRequests?: NonAttribute<AccessRequest[]>
   declare fields?: NonAttribute<DatasetField[]>
@@ -159,11 +171,13 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
     accessGrants: Association<Dataset, AccessGrant>
     accessRequests: Association<Dataset, AccessRequest>
     creator: Association<Dataset, User>
+    integration: Association<Dataset, DatasetIntegration>
     fields: Association<Dataset, DatasetField>
     owner: Association<Dataset, User>
     stewardship: Association<Dataset, DatasetStewardship>
     taggings: Association<Dataset, Tagging>
     tags: Association<Dataset, Tag>
+    visualizationControl: Association<Dataset, VisualizationControl>
   }
 
   static establishAssociations() {
@@ -175,9 +189,17 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
       foreignKey: "creatorId",
       as: "creator",
     })
+    this.hasOne(DatasetIntegration, {
+      foreignKey: "datasetId",
+      as: "integration",
+    })
     this.hasOne(DatasetStewardship, {
       foreignKey: "datasetId",
       as: "stewardship",
+    })
+    this.hasOne(VisualizationControl, {
+      foreignKey: "datasetId",
+      as: "visualizationControl",
     })
     this.hasMany(AccessRequest, {
       foreignKey: "datasetId",
@@ -214,6 +236,14 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
 
   public mostPermissiveAccessGrantFor(user: User): NonAttribute<AccessGrant | null> {
     return mostPermissiveAccessGrantFor(this, user)
+  }
+
+  public isAccessibleViaOpenAccessGrantBy(user: User): NonAttribute<boolean> {
+    return datasetIsAccessibleViaOpenAccessGrantBy(this, user)
+  }
+
+  public hasApprovedAccessRequestFor(user: User): NonAttribute<boolean> {
+    return datasetHasApprovedAccessRequestFor(this, user)
   }
 }
 
@@ -253,14 +283,6 @@ Dataset.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    subscriptionUrl: {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
-    },
-    subscriptionAccessCode: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
     isSpatialData: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -280,22 +302,6 @@ Dataset.init(
       allowNull: true,
     },
     ownerNotes: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    status: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      defaultValue: DatasetErrorTypes.OK,
-      validate: {
-        isIn: [Object.values(DatasetErrorTypes)],
-      },
-    },
-    errorCode: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
-    errorDetails: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
@@ -335,7 +341,15 @@ Dataset.init(
       },
     ],
     scopes: {
-      accessibleViaAccessGrantsBy,
+      accessibleViaAccessGrantsBy(user: User) {
+        return {
+          where: {
+            id: {
+              [Op.in]: datasetsAccessibleViaAccessGrantsBy(user),
+            },
+          },
+        }
+      },
     },
   }
 )

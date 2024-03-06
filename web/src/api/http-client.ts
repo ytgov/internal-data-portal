@@ -1,8 +1,9 @@
-import qs from "qs"
 import axios from "axios"
 
 import { API_BASE_URL } from "@/config"
 import auth0 from "@/plugins/auth0-plugin"
+
+import { paramsSerializer } from "@/api/base-api"
 
 export const httpClient = axios.create({
   baseURL: API_BASE_URL,
@@ -10,13 +11,7 @@ export const httpClient = axios.create({
     "Content-Type": "application/json",
   },
   paramsSerializer: {
-    // See api/src/app.ts -> app.set("query parser", ...)
-    serialize: (params) => {
-      return qs.stringify(params, {
-        arrayFormat: "brackets",
-        strictNullHandling: true,
-      })
-    },
+    serialize: paramsSerializer,
   },
 })
 

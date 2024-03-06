@@ -16,23 +16,29 @@ import { APPLICATION_NAME, GIT_COMMIT_HASH, NODE_ENV, RELEASE_TAG } from "@/conf
 
 import jwtMiddleware from "@/middlewares/jwt-middleware"
 import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middleware"
+import pathFormatMiddleware from "@/middlewares/path-format-middleware"
 
 import {
   AccessGrantsController,
   AccessRequests,
   AccessRequestsController,
   CurrentUserController,
+  DatasetEntriesController,
   DatasetFieldsController,
+  DatasetIntegrationsController,
   DatasetsController,
   DatasetStewardshipsController,
   QaScenarios,
   TaggingsController,
   TagsController,
+  TemporaryAccessCookieController,
   UserGroups,
   UserGroupsController,
   Users,
   UsersController,
+  VisualizationControlsController,
 } from "@/controllers"
+import temporaryAccessCookieHoistMiddleware from "./middlewares/temporary-access-cookie-hoist-middleware"
 
 export const router = Router()
 
@@ -45,10 +51,17 @@ router.route("/_status").get((req: Request, res: Response) => {
 })
 
 // api routes
-router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser)
+router.use(
+  "/api",
+  temporaryAccessCookieHoistMiddleware,
+  jwtMiddleware,
+  ensureAndAuthorizeCurrentUser,
+  pathFormatMiddleware
+)
 
 // Add all the standard api controller routes here
 router.route("/api/current-user").get(CurrentUserController.show)
+router.route("/api/temporary-access-cookie").post(TemporaryAccessCookieController.create)
 
 router.route("/api/datasets").get(DatasetsController.index).post(DatasetsController.create)
 router
@@ -79,6 +92,8 @@ router
   .route("/api/access-requests/:accessRequestId/revoke")
   .post(AccessRequests.RevokeController.create)
 
+router.route("/api/dataset-entries").get(DatasetEntriesController.index)
+
 router
   .route("/api/dataset-fields")
   .get(DatasetFieldsController.index)
@@ -87,6 +102,12 @@ router
   .route("/api/dataset-fields/:datasetFieldId")
   .patch(DatasetFieldsController.update)
   .delete(DatasetFieldsController.destroy)
+
+router.route("/api/dataset-integrations").post(DatasetIntegrationsController.create)
+router
+  .route("/api/dataset-integrations/:datasetIntegrationId")
+  .get(DatasetIntegrationsController.show)
+  .patch(DatasetIntegrationsController.update)
 
 router
   .route("/api/dataset-stewardships/:datasetStewardshipId")
@@ -107,6 +128,11 @@ router
 router.route("/api/taggings").get(TaggingsController.index).post(TaggingsController.create)
 router.route("/api/taggings/:taggingId").delete(TaggingsController.destroy)
 router.route("/api/tags").get(TagsController.index)
+
+router
+  .route("/api/visualization-controls/:visualizationControlId")
+  .get(VisualizationControlsController.show)
+  .patch(VisualizationControlsController.update)
 
 // TODO: might want to lock these to only run in non-production environments?
 router.route("/api/qa-scenarios/link-random-tags").post(QaScenarios.LinkRandomTagsController.create)

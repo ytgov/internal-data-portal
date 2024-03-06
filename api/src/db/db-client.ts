@@ -26,6 +26,7 @@ export const SEQUELIZE_CONFIG: Options = {
     underscored: true,
     timestamps: true, // This is actually the default, but making it explicit for clarity.
     paranoid: true, // adds deleted_at column
+    whereMergeStrategy: 'and', // where fields will be merged using the and operator (instead of overwriting each other)
   },
 }
 
