@@ -75,7 +75,7 @@ export class DatasetEntriesController extends BaseController {
       )
     } catch (error) {
       console.error("Failed to generate CSV", error)
-      this.response.status(500).write(`Failed to generate CSV: ${error}`)
+      this.response.write(`Failed to generate CSV: ${error}`)
     } finally {
       this.response.end()
     }
