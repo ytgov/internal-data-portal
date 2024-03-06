@@ -5,7 +5,7 @@ import path from "path"
 import helmet from "helmet"
 import qs from "qs"
 
-import { FRONTEND_URL } from "@/config"
+import { AUTH0_DOMAIN, FRONTEND_URL } from "@/config"
 import router from "@/router"
 
 export const app = express()
@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true })) // for parsing application/x-www
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      "default-src": ["'self'", "https://dev-0tc6bn14.eu.auth0.com"],
+      "default-src": ["'self'", FRONTEND_URL, AUTH0_DOMAIN],
       "base-uri": ["'self'"],
       "block-all-mixed-content": [],
       "font-src": ["'self'", "https:", "data:"],
@@ -34,7 +34,7 @@ app.use(
       "script-src-attr": ["'none'"],
       "style-src": ["'self'", "https:", "'unsafe-inline'"],
       "worker-src": ["'self'", "blob:"],
-      "connect-src": ["'self'", "https://dev-0tc6bn14.eu.auth0.com"],
+      "connect-src": ["'self'", FRONTEND_URL, AUTH0_DOMAIN],
     },
   })
 )
