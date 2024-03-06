@@ -1,7 +1,8 @@
-import { WhereOptions } from "sequelize"
+import { ModelStatic, WhereOptions } from "sequelize"
 import { isEmpty } from "lodash"
+import Papa from "papaparse"
 
-import { DatasetEntry } from "@/models"
+import { Dataset, DatasetEntry, DatasetField } from "@/models"
 import { DatasetEntriesPolicy } from "@/policies"
 
 import BaseController from "@/controllers/base-controller"
@@ -19,24 +20,7 @@ export class DatasetEntriesController extends BaseController {
     }
 
     if (this.format === "csv") {
-      // Assuming pagination is removed for un-paginated results
-      // const datasetEntries = await filteredDatasetEntries.findAll({ where })
-
-      // Convert dataset entries to CSV using Papa Parse
-      // const csv = Papa.unparse(datasetEntries)
-
-      // // Set headers to indicate a file download
-      // res.header("Content-Type", "text/csv")
-      // res.attachment("dataset-entries.csv")
-
-      // // Convert CSV string to stream and pipe it to response
-      // const csvStream = Readable.from(csv)
-      // csvStream.pipe(res)
-
-      const csvContent = "Column1,Column2\nValue1,Value2"
-      this.response.setHeader("Content-Type", "text/csv")
-      this.response.setHeader("Content-Disposition", 'attachment; filename="download.csv"')
-      this.response.send(csvContent)
+      return this.respondWithCsv(filteredDatasetEntries, where)
     } else {
       const totalCount = await filteredDatasetEntries.count({ where })
       const datasetEntries = await filteredDatasetEntries.findAll({
@@ -46,6 +30,54 @@ export class DatasetEntriesController extends BaseController {
       })
 
       return this.response.json({ datasetEntries, totalCount })
+    }
+  }
+
+  private async respondWithCsv(
+    datasetEntriesScope: ModelStatic<DatasetEntry>,
+    where: WhereOptions<DatasetEntry>
+  ) {
+    this.response.header("Content-Type", "text/csv")
+    const date = new Date().toISOString().split("T")[0]
+    this.response.attachment(`Data, Dataset Entries, ${date}.csv`)
+
+    try {
+      let isFirstLine = true
+      // @ts-expect-error - findEach works, but I can't figure out how to type it correctly
+      await datasetEntriesScope.findEach(
+        {
+          where,
+          include: [
+            {
+              association: "dataset",
+              include: ["fields"],
+            },
+          ],
+        },
+        (datasetEntry: DatasetEntry) => {
+          const { jsonData, dataset } = datasetEntry
+          const { fields } = dataset as Omit<Dataset, "fields"> & { fields: DatasetField[] }
+          const headers = fields.map((field) => field.displayName)
+
+          if (isFirstLine) {
+            const rowString = Papa.unparse([headers])
+            this.response.write(rowString)
+            this.response.write("\r\n")
+          }
+
+          const preparedData = fields?.map((field) => jsonData[field.name])
+          const rowString = Papa.unparse([preparedData])
+          this.response.write(rowString)
+          this.response.write("\r\n")
+
+          isFirstLine = false
+        }
+      )
+    } catch (error) {
+      console.error("Failed to generate CSV", error)
+      this.response.status(500).write(`Failed to generate CSV: ${error}`)
+    } finally {
+      this.response.end()
     }
   }
 }

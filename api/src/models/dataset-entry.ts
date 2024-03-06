@@ -8,7 +8,6 @@ import {
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
-  Model,
   NonAttribute,
   Op,
 } from "sequelize"
@@ -17,11 +16,12 @@ import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
 import { datasetEntriesSearch } from "@/models/dataset-entries"
+import BaseModel from "@/models/base-model"
 
 export type DatasetEntryRawJsonDataType = Record<string, unknown>
 export type DatasetEntryJsonDataType = Record<string, string | number>
 
-export class DatasetEntry extends Model<
+export class DatasetEntry extends BaseModel<
   InferAttributes<DatasetEntry>,
   InferCreationAttributes<DatasetEntry>
 > {
