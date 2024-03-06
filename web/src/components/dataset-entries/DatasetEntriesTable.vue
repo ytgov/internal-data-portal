@@ -26,7 +26,10 @@
           />
         </v-col>
         <v-col class="d-flex justify-end align-center">
-          <DownloadAsCsvButton :query="datasetEntriesQuery" />
+          <DownloadAsCsvButton
+            v-if="visualizationControl?.isDownloadableAsCsv"
+            :query="datasetEntriesQuery"
+          />
         </v-col>
       </v-row>
     </template>
@@ -34,17 +37,22 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue"
+import { computed, ref, toRefs } from "vue"
 import { debounce } from "lodash"
 
 import { MAX_PER_PAGE } from "@/api/base-api"
 import useDatasetFields from "@/use/use-dataset-fields"
 import useDatasetEntries, { DatasetEntry } from "@/use/use-dataset-entries"
+import useVisualizationControl from "@/use/use-visualization-control"
 
 import DownloadAsCsvButton from "@/components/dataset-entries/DownloadAsCsvButton.vue"
 
 const props = defineProps({
   datasetId: {
+    type: Number,
+    required: true,
+  },
+  visualizationControlId: {
     type: Number,
     required: true,
   },
@@ -61,6 +69,10 @@ const itemsPerPageOptions = [
   { value: 100, title: "100" },
   { value: -1, title: "$vuetify.dataFooter.itemsPerPageAll" },
 ]
+
+const { visualizationControlId } = toRefs(props)
+const { visualizationControl, refresh: refreshVisualizationControl } =
+  useVisualizationControl(visualizationControlId)
 
 const datasetFieldsQuery = computed(() => ({
   where: {
@@ -94,7 +106,7 @@ const {
   datasetEntries,
   totalCount,
   isLoading: isLoadingDatasetEntries,
-  refresh,
+  refresh: refreshDatasetEntries,
 } = useDatasetEntries(datasetEntriesQuery)
 
 const datasetEntriesData = computed<DatasetEntry["jsonData"][]>(() => {
@@ -108,6 +120,11 @@ function updateSearchToken(value: string) {
 }
 
 const debouncedUpdateSearchToken = debounce(updateSearchToken, 1000)
+
+function refresh() {
+  refreshVisualizationControl()
+  refreshDatasetEntries()
+}
 
 defineExpose({
   refresh,

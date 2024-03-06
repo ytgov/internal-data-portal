@@ -18,6 +18,7 @@
     v-else
     ref="datasetEntriesTable"
     :dataset-id="dataset.id"
+    :visualization-control-id="dataset.visualizationControl.id"
   />
 </template>
 

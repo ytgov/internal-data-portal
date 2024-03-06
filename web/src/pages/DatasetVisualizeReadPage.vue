@@ -29,6 +29,7 @@
   <DatasetEntriesTable
     v-else
     :dataset-id="dataset.id"
+    :visualization-control-id="dataset.visualizationControl.id"
   />
 </template>
 
