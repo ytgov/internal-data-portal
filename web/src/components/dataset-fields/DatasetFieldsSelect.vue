@@ -29,6 +29,7 @@
 import { computed } from "vue"
 import { isNil, keyBy } from "lodash"
 
+import { MAX_PER_PAGE } from "@/api/base-api"
 import useDatasetFields, { DatasetField } from "@/use/use-dataset-fields"
 
 const props = withDefaults(
@@ -52,7 +53,7 @@ const datasetFieldsQuery = computed(() => ({
     datasetId: props.datasetId,
   },
   // TODO: implement back-end search with combobox and remove max per page
-  perPage: 1000,
+  perPage: MAX_PER_PAGE,
 }))
 const { datasetFields, isLoading, refresh } = useDatasetFields(datasetFieldsQuery)
 

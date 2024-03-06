@@ -7,6 +7,7 @@ export { type DatasetEntry }
 export function useDatasetEntries(
   queryOptions: Ref<{
     where?: Record<string, unknown>
+    searchToken?: string
     page?: number
     perPage?: number
   }> = ref({})

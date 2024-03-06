@@ -6,22 +6,24 @@
   <VisualizePropertiesFormCard
     v-else
     :visualization-control-id="dataset.visualizationControl.id"
+    @saved="refreshTable"
   />
 
   <v-spacer class="mt-6" />
-  TODO: add data entries search and various Download To .. buttons
   <v-skeleton-loader
     v-if="isNil(dataset)"
     type="table"
   />
   <DatasetEntriesTable
     v-else
+    ref="datasetEntriesTable"
     :dataset-id="dataset.id"
+    :visualization-control-id="dataset.visualizationControl.id"
   />
 </template>
 
 <script setup lang="ts">
-import { toRefs } from "vue"
+import { ref, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
@@ -39,6 +41,16 @@ const props = defineProps({
 
 const { slug } = toRefs(props)
 const { dataset } = useDataset(slug)
+
+const datasetEntriesTable = ref<InstanceType<typeof DatasetEntriesTable> | null>(null)
+
+function refreshTable() {
+  if (isNil(datasetEntriesTable.value)) {
+    return
+  }
+
+  datasetEntriesTable.value.refresh()
+}
 
 const { setBreadcrumbs } = useBreadcrumbs()
 

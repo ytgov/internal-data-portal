@@ -16,6 +16,7 @@ import { APPLICATION_NAME, GIT_COMMIT_HASH, NODE_ENV, RELEASE_TAG } from "@/conf
 
 import jwtMiddleware from "@/middlewares/jwt-middleware"
 import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middleware"
+import pathFormatMiddleware from "@/middlewares/path-format-middleware"
 
 import {
   AccessGrantsController,
@@ -30,12 +31,14 @@ import {
   QaScenarios,
   TaggingsController,
   TagsController,
+  TemporaryAccessCookieController,
   UserGroups,
   UserGroupsController,
   Users,
   UsersController,
   VisualizationControlsController,
 } from "@/controllers"
+import temporaryAccessCookieHoistMiddleware from "./middlewares/temporary-access-cookie-hoist-middleware"
 
 export const router = Router()
 
@@ -48,10 +51,17 @@ router.route("/_status").get((req: Request, res: Response) => {
 })
 
 // api routes
-router.use("/api", jwtMiddleware, ensureAndAuthorizeCurrentUser)
+router.use(
+  "/api",
+  temporaryAccessCookieHoistMiddleware,
+  jwtMiddleware,
+  ensureAndAuthorizeCurrentUser,
+  pathFormatMiddleware
+)
 
 // Add all the standard api controller routes here
 router.route("/api/current-user").get(CurrentUserController.show)
+router.route("/api/temporary-access-cookie").post(TemporaryAccessCookieController.create)
 
 router.route("/api/datasets").get(DatasetsController.index).post(DatasetsController.create)
 router

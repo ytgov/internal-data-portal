@@ -1,4 +1,5 @@
 import express, { type Request, type Response } from "express"
+import cookieParser from "cookie-parser"
 import cors from "cors"
 import path from "path"
 import helmet from "helmet"
@@ -16,6 +17,7 @@ app.set("query parser", (params: string) => {
     strictNullHandling: true,
   })
 })
+app.use(cookieParser())
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(
