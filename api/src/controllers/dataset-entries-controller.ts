@@ -1,13 +1,14 @@
 import { ModelStatic, WhereOptions } from "sequelize"
 import { isEmpty } from "lodash"
-import Papa from "papaparse"
+import { createReadStream } from "fs"
 
-import { Dataset, DatasetEntry, DatasetField } from "@/models"
+import { DatasetEntry } from "@/models"
 import { DatasetEntriesPolicy } from "@/policies"
+import { CreateCsvService } from "@/services/dataset-entries"
 
 import BaseController from "@/controllers/base-controller"
 
-// TODO: consider moving this to a /dataset/:datasetId/entries route
+// TODO: consider moving this to a /datasets/:datasetId/entries route
 // so that we can use the datasetId to scope the entries and reduce query complexity
 export class DatasetEntriesController extends BaseController {
   async index() {
@@ -35,56 +36,22 @@ export class DatasetEntriesController extends BaseController {
     }
   }
 
-  // TODO: move this to a service
-  // This should write all content to a local file on the server, and only once complete
-  // stream the fie to the client
-  // that way I will get better error handling and as I'll only send the headers once
-  // I've confirmed that the CSV was built correctly.
   private async respondWithCsv(
     datasetEntriesScope: ModelStatic<DatasetEntry>,
     where: WhereOptions<DatasetEntry>
   ) {
-    this.response.header("Content-Type", "text/csv")
-    const date = new Date().toISOString().split("T")[0]
-    this.response.attachment(`Data, Dataset Entries, ${date}.csv`)
-
     try {
-      let isFirstLine = true
-      // @ts-expect-error - findEach works, but I can't figure out how to type it correctly
-      await datasetEntriesScope.findEach(
-        {
-          where,
-          include: [
-            {
-              association: "dataset",
-              include: ["fields"],
-            },
-          ],
-        },
-        (datasetEntry: DatasetEntry) => {
-          const { jsonData, dataset } = datasetEntry
-          const { fields } = dataset as Omit<Dataset, "fields"> & { fields: DatasetField[] }
-          const headers = fields.map((field) => field.displayName)
+      const filePath = await CreateCsvService.perform(datasetEntriesScope, where)
 
-          if (isFirstLine) {
-            const rowString = Papa.unparse([headers])
-            this.response.write(rowString)
-            this.response.write("\r\n")
-          }
+      this.response.header("Content-Type", "text/csv")
+      const date = new Date().toISOString().split("T")[0]
+      this.response.attachment(`Export, Dataset Entries, ${date}.csv`)
 
-          const preparedData = fields?.map((field) => jsonData[field.name])
-          const rowString = Papa.unparse([preparedData])
-          this.response.write(rowString)
-          this.response.write("\r\n")
-
-          isFirstLine = false
-        }
-      )
+      const fileStream = createReadStream(filePath)
+      fileStream.pipe(this.response)
     } catch (error) {
       console.error("Failed to generate CSV", error)
-      this.response.write(`Failed to generate CSV: ${error}`)
-    } finally {
-      this.response.end()
+      this.response.status(500).send(`Failed to generate CSV: ${error}`)
     }
   }
 }
