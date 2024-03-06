@@ -7,6 +7,8 @@ import { DatasetEntriesPolicy } from "@/policies"
 
 import BaseController from "@/controllers/base-controller"
 
+// TODO: consider moving this to a /dataset/:datasetId/entries route
+// so that we can use the datasetId to scope the entries and reduce query complexity
 export class DatasetEntriesController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<DatasetEntry>
@@ -33,6 +35,7 @@ export class DatasetEntriesController extends BaseController {
     }
   }
 
+  // TODO: move this to a service
   private async respondWithCsv(
     datasetEntriesScope: ModelStatic<DatasetEntry>,
     where: WhereOptions<DatasetEntry>
