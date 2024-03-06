@@ -126,7 +126,6 @@ export class UpdateService extends BaseService {
         let jsonData: DatasetEntryJsonDataType
         if (isString(rawJsonData)) {
           jsonData = {
-            title: rawJsonData,
             value: rawJsonData,
           } as DatasetEntryJsonDataType
         } else {
