@@ -67,23 +67,23 @@ export class BaseController {
     }
   }
 
-  index(): Promise<any> {
+  index(): Promise<unknown> {
     throw new Error("Not Implemented")
   }
 
-  create(): Promise<any> {
+  create(): Promise<unknown> {
     throw new Error("Not Implemented")
   }
 
-  show(): Promise<any> {
+  show(): Promise<unknown> {
     throw new Error("Not Implemented")
   }
 
-  update(): Promise<any> {
+  update(): Promise<unknown> {
     throw new Error("Not Implemented")
   }
 
-  destroy(): Promise<any> {
+  destroy(): Promise<unknown> {
     throw new Error("Not Implemented")
   }
 
