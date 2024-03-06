@@ -14,11 +14,7 @@
       cols="12"
       md="6"
     >
-      TODO: DatasetSearchCard
-      <v-skeleton-loader
-        type="card"
-        boilerplate
-      />
+      <DatasetSearchCard />
     </v-col>
     <v-col
       cols="12"
@@ -32,3 +28,7 @@
     </v-col>
   </v-row>
 </template>
+
+<script lang="ts" setup>
+import DatasetSearchCard from "@/components/datasets/DatasetSearchCard.vue"
+</script>
