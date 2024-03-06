@@ -4,6 +4,11 @@ export type RequestWithFormat = Request & {
   format?: string
 }
 
+/**
+ * Adds support for /my/url.xxx on all routes, where xxx is a format
+ *
+ * TODO: also support /my/url?format=xxx style
+ */
 export default function pathFormatMiddleware(req: RequestWithFormat, res: Response, next: NextFunction) {
   const formatRegex = /(.+)\.(\w+)$/
   const match = req.path.match(formatRegex)
