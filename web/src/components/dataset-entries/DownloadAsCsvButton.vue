@@ -31,24 +31,12 @@ const downloadUrl = computed(() => {
   return `${API_BASE_URL}/api/dataset-entries.csv?${serializedParams}`
 })
 
-const fileName = computed(() => {
-  const date = new Date().toISOString().slice(0, 10)
-  return `Data, Dataset Entries, ${date}.csv`
-})
-
 async function getAccessThenDownload() {
   isLoading.value = true
   try {
-    const link = document.createElement("a")
-    link.href = downloadUrl.value
-    link.target = "_blank"
-    link.download = fileName.value
-    document.body.appendChild(link)
-
     await temporaryCookieAccessApi.create()
 
-    link.click()
-    document.body.removeChild(link)
+    window.location.href = downloadUrl.value
   } catch (error) {
     console.error("Error fetching the CSV:", error)
     snack.notify("Error fetching csv. Please try again.", {
