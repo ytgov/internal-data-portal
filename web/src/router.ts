@@ -4,17 +4,17 @@ import { authGuard } from "@auth0/auth0-vue"
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
-    redirect: "/dashboard",
-  },
-  {
-    name: "DashboardPage",
-    path: "/dashboard",
-    component: () => import("@/pages/DashboardPage.vue"),
-  },
-  {
-    path: "/",
     component: () => import("@/layouts/BaseLayout.vue"),
     children: [
+      {
+        path: "",
+        redirect: "/dashboard",
+      },
+      {
+        name: "DashboardPage",
+        path: "/dashboard",
+        component: () => import("@/pages/DashboardPage.vue"),
+      },
       {
         name: "DatasetsPage",
         path: "datasets",
