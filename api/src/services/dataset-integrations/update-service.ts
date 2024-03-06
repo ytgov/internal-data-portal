@@ -64,6 +64,7 @@ export class UpdateService extends BaseService {
 
       if (this.isPreview !== true) {
         await this.parseJsonData(this.datasetIntegration)
+        // TODO: create fields if none exist during dataset import
         await this.bulkReplaceDatasetEntries(this.datasetIntegration)
       }
 

@@ -33,12 +33,22 @@
         </v-col>
       </v-row>
     </template>
+    <!-- TODO: remove this once fields are auto-generated on dataset import -->
+    <template
+      v-if="isEmpty(headers) && !isEmpty(datasetEntriesData)"
+      #tbody
+    >
+      <v-container>
+        To display data in the table, please navigate to the 'Fields' tab and add the relevant
+        fields. This step is necessary to visualize the data.
+      </v-container>
+    </template>
   </v-data-table-server>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref, toRefs } from "vue"
-import { debounce } from "lodash"
+import { debounce, isEmpty } from "lodash"
 
 import { MAX_PER_PAGE } from "@/api/base-api"
 import useDatasetFields from "@/use/use-dataset-fields"
