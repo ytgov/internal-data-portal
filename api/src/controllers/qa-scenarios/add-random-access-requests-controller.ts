@@ -104,7 +104,7 @@ export class AddRandomAccessRequestsController extends BaseController {
         firstName,
         lastName,
         position: faker.person.jobTitle(),
-        lastEmployeeDirectorySyncAt: faker.date.recent(),
+        lastSyncSuccessAt: faker.date.recent(),
       })
 
       await Role.create({
