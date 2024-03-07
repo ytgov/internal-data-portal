@@ -5,7 +5,14 @@
       NOTE: current user will always be defined when the authenticated router view loads.
     -->
     <router-view v-else-if="isReady" />
-    <PageLoader v-else />
+    <PageLoader
+      v-else-if="isReadyAuth0"
+      message="Fetching and syncing user"
+    />
+    <PageLoader
+      v-else
+      message="Checking authentication status ..."
+    />
     <AppSnackbar />
   </v-app>
 </template>
@@ -16,6 +23,8 @@ import { useAuth0 } from "@auth0/auth0-vue"
 import { useRoute } from "vue-router"
 
 import useCurrentUser from "@/use/use-current-user"
+import useSnack from "@/use/use-snack"
+
 import PageLoader from "@/components/PageLoader.vue"
 import AppSnackbar from "@/components/AppSnackbar.vue"
 
@@ -28,6 +37,8 @@ const isReadyAuth0 = computed(() => !isLoadingAuth0.value && isAuthenticated.val
 const { isReady: isReadyCurrentUser, fetch } = useCurrentUser()
 
 const isReady = computed(() => isReadyAuth0.value && isReadyCurrentUser.value)
+
+const snack = useSnack()
 
 watch(
   () => isReadyAuth0.value,
@@ -50,9 +61,10 @@ watch(
       try {
         await fetch()
       } catch (error) {
-        console.log("Failed to ensure current user:", error)
-        // Toast/snack Please contact support ...
-        // logout?
+        console.log("Failed to load current user:", error)
+        snack.notify("Failed to load current user", {
+          color: "error",
+        })
       }
     }
   },
