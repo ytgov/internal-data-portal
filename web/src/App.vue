@@ -4,7 +4,7 @@
     <!--
       NOTE: current user will always be defined when the authenticated router view loads.
     -->
-    <router-view v-else-if="isReady" />
+    <router-view v-else-if="isReady || isErrored" />
     <PageLoader
       v-else-if="isReadyAuth0"
       message="Fetching and syncing user"
@@ -18,12 +18,11 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { useAuth0 } from "@auth0/auth0-vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 import useCurrentUser from "@/use/use-current-user"
-import useSnack from "@/use/use-snack"
 
 import PageLoader from "@/components/PageLoader.vue"
 import AppSnackbar from "@/components/AppSnackbar.vue"
@@ -38,8 +37,8 @@ const { isReady: isReadyCurrentUser, fetch } = useCurrentUser()
 
 const isReady = computed(() => isReadyAuth0.value && isReadyCurrentUser.value)
 
-const snack = useSnack()
-
+const isErrored = ref(false)
+const router = useRouter()
 watch(
   () => isReadyAuth0.value,
   async (newIsReadyAuth0) => {
@@ -51,9 +50,8 @@ watch(
         await fetch()
       } catch (error) {
         console.log("Failed to load current user:", error)
-        snack.notify("Failed to load current user", {
-          color: "error",
-        })
+        isErrored.value = true
+        router.push({ name: "UnauthorizedPage" })
       }
     }
   },
