@@ -25,7 +25,7 @@ const isUnauthenticatedRoute = computed(() => route.meta.requiresAuth === false)
 
 const { isLoading: isLoadingAuth0, isAuthenticated } = useAuth0()
 const isReadyAuth0 = computed(() => !isLoadingAuth0.value && isAuthenticated.value)
-const { isReady: isReadyCurrentUser, ensure } = useCurrentUser()
+const { isReady: isReadyCurrentUser, fetch } = useCurrentUser()
 
 const isReady = computed(() => isReadyAuth0.value && isReadyCurrentUser.value)
 
@@ -48,7 +48,7 @@ watch(
             show error page
       */
       try {
-        await ensure()
+        await fetch()
       } catch (error) {
         console.log("Failed to ensure current user:", error)
         // Toast/snack Please contact support ...
