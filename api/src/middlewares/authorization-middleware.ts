@@ -32,7 +32,7 @@ async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
       firstName,
       lastName,
     })
-    console.log(`CREATED USER FOR ${email}: ${JSON.stringify(user.dataValues)}`)
+    console.log(`CREATED USER FOR User#${user.id} with ${email}`)
   }
 
   return user
