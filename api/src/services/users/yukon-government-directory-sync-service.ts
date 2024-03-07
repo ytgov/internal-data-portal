@@ -59,6 +59,11 @@ export class YukonGovernmentDirectorySyncService extends BaseService {
         unitId: userGroup4?.id,
       })
 
+      this.user.update({
+        lastSyncSuccessAt: new Date(),
+        lastSyncFailureAt: null,
+      })
+
       return this.user.reload({
         include: [
           "roles",
@@ -71,7 +76,7 @@ export class YukonGovernmentDirectorySyncService extends BaseService {
     } catch (error) {
       console.log("Failed to sync user with yukon government directory", error)
       await this.user.update({
-        lastSyncSuccessAt: new Date(),
+        lastSyncFailureAt: new Date(),
       })
       return this.user
     }

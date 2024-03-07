@@ -38,6 +38,7 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
   declare lastName: string | null
   declare position: string | null
   declare lastSyncSuccessAt: Date | null
+  declare lastSyncFailureAt: Date | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>
@@ -155,7 +156,15 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
     return this.groupMembership?.unit
   }
 
+  /**
+   * NOTE: Blocks sync if there was a sync failure, requires manual intervention
+   * to re-enable syncing.
+   */
   isTimeToSyncWithEmployeeDirectory(): NonAttribute<boolean> {
+    if (this.lastSyncFailureAt !== null) {
+      return false
+    }
+
     if (this.lastSyncSuccessAt === null) {
       return true
     }
@@ -196,6 +205,10 @@ User.init(
       allowNull: true,
     },
     lastSyncSuccessAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    lastSyncFailureAt: {
       type: DataTypes.DATE,
       allowNull: true,
     },
