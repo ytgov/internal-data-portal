@@ -18,6 +18,7 @@ export { UserGroupTypes } from "@/use/use-user-groups"
 <script setup lang="ts">
 import { computed } from "vue"
 
+import { MAX_PER_PAGE } from "@/api/base-api"
 import useUserGroups, { UserGroupTypes } from "@/use/use-user-groups"
 
 const props = withDefaults(
@@ -39,6 +40,8 @@ const userGroupsQuery = computed(() => {
       type: props.type,
       parentId: props.parentId,
     },
+    // TODO: replace max per page with search feature
+    perPage: MAX_PER_PAGE,
   }
 })
 const { userGroups } = useUserGroups(userGroupsQuery)
