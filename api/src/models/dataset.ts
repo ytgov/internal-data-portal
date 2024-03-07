@@ -364,6 +364,23 @@ Dataset.init(
           ],
         }
       },
+      withOwnerDepartment(departmentId: number) {
+        return {
+          include: [
+            {
+              association: "owner",
+              include: [
+                {
+                  association: "groupMembership",
+                  where: {
+                    departmentId,
+                  },
+                },
+              ],
+            },
+          ],
+        }
+      },
     },
   }
 )
