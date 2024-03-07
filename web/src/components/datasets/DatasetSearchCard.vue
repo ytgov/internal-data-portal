@@ -14,6 +14,7 @@
         </v-row>
         <v-row>
           <v-col>
+            <!-- TODO: only show departments that have associated datasets -->
             <UserGroupAutocomplete
               v-model="departmentId"
               label="Department"
