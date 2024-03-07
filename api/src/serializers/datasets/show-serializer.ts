@@ -37,7 +37,6 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
           "headerValue",
           "jmesPathTransform",
         ]),
-        visualizationControl: this.record.visualizationControl,
       })
     }
 
@@ -73,6 +72,7 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
       owner: this.record.owner,
       stewardship: this.record.stewardship,
       tags: this.record.tags,
+      visualizationControl: this.record.visualizationControl,
 
       // magic fields
       currentUserAccessGrant,
