@@ -66,7 +66,7 @@ const searchQuery = computed(() => {
   return {
     filters: {
       departmentId: departmentId.value,
-      tagNames: tagNames.value,
+      withTagNames: tagNames.value,
     },
   } as unknown as LocationQueryRaw
 })
