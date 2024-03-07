@@ -16,7 +16,7 @@ export class YukonGovernmentDirectorySyncService extends BaseService {
         const isDivision = branch === null && unit === null
         const isBranch = unit === null
 
-        let [userGroup1] = await UserGroup.findOrCreate({
+        const [userGroup1] = await UserGroup.findOrCreate({
           where: {
             name: department,
             type: UserGroupTypes.DEPARTMENT,

@@ -1,8 +1,9 @@
 import { isEmpty, isNil } from "lodash"
 
 import db, { Role, User, UserGroup, UserGroupMembership } from "@/models"
+import { DEFAULT_ORDER } from "@/models/user-groups"
 
-import { Users, UserGroups } from "@/services"
+import { Users } from "@/services"
 import BaseService from "@/services/base-service"
 
 type GroupMembershipAttributes = Partial<UserGroupMembership>
@@ -84,67 +85,21 @@ export class CreateService extends BaseService {
       return user.groupMembership
     }
 
-    const randomUserGroup = await UserGroup.findOne({
-      // NOTE that sequelize.random() does not work correctly for MSSQL.
-      order: db.fn("NEWID"),
+    const [defaultGroup] = await UserGroup.findOrCreate({
+      where: {
+        type: UserGroup.Types.DEPARTMENT,
+        name: "Unassigned",
+      },
+      defaults: {
+        name: "Unassigned",
+        type: UserGroup.Types.DEPARTMENT,
+        order: DEFAULT_ORDER,
+      },
     })
-
-    if (!isNil(randomUserGroup)) {
-      return this.establishGroupMembership(user, randomUserGroup)
-    }
-
-    await UserGroups.YukonGovernmentDirectorySyncService.perform()
-
-    const randomUserGroupTake2 = await UserGroup.findOne({
-      order: db.random(),
-    })
-    if (isNil(randomUserGroupTake2)) {
-      throw new Error("No user groups found")
-    }
-
-    return this.establishGroupMembership(user, randomUserGroupTake2)
-  }
-
-  private async establishGroupMembership(user: User, userGroup: UserGroup) {
-    if (userGroup.type === UserGroup.Types.DEPARTMENT) {
-      return UserGroupMembership.create({
-        userId: user.id,
-        departmentId: userGroup.id,
-      })
-    }
-
-    if (userGroup.type === UserGroup.Types.DIVISION) {
-      const department = await userGroup.getParent()
-
-      return UserGroupMembership.create({
-        userId: user.id,
-        departmentId: department?.id,
-        divisionId: userGroup.id,
-      })
-    }
-
-    if (userGroup.type === UserGroup.Types.BRANCH) {
-      const division = await userGroup.getParent()
-      const department = await division?.getParent()
-
-      return UserGroupMembership.create({
-        userId: user.id,
-        departmentId: department?.id,
-        divisionId: division?.id,
-        branchId: userGroup.id,
-      })
-    }
-
-    const branch = await userGroup.getParent()
-    const division = await branch?.getParent()
-    const department = await division?.getParent()
 
     return UserGroupMembership.create({
       userId: user.id,
-      departmentId: department?.id,
-      divisionId: division?.id,
-      branchId: branch?.id,
-      unitId: userGroup.id,
+      departmentId: defaultGroup.id,
     })
   }
 }
