@@ -6,7 +6,7 @@
         <v-row>
           <v-col>
             <TagsAutocomplete
-              v-model="tags"
+              v-model="tagNames"
               label="Keywords"
               variant="outlined"
             />
@@ -50,17 +50,14 @@
 import { computed, ref } from "vue"
 import { type LocationQueryRaw } from "vue-router"
 
-import TagsAutocomplete, { Tag } from "@/components/tags/TagsAutocomplete.vue"
+import TagsAutocomplete from "@/components/tags/TagsAutocomplete.vue"
 import UserGroupAutocomplete, {
   UserGroupTypes,
 } from "@/components/user-groups/UserGroupAutocomplete.vue"
 
-const tags = ref<Tag[]>([])
+const tagNames = ref<string[]>([])
 const departmentId = ref<number>()
 
-const keywords = computed(() => {
-  return tags.value.map(({ name }) => name)
-})
 
 /**
  * As we are parsing with Qs, we are ignoring the invalid type information
@@ -69,7 +66,7 @@ const searchQuery = computed(() => {
   return {
     filter: {
       departmentId: departmentId.value,
-      keywords: keywords.value,
+      tagNames: tagNames.value,
     },
   } as unknown as LocationQueryRaw
 })
