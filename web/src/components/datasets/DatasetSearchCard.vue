@@ -64,7 +64,7 @@ const departmentId = ref<number>()
  */
 const searchQuery = computed(() => {
   return {
-    filter: {
+    filters: {
       departmentId: departmentId.value,
       tagNames: tagNames.value,
     },

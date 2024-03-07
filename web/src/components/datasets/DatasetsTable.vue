@@ -140,14 +140,14 @@ watch(
 )
 
 const datasetsQuery = computed(() => ({
-  filter: route.query.filter,
+  filters: route.query.filters,
   perPage: itemsPerPage.value,
   page: page.value,
 }))
 const { datasets, isLoading, totalCount, fetch: refresh } = useDatasets(datasetsQuery)
 
 function clearSearchQuery() {
-  router.push({ query: { ...route.query, filter: undefined } })
+  router.push({ query: { ...route.query, filters: undefined } })
 }
 
 function formatOwnership(datasetStewardship: DatasetStewardship | undefined) {
