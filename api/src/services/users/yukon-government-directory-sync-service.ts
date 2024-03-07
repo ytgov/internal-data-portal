@@ -71,7 +71,7 @@ export class YukonGovernmentDirectorySyncService extends BaseService {
     } catch (error) {
       console.log("Failed to sync user with yukon government directory", error)
       await this.user.update({
-        lastEmployeeDirectorySyncAt: new Date(),
+        lastSyncSuccessAt: new Date(),
       })
       return this.user
     }

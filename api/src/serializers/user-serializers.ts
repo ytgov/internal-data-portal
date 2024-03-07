@@ -37,7 +37,7 @@ export class UserSerializers extends BaseSerializer<User> {
         "firstName",
         "lastName",
         "position",
-        "lastEmployeeDirectorySyncAt",
+        "lastSyncSuccessAt",
         "createdAt",
         "updatedAt",
       ]),

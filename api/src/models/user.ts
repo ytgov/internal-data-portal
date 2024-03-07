@@ -37,7 +37,7 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
   declare firstName: string | null
   declare lastName: string | null
   declare position: string | null
-  declare lastEmployeeDirectorySyncAt: Date | null
+  declare lastSyncSuccessAt: Date | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>
@@ -156,12 +156,12 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
   }
 
   isTimeToSyncWithEmployeeDirectory(): NonAttribute<boolean> {
-    if (this.lastEmployeeDirectorySyncAt === null) {
+    if (this.lastSyncSuccessAt === null) {
       return true
     }
 
     const current = DateTime.utc()
-    const lastSyncDate = DateTime.fromJSDate(this.lastEmployeeDirectorySyncAt, { zone: "utc" })
+    const lastSyncDate = DateTime.fromJSDate(this.lastSyncSuccessAt, { zone: "utc" })
 
     return !current.hasSame(lastSyncDate, "day")
   }
@@ -195,7 +195,7 @@ User.init(
       type: DataTypes.STRING(100),
       allowNull: true,
     },
-    lastEmployeeDirectorySyncAt: {
+    lastSyncSuccessAt: {
       type: DataTypes.DATE,
       allowNull: true,
     },

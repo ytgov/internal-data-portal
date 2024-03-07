@@ -51,7 +51,7 @@ export const userFactory = BaseFactory.define<User, TransientParam>(
       firstName,
       lastName,
       position: faker.person.jobTitle(),
-      lastEmployeeDirectorySyncAt: faker.date.recent(),
+      lastSyncSuccessAt: faker.date.recent(),
     })
   }
 )
