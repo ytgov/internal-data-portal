@@ -1,5 +1,5 @@
 import { WhereOptions } from "sequelize"
-import { isNil } from "lodash"
+import { isEmpty, isNil } from "lodash"
 
 import { Dataset } from "@/models"
 import { DatasetsPolicy } from "@/policies"
@@ -11,11 +11,19 @@ import BaseController from "@/controllers/base-controller"
 export class DatasetsController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<Dataset>
+    const filters = this.query.filters as Record<string, unknown>
 
     const scopedDatasets = DatasetsPolicy.applyScope(Dataset, this.currentUser)
 
-    const totalCount = await scopedDatasets.count({ where })
-    const datasets = await scopedDatasets.findAll({
+    let filteredDatasets = scopedDatasets
+    if (!isEmpty(filters)) {
+      Object.entries(filters).forEach(([key, value]) => {
+        filteredDatasets = filteredDatasets.scope({ method: [key, value] })
+      })
+    }
+
+    const totalCount = await filteredDatasets.count({ where })
+    const datasets = await filteredDatasets.findAll({
       where,
       limit: this.pagination.limit,
       offset: this.pagination.offset,

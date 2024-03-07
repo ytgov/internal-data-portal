@@ -350,6 +350,20 @@ Dataset.init(
           },
         }
       },
+      withTagNames(tagNames: string[]) {
+        return {
+          include: [
+            {
+              association: "tags",
+              where: {
+                name: {
+                  [Op.in]: tagNames,
+                },
+              },
+            },
+          ],
+        }
+      },
     },
   }
 )
