@@ -8,6 +8,26 @@
     :loading="isLoading"
     class="elevation-1"
   >
+    <template #top>
+      <v-row class="ma-1">
+        <v-col
+          cols="12"
+          md="4"
+        >
+          <v-text-field
+            model-value="click clear to remove search query ..."
+            prepend-inner-icon="mdi-magnify"
+            label="TODO: Search"
+            variant="outlined"
+            clearable
+            hide-details
+            persistent-clear
+            readonly
+            @click:clear="clearSearchQuery"
+          />
+        </v-col>
+      </v-row>
+    </template>
     <template #item.name="{ value, item: { slug } }">
       {{ value }}
       <ColumnRouterLink
@@ -56,7 +76,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import { compact, isNil } from "lodash"
 import { useI18n } from "vue-i18n"
 
@@ -95,13 +116,39 @@ const headers = ref([
   { title: "", key: "actions" },
 ])
 
+const route = useRoute()
+const router = useRouter()
+
 const itemsPerPage = ref(10)
 const page = ref(1)
+
+watch(
+  () => [itemsPerPage.value, page.value],
+  () => {
+    const { query } = route
+    router.push({
+      query: {
+        ...query,
+        page: query.page || page.value,
+        perPage: query.itemsPerPage || itemsPerPage.value,
+      },
+    })
+  },
+  {
+    immediate: true,
+  }
+)
+
 const datasetsQuery = computed(() => ({
+  filter: route.query.filter,
   perPage: itemsPerPage.value,
   page: page.value,
 }))
 const { datasets, isLoading, totalCount, fetch: refresh } = useDatasets(datasetsQuery)
+
+function clearSearchQuery() {
+  router.push({ query: { ...route.query, filter: undefined } })
+}
 
 function formatOwnership(datasetStewardship: DatasetStewardship | undefined) {
   if (isNil(datasetStewardship)) return
