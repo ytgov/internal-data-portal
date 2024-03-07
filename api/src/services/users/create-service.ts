@@ -85,7 +85,8 @@ export class CreateService extends BaseService {
     }
 
     const randomUserGroup = await UserGroup.findOne({
-      order: db.random(),
+      // NOTE that sequelize.random() does not work correctly for MSSQL.
+      order: db.fn("NEWID"),
     })
 
     if (!isNil(randomUserGroup)) {
