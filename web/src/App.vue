@@ -47,17 +47,6 @@ watch(
     if (isUnauthenticatedRoute.value) return
 
     if (newIsReadyAuth0 === true) {
-      /*
-        TODO: avoid ensuring user as part of login pipeline
-        NOTE: isReadyAuth0 === is just after successful auth0 login
-        try to log in
-          If login fails,
-            try to create user
-          If creation succeeds,
-            use user
-          else
-            show error page
-      */
       try {
         await fetch()
       } catch (error) {
