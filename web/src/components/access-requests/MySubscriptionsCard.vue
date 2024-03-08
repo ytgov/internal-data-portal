@@ -2,13 +2,7 @@
   <v-card>
     <v-card-title>My Subscriptions</v-card-title>
     <v-card-text>
-      <v-skeleton-loader
-        v-if="isNil(currentUser)"
-        type="card"
-        boilerplate
-      />
       <v-data-table-server
-        v-else
         v-model:items-per-page="itemsPerPage"
         v-model:page="page"
         :headers="headers"
@@ -63,13 +57,12 @@ const headers = ref([
   },
 ])
 
-const { currentUser } = useCurrentUser()
+const { currentUser, isLoading: isLoadingCurrentUser } = useCurrentUser()
 
 const itemsPerPage = ref(10)
 const page = ref(1)
 const datasetsQuery = computed(() => ({
   where: {
-    // TODO: check if I need to wait for currentUser before sending this query
     requestorId: currentUser.value?.id,
     // TODO: the user might want these to be shown?
     revokedAt: null,
@@ -78,5 +71,13 @@ const datasetsQuery = computed(() => ({
   perPage: itemsPerPage.value,
   page: page.value,
 }))
-const { accessRequests, totalCount, isLoading } = useAccessRequests(datasetsQuery)
+const {
+  accessRequests,
+  totalCount,
+  isLoading: isLoadingAccessRequests,
+} = useAccessRequests(datasetsQuery, {
+  skipAutoRefreshIf: () => isNil(currentUser.value),
+})
+
+const isLoading = computed(() => isLoadingAccessRequests.value || isLoadingCurrentUser.value)
 </script>
