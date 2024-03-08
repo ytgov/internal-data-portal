@@ -17,6 +17,6 @@
 </template>
 
 <script lang="ts" setup>
-import DatasetSearchCard from "@/components/datasets/DatasetSearchCard.vue"
-import MySubscriptionsCard from "@/components/access-requests/MySubscriptionsCard.vue"
+import DatasetSearchCard from "@/components/dashboard-widgets/DatasetSearchCard.vue"
+import MySubscriptionsCard from "@/components/dashboard-widgets/MySubscriptionsCard.vue"
 </script>

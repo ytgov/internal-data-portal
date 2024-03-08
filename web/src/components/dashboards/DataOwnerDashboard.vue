@@ -43,5 +43,5 @@
 </template>
 
 <script lang="ts" setup>
-import DatasetSearchCard from "@/components/datasets/DatasetSearchCard.vue"
+import DatasetSearchCard from "@/components/dashboard-widgets/DatasetSearchCard.vue"
 </script>
