@@ -5,7 +5,7 @@
       class="mt-4 mt-md-0"
       color="primary"
       :to="{ name: 'DatasetNewPage' }"
-      >Create Dataset</v-btn
+      >Add Dataset</v-btn
     >
   </h2>
   <v-row class="mt-6">

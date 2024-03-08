@@ -4,9 +4,9 @@
     <v-btn
       class="mt-4 mt-md-0"
       color="primary"
-      :to="{ name: 'DatasetsPage' }"
+      :to="{ name: 'DatasetNewPage' }"
     >
-      View Datasets
+      Add Dataset
     </v-btn>
   </h2>
   <v-row class="mt-6">
