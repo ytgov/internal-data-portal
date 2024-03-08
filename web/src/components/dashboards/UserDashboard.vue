@@ -1,14 +1,5 @@
 <template>
-  <h2 class="d-flex flex-column flex-md-row justify-space-between">
-    Dashboard
-    <v-btn
-      class="mt-4 mt-md-0"
-      color="primary"
-      :to="{ name: 'DatasetsPage' }"
-    >
-      View Datasets
-    </v-btn>
-  </h2>
+  <h2>Dashboard</h2>
   <v-row class="mt-6">
     <v-col
       cols="12"
