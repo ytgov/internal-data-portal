@@ -76,7 +76,7 @@ const {
   totalCount,
   isLoading: isLoadingAccessRequests,
 } = useAccessRequests(datasetsQuery, {
-  skipAutoRefreshIf: () => isNil(currentUser.value),
+  skipWatchIf: () => isNil(currentUser.value),
 })
 
 const isLoading = computed(() => isLoadingAccessRequests.value || isLoadingCurrentUser.value)

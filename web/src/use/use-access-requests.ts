@@ -14,7 +14,7 @@ export function useAccessRequests(
     page?: number
     perPage?: number
   }> = ref({}),
-  { skipAutoRefreshIf = () => false }: { skipAutoRefreshIf?: () => boolean } = {}
+  { skipWatchIf = () => false }: { skipWatchIf?: () => boolean } = {}
 ) {
   const state = reactive<{
     accessRequests: AccessRequestTableView[]
@@ -48,7 +48,7 @@ export function useAccessRequests(
   watch(
     () => unref(queryOptions),
     async () => {
-      if (skipAutoRefreshIf()) return
+      if (skipWatchIf()) return
 
       await fetch()
     },
