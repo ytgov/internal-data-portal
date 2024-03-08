@@ -20,11 +20,7 @@
       cols="12"
       md="6"
     >
-      TODO: MySubscriptionsCard
-      <v-skeleton-loader
-        type="card"
-        boilerplate
-      />
+      <MySubscriptionsCard />
     </v-col>
   </v-row>
   <v-divider
@@ -60,6 +56,7 @@ import { ref } from "vue"
 import userGroupsApi from "@/api/user-groups-api"
 
 import DatasetSearchCard from "@/components/dashboard-widgets/DatasetSearchCard.vue"
+import MySubscriptionsCard from "@/components/dashboard-widgets/MySubscriptionsCard.vue"
 import QaScenariosCard from "@/components/qa-scenarios/QaScenariosCard.vue"
 
 const isLoadingUserGroups = ref(false)

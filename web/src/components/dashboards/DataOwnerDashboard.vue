@@ -19,16 +19,20 @@
       cols="12"
       md="6"
     >
-      TODO: MySubscriptionsCard
-      <v-skeleton-loader
-        type="card"
-        boilerplate
-      />
-      TODO: MyDataCard
-      <v-skeleton-loader
-        type="card"
-        boilerplate
-      />
+      <v-row>
+        <v-col>
+          <MySubscriptionsCard />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          TODO: MyDataCard
+          <v-skeleton-loader
+            type="card"
+            boilerplate
+          />
+        </v-col>
+      </v-row>
     </v-col>
   </v-row>
   <v-row>
@@ -44,4 +48,5 @@
 
 <script lang="ts" setup>
 import DatasetSearchCard from "@/components/dashboard-widgets/DatasetSearchCard.vue"
+import MySubscriptionsCard from "@/components/dashboard-widgets/MySubscriptionsCard.vue"
 </script>
