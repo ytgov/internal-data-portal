@@ -14,9 +14,11 @@
       <MySubscriptionsCard />
     </v-col>
   </v-row>
+  <QaHelpersSection />
 </template>
 
 <script lang="ts" setup>
 import DatasetSearchCard from "@/components/dashboard-widgets/DatasetSearchCard.vue"
 import MySubscriptionsCard from "@/components/dashboard-widgets/MySubscriptionsCard.vue"
+import QaHelpersSection from "@/components/dashboard-widgets/QaHelpersSection.vue"
 </script>
