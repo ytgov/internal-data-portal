@@ -350,6 +350,37 @@ Dataset.init(
           },
         }
       },
+      withTagNames(tagNames: string[]) {
+        return {
+          include: [
+            {
+              association: "tags",
+              where: {
+                name: {
+                  [Op.in]: tagNames,
+                },
+              },
+            },
+          ],
+        }
+      },
+      withOwnerDepartment(departmentId: number) {
+        return {
+          include: [
+            {
+              association: "owner",
+              include: [
+                {
+                  association: "groupMembership",
+                  where: {
+                    departmentId,
+                  },
+                },
+              ],
+            },
+          ],
+        }
+      },
     },
   }
 )

@@ -56,15 +56,11 @@ export const yukonGovernmentIntegration = {
     })
     return data
   },
-  async fetchEmpolyee(email: string): Promise<{
-    employee: YukonGovernmentEmployee
-  }> {
+  async fetchEmpolyee(email: string): Promise<YukonGovernmentEmployee | null> {
     const { employees } = await yukonGovernmentIntegration.searchEmployees({ email })
 
     if (isEmpty(employees)) {
-      throw new Error(
-        `Failed to find any employee info at https://api.gov.yk.ca/directory/employees?email=${email}`
-      )
+      return null
     }
 
     if (employees.length > 1) {
@@ -74,7 +70,7 @@ export const yukonGovernmentIntegration = {
       throw new Error(errorMessage)
     }
 
-    return { employee: employees[0] }
+    return employees[0]
   },
   async fetchDepartments(): Promise<{
     departments: string[]

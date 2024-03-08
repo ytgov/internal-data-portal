@@ -1,7 +1,7 @@
 import { isEmpty, isNil } from "lodash"
 
 import db, { Role, User, UserGroup, UserGroupMembership } from "@/models"
-import { DEFAULT_ORDER } from "@/models/user-groups"
+import { DEFAULT_ORDER, UNASSIGNED_USER_GROUP_NAME } from "@/models/user-groups"
 
 import { Users } from "@/services"
 import BaseService from "@/services/base-service"
@@ -88,10 +88,10 @@ export class CreateService extends BaseService {
     const [defaultGroup] = await UserGroup.findOrCreate({
       where: {
         type: UserGroup.Types.DEPARTMENT,
-        name: "Unassigned",
+        name: UNASSIGNED_USER_GROUP_NAME,
       },
       defaults: {
-        name: "Unassigned",
+        name: UNASSIGNED_USER_GROUP_NAME,
         type: UserGroup.Types.DEPARTMENT,
         order: DEFAULT_ORDER,
       },

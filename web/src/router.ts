@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
 import { authGuard } from "@auth0/auth0-vue"
 
+import { parseQuery, stringifyQuery } from "@/api/base-api"
+
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
@@ -114,6 +116,9 @@ const routes: RouteRecordRaw[] = [
 
 const router = createRouter({
   history: createWebHistory(),
+  // @ts-expect-error - Ignore vue-router query format as Qs format _does_ work
+  parseQuery,
+  stringifyQuery,
   routes,
 })
 

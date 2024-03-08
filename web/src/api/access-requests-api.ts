@@ -2,6 +2,7 @@ import http from "@/api/http-client"
 
 import { AccessGrant } from "@/api/access-grants-api"
 import { Dataset } from "@/api/datasets-api"
+import { DatasetIntegration } from "@/api/dataset-integrations-api"
 import { User } from "@/api/users-api"
 import { UserGroup } from "@/api/user-groups-api"
 
@@ -46,6 +47,9 @@ export type AccessRequestTableView = Pick<
   requestorDepartmentName: UserGroup["name"]
   accessType: AccessGrant["accessType"]
   status: AccessRequestTableStatuses
+  dataset: Pick<Dataset, "id" | "name" | "description"> & {
+    integration?: Pick<DatasetIntegration, "id" | "status">
+  }
 }
 
 export const accessRequestsApi = {

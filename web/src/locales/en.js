@@ -33,4 +33,10 @@ export default {
       },
     },
   },
+  dataset_integrations: {
+    status_types: {
+      ok: "OK",
+      errored: "Errored",
+    },
+  },
 }
