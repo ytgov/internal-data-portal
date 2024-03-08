@@ -27,6 +27,7 @@ export class AccessRequestsController extends BaseController {
           ],
         },
         "accessGrant",
+        { association: "dataset", include: ["integration"] },
       ],
       limit: this.pagination.limit,
       offset: this.pagination.offset,

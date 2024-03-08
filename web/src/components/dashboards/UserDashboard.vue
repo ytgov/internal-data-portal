@@ -20,15 +20,12 @@
       cols="12"
       md="6"
     >
-      TODO: MySubscriptionsCard
-      <v-skeleton-loader
-        type="card"
-        boilerplate
-      />
+      <MySubscriptionsCard />
     </v-col>
   </v-row>
 </template>
 
 <script lang="ts" setup>
 import DatasetSearchCard from "@/components/datasets/DatasetSearchCard.vue"
+import MySubscriptionsCard from "@/components/access-requests/MySubscriptionsCard.vue"
 </script>
