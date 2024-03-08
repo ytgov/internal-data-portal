@@ -1,8 +1,11 @@
 import { type NextFunction, type Response } from "express"
 import { type Request as JwtRequest } from "express-jwt"
+import { isNil } from "lodash"
+
+import { User } from "@/models"
+import { Users } from "@/services"
 
 import auth0Integration, { Auth0PayloadError } from "@/integrations/auth0-integration"
-import { Role, User } from "@/models"
 
 export type AuthorizationRequest = JwtRequest & {
   currentUser?: User
@@ -11,28 +14,8 @@ export type AuthorizationRequest = JwtRequest & {
 async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
   const { auth0Subject, email, firstName, lastName } = await auth0Integration.getUserInfo(token)
 
-  // TODO: move to ensure user service
-  const [user, created] = await User.findOrCreate({
+  let user = await User.findOne({
     where: { auth0Subject },
-    defaults: {
-      auth0Subject,
-      email: email,
-      firstName,
-      lastName,
-    },
-  })
-  await Role.findOrCreate({
-    where: {
-      userId: user.id,
-      role: Role.Types.USER,
-    },
-    defaults: {
-      userId: user.id,
-      role: Role.Types.USER,
-    },
-  })
-
-  await user.reload({
     include: [
       "roles",
       {
@@ -42,8 +25,14 @@ async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
     ],
   })
 
-  if (created) {
-    console.log(`CREATED USER FOR ${email}: ${JSON.stringify(user.dataValues)}`)
+  if (isNil(user)) {
+    user = await Users.CreateService.perform({
+      auth0Subject,
+      email,
+      firstName,
+      lastName,
+    })
+    console.log(`CREATED USER FOR User#${user.id} with ${email}`)
   }
 
   return user

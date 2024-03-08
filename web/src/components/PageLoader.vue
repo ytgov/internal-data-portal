@@ -7,7 +7,16 @@
         class="mb-5"
         color="yg-blue"
       ></v-progress-circular>
-      <h1>Loading ...</h1>
+      <h1>{{ message }}</h1>
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+defineProps({
+  message: {
+    type: String,
+    default: "Loading ...",
+  },
+})
+</script>
