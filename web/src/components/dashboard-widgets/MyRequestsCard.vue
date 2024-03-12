@@ -88,13 +88,11 @@ const itemsPerPage = ref(10)
 const page = ref(1)
 const accessRequestsQuery = computed(() => ({
   where: {
-    // TODO: add filter scope for owned datasets
-    // dataset: {
-    //   ownerId: currentUser.value?.id,
-    // },
     approvedAt: null,
     deniedAt: null,
-    // TODO: check if I need to exclude revoked requests
+  },
+  filters: {
+    withDatasetOwnerId: currentUser.value?.id,
   },
   perPage: itemsPerPage.value,
   page: page.value,

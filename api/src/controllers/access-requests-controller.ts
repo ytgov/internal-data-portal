@@ -1,5 +1,5 @@
-import { WhereOptions } from "sequelize"
-import { isNil } from "lodash"
+import { WhereOptions, ModelStatic } from "sequelize"
+import { isEmpty, isNil } from "lodash"
 
 import { AccessRequest, Dataset } from "@/models"
 import { TableSerializer } from "@/serializers/access-requests"
@@ -12,9 +12,19 @@ import BaseController from "@/controllers/base-controller"
 export class AccessRequestsController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<AccessRequest>
+    const filters = this.query.filters as Record<string, unknown>
 
-    const totalCount = await AccessRequest.count({ where })
-    const accessRequests = await AccessRequest.findAll({
+    // TODO: add policy scoping
+
+    let filteredAccessRequests: ModelStatic<AccessRequest> = AccessRequest
+    if (!isEmpty(filters)) {
+      Object.entries(filters).forEach(([key, value]) => {
+        filteredAccessRequests = filteredAccessRequests.scope({ method: [key, value] })
+      })
+    }
+
+    const totalCount = await filteredAccessRequests.count({ where })
+    const accessRequests = await filteredAccessRequests.findAll({
       where,
       include: [
         {

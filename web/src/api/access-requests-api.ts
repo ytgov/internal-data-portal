@@ -52,13 +52,15 @@ export type AccessRequestTableView = Pick<
   }
 }
 
+// Keep in sync with api/src/models/access-request.ts -> scopes
+export type AccessRequestsFilters = {
+  withDatasetOwnerId?: number
+}
+
 export const accessRequestsApi = {
-  async list({
-    where,
-    page,
-    perPage,
-  }: {
+  async list(params: {
     where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
+    filters?: AccessRequestsFilters
     page?: number
     perPage?: number
   } = {}): Promise<{
@@ -66,7 +68,7 @@ export const accessRequestsApi = {
     totalCount: number
   }> {
     const { data } = await http.get("/api/access-requests", {
-      params: { where, page, perPage },
+      params,
     })
     return data
   },
