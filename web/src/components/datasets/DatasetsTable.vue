@@ -140,7 +140,7 @@ watch(
 )
 
 const datasetsQuery = computed(() => ({
-  filters: route.query.filters,
+  filters: route.query.filters as unknown as Record<string, unknown> | undefined,
   perPage: itemsPerPage.value,
   page: page.value,
 }))

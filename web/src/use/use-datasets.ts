@@ -7,6 +7,7 @@ export { type Dataset }
 export function useDatasets(
   options: Ref<{
     where?: Record<string, unknown>
+    filters?: Record<string, unknown>
     page?: number
     perPage?: number
   }> = ref({}),
