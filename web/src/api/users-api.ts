@@ -77,6 +77,15 @@ export const usersApi = {
     const { data } = await http.get(`/api/users/${id}`)
     return data
   },
+  async update(
+    userId: number,
+    attributes: Partial<User>
+  ): Promise<{
+    user: User
+  }> {
+    const { data } = await http.patch(`/api/users/${userId}`, attributes)
+    return data
+  },
 
   // Special Endpoints
   async search(
