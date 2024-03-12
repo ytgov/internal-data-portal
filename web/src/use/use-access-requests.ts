@@ -4,13 +4,20 @@ import accessRequestsApi, {
   AccessRequestTableStatuses,
   type AccessRequest,
   type AccessRequestTableView,
+  type AccessRequestsFilters,
 } from "@/api/access-requests-api"
 
-export { AccessRequestTableStatuses, type AccessRequest, type AccessRequestTableView }
+export {
+  AccessRequestTableStatuses,
+  type AccessRequest,
+  type AccessRequestTableView,
+  type AccessRequestsFilters,
+}
 
 export function useAccessRequests(
   queryOptions: Ref<{
     where?: Record<string, unknown>
+    filters?: AccessRequestsFilters
     page?: number
     perPage?: number
   }> = ref({}),

@@ -60,6 +60,7 @@ export const datasetsApi = {
   DatasetErrorTypes,
   async list(params: {
     where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
+    filters?: Record<string, unknown>
     page?: number
     perPage?: number
   }): Promise<{

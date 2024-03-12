@@ -256,6 +256,20 @@ AccessRequest.init(
         }
       },
     },
+    scopes: {
+      withDatasetOwnerId(ownerId: number) {
+        return {
+          include: [
+            {
+              association: "dataset",
+              where: {
+                ownerId,
+              },
+            },
+          ],
+        }
+      },
+    },
   }
 )
 
