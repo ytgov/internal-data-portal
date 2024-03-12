@@ -17,6 +17,7 @@
                 :model-value="accessRequest.requestorId"
                 label="Name"
                 attribute="displayName"
+                append-inner-icon="mdi-lock"
                 variant="outlined"
                 readonly
               />
@@ -27,6 +28,7 @@
               <v-text-field
                 :model-value="accessRequest.requestorDepartmentName"
                 label="Department"
+                append-inner-icon="mdi-lock"
                 variant="outlined"
                 readonly
               />
@@ -37,6 +39,7 @@
               <v-text-field
                 :model-value="accessRequest.projectName"
                 label="Request on Behalf Of (Program/App)"
+                append-inner-icon="mdi-lock"
                 variant="outlined"
                 readonly
               />
@@ -47,6 +50,7 @@
               <v-textarea
                 :model-value="accessRequest.projectDescription"
                 label="Project Description"
+                append-inner-icon="mdi-lock"
                 rows="5"
                 variant="outlined"
                 readonly
