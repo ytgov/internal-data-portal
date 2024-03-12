@@ -33,11 +33,7 @@
   </v-row>
   <v-row>
     <v-col>
-      TODO: MyRequestsCard
-      <v-skeleton-loader
-        type="card"
-        boilerplate
-      />
+      <MyRequestsCard />
     </v-col>
   </v-row>
   <QaHelpersSection />
@@ -47,5 +43,6 @@
 import DatasetSearchCard from "@/components/dashboard-widgets/DatasetSearchCard.vue"
 import MySubscriptionsCard from "@/components/dashboard-widgets/MySubscriptionsCard.vue"
 import MyDataCard from "@/components/dashboard-widgets/MyDataCard.vue"
+import MyRequestsCard from "@/components/dashboard-widgets/MyRequestsCard.vue"
 import QaHelpersSection from "@/components/dashboard-widgets/QaHelpersSection.vue"
 </script>
