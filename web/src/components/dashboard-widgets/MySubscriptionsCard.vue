@@ -61,7 +61,7 @@ const { currentUser, isLoading: isLoadingCurrentUser } = useCurrentUser()
 
 const itemsPerPage = ref(10)
 const page = ref(1)
-const datasetsQuery = computed(() => ({
+const accessRequestsQuery = computed(() => ({
   where: {
     requestorId: currentUser.value?.id,
     // TODO: the user might want these to be shown?
@@ -75,7 +75,7 @@ const {
   accessRequests,
   totalCount,
   isLoading: isLoadingAccessRequests,
-} = useAccessRequests(datasetsQuery, {
+} = useAccessRequests(accessRequestsQuery, {
   skipWatchIf: () => isNil(currentUser.value),
 })
 
