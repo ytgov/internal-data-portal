@@ -30,7 +30,7 @@
         md="6"
       >
         <v-text-field
-          :model-value="currentUser.firstName"
+          v-model="currentUser.firstName"
           label="First name"
           variant="outlined"
         />
@@ -40,7 +40,7 @@
         md="6"
       >
         <v-text-field
-          :model-value="currentUser.lastName"
+          v-model="currentUser.lastName"
           label="Last name"
           variant="outlined"
         />
@@ -53,7 +53,7 @@
         md="6"
       >
         <v-text-field
-          :model-value="currentUser.email"
+          v-model="currentUser.email"
           label="Email"
           variant="outlined"
         />
@@ -63,7 +63,7 @@
         md="6"
       >
         <v-text-field
-          :model-value="currentUser.position"
+          v-model="currentUser.position"
           label="Position"
           variant="outlined"
         />
