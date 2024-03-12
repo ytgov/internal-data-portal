@@ -9,6 +9,7 @@
             <TagsCombobox
               :model-value="selectedTags"
               label="Keywords"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               :closable-chips="false"
               readonly

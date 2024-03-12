@@ -20,6 +20,7 @@
             <UserAttributeTextField
               :model-value="datasetStewardship.ownerId"
               label="Owner Name"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               readonly
             />
@@ -32,6 +33,7 @@
               :model-value="datasetStewardship.ownerId"
               label="Owner Position"
               attribute="position"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               readonly
             />
@@ -46,6 +48,7 @@
               :model-value="datasetStewardship.supportId"
               label="Support Name"
               attribute="displayName"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               readonly
             />
@@ -58,6 +61,7 @@
               :model-value="datasetStewardship.supportId"
               label="Support Email"
               attribute="email"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               readonly
             />
@@ -72,6 +76,7 @@
               :model-value="datasetStewardship.supportId"
               label="Support Position"
               attribute="position"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               readonly
             />
@@ -90,6 +95,7 @@
               item-value="id"
               item-title="name"
               label="Department"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               readonly
             />
@@ -106,6 +112,7 @@
               item-value="id"
               item-title="name"
               label="Division"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               readonly
             />
@@ -124,6 +131,7 @@
               item-value="id"
               item-title="name"
               label="Branch"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               readonly
             />
@@ -140,6 +148,7 @@
               item-value="id"
               item-title="name"
               label="Unit"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               readonly
             />
