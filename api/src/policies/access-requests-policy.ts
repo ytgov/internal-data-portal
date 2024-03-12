@@ -1,4 +1,4 @@
-import { NonAttribute } from "sequelize"
+import { ModelStatic, NonAttribute } from "sequelize"
 import { isNil } from "lodash"
 
 import { Path } from "@/utils/deep-pick"
@@ -46,6 +46,25 @@ export class AccessRequestsPolicy extends BasePolicy<
 
   update(): boolean {
     return this.datasetsPolicy.update()
+  }
+
+  static applyScope(
+    modelClass: ModelStatic<AccessRequest>,
+    user: User
+  ): ModelStatic<AccessRequest> {
+    if (user.isSystemAdmin || user.isBusinessAnalyst) {
+      return modelClass
+    }
+
+    if (user.isDataOwner) {
+      return modelClass.scope({ method: ["withDatasetOwnerId", user.id] })
+    }
+
+    return modelClass.scope({
+      where: {
+        requestorId: user.id,
+      },
+    })
   }
 
   permittedAttributesForUpdate(): Path[] {

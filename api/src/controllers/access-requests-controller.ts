@@ -1,4 +1,4 @@
-import { WhereOptions, ModelStatic } from "sequelize"
+import { WhereOptions } from "sequelize"
 import { isEmpty, isNil } from "lodash"
 
 import { AccessRequest, Dataset } from "@/models"
@@ -14,9 +14,9 @@ export class AccessRequestsController extends BaseController {
     const where = this.query.where as WhereOptions<AccessRequest>
     const filters = this.query.filters as Record<string, unknown>
 
-    // TODO: add policy scoping
+    const scopedAccessRequests = AccessRequestsPolicy.applyScope(AccessRequest, this.currentUser)
 
-    let filteredAccessRequests: ModelStatic<AccessRequest> = AccessRequest
+    let filteredAccessRequests = scopedAccessRequests
     if (!isEmpty(filters)) {
       Object.entries(filters).forEach(([key, value]) => {
         filteredAccessRequests = filteredAccessRequests.scope({ method: [key, value] })
