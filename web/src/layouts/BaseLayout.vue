@@ -35,6 +35,7 @@
       <v-btn
         class="text-body-1"
         :to="{ name: 'ProfilePage' }"
+        :active="isViewingProfilePage"
         append-icon="mdi-account-arrow-right-outline"
         variant="text"
       >
@@ -61,6 +62,7 @@
 
 <script lang="ts" setup>
 import { computed } from "vue"
+import { useRoute } from "vue-router"
 
 import BaseBreadcrumbs from "@/components/BaseBreadcrumbs.vue"
 import KebabMenu from "@/components/base-layout/KebabMenu.vue"
@@ -75,5 +77,10 @@ const username = computed(() => {
 
   const { email } = currentUser.value
   return email.substring(0, email.indexOf("@"))
+})
+
+const route = useRoute()
+const isViewingProfilePage = computed(() => {
+  return ["ProfilePage", "ProfileEditPage"].includes(route.name as string)
 })
 </script>
