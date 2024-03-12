@@ -85,6 +85,7 @@
               :model-value="dataset.name"
               label="Name"
               variant="outlined"
+              append-inner-icon="mdi-lock"
               readonly
             />
           </v-col>
@@ -97,6 +98,7 @@
             <v-textarea
               :model-value="dataset.description"
               label="Description"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               rows="6"
               readonly
@@ -121,6 +123,7 @@
             <v-textarea
               :model-value="dataset.termsOfUse"
               label="Terms of Use"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               rows="4"
               readonly
@@ -128,6 +131,7 @@
             <v-textarea
               :model-value="dataset.credits"
               label="Credits"
+              append-inner-icon="mdi-lock"
               variant="outlined"
               rows="4"
               readonly
