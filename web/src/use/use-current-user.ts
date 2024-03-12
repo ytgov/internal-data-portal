@@ -2,9 +2,9 @@ import { computed, reactive, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import { sleep } from "@/utils/sleep"
-import usersApi, { RoleTypes, type User } from "@/api/users-api"
+import usersApi, { RoleTypes, type User, type UserUpdate } from "@/api/users-api"
 
-export { RoleTypes, User }
+export { RoleTypes, type User, type UserUpdate }
 
 // Global state
 const state = reactive<{
@@ -56,14 +56,20 @@ export function useCurrentUser() {
     return fetch()
   }
 
-  async function save(): Promise<User> {
+
+  async function save(customAttributes: UserUpdate): Promise<User> {
     if (isNil(state.currentUser)) {
       throw new Error("No user to save.")
     }
 
+    const attributes = {
+      ...state.currentUser,
+      ...customAttributes,
+    }
+
     state.isLoading = true
     try {
-      const { user } = await usersApi.update(state.currentUser.id, state.currentUser)
+      const { user } = await usersApi.update(state.currentUser.id, attributes)
       state.isErrored = false
       state.currentUser = user
       state.isCached = true

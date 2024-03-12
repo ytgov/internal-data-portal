@@ -34,6 +34,10 @@ export type User = {
   groupMembership: GroupMembership
 }
 
+export type UserUpdate = Partial<User> & {
+  groupMembershipAttributes?: Partial<GroupMembership>
+}
+
 // Must match roles in api/src/models/roles.ts
 export enum RoleTypes {
   DATA_OWNER = "data_owner",

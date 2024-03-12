@@ -77,20 +77,30 @@
         cols="12"
         md="6"
       >
-        <v-text-field
-          :model-value="currentUser.department"
+        <UserGroupAutocomplete
+          :model-value="groupMembershipAttributes.departmentId"
+          :type="UserGroupTypes.DEPARTMENT"
+          :parent-id="null"
+          :rules="[required]"
           label="Department"
           variant="outlined"
+          required
+          @update:model-value="updateDepartment"
         />
       </v-col>
       <v-col
         cols="12"
         md="6"
       >
-        <v-text-field
-          :model-value="currentUser.division"
+        <UserGroupAutocomplete
+          :model-value="groupMembershipAttributes.divisionId"
+          :type="UserGroupTypes.DIVISION"
+          :parent-id="groupMembershipAttributes.departmentId"
+          :disabled="isNil(groupMembershipAttributes.departmentId)"
           label="Division"
           variant="outlined"
+          clearable
+          @update:model-value="updateDivision"
         />
       </v-col>
     </v-row>
@@ -100,20 +110,30 @@
         cols="12"
         md="6"
       >
-        <v-text-field
-          :model-value="currentUser.branch"
+        <UserGroupAutocomplete
+          :model-value="groupMembershipAttributes.branchId"
+          :type="UserGroupTypes.BRANCH"
+          :parent-id="groupMembershipAttributes.divisionId"
+          :disabled="isNil(groupMembershipAttributes.divisionId)"
           label="Branch"
           variant="outlined"
+          clearable
+          @update:model-value="updateBranch"
         />
       </v-col>
       <v-col
         cols="12"
         md="6"
       >
-        <v-text-field
-          :model-value="currentUser.unit"
+        <UserGroupAutocomplete
+          :model-value="groupMembershipAttributes.unitId"
+          :type="UserGroupTypes.UNIT"
+          :parent-id="groupMembershipAttributes.branchId"
+          :disabled="isNil(groupMembershipAttributes.branchId)"
           label="Unit"
           variant="outlined"
+          clearable
+          @update:model-value="updateUnit"
         />
       </v-col>
     </v-row>
@@ -150,7 +170,7 @@
         <v-btn
           class="ml-md-3"
           color="success"
-          @click="save"
+          @click="saveWrapper"
         >
           Save
         </v-btn>
@@ -162,12 +182,98 @@
 <script setup lang="ts">
 import { isNil } from "lodash"
 import { useI18n } from "vue-i18n"
+import { ref, watch } from "vue"
 
+import { required } from "@/utils/validators"
+import { GroupMembership } from "@/api/users-api"
+import { UserGroupTypes } from "@/api/user-groups-api"
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 import { useCurrentUser } from "@/use/use-current-user"
 
-const { t } = useI18n()
+import UserGroupAutocomplete from "@/components/user-groups/UserGroupAutocomplete.vue"
+
 const { currentUser, save, sync } = useCurrentUser()
+
+async function saveWrapper() {
+  return save(groupMembershipAttributes.value)
+}
+
+const groupMembershipAttributes = ref<Partial<GroupMembership>>({})
+
+watch(
+  () => currentUser.value,
+  (newCurrentUser) => {
+    if (isNil(newCurrentUser)) return
+
+    const { groupMembership } = newCurrentUser
+    const { departmentId, divisionId, branchId, unitId } = groupMembership
+
+    groupMembershipAttributes.value = {
+      departmentId,
+      divisionId,
+      branchId,
+      unitId,
+    }
+  },
+  {
+    deep: true,
+    immediate: true,
+  }
+)
+
+function clearDivision() {
+  groupMembershipAttributes.value.divisionId = null
+  clearBranch()
+}
+
+function clearBranch() {
+  groupMembershipAttributes.value.branchId = null
+  clearUnit()
+}
+
+function clearUnit() {
+  groupMembershipAttributes.value.unitId = null
+}
+
+async function updateDepartment(newDepartmentId: number | null) {
+  if (isNil(newDepartmentId)) {
+    throw new Error("Department id is required")
+  }
+
+  groupMembershipAttributes.value.departmentId = newDepartmentId
+  clearDivision()
+}
+
+async function updateDivision(newDivisionId: number | null) {
+  if (isNil(newDivisionId)) {
+    clearDivision()
+    return
+  }
+
+  groupMembershipAttributes.value.divisionId = newDivisionId
+  clearBranch()
+}
+
+async function updateBranch(newBranchId: number | null) {
+  if (isNil(newBranchId)) {
+    clearBranch()
+    return
+  }
+
+  groupMembershipAttributes.value.branchId = newBranchId
+  clearUnit()
+}
+
+async function updateUnit(newUnitId: number | null) {
+  if (isNil(newUnitId)) {
+    clearUnit()
+    return
+  }
+
+  groupMembershipAttributes.value.unitId = newUnitId
+}
+
+const { t } = useI18n()
 
 function formatRole(roleType: string) {
   return t(`roles.role_types.${roleType}`, roleType)
