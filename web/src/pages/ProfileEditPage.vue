@@ -146,6 +146,7 @@
         >
           Cancel
         </v-btn>
+        <!-- TODO: add ability to request update of yukon government directory information during save -->
         <v-btn
           class="ml-md-3"
           color="success"
