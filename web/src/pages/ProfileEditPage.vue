@@ -195,7 +195,9 @@ import UserGroupAutocomplete from "@/components/user-groups/UserGroupAutocomplet
 const { currentUser, save, sync } = useCurrentUser()
 
 async function saveWrapper() {
-  return save(groupMembershipAttributes.value)
+  return save({
+    groupMembershipAttributes: groupMembershipAttributes.value,
+  })
 }
 
 const groupMembershipAttributes = ref<Partial<GroupMembership>>({})

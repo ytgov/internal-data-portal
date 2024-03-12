@@ -26,7 +26,7 @@ export class UsersPolicy extends BasePolicy<User> {
       "lastName",
       "position",
       {
-        userGroupAttributes: ["departmentId", "divisionId", "branchId", "unitId"],
+        groupMembershipAttributes: ["departmentId", "divisionId", "branchId", "unitId"],
       },
     ]
   }
