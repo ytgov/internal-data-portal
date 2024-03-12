@@ -15,6 +15,7 @@
             <v-col>
               <AccessGrantGrantLevelSelect
                 v-model="accessGrant.grantLevel"
+                append-inner-icon="mdi-lock"
                 readonly
               />
             </v-col>
@@ -23,6 +24,7 @@
             <v-col>
               <AccessGrantAccessTypeSelect
                 v-model="accessGrant.accessType"
+                append-inner-icon="mdi-lock"
                 readonly
               />
             </v-col>
@@ -33,6 +35,7 @@
                 :model-value="accessGrant.supportId"
                 label="Request Email"
                 attribute="email"
+                append-inner-icon="mdi-lock"
                 readonly
               />
             </v-col>
