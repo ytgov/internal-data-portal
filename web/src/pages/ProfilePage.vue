@@ -23,6 +23,7 @@
         <v-text-field
           :model-value="currentUser.firstName"
           label="First name"
+          append-inner-icon="mdi-lock"
           variant="outlined"
           readonly
         />
@@ -34,6 +35,7 @@
         <v-text-field
           :model-value="currentUser.lastName"
           label="Last name"
+          append-inner-icon="mdi-lock"
           variant="outlined"
           readonly
         />
@@ -48,6 +50,7 @@
         <v-text-field
           :model-value="currentUser.email"
           label="Email"
+          append-inner-icon="mdi-lock"
           variant="outlined"
           readonly
         />
@@ -59,6 +62,7 @@
         <v-text-field
           :model-value="currentUser.position"
           label="Position"
+          append-inner-icon="mdi-lock"
           variant="outlined"
           readonly
         />
@@ -75,6 +79,7 @@
         <v-text-field
           :model-value="currentUser.department"
           label="Department"
+          append-inner-icon="mdi-lock"
           variant="outlined"
           readonly
         />
@@ -86,6 +91,7 @@
         <v-text-field
           :model-value="currentUser.division"
           label="Division"
+          append-inner-icon="mdi-lock"
           variant="outlined"
           readonly
         />
@@ -100,6 +106,7 @@
         <v-text-field
           :model-value="currentUser.branch"
           label="Branch"
+          append-inner-icon="mdi-lock"
           variant="outlined"
           readonly
         />
@@ -111,6 +118,7 @@
         <v-text-field
           :model-value="currentUser.unit"
           label="Unit"
+          append-inner-icon="mdi-lock"
           variant="outlined"
           readonly
         />
