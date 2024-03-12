@@ -31,6 +31,10 @@ const { modelValue: userId } = toRefs(props)
 const { user, isLoading } = useUser(userId)
 
 const fieldValue = computed(() => {
+  if (isNil(props.modelValue)) {
+    return ""
+  }
+
   if (isLoading.value) {
     return "loading..."
   }
