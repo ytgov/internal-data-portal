@@ -8,21 +8,22 @@
       ></v-btn>
     </template>
 
-    <v-list density="compact">
-      <v-list-item :to="{ name: 'StatusPage' }">
-        <template #prepend>
-          <v-icon>mdi-clock</v-icon>
-        </template>
-        <v-list-item-title class="text-body-2">
-          {{ status?.RELEASE_TAG || "loading..." }}
-        </v-list-item-title>
-      </v-list-item>
-      <v-list-item @click="logoutWrapper">
-        <template #prepend>
-          <v-icon>mdi-exit-run</v-icon>
-        </template>
-        <v-list-item-title class="text-body-2">Sign out</v-list-item-title>
-      </v-list-item>
+    <v-list>
+      <v-list-item
+        title="All Datasets"
+        :to="{ name: 'DatasetsPage' }"
+        prepend-icon="mdi-database"
+      />
+      <v-list-item
+        :title="status?.RELEASE_TAG || 'loading...'"
+        :to="{ name: 'StatusPage' }"
+        prepend-icon="mdi-clock"
+      />
+      <v-list-item
+        title="Sign out"
+        prepend-icon="mdi-exit-run"
+        @click="logoutWrapper"
+      />
     </v-list>
   </v-menu>
 </template>
