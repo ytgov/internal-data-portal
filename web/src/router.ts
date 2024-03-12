@@ -88,6 +88,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import("@/pages/DatasetApiManagePage.vue"),
         props: true,
       },
+      {
+        path: "profile",
+        name: "ProfilePage",
+        component: () => import("@/pages/ProfilePage.vue"),
+      },
     ],
   },
   {

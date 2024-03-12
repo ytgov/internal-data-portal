@@ -39,4 +39,12 @@ export default {
       errored: "Errored",
     },
   },
+  roles: {
+    role_types: {
+      user: "User",
+      data_owner: "Data Owner",
+      business_analyst: "Business Analyst",
+      system_admin: "System Admin",
+    },
+  },
 }

@@ -32,7 +32,14 @@
         inset
       />
 
-      <span class="text-body-2"> {{ username }} </span>
+      <v-btn
+        class="text-body-1"
+        :to="{ name: 'ProfilePage' }"
+        append-icon="mdi-account-arrow-right-outline"
+        variant="text"
+      >
+        {{ username }}
+      </v-btn>
 
       <KebabMenu />
     </template>
