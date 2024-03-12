@@ -1,4 +1,5 @@
 import { computed, reactive, toRefs } from "vue"
+import { isNil } from "lodash"
 
 import { sleep } from "@/utils/sleep"
 import usersApi, { RoleTypes, type User } from "@/api/users-api"
@@ -55,6 +56,27 @@ export function useCurrentUser() {
     return fetch()
   }
 
+  async function sync(): Promise<User> {
+    if (isNil(state.currentUser)) {
+      throw new Error("Cannot sync when current user is missing.")
+    }
+
+    state.isLoading = true
+    try {
+      const { user } = await usersApi.sync(state.currentUser.id)
+      state.isErrored = false
+      state.currentUser = user
+      state.isCached = true
+      return user
+    } catch (error) {
+      console.error("Failed to sync current user:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
   // I think this needs to be called during logout or current user will persist?
   function reset() {
     state.currentUser = null
@@ -69,6 +91,7 @@ export function useCurrentUser() {
     fetch,
     ensure,
     reset,
+    sync,
   }
 }
 

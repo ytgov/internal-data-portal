@@ -8,9 +8,10 @@
         title="Sync profile with external directory"
         color="primary"
         size="small"
-        icon="mdi-cached"
-        @click="ygGovernmentDirectorySync"
+        icon
+        @click="sync"
       >
+        <v-icon size="x-large">mdi-account-sync-outline</v-icon>
       </v-btn>
     </h2>
 
@@ -145,11 +146,7 @@ import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 import { useCurrentUser } from "@/use/use-current-user"
 
 const { t } = useI18n()
-const { currentUser } = useCurrentUser()
-
-function ygGovernmentDirectorySync() {
-  alert("TODO: Syncing with ygGovernmentDirectory")
-}
+const { currentUser, sync } = useCurrentUser()
 
 function formatRole(roleType: string) {
   return t(`roles.role_types.${roleType}`, roleType)

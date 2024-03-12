@@ -94,6 +94,10 @@ export const usersApi = {
     })
     return data
   },
+  async sync(userId: number): Promise<{ user: User }> {
+    const { data } = await http.post(`/api/users/${userId}/yukon-government-directory-sync`)
+    return data
+  },
 }
 
 export default usersApi
