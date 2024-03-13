@@ -122,14 +122,25 @@ const isLoading = ref(false)
 watch(
   () => showDialog.value,
   (value) => {
+    const { query } = route
     if (value) {
-      if (route.query.showDelete === userId.value?.toString()) {
+      if (query.showDelete === userId.value?.toString()) {
         return
       }
 
-      router.push({ query: { showDelete: userId.value } })
+      router.push({
+        query: {
+          ...query,
+          showDelete: userId.value,
+        },
+      })
     } else {
-      router.push({ query: { showDelete: undefined } })
+      router.push({
+        query: {
+          ...query,
+          showDelete: undefined,
+        },
+      })
     }
   }
 )
