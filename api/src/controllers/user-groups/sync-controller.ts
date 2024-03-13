@@ -13,8 +13,12 @@ export class SyncController extends BaseController {
         .json({ message: "You are not authorized to sync user groups." })
     }
 
-    const userGroups = await SyncService.perform()
-    return this.response.status(201).json({ userGroups })
+    try {
+      const userGroups = await SyncService.perform()
+      return this.response.status(201).json({ userGroups })
+    } catch (error) {
+      return this.response.status(422).json({ message: `Failed to sync user groups: ${error}` })
+    }
   }
 
   private async buildUserGroup(): Promise<UserGroup> {

@@ -18,10 +18,13 @@ export class SyncController extends BaseController {
         .json({ message: "You are not authorized to sync this user." })
     }
 
-    return SyncService.perform(this.currentUser).then((user) => {
-      const serializedUser = UserSerializers.asDetailed(user)
+    try {
+      const updatedUser = await SyncService.perform(user)
+      const serializedUser = UserSerializers.asDetailed(updatedUser)
       return this.response.status(201).json({ user: serializedUser })
-    })
+    } catch (error) {
+      return this.response.status(422).json({ message: `Failed to sync user: ${error}` })
+    }
   }
 
   private loadUser(): Promise<User | null> {
