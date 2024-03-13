@@ -1,11 +1,12 @@
 import http from "@/api/http-client"
 
 import { type Policy } from "@/api/base-api"
-import { type User } from "@/api/users-api"
-import { type DatasetIntegration } from "@/api/dataset-integrations-api"
-import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
 import { type AccessGrant } from "@/api/access-grants-api"
 import { type AccessRequest } from "@/api/access-requests-api"
+import { type DatasetIntegration } from "@/api/dataset-integrations-api"
+import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
+import { type User } from "@/api/users-api"
+import { type UserGroup } from "@/api/user-groups-api"
 import { type VisualizationControl } from "@/api/visualization-controls-api"
 
 export { type Policy }
@@ -56,11 +57,17 @@ export type DatasetDetailedResult = Dataset & {
   currentUserAccessRequest: AccessRequest | null
 }
 
+// Keep in sync with api/src/models/dataset.ts -> scopes
+export type DatasetsFilters = {
+  withOwnerDepartment?: UserGroup["id"]
+  withTagNames?: string[]
+}
+
 export const datasetsApi = {
   DatasetErrorTypes,
   async list(params: {
     where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
-    filters?: Record<string, unknown>
+    filters?: DatasetsFilters
     page?: number
     perPage?: number
   }): Promise<{
