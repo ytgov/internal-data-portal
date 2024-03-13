@@ -51,18 +51,21 @@ import useUsers, { User } from "@/use/use-users"
 
 import UserEditDialog from "@/components/users/UserEditDialog.vue"
 import UserDeleteDialog from "@/components/users/UserDeleteDialog.vue"
+import { useI18n } from "vue-i18n"
+
+const { t } = useI18n()
 
 const headers = ref([
   { title: "Display Name", key: "displayName" },
   { title: "Email", key: "email" },
   { title: "Position", key: "position" },
-
   {
     title: "Role",
     key: "roleTypes",
     value: (item: unknown) => {
       const { roleTypes } = item as User
-      return roleTypes.join(", ")
+      const formatedRoleTypes = roleTypes.map((roleType) => t(`roles.role_types.${roleType}`, roleType))
+      return formatedRoleTypes.join(", ")
     },
   },
   { title: "", key: "actions" },
