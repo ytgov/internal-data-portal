@@ -7,6 +7,7 @@
     :items-length="totalCount"
     :loading="isLoading"
     class="elevation-1"
+    @dblclick:row="(_event: unknown, { item }: UserTableRow) => goToUserEdit(item.id)"
   >
     <template #top>
       <UserDeleteDialog
@@ -44,11 +45,15 @@
 import { computed, ref, watch } from "vue"
 import { isNil } from "lodash"
 import { useI18n } from "vue-i18n"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 import useUsers, { User } from "@/use/use-users"
 
 import UserDeleteDialog from "@/components/users/UserDeleteDialog.vue"
+
+type UserTableRow = {
+  item: User
+}
 
 const { t } = useI18n()
 
@@ -79,6 +84,7 @@ const headers = ref([
 ])
 
 const route = useRoute()
+const router = useRouter()
 const itemsPerPage = ref(10)
 const page = ref(1)
 const datasetsQuery = computed(() => ({
@@ -87,6 +93,13 @@ const datasetsQuery = computed(() => ({
 }))
 
 const { users, totalCount, isLoading, refresh } = useUsers(datasetsQuery)
+
+function goToUserEdit(userId: number) {
+  router.push({
+    name: "UserEditPage",
+    params: { userId },
+  })
+}
 
 const deleteDialog = ref<InstanceType<typeof UserDeleteDialog> | null>(null)
 
