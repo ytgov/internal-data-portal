@@ -15,6 +15,12 @@
         prepend-icon="mdi-database"
       />
       <v-list-item
+        :title="userName"
+        :to="{ name: 'ProfilePage' }"
+        :active="isViewingProfilePage"
+        prepend-icon="mdi-account-outline"
+      />
+      <v-list-item
         :title="status?.RELEASE_TAG || 'loading...'"
         :to="{ name: 'StatusPage' }"
         prepend-icon="mdi-clock"
@@ -29,11 +35,27 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue"
+import { computed, onMounted } from "vue"
+import { useRoute } from "vue-router"
 
 import { useAuth0 } from "@auth0/auth0-vue"
 
+import useCurrentUser from "@/use/use-current-user"
 import useStatus from "@/use/use-status"
+
+const { currentUser } = useCurrentUser()
+
+const userName = computed(() => {
+  if (currentUser.value === null) return "loading..."
+
+  const { email } = currentUser.value
+  return email.substring(0, email.indexOf("@"))
+})
+
+const route = useRoute()
+const isViewingProfilePage = computed(() => {
+  return ["ProfilePage", "ProfileEditPage"].includes(route.name as string)
+})
 
 const { logout } = useAuth0()
 
