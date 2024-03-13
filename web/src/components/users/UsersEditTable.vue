@@ -1,5 +1,10 @@
 <template>
+  <v-skeleton-loader
+    v-if="isLoading"
+    type="table"
+  />
   <v-data-table-server
+    v-else
     v-model:items-per-page="itemsPerPage"
     v-model:page="page"
     :headers="headers"
@@ -85,14 +90,15 @@ const headers = ref([
 
 const route = useRoute()
 const router = useRouter()
-const itemsPerPage = ref(10)
-const page = ref(1)
-const datasetsQuery = computed(() => ({
+const itemsPerPage = ref(parseInt(route.query.perPage as string) || 10)
+const page = ref(parseInt(route.query.page as string) || 1)
+
+const usersQuery = computed(() => ({
   perPage: itemsPerPage.value,
   page: page.value,
 }))
 
-const { users, totalCount, isLoading, refresh } = useUsers(datasetsQuery)
+const { users, totalCount, isLoading, refresh } = useUsers(usersQuery)
 
 function goToUserEdit(userId: number) {
   router.push({
@@ -118,6 +124,22 @@ function showDeleteDialogForRouteQuery() {
 
   showDeleteDialog(user)
 }
+
+watch(
+  () => [page.value, itemsPerPage.value],
+  ([newPage, newPerPage]) => {
+    router.push({
+      query: {
+        ...route.query,
+        page: newPage,
+        perPage: newPerPage,
+      },
+    })
+  },
+  {
+    immediate: true,
+  }
+)
 
 watch(
   () => users.value,
