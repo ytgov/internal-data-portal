@@ -26,7 +26,9 @@
     </h2>
 
     <UserEditForm
+      class="mt-10"
       :user-id="currentUser.id"
+      @saved="refresh"
     />
   </v-container>
 </template>
@@ -39,7 +41,7 @@ import useCurrentUser from "@/use/use-current-user"
 
 import UserEditForm from "@/components/users/UserEditForm.vue"
 
-const { currentUser, sync } = useCurrentUser()
+const { currentUser, sync, refresh } = useCurrentUser()
 
 const { setBreadcrumbs } = useBreadcrumbs()
 

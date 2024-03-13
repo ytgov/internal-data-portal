@@ -89,6 +89,7 @@ export function useCurrentUser() {
     ...toRefs(state),
     isReady,
     fetch,
+    refresh: fetch,
     ensure,
     reset,
     sync,

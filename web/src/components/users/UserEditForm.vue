@@ -189,6 +189,8 @@ const props = defineProps<{
   userId: number
 }>()
 
+const emit = defineEmits(["saved"])
+
 const { userId } = toRefs(props)
 const { user, save, isLoading } = useUser(userId)
 
@@ -203,9 +205,10 @@ async function saveWrapper() {
     return
   }
 
-  return save({
+  await save({
     groupMembershipAttributes: groupMembershipAttributes.value,
   })
+  emit("saved")
 }
 
 watch(
