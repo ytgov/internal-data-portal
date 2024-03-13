@@ -10,10 +10,6 @@
     class="elevation-1"
   >
     <template #top>
-      <UserEditDialog
-        ref="editDialog"
-        @saved="refresh"
-      />
       <UserDeleteDialog
         ref="deleteDialog"
         @deleted="refresh"
@@ -24,7 +20,10 @@
         <v-btn
           color="primary"
           variant="outlined"
-          @click="showEditDialog(item)"
+          :to="{
+            name: 'UserEditPage',
+            params: { userId: item.id },
+          }"
         >
           Edit
         </v-btn>
@@ -44,14 +43,13 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue"
-import { useRoute } from "vue-router"
 import { isNil } from "lodash"
+import { useI18n } from "vue-i18n"
+import { useRoute } from "vue-router"
 
 import useUsers, { User } from "@/use/use-users"
 
-import UserEditDialog from "@/components/users/UserEditDialog.vue"
 import UserDeleteDialog from "@/components/users/UserDeleteDialog.vue"
-import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 
@@ -64,7 +62,7 @@ const headers = ref([
     key: "department",
     value: (item: unknown) => {
       const { department, division, branch, unit } = item as User
-      return [department, division, branch, unit].filter(Boolean).join(' - ')
+      return [department, division, branch, unit].filter(Boolean).join(" - ")
     },
   },
   {
@@ -91,27 +89,10 @@ const datasetsQuery = computed(() => ({
 
 const { users, totalCount, isLoading, refresh } = useUsers(datasetsQuery)
 
-const editDialog = ref<InstanceType<typeof UserEditDialog> | null>(null)
 const deleteDialog = ref<InstanceType<typeof UserDeleteDialog> | null>(null)
 
 function showDeleteDialog(user: User) {
   deleteDialog.value?.show(user)
-}
-
-function showEditDialog(user: User) {
-  editDialog.value?.show(user)
-}
-
-function showEditDialogForRouteQuery() {
-  if (typeof route.query.showEdit !== "string") return
-
-  const userId = parseInt(route.query.showEdit)
-  if (isNaN(userId)) return
-
-  const user = users.value.find((user) => user.id === userId)
-  if (isNil(user)) return
-
-  showEditDialog(user)
 }
 
 function showDeleteDialogForRouteQuery() {
@@ -131,7 +112,6 @@ watch(
   (users) => {
     if (users.length === 0) return
 
-    showEditDialogForRouteQuery()
     showDeleteDialogForRouteQuery()
   }
 )

@@ -20,7 +20,7 @@
         prepend-icon="mdi-account-group"
       />
       <v-list-item
-        :title="userName"
+        :title="username"
         :to="{ name: 'ProfilePage' }"
         :active="isViewingProfilePage"
         prepend-icon="mdi-account-outline"
@@ -50,7 +50,7 @@ import useStatus from "@/use/use-status"
 
 const { currentUser } = useCurrentUser()
 
-const userName = computed(() => {
+const username = computed(() => {
   if (currentUser.value === null) return "loading..."
 
   const { email } = currentUser.value

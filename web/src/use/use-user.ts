@@ -70,6 +70,27 @@ export function useUser(
     }
   }
 
+  async function sync(): Promise<User> {
+    const staticId = unref(id)
+    if (isNil(staticId)) {
+      throw new Error("id is required")
+    }
+
+    state.isLoading = true
+    try {
+      const { user } = await usersApi.sync(staticId)
+      state.isErrored = false
+      state.user = user
+      return user
+    } catch (error) {
+      console.error("Failed to sync current user:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
   watch(
     () => unref(id),
     async (newId) => {
@@ -85,6 +106,7 @@ export function useUser(
     fetch,
     refresh: fetch,
     save,
+    sync,
   }
 }
 

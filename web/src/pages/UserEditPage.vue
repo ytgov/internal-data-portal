@@ -1,0 +1,76 @@
+<template>
+  <v-skeleton-loader v-if="isNil(user)" />
+  <v-container v-else>
+    <h2 class="d-flex flex-column flex-md-row justify-space-between mb-3">
+      <span>
+        User Profile:
+        <v-chip variant="outlined">
+          {{ username }}
+        </v-chip>
+      </span>
+
+      <div class="d-flex justify-space-between mt-4 mb-3 my-md-0">
+        <v-btn
+          color="primary"
+          variant="outlined"
+          :to="{ name: 'UsersPage' }"
+        >
+          Back
+        </v-btn>
+        <v-btn
+          class="ml-md-3"
+          title="Sync profile with external directory"
+          color="primary"
+          append-icon="mdi-sync"
+          @click="sync"
+        >
+          Sync
+        </v-btn>
+      </div>
+    </h2>
+
+    <UserEditForm
+      class="mt-10"
+      :user-id="user.id"
+      @saved="refresh"
+    />
+  </v-container>
+</template>
+
+<script setup lang="ts">
+import { computed } from "vue"
+import { isNil } from "lodash"
+
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useUser from "@/use/use-user"
+
+import UserEditForm from "@/components/users/UserEditForm.vue"
+
+const props = defineProps<{
+  userId: string
+}>()
+
+const userId = computed(() => parseInt(props.userId))
+const { user, sync, refresh } = useUser(userId)
+
+const username = computed(() => {
+  if (user.value === null) return "loading..."
+
+  const { email } = user.value
+  return email.substring(0, email.indexOf("@"))
+})
+
+const { setBreadcrumbs } = useBreadcrumbs()
+
+setBreadcrumbs([
+  {
+    title: "All Users",
+    to: { name: "UsersPage" },
+  },
+  // Add non-edit user page link, once it exists
+  {
+    title: "Edit",
+    to: { name: "ProfileEditPage" },
+  },
+])
+</script>
