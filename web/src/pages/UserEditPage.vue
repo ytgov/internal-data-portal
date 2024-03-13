@@ -68,10 +68,20 @@ setBreadcrumbs([
     title: "All Users",
     to: { name: "UsersPage" },
   },
-  // Add non-edit user page link, once it exists
+  {
+    title: "User",
+    to: {
+      // TODO: set to non-edit user page, once it exists
+      name: "UserEditPage",
+      params: { userId: props.userId },
+    },
+  },
   {
     title: "Edit",
-    to: { name: "ProfileEditPage" },
+    to: {
+      name: "UserEditPage",
+      params: { userId: props.userId },
+    },
   },
 ])
 </script>
