@@ -7,9 +7,11 @@ export { type Dataset }
 export function useDatasets(
   options: Ref<{
     where?: Record<string, unknown>
+    filters?: Record<string, unknown>
     page?: number
     perPage?: number
-  }> = ref({})
+  }> = ref({}),
+  { skipWatchIf = () => false }: { skipWatchIf?: () => boolean } = {}
 ) {
   const state = reactive<{
     datasets: Dataset[]
@@ -43,6 +45,8 @@ export function useDatasets(
   watch(
     () => unref(options),
     async () => {
+      if (skipWatchIf()) return
+
       await fetch()
     },
     { deep: true, immediate: true }

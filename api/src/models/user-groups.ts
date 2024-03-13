@@ -32,6 +32,7 @@ export enum UserGroupTypes {
   UNIT = "unit",
 }
 
+export const UNASSIGNED_USER_GROUP_NAME = "Unassigned"
 export const DEFAULT_ORDER = -1
 
 export class UserGroup extends Model<

@@ -2,6 +2,7 @@ import http from "@/api/http-client"
 
 import { AccessGrant } from "@/api/access-grants-api"
 import { Dataset } from "@/api/datasets-api"
+import { DatasetIntegration } from "@/api/dataset-integrations-api"
 import { User } from "@/api/users-api"
 import { UserGroup } from "@/api/user-groups-api"
 
@@ -46,15 +47,20 @@ export type AccessRequestTableView = Pick<
   requestorDepartmentName: UserGroup["name"]
   accessType: AccessGrant["accessType"]
   status: AccessRequestTableStatuses
+  dataset: Pick<Dataset, "id" | "name" | "description"> & {
+    integration?: Pick<DatasetIntegration, "id" | "status">
+  }
+}
+
+// Keep in sync with api/src/models/access-request.ts -> scopes
+export type AccessRequestsFilters = {
+  withDatasetOwnerId?: number
 }
 
 export const accessRequestsApi = {
-  async list({
-    where,
-    page,
-    perPage,
-  }: {
+  async list(params: {
     where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
+    filters?: AccessRequestsFilters
     page?: number
     perPage?: number
   } = {}): Promise<{
@@ -62,7 +68,7 @@ export const accessRequestsApi = {
     totalCount: number
   }> {
     const { data } = await http.get("/api/access-requests", {
-      params: { where, page, perPage },
+      params,
     })
     return data
   },

@@ -1,6 +1,6 @@
 import { isNil, pick } from "lodash"
 
-import { AccessGrant, AccessRequest, User, UserGroup } from "@/models"
+import { AccessGrant, AccessRequest, Dataset, DatasetIntegration, User, UserGroup } from "@/models"
 import BaseSerializer from "@/serializers/base-serializer"
 
 export enum AccessRequestTableStatuses {
@@ -26,6 +26,9 @@ export type AccessRequestTableView = Pick<
   requestorDepartmentName: UserGroup["name"]
   accessType: AccessGrant["accessType"]
   status: AccessRequestTableStatuses
+  dataset: Pick<Dataset, "id" | "name" | "description"> & {
+    integration?: Pick<DatasetIntegration, "id" | "status">
+  }
 }
 
 export class TableSerializer extends BaseSerializer<AccessRequest> {
@@ -56,6 +59,22 @@ export class TableSerializer extends BaseSerializer<AccessRequest> {
     if (isNil(accessGrant)) {
       throw new Error("AccessRequest must include an access grant.")
     }
+
+    const { dataset } = this.record
+    if (isNil(dataset)) {
+      throw new Error("AccessRequest must include a dataset.")
+    }
+
+    let integrationAttributes = {}
+    if (!isNil(dataset.integration)) {
+      integrationAttributes = {
+        integration: {
+          id: dataset.integration.id,
+          status: dataset.integration.status,
+        },
+      }
+    }
+
     return {
       ...pick(this.record.dataValues, [
         "id",
@@ -71,6 +90,12 @@ export class TableSerializer extends BaseSerializer<AccessRequest> {
       requestorDepartmentName: requestorDepartment.name,
       accessType: accessGrant.accessType,
       status: this.buildStatus(),
+      dataset: {
+        id: dataset.id,
+        name: dataset.name,
+        description: dataset.description,
+        ...integrationAttributes,
+      },
     }
   }
 

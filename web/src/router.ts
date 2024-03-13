@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
 import { authGuard } from "@auth0/auth0-vue"
 
+import { parseQuery, stringifyQuery } from "@/api/base-api"
+
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
@@ -8,11 +10,11 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: "",
-        redirect: "/dashboard",
+        redirect: "dashboard",
       },
       {
         name: "DashboardPage",
-        path: "/dashboard",
+        path: "dashboard",
         component: () => import("@/pages/DashboardPage.vue"),
       },
       {
@@ -86,6 +88,16 @@ const routes: RouteRecordRaw[] = [
         component: () => import("@/pages/DatasetApiManagePage.vue"),
         props: true,
       },
+      {
+        path: "profile",
+        name: "ProfilePage",
+        component: () => import("@/pages/ProfilePage.vue"),
+      },
+      {
+        path: "profile/edit",
+        name: "ProfileEditPage",
+        component: () => import("@/pages/ProfileEditPage.vue"),
+      },
     ],
   },
   {
@@ -114,6 +126,9 @@ const routes: RouteRecordRaw[] = [
 
 const router = createRouter({
   history: createWebHistory(),
+  // @ts-expect-error - Ignore vue-router query format as Qs format _does_ work
+  parseQuery,
+  stringifyQuery,
   routes,
 })
 

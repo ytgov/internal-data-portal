@@ -1,4 +1,5 @@
-import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
+import { type Ref, reactive, toRefs, ref, unref, watch, nextTick } from "vue"
+import { debounce } from "lodash"
 
 import tagsApi, { type Tag } from "@/api/tags-api"
 
@@ -7,9 +8,17 @@ export { type Tag }
 export function useTags(
   queryOptions: Ref<{
     where?: Record<string, unknown>
+    searchToken?: string
     page?: number
     perPage?: number
-  }> = ref({})
+  }> = ref({}),
+  {
+    wait = 0,
+    immediate = true,
+  }: {
+    wait?: number
+    immediate?: boolean
+  } = {}
 ) {
   const state = reactive<{
     tags: Tag[]
@@ -37,18 +46,27 @@ export function useTags(
     }
   }
 
+  const debouncedFetch = debounce(fetch, wait)
+  const cancelDebouncedFetch = async () => {
+    await nextTick()
+    debouncedFetch.cancel()
+  }
+
   watch(
     () => unref(queryOptions),
     async () => {
-      await fetch()
+      state.isLoading = true
+      await debouncedFetch()
+      state.isLoading = false
     },
-    { deep: true, immediate: true }
+    { deep: true, immediate }
   )
 
   return {
     ...toRefs(state),
     fetch,
     refresh: fetch,
+    cancel: cancelDebouncedFetch,
   }
 }
 

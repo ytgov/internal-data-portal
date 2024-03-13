@@ -4,16 +4,24 @@ import accessRequestsApi, {
   AccessRequestTableStatuses,
   type AccessRequest,
   type AccessRequestTableView,
+  type AccessRequestsFilters,
 } from "@/api/access-requests-api"
 
-export { AccessRequestTableStatuses, type AccessRequest, type AccessRequestTableView }
+export {
+  AccessRequestTableStatuses,
+  type AccessRequest,
+  type AccessRequestTableView,
+  type AccessRequestsFilters,
+}
 
 export function useAccessRequests(
   queryOptions: Ref<{
     where?: Record<string, unknown>
+    filters?: AccessRequestsFilters
     page?: number
     perPage?: number
-  }> = ref({})
+  }> = ref({}),
+  { skipWatchIf = () => false }: { skipWatchIf?: () => boolean } = {}
 ) {
   const state = reactive<{
     accessRequests: AccessRequestTableView[]
@@ -47,6 +55,8 @@ export function useAccessRequests(
   watch(
     () => unref(queryOptions),
     async () => {
+      if (skipWatchIf()) return
+
       await fetch()
     },
     { deep: true, immediate: true }

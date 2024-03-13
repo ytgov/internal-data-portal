@@ -1,9 +1,9 @@
 import { isEmpty, isNil } from "lodash"
 
 import db, { Role, User, UserGroup, UserGroupMembership } from "@/models"
-import { DEFAULT_ORDER } from "@/models/user-groups"
+import { DEFAULT_ORDER, UNASSIGNED_USER_GROUP_NAME } from "@/models/user-groups"
 
-import { Users } from "@/services"
+import { SyncService } from "@/services/users"
 import BaseService from "@/services/base-service"
 
 type GroupMembershipAttributes = Partial<UserGroupMembership>
@@ -79,7 +79,7 @@ export class CreateService extends BaseService {
       })
     }
 
-    await Users.YukonGovernmentDirectorySyncService.perform(user)
+    await SyncService.perform(user)
 
     if (!isEmpty(user.groupMembership)) {
       return user.groupMembership
@@ -88,10 +88,10 @@ export class CreateService extends BaseService {
     const [defaultGroup] = await UserGroup.findOrCreate({
       where: {
         type: UserGroup.Types.DEPARTMENT,
-        name: "Unassigned",
+        name: UNASSIGNED_USER_GROUP_NAME,
       },
       defaults: {
-        name: "Unassigned",
+        name: UNASSIGNED_USER_GROUP_NAME,
         type: UserGroup.Types.DEPARTMENT,
         order: DEFAULT_ORDER,
       },

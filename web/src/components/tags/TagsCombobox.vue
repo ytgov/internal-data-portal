@@ -15,12 +15,16 @@
   ></v-combobox>
 </template>
 
+<script lang="ts">
+export { type Tag } from "@/use/use-tags"
+</script>
+
 <script lang="ts" setup>
 import { computed, ref } from "vue"
 import { differenceBy } from "lodash"
 
 import { MAX_PER_PAGE } from "@/api/base-api"
-import useTags, { Tag } from "@/use/use-tags"
+import useTags, { type Tag } from "@/use/use-tags"
 
 const props = withDefaults(
   defineProps<{

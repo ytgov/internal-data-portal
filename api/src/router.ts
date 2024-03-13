@@ -115,15 +115,15 @@ router
 
 router.route("/api/users").get(UsersController.index)
 router.route("/api/users/search/:searchToken").get(Users.SearchController.index)
-router.route("/api/users/:userId").get(UsersController.show)
+router.route("/api/users/:userId").get(UsersController.show).patch(UsersController.update)
 router
-  .route("/api/users/:userId/yukon-government-directory-sync")
-  .post(Users.YukonGovernmentDirectorySyncController.create)
+  .route("/api/users/:userId/sync")
+  .post(Users.SyncController.create)
 
 router.route("/api/user-groups").get(UserGroupsController.index)
 router
-  .route("/api/user-groups/yukon-government-directory-sync")
-  .post(UserGroups.YukonGovernmentDirectorySyncController.create)
+  .route("/api/user-groups/sync")
+  .post(UserGroups.SyncController.create)
 
 router.route("/api/taggings").get(TaggingsController.index).post(TaggingsController.create)
 router.route("/api/taggings/:taggingId").delete(TaggingsController.destroy)

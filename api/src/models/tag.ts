@@ -16,6 +16,10 @@ import {
   InferCreationAttributes,
   Model,
   NonAttribute,
+  Op,
+  col,
+  fn,
+  where,
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
@@ -92,7 +96,15 @@ Tag.init(
           deleted_at: null,
         },
       },
-    ]
+    ],
+    scopes: {
+      search(searchToken: string) {
+        const cleanSearchToken = searchToken.toLowerCase()
+        return {
+          where: where(fn("LOWER", col("name")), { [Op.like]: `%${cleanSearchToken}%` }),
+        }
+      },
+    },
   }
 )
 

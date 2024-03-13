@@ -33,4 +33,18 @@ export default {
       },
     },
   },
+  dataset_integrations: {
+    status_types: {
+      ok: "OK",
+      errored: "Errored",
+    },
+  },
+  roles: {
+    role_types: {
+      user: "User",
+      data_owner: "Data Owner",
+      business_analyst: "Business Analyst",
+      system_admin: "System Admin",
+    },
+  },
 }

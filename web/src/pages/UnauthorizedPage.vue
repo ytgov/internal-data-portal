@@ -3,12 +3,30 @@
     <h1>Unauthorized (401)</h1>
     <p>Authentication failed. If you think this is an error, please contact support.</p>
     <p>Alternatively, try logging out and signing in again.</p>
-    <v-btn
-      class="mt-6"
-      color="primary"
-      @click="logoutWithRedirect"
-      >Logout</v-btn
-    >
+    <v-row class="mt-6">
+      <v-spacer />
+      <v-col>
+        <!-- href="/" performs a more aggressive refresh than using to="xxx" -->
+        <v-btn
+          color="primary"
+          variant="outlined"
+          href="/"
+          >Reboot App</v-btn
+        >
+      </v-col>
+      <v-spacer />
+    </v-row>
+    <v-row>
+      <v-spacer />
+      <v-col>
+        <v-btn
+          color="primary"
+          @click="logoutWithRedirect"
+          >Logout</v-btn
+        >
+      </v-col>
+      <v-spacer />
+    </v-row>
     <hr />
     <p>Site: {{ APPLICATION_NAME }}</p>
     <p>Version: {{ releaseTag }}</p>

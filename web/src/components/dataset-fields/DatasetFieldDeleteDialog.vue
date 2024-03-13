@@ -16,6 +16,7 @@
               <v-text-field
                 v-model="datasetField.name"
                 label="Field Name"
+                append-inner-icon="mdi-lock"
                 readonly
               />
             </v-col>
@@ -25,6 +26,7 @@
               <v-text-field
                 v-model="datasetField.displayName"
                 label="Display Name"
+                append-inner-icon="mdi-lock"
                 readonly
               />
             </v-col>
@@ -34,6 +36,7 @@
               <v-textarea
                 v-model="datasetField.description"
                 label="Field Description"
+                append-inner-icon="mdi-lock"
                 rows="6"
                 readonly
               />
@@ -45,6 +48,7 @@
                 v-model="datasetField.dataType"
                 :items="datasetFieldTypes"
                 label="Data Type"
+                append-inner-icon="mdi-lock"
                 readonly
               />
             </v-col>
@@ -55,6 +59,7 @@
                 v-model="datasetField.note"
                 label="Notes"
                 rows="10"
+                append-inner-icon="mdi-lock"
                 readonly
               />
             </v-col>

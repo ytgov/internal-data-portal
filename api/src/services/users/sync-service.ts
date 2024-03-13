@@ -1,3 +1,5 @@
+import { isNil } from "lodash"
+
 import { User } from "@/models"
 
 import BaseService from "@/services/base-service"
@@ -5,9 +7,9 @@ import { yukonGovernmentIntegration } from "@/integrations"
 import UserGroup, { UserGroupTypes } from "@/models/user-groups"
 import UserGroupMembership from "@/models/user-group-membership"
 
-import { DEFAULT_ORDER } from "@/services/user-groups/yukon-government-directory-sync-service"
+import { DEFAULT_ORDER } from "@/services/user-groups/sync-service"
 
-export class YukonGovernmentDirectorySyncService extends BaseService {
+export class SyncService extends BaseService {
   private user: User
 
   constructor(user: User) {
@@ -19,7 +21,14 @@ export class YukonGovernmentDirectorySyncService extends BaseService {
     const email = this.user.email
 
     try {
-      const { employee } = await yukonGovernmentIntegration.fetchEmpolyee(email)
+      const employee = await yukonGovernmentIntegration.fetchEmpolyee(email)
+      if (isNil(employee)) {
+        console.info(`No employee found with email: ${email} in yukon government directory`)
+        return this.user.update({
+          lastSyncFailureAt: new Date(),
+        })
+      }
+
       const { department, division, branch, unit } = employee
 
       let userGroup2: UserGroup | null = null
@@ -74,13 +83,12 @@ export class YukonGovernmentDirectorySyncService extends BaseService {
         ],
       })
     } catch (error) {
-      console.log("Failed to sync user with yukon government directory", error)
-      await this.user.update({
+      console.error(`User sync failure for ${email} with yukon government directory`, error)
+      return this.user.update({
         lastSyncFailureAt: new Date(),
       })
-      return this.user
     }
   }
 }
 
-export default YukonGovernmentDirectorySyncService
+export default SyncService

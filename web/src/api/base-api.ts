@@ -1,9 +1,17 @@
-import qs from "qs"
+import qs, { type ParsedQs } from "qs"
+
+export { type ParsedQs }
 
 // See api/src/app.ts -> app.set("query parser", ...)
-export function paramsSerializer(params: unknown) {
+export function stringifyQuery(params: unknown): string {
   return qs.stringify(params, {
     arrayFormat: "brackets",
+    strictNullHandling: true,
+  })
+}
+
+export function parseQuery(search: string): ParsedQs {
+  return qs.parse(search, {
     strictNullHandling: true,
   })
 }

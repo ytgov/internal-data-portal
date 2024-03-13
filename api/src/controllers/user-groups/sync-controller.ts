@@ -1,9 +1,9 @@
 import { UserGroup } from "@/models"
-import { UserGroups } from "@/services"
+import { SyncService } from "@/services/user-groups"
 import { UserGroupsPolicy } from "@/policies"
 import BaseController from "@/controllers/base-controller"
 
-export class YukonGovernmentDirectorySyncController extends BaseController {
+export class SyncController extends BaseController {
   async create() {
     const userGroup = await this.buildUserGroup()
     const policy = this.buildPolicy(userGroup)
@@ -13,8 +13,12 @@ export class YukonGovernmentDirectorySyncController extends BaseController {
         .json({ message: "You are not authorized to sync user groups." })
     }
 
-    const userGroups = await UserGroups.YukonGovernmentDirectorySyncService.perform()
-    return this.response.status(201).json({ userGroups })
+    try {
+      const userGroups = await SyncService.perform()
+      return this.response.status(201).json({ userGroups })
+    } catch (error) {
+      return this.response.status(422).json({ message: `Failed to sync user groups: ${error}` })
+    }
   }
 
   private async buildUserGroup(): Promise<UserGroup> {
@@ -26,4 +30,4 @@ export class YukonGovernmentDirectorySyncController extends BaseController {
   }
 }
 
-export default YukonGovernmentDirectorySyncController
+export default SyncController
