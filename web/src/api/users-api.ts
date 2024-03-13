@@ -90,6 +90,10 @@ export const usersApi = {
     const { data } = await http.patch(`/api/users/${userId}`, attributes)
     return data
   },
+  async delete(userId: number): Promise<void> {
+    const { data } = await http.delete(`/api/users/${userId}`)
+    return data
+  },
 
   // Special Endpoints
   async search(

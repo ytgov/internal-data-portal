@@ -1,5 +1,4 @@
 <template>
-  TODO: implement the UsersEditTable component
   <v-data-table-server
     v-model:items-per-page="itemsPerPage"
     v-model:page="page"
