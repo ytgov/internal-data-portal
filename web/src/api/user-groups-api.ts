@@ -24,7 +24,7 @@ export type UserGroup = {
 export const userGroupsApi = {
   Types: UserGroupTypes,
   async sync(): Promise<{ userGroups: UserGroup[] }> {
-    const { data } = await http.post("/api/user-groups/yukon-government-directory-sync")
+    const { data } = await http.post("/api/user-groups/sync")
     return data
   },
   async list({

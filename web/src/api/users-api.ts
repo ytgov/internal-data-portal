@@ -34,6 +34,10 @@ export type User = {
   groupMembership: GroupMembership
 }
 
+export type UserUpdate = Partial<User> & {
+  groupMembershipAttributes?: Partial<GroupMembership>
+}
+
 // Must match roles in api/src/models/roles.ts
 export enum RoleTypes {
   DATA_OWNER = "data_owner",
@@ -77,6 +81,15 @@ export const usersApi = {
     const { data } = await http.get(`/api/users/${id}`)
     return data
   },
+  async update(
+    userId: number,
+    attributes: Partial<User>
+  ): Promise<{
+    user: User
+  }> {
+    const { data } = await http.patch(`/api/users/${userId}`, attributes)
+    return data
+  },
 
   // Special Endpoints
   async search(
@@ -92,6 +105,10 @@ export const usersApi = {
     const { data } = await http.get(`/api/users/search/${searchToken}`, {
       params: { page, perPage },
     })
+    return data
+  },
+  async sync(userId: number): Promise<{ user: User }> {
+    const { data } = await http.post(`/api/users/${userId}/sync`)
     return data
   },
 }

@@ -54,12 +54,14 @@ const { currentUser } = useCurrentUser()
 const activeTab = ref(null)
 
 const DescriptionTab = defineAsyncComponent(
-  () => import("@/layouts/dataset-layout/DescriptionTab.vue")
+  () => import("@/components/dataset-layout/DescriptionTab.vue")
 )
-const FieldsTab = defineAsyncComponent(() => import("@/layouts/dataset-layout/FieldsTab.vue"))
+const FieldsTab = defineAsyncComponent(() => import("@/components/dataset-layout/FieldsTab.vue"))
 // TODO: access tab only has manage view, which is a bit confusing
-const AccessTab = defineAsyncComponent(() => import("@/layouts/dataset-layout/AccessTab.vue"))
-const VisualizeTab = defineAsyncComponent(() => import("@/layouts/dataset-layout/VisualizeTab.vue"))
+const AccessTab = defineAsyncComponent(() => import("@/components/dataset-layout/AccessTab.vue"))
+const VisualizeTab = defineAsyncComponent(
+  () => import("@/components/dataset-layout/VisualizeTab.vue")
+)
 
 type TabComponents = {
   component: typeof DescriptionTab | typeof FieldsTab | typeof AccessTab

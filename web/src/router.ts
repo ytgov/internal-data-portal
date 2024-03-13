@@ -10,11 +10,11 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: "",
-        redirect: "/dashboard",
+        redirect: "dashboard",
       },
       {
         name: "DashboardPage",
-        path: "/dashboard",
+        path: "dashboard",
         component: () => import("@/pages/DashboardPage.vue"),
       },
       {
@@ -87,6 +87,16 @@ const routes: RouteRecordRaw[] = [
         name: "DatasetApiManagePage",
         component: () => import("@/pages/DatasetApiManagePage.vue"),
         props: true,
+      },
+      {
+        path: "profile",
+        name: "ProfilePage",
+        component: () => import("@/pages/ProfilePage.vue"),
+      },
+      {
+        path: "profile/edit",
+        name: "ProfileEditPage",
+        component: () => import("@/pages/ProfileEditPage.vue"),
       },
     ],
   },

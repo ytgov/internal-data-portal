@@ -4,6 +4,7 @@ import { isNil } from "lodash"
 import { User } from "@/models"
 import { UserSerializers } from "@/serializers"
 import { UsersPolicy } from "@/policies"
+import { UpdateService } from "@/services/users"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -48,6 +49,29 @@ export class UsersController extends BaseController {
       return this.response.status(200).json({ user: serializedUser })
     } catch (error) {
       return this.response.status(422).json({ message: `User serialization failed: ${error}` })
+    }
+  }
+
+  async update() {
+    const user = await this.loadUser()
+    if (isNil(user)) {
+      return this.response.status(404).json({ message: "User not found." })
+    }
+
+    const policy = this.buildPolicy(user)
+    if (!policy.update()) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to update this user." })
+    }
+
+    const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
+    try {
+      const updatedUser = await UpdateService.perform(user, permittedAttributes, this.currentUser)
+      const serializedUser = UserSerializers.asDetailed(updatedUser)
+      return this.response.status(200).json({ user: serializedUser })
+    } catch (error) {
+      return this.response.status(422).json({ message: `User update failed: ${error}` })
     }
   }
 

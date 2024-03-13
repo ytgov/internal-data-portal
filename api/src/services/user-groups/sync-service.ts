@@ -6,7 +6,7 @@ import { UserGroupTypes } from "@/models/user-groups"
 
 export const DEFAULT_ORDER = -1
 
-export class YukonGovernmentDirectorySyncService extends BaseService {
+export class SyncService extends BaseService {
   async perform(): Promise<UserGroup[]> {
     try {
       const { divisions: records } = await yukonGovernmentIntegration.fetchDivisions()
@@ -119,4 +119,4 @@ export class YukonGovernmentDirectorySyncService extends BaseService {
   }
 }
 
-export default YukonGovernmentDirectorySyncService
+export default SyncService

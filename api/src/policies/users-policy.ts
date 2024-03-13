@@ -1,3 +1,4 @@
+import { Path } from "@/utils/deep-pick"
 import { User } from "@/models"
 import { RoleTypes } from "@/models/role"
 
@@ -16,6 +17,18 @@ export class UsersPolicy extends BasePolicy<User> {
     if (this.user.id === this.record.id) return true
 
     return false
+  }
+
+  permittedAttributes(): Path[] {
+    return [
+      "email",
+      "firstName",
+      "lastName",
+      "position",
+      {
+        groupMembershipAttributes: ["departmentId", "divisionId", "branchId", "unitId"],
+      },
+    ]
   }
 }
 
