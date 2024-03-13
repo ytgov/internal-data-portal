@@ -4,29 +4,23 @@
       <h2 class="">All Users</h2>
 
       <v-btn
-        icon="mdi-cached"
         color="primary"
-        variant="outlined"
-        size="x-small"
-        title="Refresh Datasets"
-        @click="refresh"
-      />
+        :to="{ name: 'UserNewPage' }"
+      >
+        Create User
+      </v-btn>
     </div>
 
-    <UsersEditTable ref="usersEditsTable" />
+    <UsersEditTable />
   </v-container>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
-
 import UsersEditTable from "@/components/users/UsersEditTable.vue"
 
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 
 const { setBreadcrumbs } = useBreadcrumbs()
-
-const usersEditsTable = ref<InstanceType<typeof UsersEditTable>>()
 
 setBreadcrumbs([
   {
@@ -34,8 +28,4 @@ setBreadcrumbs([
     to: { name: "UsersPage" },
   },
 ])
-
-function refresh() {
-  usersEditsTable.value?.refresh()
-}
 </script>
