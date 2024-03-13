@@ -1,17 +1,13 @@
 <template>
-  <v-skeleton-loader
-    v-if="isLoading"
-    type="table"
-  />
   <v-data-table-server
-    v-else
     v-model:items-per-page="itemsPerPage"
-    v-model:page="page"
+    :page="page"
     :headers="headers"
     :items="datasets"
     :items-length="totalCount"
     :loading="isLoading"
     class="elevation-1"
+    @update:page="updatePage"
   >
     <template #top>
       <v-row class="ma-1">
@@ -126,6 +122,12 @@ const router = useRouter()
 
 const itemsPerPage = ref(parseInt(route.query.perPage as string) || 10)
 const page = ref(parseInt(route.query.page as string) || 1)
+
+function updatePage(newPage: number) {
+  if (isLoading.value) return
+
+  page.value = newPage
+}
 
 watch(
   () => [itemsPerPage.value, page.value],
