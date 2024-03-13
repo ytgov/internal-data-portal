@@ -10,6 +10,12 @@
 
     <v-list>
       <v-list-item
+        :title="username"
+        :to="{ name: 'ProfilePage' }"
+        :active="isViewingProfilePage"
+        prepend-icon="mdi-account-outline"
+      />
+      <v-list-item
         title="All Datasets"
         :to="{ name: 'DatasetsPage' }"
         prepend-icon="mdi-database"
@@ -19,12 +25,6 @@
         title="All Users"
         :to="{ name: 'UsersPage' }"
         prepend-icon="mdi-account-group"
-      />
-      <v-list-item
-        :title="username"
-        :to="{ name: 'ProfilePage' }"
-        :active="isViewingProfilePage"
-        prepend-icon="mdi-account-outline"
       />
       <v-list-item
         :title="status?.RELEASE_TAG || 'loading...'"
