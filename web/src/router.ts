@@ -98,6 +98,11 @@ const routes: RouteRecordRaw[] = [
         name: "ProfileEditPage",
         component: () => import("@/pages/ProfileEditPage.vue"),
       },
+      {
+        path: "users",
+        name: "UsersPage",
+        component: () => import("@/pages/UsersPage.vue"),
+      }
     ],
   },
   {

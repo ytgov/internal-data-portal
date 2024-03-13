@@ -15,6 +15,11 @@
         prepend-icon="mdi-database"
       />
       <v-list-item
+        title="All Users"
+        :to="{ name: 'UsersPage' }"
+        prepend-icon="mdi-account-group"
+      />
+      <v-list-item
         :title="userName"
         :to="{ name: 'ProfilePage' }"
         :active="isViewingProfilePage"

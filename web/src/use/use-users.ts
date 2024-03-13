@@ -2,6 +2,8 @@ import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
 
 import usersApi, { type User } from "@/api/users-api"
 
+export { type User }
+
 export function useUsers(
   options: Ref<{
     where?: Record<string, unknown>
@@ -16,10 +18,12 @@ export function useUsers(
 ) {
   const state = reactive<{
     users: User[]
+    totalCount: number
     isLoading: boolean
     isErrored: boolean
   }>({
     users: [],
+    totalCount: 0,
     isLoading: false,
     isErrored: false,
   })
@@ -27,9 +31,10 @@ export function useUsers(
   async function fetch(): Promise<User[]> {
     state.isLoading = true
     try {
-      const { users } = await usersApi.list(unref(options))
+      const { users, totalCount } = await usersApi.list(unref(options))
       state.isErrored = false
       state.users = users
+      state.totalCount = totalCount
       return users
     } catch (error) {
       console.error("Failed to fetch users:", error)
