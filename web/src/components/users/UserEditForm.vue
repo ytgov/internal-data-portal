@@ -154,7 +154,7 @@
           :loading="isLoading"
           color="error"
           variant="outlined"
-          :to="{ name: 'ProfilePage' }"
+          v-bind="cancelButtonOptions"
         >
           Cancel
         </v-btn>
@@ -174,8 +174,10 @@
 
 <script setup lang="ts">
 import { isNil } from "lodash"
-import { useI18n } from "vue-i18n"
 import { ref, toRefs, watch } from "vue"
+import { useI18n } from "vue-i18n"
+
+import { VBtn } from "vuetify/lib/components/index.mjs"
 
 import { GroupMembership } from "@/api/users-api"
 import { required } from "@/utils/validators"
@@ -185,9 +187,22 @@ import useUser from "@/use/use-user"
 
 import UserGroupAutocomplete from "@/components/user-groups/UserGroupAutocomplete.vue"
 
-const props = defineProps<{
-  userId: number
-}>()
+type CancelButtonOptions = VBtn["$props"]
+
+const props = withDefaults(
+  defineProps<{
+    userId: number
+    cancelButtonOptions?: CancelButtonOptions
+  }>(),
+  {
+    cancelButtonOptions: ({ userId }) => ({
+      to: {
+        name: "UserPage",
+        params: { userId },
+      },
+    }),
+  }
+)
 
 const emit = defineEmits(["saved"])
 

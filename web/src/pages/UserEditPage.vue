@@ -32,6 +32,7 @@
     <UserEditForm
       class="mt-10"
       :user-id="user.id"
+      :cancel-button-options="{ to: { name: 'UsersPage' } }"
       @saved="refresh"
     />
   </v-container>
