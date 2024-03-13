@@ -60,11 +60,21 @@ const headers = ref([
   { title: "Email", key: "email" },
   { title: "Position", key: "position" },
   {
+    title: "Department",
+    key: "department",
+    value: (item: unknown) => {
+      const { department, division, branch, unit } = item as User
+      return [department, division, branch, unit].filter(Boolean).join(' - ')
+    },
+  },
+  {
     title: "Role",
     key: "roleTypes",
     value: (item: unknown) => {
       const { roleTypes } = item as User
-      const formatedRoleTypes = roleTypes.map((roleType) => t(`roles.role_types.${roleType}`, roleType))
+      const formatedRoleTypes = roleTypes.map((roleType) =>
+        t(`roles.role_types.${roleType}`, roleType)
+      )
       return formatedRoleTypes.join(", ")
     },
   },
