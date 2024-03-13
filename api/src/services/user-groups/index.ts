@@ -1,1 +1,1 @@
-export { YukonGovernmentDirectorySyncService } from "./yukon-government-directory-sync-service"
+export { SyncService } from "./sync-service"

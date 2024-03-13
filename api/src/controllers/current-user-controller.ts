@@ -1,4 +1,4 @@
-import { Users } from "@/services"
+import { SyncService } from "@/services/users"
 import { UserSerializers } from "@/serializers"
 
 import BaseController from "@/controllers/base-controller"
@@ -11,7 +11,7 @@ export class CurrentUserController extends BaseController {
       return this.response.status(200).json({ user: serializedUser })
     }
 
-    return Users.YukonGovernmentDirectorySyncService.perform(this.currentUser).then(
+    return SyncService.perform(this.currentUser).then(
       (updatedUser) => {
         // TODO: consider changing interface to Users.AsDetailedSerializer.perform()?
         const serializedUser = UserSerializers.asDetailed(updatedUser)
