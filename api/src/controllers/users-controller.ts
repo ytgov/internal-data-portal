@@ -4,7 +4,7 @@ import { isNil } from "lodash"
 import { User } from "@/models"
 import { UserSerializers } from "@/serializers"
 import { UsersPolicy } from "@/policies"
-import { UpdateService } from "@/services/users"
+import { DestroyService, UpdateService } from "@/services/users"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -72,6 +72,27 @@ export class UsersController extends BaseController {
       return this.response.status(200).json({ user: serializedUser })
     } catch (error) {
       return this.response.status(422).json({ message: `User update failed: ${error}` })
+    }
+  }
+
+  async destroy() {
+    const user = await this.loadUser()
+    if (isNil(user)) {
+      return this.response.status(404).json({ message: "User not found." })
+    }
+
+    const policy = this.buildPolicy(user)
+    if (!policy.update()) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to delete this user." })
+    }
+
+    try {
+      await DestroyService.perform(user, this.currentUser)
+      return this.response.status(204).end()
+    } catch (error) {
+      return this.response.status(422).json({ message: `User delete failed: ${error}` })
     }
   }
 

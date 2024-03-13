@@ -19,6 +19,12 @@ export class UsersPolicy extends BasePolicy<User> {
     return false
   }
 
+  destroy(): boolean {
+    if (this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN)) return true
+
+    return false
+  }
+
   permittedAttributes(): Path[] {
     return [
       "email",
