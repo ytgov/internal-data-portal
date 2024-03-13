@@ -12,6 +12,7 @@
         >
           Back
         </v-btn>
+        <!-- TODO: Make sync occur through useUser to avoid page refresh -->
         <v-btn
           class="ml-md-3"
           title="Sync profile with external directory"
