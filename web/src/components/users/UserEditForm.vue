@@ -149,7 +149,6 @@
     <v-row>
       <v-spacer />
       <v-col class="d-flex justify-end">
-        <!-- TODO: make cancel link generic or configurable -->
         <v-btn
           :loading="isLoading"
           color="error"
