@@ -67,7 +67,7 @@
           :type="UserGroupTypes.DEPARTMENT"
           :parent-id="null"
           :rules="[required]"
-          label="Department"
+          label="Department *"
           variant="outlined"
           required
           @update:model-value="updateDepartment"
