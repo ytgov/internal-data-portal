@@ -128,9 +128,16 @@
         cols="12"
         md="6"
       >
-        <h3 class="mb-1">Roles</h3>
+        <h3>Roles</h3>
 
-        TODO: add roles selector
+        <RoleTypeSelect
+          v-model="roleType"
+          label="Role *"
+          :rules="[required]"
+          class="mt-6"
+          variant="outlined"
+          required
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -161,12 +168,13 @@
 import { isNil } from "lodash"
 import { ref } from "vue"
 
-import usersApi, { type GroupMembership, type User } from "@/api/users-api"
 import { required } from "@/utils/validators"
+import usersApi, { type GroupMembership, type User, RoleTypes } from "@/api/users-api"
 import { UserGroupTypes } from "@/api/user-groups-api"
 import useSnack from "@/use/use-snack"
 
 import UserGroupAutocomplete from "@/components/user-groups/UserGroupAutocomplete.vue"
+import RoleTypeSelect from "@/components/roles/RoleTypeSelect.vue"
 
 const snack = useSnack()
 
@@ -174,6 +182,7 @@ const userAttributes = ref<Partial<User>>({})
 const groupMembershipAttributes = ref<Partial<GroupMembership>>({})
 const isLoading = ref(false)
 const isValid = ref(false)
+const roleType = ref<RoleTypes>(RoleTypes.USER)
 
 async function saveWrapper() {
   if (!isValid.value) {
@@ -185,6 +194,7 @@ async function saveWrapper() {
     await usersApi.create({
       ...userAttributes,
       groupMembershipAttributes: groupMembershipAttributes.value,
+      rolesAttributes: [{ role: roleType.value }],
     })
   } catch (error) {
     snack.notify("Failed to create user", { color: "error" })

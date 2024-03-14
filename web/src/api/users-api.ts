@@ -1,5 +1,22 @@
 import http from "@/api/http-client"
 
+// Must match roles in api/src/models/roles.ts
+export enum RoleTypes {
+  DATA_OWNER = "data_owner",
+  USER = "user",
+  SYSTEM_ADMIN = "system_admin",
+  BUSINESS_ANALYST = "business_analyst",
+}
+
+export type Role = {
+  id: number
+  userId: User["id"]
+  role: RoleTypes
+  createdAt: Date
+  updatedAt: Date
+  deletedAt: Date
+}
+
 export type GroupMembership = {
   id: number
   userId: number
@@ -40,23 +57,7 @@ export type UserUpdate = Partial<User> & {
 
 export type UserCreationAttributes = Partial<User> & {
   groupMembershipAttributes?: Partial<GroupMembership>
-}
-
-// Must match roles in api/src/models/roles.ts
-export enum RoleTypes {
-  DATA_OWNER = "data_owner",
-  USER = "user",
-  SYSTEM_ADMIN = "system_admin",
-  BUSINESS_ANALYST = "business_analyst",
-}
-
-export type Role = {
-  id: number
-  userId: User["id"]
-  role: RoleTypes[]
-  createdAt: Date
-  updatedAt: Date
-  deletedAt: Date
+  rolesAttributes?: Partial<Role>[]
 }
 
 export const usersApi = {
