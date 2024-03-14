@@ -38,6 +38,10 @@ export type UserUpdate = Partial<User> & {
   groupMembershipAttributes?: Partial<GroupMembership>
 }
 
+export type UserCreationAttributes = Partial<User> & {
+  groupMembershipAttributes?: Partial<GroupMembership>
+}
+
 // Must match roles in api/src/models/roles.ts
 export enum RoleTypes {
   DATA_OWNER = "data_owner",
@@ -77,6 +81,12 @@ export const usersApi = {
   },
   async get(id: number): Promise<{ user: User }> {
     const { data } = await http.get(`/api/users/${id}`)
+    return data
+  },
+  async create(attributes: UserCreationAttributes): Promise<{
+    user: User
+  }> {
+    const { data } = await http.post("/api/users", attributes)
     return data
   },
   async update(

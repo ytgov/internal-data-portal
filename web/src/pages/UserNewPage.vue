@@ -1,6 +1,5 @@
 <template>
-  <v-skeleton-loader v-if="isNil(currentUser)" />
-  <v-container v-else>
+  <v-container>
     <h2 class="d-flex flex-column flex-md-row justify-space-between mb-3">
       Create User
 
@@ -15,25 +14,14 @@
       </div>
     </h2>
 
-    TODO: replace with user create form
-    <UserEditForm
-      class="mt-10"
-      :user-id="currentUser.id"
-      :cancel-button-options="{ to: { name: 'UsersPage' } }"
-      @saved="refresh"
-    />
+    <UserCreateForm class="mt-10" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { isNil } from "lodash"
-
 import useBreadcrumbs from "@/use/use-breadcrumbs"
-import useCurrentUser from "@/use/use-current-user"
 
-import UserEditForm from "@/components/users/UserEditForm.vue"
-
-const { currentUser, refresh } = useCurrentUser()
+import UserCreateForm from "@/components/users/UserCreateForm.vue"
 
 const { setBreadcrumbs } = useBreadcrumbs()
 
