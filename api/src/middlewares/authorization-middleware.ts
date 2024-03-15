@@ -51,7 +51,10 @@ async function ensureUserFromAuth0Token(token: string): Promise<User> {
   if (!isNil(user)) return user
 
   user = await findAndSetupUserFromEmailFirstLogin(email, auth0Subject)
-  if (!isNil(user)) return user
+  if (!isNil(user)) {
+    console.log(`SETUP User#${user.id} with ${email}`)
+    return user
+  }
 
   user = await Users.CreateService.perform({
     auth0Subject,
@@ -59,7 +62,7 @@ async function ensureUserFromAuth0Token(token: string): Promise<User> {
     firstName,
     lastName,
   })
-  console.log(`CREATED USER FOR User#${user.id} with ${email}`)
+  console.log(`CREATED User#${user.id} with ${email}`)
   return user
 }
 
