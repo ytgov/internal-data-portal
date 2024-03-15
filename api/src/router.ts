@@ -113,7 +113,7 @@ router
   .route("/api/dataset-stewardships/:datasetStewardshipId")
   .patch(DatasetStewardshipsController.update)
 
-router.route("/api/users").get(UsersController.index)
+router.route("/api/users").get(UsersController.index).post(UsersController.create)
 router.route("/api/users/search/:searchToken").get(Users.SearchController.index)
 router
   .route("/api/users/:userId")
