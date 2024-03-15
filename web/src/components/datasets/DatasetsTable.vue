@@ -1,12 +1,13 @@
 <template>
   <v-data-table-server
     v-model:items-per-page="itemsPerPage"
-    v-model:page="page"
+    :page="page"
     :headers="headers"
     :items="datasets"
     :items-length="totalCount"
     :loading="isLoading"
     class="elevation-1"
+    @update:page="updatePage"
   >
     <template #top>
       <v-row class="ma-1">
@@ -119,18 +120,24 @@ const headers = ref([
 const route = useRoute()
 const router = useRouter()
 
-const itemsPerPage = ref(10)
-const page = ref(1)
+const itemsPerPage = ref(parseInt(route.query.perPage as string) || 10)
+const page = ref(parseInt(route.query.page as string) || 1)
+
+function updatePage(newPage: number) {
+  if (isLoading.value) return
+
+  page.value = newPage
+}
 
 watch(
   () => [itemsPerPage.value, page.value],
-  () => {
+  ([newPerPage, newPage]) => {
     const { query } = route
     router.push({
       query: {
         ...query,
-        page: query.page || page.value,
-        perPage: query.itemsPerPage || itemsPerPage.value,
+        perPage: newPerPage,
+        page: newPage,
       },
     })
   },

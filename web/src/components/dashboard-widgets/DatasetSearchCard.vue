@@ -20,6 +20,7 @@
               label="Department"
               variant="outlined"
               :type="UserGroupTypes.DEPARTMENT"
+              clearable
             />
           </v-col>
         </v-row>
@@ -51,6 +52,8 @@
 import { computed, ref } from "vue"
 import { type LocationQueryRaw } from "vue-router"
 
+import { type DatasetsFilters } from "@/api/datasets-api"
+
 import TagsAutocomplete from "@/components/tags/TagsAutocomplete.vue"
 import UserGroupAutocomplete, {
   UserGroupTypes,
@@ -59,16 +62,20 @@ import UserGroupAutocomplete, {
 const tagNames = ref<string[]>([])
 const departmentId = ref<number>()
 
-
 /**
  * As we are parsing with Qs, we are ignoring the invalid type information
  */
 const searchQuery = computed(() => {
-  return {
-    filters: {
-      withOwnerDepartment: departmentId.value,
-      withTagNames: tagNames.value,
-    },
-  } as unknown as LocationQueryRaw
+  const filters: DatasetsFilters = {}
+
+  if (departmentId.value) {
+    filters.withOwnerDepartment = departmentId.value
+  }
+
+  if (tagNames.value) {
+    filters.withTagNames = tagNames.value
+  }
+
+  return { filters } as unknown as LocationQueryRaw
 })
 </script>

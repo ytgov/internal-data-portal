@@ -113,17 +113,17 @@ router
   .route("/api/dataset-stewardships/:datasetStewardshipId")
   .patch(DatasetStewardshipsController.update)
 
-router.route("/api/users").get(UsersController.index)
+router.route("/api/users").get(UsersController.index).post(UsersController.create)
 router.route("/api/users/search/:searchToken").get(Users.SearchController.index)
-router.route("/api/users/:userId").get(UsersController.show).patch(UsersController.update)
 router
-  .route("/api/users/:userId/sync")
-  .post(Users.SyncController.create)
+  .route("/api/users/:userId")
+  .get(UsersController.show)
+  .patch(UsersController.update)
+  .delete(UsersController.destroy)
+router.route("/api/users/:userId/sync").post(Users.SyncController.create)
 
 router.route("/api/user-groups").get(UserGroupsController.index)
-router
-  .route("/api/user-groups/sync")
-  .post(UserGroups.SyncController.create)
+router.route("/api/user-groups/sync").post(UserGroups.SyncController.create)
 
 router.route("/api/taggings").get(TaggingsController.index).post(TaggingsController.create)
 router.route("/api/taggings/:taggingId").delete(TaggingsController.destroy)

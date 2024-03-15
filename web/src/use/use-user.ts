@@ -70,12 +70,46 @@ export function useUser(
     }
   }
 
+  async function sync(): Promise<User> {
+    const staticId = unref(id)
+    if (isNil(staticId)) {
+      throw new Error("id is required")
+    }
+
+    state.isLoading = true
+    try {
+      const { user } = await usersApi.sync(staticId)
+      state.isErrored = false
+      state.user = user
+      return user
+    } catch (error) {
+      console.error("Failed to sync current user:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
   watch(
     () => unref(id),
     async (newId) => {
       if (isNil(newId)) return
 
-      await fetch()
+      try {
+        await fetch()
+      } catch (_error) {
+        /**
+         * ignore the error.
+         * This will occur if the dataset owner has been deleted.
+         * I'm not really sure how to handle this currently, but in the future,
+         * it might make sense to store the error in the state, and/or show it to the
+         * user via a toast instead of logging it.
+         *
+         * It depends on whether we decide that missing users are a normal system state
+         * or a bug in the system that should be fixed.
+         */
+      }
     },
     { immediate }
   )
@@ -85,6 +119,7 @@ export function useUser(
     fetch,
     refresh: fetch,
     save,
+    sync,
   }
 }
 

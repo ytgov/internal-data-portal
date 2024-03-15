@@ -70,7 +70,7 @@ const headers = ref([
 const route = useRoute()
 const itemsPerPage = ref(10)
 const page = ref(1)
-const datasetsQuery = computed(() => ({
+const datasetFieldsQuery = computed(() => ({
   where: {
     datasetId: props.datasetId,
   },
@@ -78,7 +78,7 @@ const datasetsQuery = computed(() => ({
   page: page.value,
 }))
 
-const { datasetFields, totalCount, isLoading, refresh } = useDatasetFields(datasetsQuery)
+const { datasetFields, totalCount, isLoading, refresh } = useDatasetFields(datasetFieldsQuery)
 
 const editDialog = ref<InstanceType<typeof DatasetFieldEditDialog> | null>(null)
 const deleteDialog = ref<InstanceType<typeof DatasetFieldDeleteDialog> | null>(null)

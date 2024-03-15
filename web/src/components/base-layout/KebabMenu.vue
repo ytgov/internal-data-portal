@@ -10,15 +10,21 @@
 
     <v-list>
       <v-list-item
+        :title="username"
+        :to="{ name: 'ProfilePage' }"
+        :active="isViewingProfilePage"
+        prepend-icon="mdi-account-outline"
+      />
+      <v-list-item
         title="All Datasets"
         :to="{ name: 'DatasetsPage' }"
         prepend-icon="mdi-database"
       />
       <v-list-item
-        :title="userName"
-        :to="{ name: 'ProfilePage' }"
-        :active="isViewingProfilePage"
-        prepend-icon="mdi-account-outline"
+        v-if="isSystemAdmin"
+        title="All Users"
+        :to="{ name: 'UsersPage' }"
+        prepend-icon="mdi-account-group"
       />
       <v-list-item
         :title="status?.RELEASE_TAG || 'loading...'"
@@ -40,16 +46,19 @@ import { useRoute } from "vue-router"
 
 import { useAuth0 } from "@auth0/auth0-vue"
 
-import useCurrentUser from "@/use/use-current-user"
+import useCurrentUser, { RoleTypes } from "@/use/use-current-user"
 import useStatus from "@/use/use-status"
 
 const { currentUser } = useCurrentUser()
 
-const userName = computed(() => {
+const username = computed(() => {
   if (currentUser.value === null) return "loading..."
 
   const { email } = currentUser.value
   return email.substring(0, email.indexOf("@"))
+})
+const isSystemAdmin = computed(() => {
+  return currentUser.value?.roleTypes.includes(RoleTypes.SYSTEM_ADMIN)
 })
 
 const route = useRoute()

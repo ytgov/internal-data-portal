@@ -8,7 +8,8 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "lint": "eslint --ext .js,.ts,.vue --ignore-path ../.gitignore"
+    "lint": "eslint --ext .js,.ts,.vue --ignore-path ../.gitignore",
+    "check-types": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@auth0/auth0-vue": "^2.3.3",
@@ -22,7 +23,7 @@
     "vue": "^3.4.8",
     "vue-i18n": "^9.9.1",
     "vue-router": "^4.2.5",
-    "vuetify": "^3.5.1"
+    "vuetify": "^3.5.9"
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^2.0.0",

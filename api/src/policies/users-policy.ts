@@ -12,9 +12,21 @@ export class UsersPolicy extends BasePolicy<User> {
     return true
   }
 
+  create(): boolean {
+    if (this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN)) return true
+
+    return false
+  }
+
   update(): boolean {
     if (this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN)) return true
     if (this.user.id === this.record.id) return true
+
+    return false
+  }
+
+  destroy(): boolean {
+    if (this.user.roleTypes.includes(RoleTypes.SYSTEM_ADMIN)) return true
 
     return false
   }
@@ -28,6 +40,14 @@ export class UsersPolicy extends BasePolicy<User> {
       {
         groupMembershipAttributes: ["departmentId", "divisionId", "branchId", "unitId"],
       },
+    ]
+  }
+
+  permittedAttributesForCreate(): Path[] {
+    return [
+      ...this.permittedAttributes(),
+      "setupFromEmailFirstLogin",
+      { rolesAttributes: ["role"] },
     ]
   }
 }

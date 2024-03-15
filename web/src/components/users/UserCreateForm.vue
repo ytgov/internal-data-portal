@@ -1,10 +1,5 @@
 <template>
-  <v-skeleton-loader
-    v-if="isNil(user)"
-    type="card"
-  />
   <v-form
-    v-else
     v-model="isValid"
     @submit.prevent="saveWrapper"
   >
@@ -14,7 +9,7 @@
         md="6"
       >
         <v-text-field
-          v-model="user.firstName"
+          v-model="userAttributes.firstName"
           label="First name *"
           :rules="[required]"
           variant="outlined"
@@ -26,7 +21,7 @@
         md="6"
       >
         <v-text-field
-          v-model="user.lastName"
+          v-model="userAttributes.lastName"
           label="Last name *"
           :rules="[required]"
           variant="outlined"
@@ -41,7 +36,7 @@
         md="6"
       >
         <v-text-field
-          v-model="user.email"
+          v-model="userAttributes.email"
           label="Email *"
           :rules="[required]"
           variant="outlined"
@@ -53,7 +48,7 @@
         md="6"
       >
         <v-text-field
-          v-model="user.position"
+          v-model="userAttributes.position"
           label="Position"
           variant="outlined"
         />
@@ -72,7 +67,7 @@
           :type="UserGroupTypes.DEPARTMENT"
           :parent-id="null"
           :rules="[required]"
-          label="Department"
+          label="Department *"
           variant="outlined"
           required
           @update:model-value="updateDepartment"
@@ -133,17 +128,16 @@
         cols="12"
         md="6"
       >
-        <h3 class="mb-1">Roles</h3>
+        <h3>Roles</h3>
 
-        <v-chip
-          v-for="(roleType, index) in user.roleTypes"
-          :key="index"
-          class="ma-2"
-          color="info"
-          size="large"
-        >
-          {{ formatRole(roleType) }}
-        </v-chip>
+        <RoleTypeSelect
+          v-model="roleType"
+          label="Role *"
+          :rules="[required]"
+          class="mt-6"
+          variant="outlined"
+          required
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -153,18 +147,17 @@
           :loading="isLoading"
           color="error"
           variant="outlined"
-          v-bind="cancelButtonOptions"
+          :to="{ name: 'UsersPage' }"
         >
           Cancel
         </v-btn>
-        <!-- TODO: add ability to request update of yukon government directory information during save -->
         <v-btn
           class="ml-3"
           :loading="isLoading"
           type="submit"
           color="success"
         >
-          Save
+          Create
         </v-btn>
       </v-col>
     </v-row>
@@ -173,45 +166,27 @@
 
 <script setup lang="ts">
 import { isNil } from "lodash"
-import { ref, toRefs, watch } from "vue"
-import { useI18n } from "vue-i18n"
+import { ref } from "vue"
+import { useRouter } from "vue-router"
 
-import { VBtn } from "vuetify/lib/components/index.mjs"
-
-import { GroupMembership } from "@/api/users-api"
 import { required } from "@/utils/validators"
+import usersApi, { type GroupMembership, type User, RoleTypes } from "@/api/users-api"
 import { UserGroupTypes } from "@/api/user-groups-api"
 import useSnack from "@/use/use-snack"
-import useUser from "@/use/use-user"
 
 import UserGroupAutocomplete from "@/components/user-groups/UserGroupAutocomplete.vue"
-
-type CancelButtonOptions = VBtn["$props"]
-
-const props = withDefaults(
-  defineProps<{
-    userId: number
-    cancelButtonOptions?: CancelButtonOptions
-  }>(),
-  {
-    cancelButtonOptions: ({ userId }) => ({
-      to: {
-        name: "UserPage",
-        params: { userId },
-      },
-    }),
-  }
-)
-
-const emit = defineEmits(["saved"])
-
-const { userId } = toRefs(props)
-const { user, save, isLoading } = useUser(userId)
+import RoleTypeSelect from "@/components/roles/RoleTypeSelect.vue"
 
 const snack = useSnack()
+const router = useRouter()
 
-const isValid = ref(false)
+const userAttributes = ref<Partial<User>>({
+  setupFromEmailFirstLogin: true
+})
 const groupMembershipAttributes = ref<Partial<GroupMembership>>({})
+const isLoading = ref(false)
+const isValid = ref(false)
+const roleType = ref<RoleTypes>(RoleTypes.USER)
 
 async function saveWrapper() {
   if (!isValid.value) {
@@ -219,32 +194,19 @@ async function saveWrapper() {
     return
   }
 
-  await save({
-    groupMembershipAttributes: groupMembershipAttributes.value,
-  })
-  emit("saved")
-}
-
-watch(
-  () => user.value,
-  (newUser) => {
-    if (isNil(newUser)) return
-
-    const { groupMembership } = newUser
-    const { departmentId, divisionId, branchId, unitId } = groupMembership
-
-    groupMembershipAttributes.value = {
-      departmentId,
-      divisionId,
-      branchId,
-      unitId,
-    }
-  },
-  {
-    deep: true,
-    immediate: true,
+  try {
+    await usersApi.create({
+      ...userAttributes.value,
+      groupMembershipAttributes: groupMembershipAttributes.value,
+      rolesAttributes: [{ role: roleType.value }],
+    })
+    snack.notify("User created", { color: "success" })
+    router.push({ name: "UsersPage" })
+  } catch (error) {
+    snack.notify("Failed to create user", { color: "error" })
+    throw error
   }
-)
+}
 
 function clearDivision() {
   groupMembershipAttributes.value.divisionId = null
@@ -296,11 +258,5 @@ async function updateUnit(newUnitId: number | null) {
   }
 
   groupMembershipAttributes.value.unitId = newUnitId
-}
-
-const { t } = useI18n()
-
-function formatRole(roleType: string) {
-  return t(`roles.role_types.${roleType}`, roleType)
 }
 </script>
