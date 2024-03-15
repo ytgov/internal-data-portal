@@ -32,13 +32,14 @@ import BaseModel from "@/models/base-model"
 
 export class User extends BaseModel<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>
-  declare auth0Subject: string
+  declare auth0Subject: string | null
   declare email: string
   declare firstName: string | null
   declare lastName: string | null
   declare position: string | null
   declare lastSyncSuccessAt: Date | null
   declare lastSyncFailureAt: Date | null
+  declare setupFromEmailFirstLogin: CreationOptional<boolean>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date>
@@ -186,7 +187,7 @@ User.init(
     },
     auth0Subject: {
       type: DataTypes.STRING(100),
-      allowNull: false,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING(100),
@@ -211,6 +212,11 @@ User.init(
     lastSyncFailureAt: {
       type: DataTypes.DATE,
       allowNull: true,
+    },
+    setupFromEmailFirstLogin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     createdAt: {
       type: DataTypes.DATE,
