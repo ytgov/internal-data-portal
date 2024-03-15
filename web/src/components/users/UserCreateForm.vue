@@ -192,7 +192,7 @@ async function saveWrapper() {
 
   try {
     await usersApi.create({
-      ...userAttributes,
+      ...userAttributes.value,
       groupMembershipAttributes: groupMembershipAttributes.value,
       rolesAttributes: [{ role: roleType.value }],
     })
