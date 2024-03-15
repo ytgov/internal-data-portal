@@ -37,10 +37,17 @@ export class UsersPolicy extends BasePolicy<User> {
       "firstName",
       "lastName",
       "position",
-      "setupFromEmailFirstLogin",
       {
         groupMembershipAttributes: ["departmentId", "divisionId", "branchId", "unitId"],
       },
+    ]
+  }
+
+  permittedAttributesForCreate(): Path[] {
+    return [
+      ...this.permittedAttributes(),
+      "setupFromEmailFirstLogin",
+      { rolesAttributes: ["role"] },
     ]
   }
 }
