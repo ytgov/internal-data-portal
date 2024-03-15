@@ -178,7 +178,9 @@ import RoleTypeSelect from "@/components/roles/RoleTypeSelect.vue"
 
 const snack = useSnack()
 
-const userAttributes = ref<Partial<User>>({})
+const userAttributes = ref<Partial<User>>({
+  setupFromEmailFirstLogin: true
+})
 const groupMembershipAttributes = ref<Partial<GroupMembership>>({})
 const isLoading = ref(false)
 const isValid = ref(false)

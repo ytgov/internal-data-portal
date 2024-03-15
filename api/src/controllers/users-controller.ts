@@ -4,7 +4,7 @@ import { isNil } from "lodash"
 import { User } from "@/models"
 import { UserSerializers } from "@/serializers"
 import { UsersPolicy } from "@/policies"
-import { DestroyService, UpdateService } from "@/services/users"
+import { CreateService, DestroyService, UpdateService } from "@/services/users"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -52,6 +52,25 @@ export class UsersController extends BaseController {
     }
   }
 
+  async create() {
+    const user = await this.buildUser()
+    const policy = this.buildPolicy(user)
+    if (!policy.create()) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to create a user with these properties." })
+    }
+
+    const permittedAttributes = policy.permitAttributesForCreate(this.request.body)
+    try {
+      const newUser = await CreateService.perform(permittedAttributes, this.currentUser)
+      const serializedUser = UserSerializers.asDetailed(newUser)
+      return this.response.status(201).json({ user: serializedUser })
+    } catch (error) {
+      return this.response.status(422).json({ message: `User creation failed: ${error}` })
+    }
+  }
+
   async update() {
     const user = await this.loadUser()
     if (isNil(user)) {
@@ -94,6 +113,10 @@ export class UsersController extends BaseController {
     } catch (error) {
       return this.response.status(422).json({ message: `User delete failed: ${error}` })
     }
+  }
+
+  private async buildUser() {
+    return User.build(this.request.body)
   }
 
   private async loadUser() {

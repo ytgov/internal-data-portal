@@ -31,7 +31,7 @@ export type GroupMembership = {
 
 export type User = {
   id: number
-  auth0Subject: string
+  auth0Subject: string | null
   email: string
   firstName: string | null
   lastName: string | null
@@ -40,6 +40,7 @@ export type User = {
   division: string | null
   branch: string | null
   unit: string | null
+  setupFromEmailFirstLogin: boolean
   createdAt: string
   updatedAt: string
 
