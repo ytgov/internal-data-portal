@@ -18,6 +18,9 @@ import {
   InferAttributes,
   InferCreationAttributes,
   NonAttribute,
+  col,
+  fn,
+  where,
 } from "sequelize"
 import { DateTime } from "luxon"
 
@@ -123,6 +126,10 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
       foreignKey: "supportId",
       as: "accessGrantSupports",
     })
+  }
+
+  static byEmailIgnoreCase(email: string) {
+    return this.scope({ method: ["byEmailIgnoreCase", email] })
   }
 
   get roleTypes(): NonAttribute<RoleTypes[]> {
@@ -253,6 +260,13 @@ User.init(
         },
       },
     ],
+    scopes: {
+      byEmailIgnoreCase: (email: string) => {
+        return {
+          where: where(fn("LOWER", col("email")), email.toLowerCase()),
+        }
+      },
+    },
   }
 )
 
