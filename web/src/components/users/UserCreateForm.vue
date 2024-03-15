@@ -167,6 +167,7 @@
 <script setup lang="ts">
 import { isNil } from "lodash"
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 
 import { required } from "@/utils/validators"
 import usersApi, { type GroupMembership, type User, RoleTypes } from "@/api/users-api"
@@ -177,6 +178,7 @@ import UserGroupAutocomplete from "@/components/user-groups/UserGroupAutocomplet
 import RoleTypeSelect from "@/components/roles/RoleTypeSelect.vue"
 
 const snack = useSnack()
+const router = useRouter()
 
 const userAttributes = ref<Partial<User>>({
   setupFromEmailFirstLogin: true
@@ -198,6 +200,8 @@ async function saveWrapper() {
       groupMembershipAttributes: groupMembershipAttributes.value,
       rolesAttributes: [{ role: roleType.value }],
     })
+    snack.notify("User created", { color: "success" })
+    router.push({ name: "UsersPage" })
   } catch (error) {
     snack.notify("Failed to create user", { color: "error" })
     throw error
