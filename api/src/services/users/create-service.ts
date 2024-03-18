@@ -6,26 +6,46 @@ import { DEFAULT_ORDER, UNASSIGNED_USER_GROUP_NAME } from "@/models/user-groups"
 import { SyncService } from "@/services/users"
 import BaseService from "@/services/base-service"
 
+type RolesAttributes = Partial<Role>[]
 type GroupMembershipAttributes = Partial<UserGroupMembership>
-type Attributes = Partial<User> & {
+type UserCreationAttributes = Partial<User> & {
   groupMembershipAttributes?: GroupMembershipAttributes
+  rolesAttributes?: RolesAttributes
 }
 
 export class CreateService extends BaseService {
   private attributes: Partial<User>
   private groupMembershipAttributes?: GroupMembershipAttributes
+  private rolesAttributes?: RolesAttributes
+  private currentUser?: User | undefined
 
-  constructor({ groupMembershipAttributes, ...attributes }: Attributes) {
+  constructor(
+    { groupMembershipAttributes, rolesAttributes, ...attributes }: UserCreationAttributes,
+    currentUser?: User
+  ) {
     super()
     this.attributes = attributes
     this.groupMembershipAttributes = groupMembershipAttributes
+    this.rolesAttributes = rolesAttributes
+    this.currentUser = currentUser
   }
 
   async perform(): Promise<User> {
-    const { auth0Subject, email, firstName, lastName, ...optionalAttributes } = this.attributes
+    const {
+      auth0Subject,
+      email,
+      setupFromEmailFirstLogin,
+      firstName,
+      lastName,
+      ...optionalAttributes
+    } = this.attributes
 
-    if (isNil(auth0Subject) || isEmpty(auth0Subject)) {
-      throw new Error("auth0Subject is required")
+    if (setupFromEmailFirstLogin && !isEmpty(auth0Subject)) {
+      throw new Error("auth0Subject is not allowed when setupFromEmailFirstLogin is true")
+    }
+
+    if (isEmpty(auth0Subject) && !setupFromEmailFirstLogin) {
+      throw new Error("auth0Subject is required when setupFromEmailFirstLogin is falsey")
     }
 
     if (isNil(email) || isEmpty(email)) {
@@ -46,15 +66,14 @@ export class CreateService extends BaseService {
         email,
         firstName,
         lastName,
+        setupFromEmailFirstLogin,
         ...optionalAttributes,
       })
 
-      await Role.create({
-        userId: user.id,
-        role: Role.Types.USER,
-      })
-
+      await this.ensureRoles(user, this.rolesAttributes)
       await this.ensureUserGroupMembership(user, this.groupMembershipAttributes)
+
+      // Log user action, if available
 
       return user.reload({
         include: [
@@ -66,6 +85,17 @@ export class CreateService extends BaseService {
         ],
       })
     })
+  }
+
+  private async ensureRoles(user: User, rolesAttributes?: RolesAttributes) {
+    const defaultRole = { role: Role.Types.USER, userId: user.id }
+    const secureRolesAttributes = rolesAttributes?.map((roleAttributes) => ({
+      userId: user.id,
+      role: Role.Types.USER,
+      ...roleAttributes,
+    })) || [defaultRole]
+
+    return Role.bulkCreate(secureRolesAttributes)
   }
 
   private async ensureUserGroupMembership(

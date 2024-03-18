@@ -1,5 +1,22 @@
 import http from "@/api/http-client"
 
+// Must match roles in api/src/models/roles.ts
+export enum RoleTypes {
+  DATA_OWNER = "data_owner",
+  USER = "user",
+  SYSTEM_ADMIN = "system_admin",
+  BUSINESS_ANALYST = "business_analyst",
+}
+
+export type Role = {
+  id: number
+  userId: User["id"]
+  role: RoleTypes
+  createdAt: Date
+  updatedAt: Date
+  deletedAt: Date
+}
+
 export type GroupMembership = {
   id: number
   userId: number
@@ -14,7 +31,7 @@ export type GroupMembership = {
 
 export type User = {
   id: number
-  auth0Subject: string
+  auth0Subject: string | null
   email: string
   firstName: string | null
   lastName: string | null
@@ -23,6 +40,7 @@ export type User = {
   division: string | null
   branch: string | null
   unit: string | null
+  setupFromEmailFirstLogin: boolean
   createdAt: string
   updatedAt: string
 
@@ -38,21 +56,9 @@ export type UserUpdate = Partial<User> & {
   groupMembershipAttributes?: Partial<GroupMembership>
 }
 
-// Must match roles in api/src/models/roles.ts
-export enum RoleTypes {
-  DATA_OWNER = "data_owner",
-  USER = "user",
-  SYSTEM_ADMIN = "system_admin",
-  BUSINESS_ANALYST = "business_analyst",
-}
-
-export type Role = {
-  id: number
-  userId: User["id"]
-  role: RoleTypes[]
-  createdAt: Date
-  updatedAt: Date
-  deletedAt: Date
+export type UserCreationAttributes = Partial<User> & {
+  groupMembershipAttributes?: Partial<GroupMembership>
+  rolesAttributes?: Partial<Role>[]
 }
 
 export const usersApi = {
@@ -62,23 +68,27 @@ export const usersApi = {
     const { data } = await http.get("/api/current-user")
     return data
   },
-  async list({
-    where,
-    page,
-    perPage,
-  }: {
-    where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
-    page?: number
-    perPage?: number
-  } = {}): Promise<{
+  async list(
+    params: {
+      where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
+      page?: number
+      perPage?: number
+    } = {}
+  ): Promise<{
     users: User[]
     totalCount: number
   }> {
-    const { data } = await http.get("/api/users", { params: { where, page, perPage } })
+    const { data } = await http.get("/api/users", { params })
     return data
   },
   async get(id: number): Promise<{ user: User }> {
     const { data } = await http.get(`/api/users/${id}`)
+    return data
+  },
+  async create(attributes: UserCreationAttributes): Promise<{
+    user: User
+  }> {
+    const { data } = await http.post("/api/users", attributes)
     return data
   },
   async update(
@@ -88,6 +98,10 @@ export const usersApi = {
     user: User
   }> {
     const { data } = await http.patch(`/api/users/${userId}`, attributes)
+    return data
+  },
+  async delete(userId: number): Promise<void> {
+    const { data } = await http.delete(`/api/users/${userId}`)
     return data
   },
 

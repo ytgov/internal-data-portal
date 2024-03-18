@@ -33,7 +33,7 @@ const headers = ref([
 
 const itemsPerPage = ref(10)
 const page = ref(1)
-const datasetsQuery = computed(() => ({
+const datasetFieldsQuery = computed(() => ({
   where: {
     datasetId: props.datasetId,
   },
@@ -41,5 +41,5 @@ const datasetsQuery = computed(() => ({
   page: page.value,
 }))
 
-const { datasetFields, totalCount, isLoading } = useDatasetFields(datasetsQuery)
+const { datasetFields, totalCount, isLoading } = useDatasetFields(datasetFieldsQuery)
 </script>

@@ -91,14 +91,14 @@ const headers = ref([
 const route = useRoute()
 const itemsPerPage = ref(10)
 const page = ref(1)
-const datasetsQuery = computed(() => ({
+const accessGrantsQuery = computed(() => ({
   where: {
     datasetId: props.datasetId,
   },
   perPage: itemsPerPage.value,
   page: page.value,
 }))
-const { accessGrants, totalCount, isLoading, refresh } = useAccessGrants(datasetsQuery)
+const { accessGrants, totalCount, isLoading, refresh } = useAccessGrants(accessGrantsQuery)
 
 const { t } = useI18n()
 

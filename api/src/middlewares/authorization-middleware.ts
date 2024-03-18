@@ -11,10 +11,8 @@ export type AuthorizationRequest = JwtRequest & {
   currentUser?: User
 }
 
-async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
-  const { auth0Subject, email, firstName, lastName } = await auth0Integration.getUserInfo(token)
-
-  let user = await User.findOne({
+async function findUserFromAuth0Subject(auth0Subject: string): Promise<User | null> {
+  return User.findOne({
     where: { auth0Subject },
     include: [
       "roles",
@@ -24,17 +22,47 @@ async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
       },
     ],
   })
+}
 
-  if (isNil(user)) {
-    user = await Users.CreateService.perform({
-      auth0Subject,
-      email,
-      firstName,
-      lastName,
-    })
-    console.log(`CREATED USER FOR User#${user.id} with ${email}`)
+async function findAndSetupUserFromEmailFirstLogin(
+  email: string,
+  auth0Subject: string
+): Promise<User | null> {
+  const user = await User.byEmailIgnoreCase(email).findOne({
+    where: { setupFromEmailFirstLogin: true },
+  })
+  if (isNil(user)) return null
+
+  await user.update({ auth0Subject, setupFromEmailFirstLogin: false })
+  return user.reload({
+    include: [
+      "roles",
+      {
+        association: "groupMembership",
+        include: ["department", "division", "branch", "unit"],
+      },
+    ],
+  })
+}
+
+async function ensureUserFromAuth0Token(token: string): Promise<User> {
+  const { auth0Subject, email, firstName, lastName } = await auth0Integration.getUserInfo(token)
+  let user = await findUserFromAuth0Subject(auth0Subject)
+  if (!isNil(user)) return user
+
+  user = await findAndSetupUserFromEmailFirstLogin(email, auth0Subject)
+  if (!isNil(user)) {
+    console.log(`SETUP User#${user.id} with ${email}`)
+    return user
   }
 
+  user = await Users.CreateService.perform({
+    auth0Subject,
+    email,
+    firstName,
+    lastName,
+  })
+  console.log(`CREATED User#${user.id} with ${email}`)
   return user
 }
 
@@ -64,7 +92,7 @@ export async function ensureAndAuthorizeCurrentUser(
 
   try {
     const token = req.headers.authorization || ""
-    const user = await findOrCreateUserFromAuth0Token(token)
+    const user = await ensureUserFromAuth0Token(token)
     req.currentUser = user
     return next()
   } catch (error) {

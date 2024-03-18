@@ -27,6 +27,7 @@
     <UserEditForm
       class="mt-10"
       :user-id="currentUser.id"
+      :cancel-button-options="{ to: { name: 'ProfilePage' } }"
       @saved="refresh"
     />
   </v-container>
