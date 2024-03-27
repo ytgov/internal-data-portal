@@ -13,16 +13,19 @@
     @update:search="debouncedSearch"
     @click:clear="clearUsers"
   >
-    <template #prepend-item>
-      <slot name="prepend-item">
-        <v-list-item><em>Search for a user ...</em></v-list-item>
-      </slot>
-    </template>
     <template
       v-for="slotName in slotsNamesToPassThrough"
       #[slotName]="slotProps"
     >
       <slot
+        v-if="slotName === 'prepend-item'"
+        :name="slotName"
+        v-bind="slotProps"
+      >
+        <v-list-item><em>Search for a user ...</em></v-list-item>
+      </slot>
+      <slot
+        v-else
         :name="slotName"
         v-bind="slotProps"
       ></slot>
@@ -31,14 +34,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue"
+import { computed, ref, useSlots, watch } from "vue"
 import { debounce, isEmpty, isNil } from "lodash"
 
 import useUsers from "@/use/use-users"
 
-import { VAutocomplete } from "vuetify/lib/components/index.mjs"
+// Slot passthrough with TypeScript
+import type { VAutocomplete } from "vuetify/lib/components/index.mjs"
 
-const slotsNamesToPassThrough: (keyof VAutocomplete["$slots"])[] = [
+type WrappedSlotNames = keyof VAutocomplete["$slots"]
+const wrappedSlotNames = new Set<WrappedSlotNames>([
   "append-inner",
   "append-item",
   "append",
@@ -51,9 +56,19 @@ const slotsNamesToPassThrough: (keyof VAutocomplete["$slots"])[] = [
   "message",
   "no-data",
   "prepend-inner",
+  "prepend-item",
   "prepend",
   "selection",
-]
+])
+
+const slots = useSlots()
+
+const slotsNamesToPassThrough = computed(() => {
+  return Object.keys(slots).filter((slotName): slotName is WrappedSlotNames =>
+    wrappedSlotNames.has(slotName as WrappedSlotNames)
+  )
+})
+// End of slot passthrough with TypeScript
 
 const props = defineProps<{
   modelValue: number | null | undefined
