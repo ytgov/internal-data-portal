@@ -19,19 +19,13 @@
       </slot>
     </template>
     <template
-      v-for="slotName in dynamicSlots"
+      v-for="slotName in slotsNamesToPassThrough"
       #[slotName]="slotProps"
     >
       <slot
         :name="slotName"
         v-bind="slotProps"
       ></slot>
-    </template>
-    <template
-      v-for="slotName in staticSlots"
-      #[slotName]
-    >
-      <slot :name="slotName"></slot>
     </template>
   </v-autocomplete>
 </template>
@@ -42,20 +36,24 @@ import { debounce, isEmpty, isNil } from "lodash"
 
 import useUsers from "@/use/use-users"
 
-const dynamicSlots = [
-  "append",
+import { VAutocomplete } from "vuetify/lib/components/index.mjs"
+
+const slotsNamesToPassThrough: (keyof VAutocomplete["$slots"])[] = [
   "append-inner",
+  "append-item",
+  "append",
   "chip",
+  "clear",
   "details",
   "item",
   "label",
   "loader",
   "message",
-  "prepend",
+  "no-data",
   "prepend-inner",
+  "prepend",
   "selection",
-] as const
-const staticSlots = ["append-item", "clear", "no-data"] as const
+]
 
 const props = defineProps<{
   modelValue: number | null | undefined
