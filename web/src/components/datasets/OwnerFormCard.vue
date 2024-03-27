@@ -1,6 +1,12 @@
 <template>
   <v-card>
-    <v-card-title>Owner</v-card-title>
+    <v-card-title class="d-flex justify-space-between align-center">
+      Owner
+      <SaveStateProgress
+        :saving="isLoading"
+        @click="saveAndNotify"
+      />
+    </v-card-title>
 
     <v-card-text>
       <!-- TODO: make the skeleton loader an external component that matches the form -->
@@ -11,7 +17,6 @@
       <v-form
         v-else
         class="d-flex flex-column mt-6"
-        @submit.prevent="saveWrapper"
       >
         <v-row>
           <v-col
@@ -191,16 +196,6 @@
             />
           </v-col>
         </v-row>
-        <div class="d-flex justify-end">
-          <v-btn
-            :loading="isLoading"
-            type="submit"
-            color="primary"
-            variant="outlined"
-          >
-            Save
-          </v-btn>
-        </div>
       </v-form>
     </v-card-text>
   </v-card>
@@ -219,6 +214,8 @@ import useDataset from "@/use/use-dataset"
 import useSnack from "@/use/use-snack"
 import useUserGroups from "@/use/use-user-groups"
 import useUsers from "@/use/use-users"
+
+import SaveStateProgress from "@/components/SaveStateProgress.vue"
 
 const props = defineProps({
   slug: {
@@ -308,9 +305,11 @@ async function updateOwner(newOwnerId: number | null) {
   await updateDivision(newDivisionId)
   await updateBranch(newBranchId)
   await updateUnit(newUnitId)
+
+  await saveAndNotify()
 }
 
-function updateSupport(supportId: number | null) {
+async function updateSupport(supportId: number | null) {
   if (isNil(datasetStewardship.value)) {
     throw new Error("Dataset stewardship is not defined")
   }
@@ -320,6 +319,8 @@ function updateSupport(supportId: number | null) {
   }
 
   datasetStewardship.value.supportId = supportId
+
+  await saveAndNotify()
 }
 
 function clearDivision() {
@@ -359,6 +360,8 @@ async function updateDepartment(newDepartmentId: number | null) {
 
   datasetStewardship.value.departmentId = newDepartmentId
   clearDivision()
+
+  await saveAndNotify()
 }
 
 async function updateDivision(newDivisionId: number | null) {
@@ -377,6 +380,8 @@ async function updateDivision(newDivisionId: number | null) {
 
   datasetStewardship.value.divisionId = newDivisionId
   clearBranch()
+
+  await saveAndNotify()
 }
 
 async function updateBranch(newBranchId: number | null) {
@@ -395,6 +400,8 @@ async function updateBranch(newBranchId: number | null) {
 
   datasetStewardship.value.branchId = newBranchId
   clearUnit()
+
+  await saveAndNotify()
 }
 
 async function updateUnit(newUnitId: number | null) {
@@ -412,9 +419,11 @@ async function updateUnit(newUnitId: number | null) {
   }
 
   datasetStewardship.value.unitId = newUnitId
+
+  await saveAndNotify()
 }
 
-async function saveWrapper() {
+async function saveAndNotify() {
   if (isNil(datasetStewardship.value)) {
     throw new Error("Dataset stewardship is not defined")
   }
