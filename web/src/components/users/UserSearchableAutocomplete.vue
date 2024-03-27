@@ -14,7 +14,24 @@
     @click:clear="clearUsers"
   >
     <template #prepend-item>
-      <v-list-item><em>Search for a user ...</em></v-list-item>
+      <slot name="prepend-item">
+        <v-list-item><em>Search for a user ...</em></v-list-item>
+      </slot>
+    </template>
+    <template
+      v-for="slotName in dynamicSlots"
+      #[slotName]="slotProps"
+    >
+      <slot
+        :name="slotName"
+        v-bind="slotProps"
+      ></slot>
+    </template>
+    <template
+      v-for="slotName in staticSlots"
+      #[slotName]
+    >
+      <slot :name="slotName"></slot>
     </template>
   </v-autocomplete>
 </template>
@@ -24,6 +41,21 @@ import { ref, watch } from "vue"
 import { debounce, isEmpty, isNil } from "lodash"
 
 import useUsers from "@/use/use-users"
+
+const dynamicSlots = [
+  "append",
+  "append-inner",
+  "chip",
+  "details",
+  "item",
+  "label",
+  "loader",
+  "message",
+  "prepend",
+  "prepend-inner",
+  "selection",
+] as const
+const staticSlots = ["append-item", "clear", "no-data"] as const
 
 const props = defineProps<{
   modelValue: number | null | undefined
