@@ -25,7 +25,7 @@ const { setBreadcrumbs } = useBreadcrumbs()
 
 setBreadcrumbs([
   {
-    title: "All Dataset",
+    title: "All Datasets",
     to: { name: "DatasetsPage" },
   },
 ])
