@@ -15,6 +15,20 @@
     @click:clear="clearUsers"
   >
     <template
+      v-if="!slotsNamesToPassThrough.includes('item')"
+      #item="{ props: itemProps }"
+    >
+      <v-list-item
+        v-if="isEmpty(itemProps.title)"
+        v-bind="itemProps"
+        subtitle="<empty>"
+      />
+      <v-list-item
+        v-else
+        v-bind="itemProps"
+      />
+    </template>
+    <template
       v-if="!slotsNamesToPassThrough.includes('prepend-item')"
       #prepend-item
     >
