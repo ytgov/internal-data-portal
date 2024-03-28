@@ -35,9 +35,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue"
+import { ref, toRefs, watch } from "vue"
 import { assign, debounce, isEmpty, isNil } from "lodash"
 
+import useUser from "@/use/use-user"
 import useUsers, { type UsersFilters, type User } from "@/use/use-users"
 import useVuetifySlotNamesPassThrough from "@/use/use-vuetify-slot-names-pass-through"
 
@@ -78,19 +79,20 @@ watch(
   }
 )
 
-const { users, isLoading, search, refresh } = useUsers(usersQuery, { isWatchEnabled: false })
+const { modelValue: userId } = toRefs(props)
+const { user } = useUser(userId)
+const { users, isLoading, search } = useUsers(usersQuery, { isWatchEnabled: false })
 
-watch(
-  () => props.modelValue,
-  async (newValue) => {
-    if (isNil(newValue)) return
+watch<[number | null | undefined, User | null, User[]], true>(
+  () => [props.modelValue, user.value, users.value],
+  async ([newUserId, newUser, newUsers]) => {
+    if (isNil(newUserId)) return
+    if (isNil(newUser)) return
 
-    const isExistingUser = users.value.some((user) => user.id === newValue)
+    const isExistingUser = newUsers.some((user) => user.id === newUserId)
     if (isExistingUser) return
 
-    assign(usersQuery.value, { where: { id: newValue }, perPage: 1 })
-    await refresh()
-    assign(usersQuery.value, { where: undefined, perPage: 5 })
+    users.value.unshift(newUser)
   },
   {
     immediate: true,
