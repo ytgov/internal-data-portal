@@ -1,16 +1,17 @@
 <template>
   <v-autocomplete
+    v-model:search="searchToken"
     :model-value="modelValue"
     :items="users"
     :loading="isLoading"
     label="User by Email"
     item-value="id"
-    item-title="email"
+    :item-title="itemTitle"
     prepend-inner-icon="mdi-magnify"
     auto-select-first
     v-bind="$attrs"
     @update:model-value="updateModelValue"
-    @update:search="debouncedSearch"
+    @update:search="debouncedSearchWrapper"
     @click:clear="clearUsers"
   >
     <template
@@ -35,15 +36,24 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue"
-import { debounce, isEmpty, isNil } from "lodash"
+import { assign, debounce, isEmpty, isNil } from "lodash"
 
-import useUsers from "@/use/use-users"
+import useUsers, { type User } from "@/use/use-users"
 import useVuetifySlotNamesPassThrough from "@/use/use-vuetify-slot-names-pass-through"
+
 import { VAutocomplete } from "vuetify/lib/components/index.mjs"
 
-const props = defineProps<{
-  modelValue: number | null | undefined
-}>()
+type UserAttributes = keyof User
+
+const props = withDefaults(
+  defineProps<{
+    modelValue: number | null | undefined
+    itemTitle: UserAttributes
+  }>(),
+  {
+    itemTitle: "email",
+  }
+)
 
 const emit = defineEmits<{
   "update:modelValue": [value: number | undefined]
@@ -66,11 +76,9 @@ watch(
     const isExistingUser = users.value.some((user) => user.id === newValue)
     if (isExistingUser) return
 
-    usersQuery.value.where = {
-      id: newValue,
-    }
+    assign(usersQuery.value, { where: { id: newValue }, perPage: 1 })
     await refresh()
-    delete usersQuery.value.where
+    assign(usersQuery.value, { where: undefined, perPage: 5 })
   },
   {
     immediate: true,
@@ -81,15 +89,20 @@ function updateModelValue(value: number | undefined) {
   emit("update:modelValue", value)
 }
 
-const debouncedSearch = debounce((newSearchToken: string) => {
-  const isStaleSearch = users.value.some((user) => user.email === newSearchToken)
+const searchWrapper = (newSearchToken: string) => {
+  const searchAttribute: UserAttributes = props.itemTitle
+  const isStaleSearch = users.value.some(
+    (user) => user[searchAttribute] === newSearchToken || user.id === Number(newSearchToken)
+  )
   if (isStaleSearch) return
 
   searchToken.value = newSearchToken
   if (isEmpty(searchToken.value)) return
 
   search(searchToken.value)
-}, 300)
+}
+
+const debouncedSearchWrapper = debounce(searchWrapper, 300)
 
 function clearUsers() {
   users.value = []
