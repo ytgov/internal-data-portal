@@ -103,9 +103,10 @@ function updateModelValue(value: number | undefined) {
 
 const searchWrapper = (newSearchToken: string) => {
   const searchAttribute: UserAttributes = props.itemTitle
-  const isStaleSearch = users.value.some(
-    (user) => user[searchAttribute] === newSearchToken || user.id === Number(newSearchToken)
-  )
+  const isStaleSearch =
+    users.value.some(
+      (user) => user[searchAttribute] === newSearchToken || user.id === parseInt(newSearchToken)
+    ) || props.modelValue === parseInt(newSearchToken)
   if (isStaleSearch) return
 
   searchToken.value = newSearchToken
