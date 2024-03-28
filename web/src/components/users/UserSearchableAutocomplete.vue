@@ -38,7 +38,7 @@
 import { ref, watch } from "vue"
 import { assign, debounce, isEmpty, isNil } from "lodash"
 
-import useUsers, { type User } from "@/use/use-users"
+import useUsers, { type UsersFilters, type User } from "@/use/use-users"
 import useVuetifySlotNamesPassThrough from "@/use/use-vuetify-slot-names-pass-through"
 
 import { VAutocomplete } from "vuetify/lib/components/index.mjs"
@@ -48,10 +48,12 @@ type UserAttributes = keyof User
 const props = withDefaults(
   defineProps<{
     modelValue: number | null | undefined
-    itemTitle: UserAttributes
+    itemTitle?: UserAttributes
+    filters?: UsersFilters
   }>(),
   {
     itemTitle: "email",
+    filters: () => ({}),
   }
 )
 
@@ -62,10 +64,20 @@ const emit = defineEmits<{
 const searchToken = ref("")
 const usersQuery = ref<{
   where?: Record<string, unknown>
+  filters?: UsersFilters
   perPage: number
 }>({
   perPage: 5,
+  filters: props.filters,
 })
+
+watch(
+  () => props.filters,
+  (newValue) => {
+    assign(usersQuery.value, { filters: newValue })
+  }
+)
+
 const { users, isLoading, search, refresh } = useUsers(usersQuery, { isWatchEnabled: false })
 
 watch(

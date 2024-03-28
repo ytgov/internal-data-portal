@@ -1,5 +1,5 @@
-import { WhereOptions } from "sequelize"
-import { isNil } from "lodash"
+import { ModelStatic, WhereOptions } from "sequelize"
+import { isEmpty, isNil } from "lodash"
 
 import { User } from "@/models"
 import { UserSerializers } from "@/serializers"
@@ -11,9 +11,17 @@ import BaseController from "@/controllers/base-controller"
 export class UsersController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<User>
+    const filters = this.query.filters as Record<string, unknown>
 
-    const totalCount = await User.count({ where })
-    const users = await User.findAll({
+    let filteredUsers: ModelStatic<User> = User
+    if (!isEmpty(filters)) {
+      Object.entries(filters).forEach(([key, value]) => {
+        filteredUsers = filteredUsers.scope({ method: [key, value] })
+      })
+    }
+
+    const totalCount = await filteredUsers.count({ where })
+    const users = await filteredUsers.findAll({
       where,
       limit: this.pagination.limit,
       offset: this.pagination.offset,

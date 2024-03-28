@@ -26,6 +26,7 @@
             <!-- TODO: enforce owner as current user if data_owner type -->
             <UserSearchableAutocomplete
               :model-value="datasetStewardship.ownerId"
+              :filters="{ withPresenceOf: ['firstName', 'lastName'] }"
               :rules="[required]"
               label="Owner Name *"
               item-value="id"
@@ -43,6 +44,7 @@
             <UserSearchableAutocomplete
               :model-value="datasetStewardship.ownerId"
               :disabled="datasetStewardship.ownerId === undefined"
+              :filters="{ withPresenceOf: ['position'] }"
               :rules="[required]"
               label="Owner Position *"
               item-value="id"
@@ -61,6 +63,7 @@
           >
             <UserSearchableAutocomplete
               :model-value="datasetStewardship.supportId"
+              :filters="{ withPresenceOf: ['firstName', 'lastName'] }"
               :rules="[required]"
               label="Support Name *"
               item-value="id"
@@ -97,6 +100,7 @@
             <UserSearchableAutocomplete
               :model-value="datasetStewardship.supportId"
               :disabled="datasetStewardship.supportId === undefined"
+              :filters="{ withPresenceOf: ['position'] }"
               :rules="[required]"
               label="Support Position *"
               item-value="id"

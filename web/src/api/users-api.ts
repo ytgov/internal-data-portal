@@ -61,6 +61,11 @@ export type UserCreationAttributes = Partial<User> & {
   rolesAttributes?: Partial<Role>[]
 }
 
+// Keep in sync with api/src/models/user.ts -> scopes
+export type UsersFilters = {
+  withPresenceOf?: string[]
+}
+
 export const usersApi = {
   RoleTypes,
   // TODO: consider moving this to its own api?
@@ -71,6 +76,7 @@ export const usersApi = {
   async list(
     params: {
       where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
+      filters?: UsersFilters
       page?: number
       perPage?: number
     } = {}
@@ -108,16 +114,14 @@ export const usersApi = {
   // Special Endpoints
   async search(
     searchToken: string,
-    {
-      page,
-      perPage,
-    }: {
+    params: {
+      filters?: UsersFilters
       page?: number
       perPage?: number
     } = {}
   ): Promise<{ users: User[]; totalCount: number }> {
     const { data } = await http.get(`/api/users/search/${searchToken}`, {
-      params: { page, perPage },
+      params,
     })
     return data
   },
