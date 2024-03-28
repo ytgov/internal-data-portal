@@ -275,7 +275,7 @@ User.init(
         const where = {
           [Op.or]: attributes.map((attribute) => ({
             [attribute]: {
-              [Op.not]: null,
+              [Op.and]: [{ [Op.not]: null }, { [Op.ne]: "" }],
             },
           })),
         }
