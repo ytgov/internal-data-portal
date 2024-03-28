@@ -34,13 +34,7 @@
               auto-select-first
               required
               @update:model-value="updateOwner($event as unknown as number | null)"
-            >
-              <template #no-data>
-                <v-list-item>
-                  <v-btn block> TODO: Create New User </v-btn>
-                </v-list-item>
-              </template>
-            </UserSearchableAutocomplete>
+            />
           </v-col>
           <v-col
             cols="12"
