@@ -118,7 +118,8 @@ export class DatasetsController extends BaseController {
         permittedAttributes,
         this.currentUser
       )
-      return this.response.status(200).json({ dataset: updatedDataset })
+      const serializedDataset = ShowSerializer.perform(updatedDataset, this.currentUser)
+      return this.response.status(200).json({ dataset: serializedDataset })
     } catch (error) {
       return this.response.status(422).json({ message: `Dataset update failed: ${error}` })
     }

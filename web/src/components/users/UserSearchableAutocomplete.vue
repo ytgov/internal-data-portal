@@ -15,18 +15,30 @@
     @click:clear="clearUsers"
   >
     <template
+      v-if="!slotsNamesToPassThrough.includes('item')"
+      #item="{ props: itemProps }"
+    >
+      <v-list-item
+        v-if="isEmpty(itemProps.title)"
+        v-bind="itemProps"
+        subtitle="<empty>"
+      />
+      <v-list-item
+        v-else
+        v-bind="itemProps"
+      />
+    </template>
+    <template
+      v-if="!slotsNamesToPassThrough.includes('prepend-item')"
+      #prepend-item
+    >
+      <v-list-item><em>Search for a user ...</em></v-list-item>
+    </template>
+    <template
       v-for="slotName in slotsNamesToPassThrough"
       #[slotName]="slotProps"
     >
       <slot
-        v-if="slotName === 'prepend-item'"
-        :name="slotName"
-        v-bind="slotProps"
-      >
-        <v-list-item><em>Search for a user ...</em></v-list-item>
-      </slot>
-      <slot
-        v-else
         :name="slotName"
         v-bind="slotProps"
       ></slot>

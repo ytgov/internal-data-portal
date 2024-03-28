@@ -37,9 +37,9 @@
         md="6"
       >
         <!-- TODO: enforce owner as current user if data_owner type -->
-        <v-autocomplete
+        <UserSearchableAutocomplete
           :model-value="datasetStewardship.ownerId"
-          :items="users"
+          :filters="{ withPresenceOf: ['firstName', 'lastName'] }"
           :rules="[required]"
           label="Owner Name *"
           item-value="id"
@@ -49,22 +49,16 @@
           clearable
           required
           @update:model-value="updateOwner($event as unknown as number | null)"
-        >
-          <template #no-data>
-            <v-list-item>
-              <v-btn block> TODO: Create New User </v-btn>
-            </v-list-item>
-          </template>
-        </v-autocomplete>
+        />
       </v-col>
       <v-col
         cols="12"
         md="6"
       >
-        <v-autocomplete
+        <UserSearchableAutocomplete
           :model-value="datasetStewardship.ownerId"
-          :items="users"
           :disabled="datasetStewardship.ownerId === undefined"
+          :filters="{ withPresenceOf: ['position'] }"
           :rules="[required]"
           label="Owner Position *"
           item-value="id"
@@ -80,9 +74,9 @@
         cols="12"
         md="6"
       >
-        <v-autocomplete
+        <UserSearchableAutocomplete
           :model-value="datasetStewardship.supportId"
-          :items="users"
+          :filters="{ withPresenceOf: ['firstName', 'lastName'] }"
           :rules="[required]"
           label="Support Name *"
           item-value="id"
@@ -98,9 +92,8 @@
         cols="12"
         md="6"
       >
-        <v-autocomplete
+        <UserSearchableAutocomplete
           :model-value="datasetStewardship.supportId"
-          :items="users"
           :disabled="datasetStewardship.supportId === undefined"
           :rules="[required]"
           label="Support Email *"
@@ -117,10 +110,10 @@
         cols="12"
         md="6"
       >
-        <v-autocomplete
+        <UserSearchableAutocomplete
           :model-value="datasetStewardship.supportId"
-          :items="users"
           :disabled="datasetStewardship.supportId === undefined"
+          :filters="{ withPresenceOf: ['position'] }"
           :rules="[required]"
           label="Support Position *"
           item-value="id"
@@ -244,15 +237,17 @@ import { isNil } from "lodash"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
 
-import datasetsApi, { type Dataset } from "@/api/datasets-api"
+import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
 import { UserGroupTypes } from "@/api/user-groups-api"
-import { DatasetStewardship } from "@/api/dataset-stewardships-api"
+import datasetsApi, { type Dataset } from "@/api/datasets-api"
+import usersApi from "@/api/users-api"
 
 import useSnack from "@/use/use-snack"
 import useUserGroups from "@/use/use-user-groups"
-import useUsers from "@/use/use-users"
 
 import { required } from "@/utils/validators"
+
+import UserSearchableAutocomplete from "@/components/users/UserSearchableAutocomplete.vue"
 
 const router = useRouter()
 const snack = useSnack()
@@ -262,8 +257,6 @@ const isLoading = ref(false)
 const dataset = ref<Partial<Dataset>>({})
 
 const datasetStewardship = ref<Partial<DatasetStewardship>>({})
-
-const { users } = useUsers()
 
 const departmentId = computed(() => datasetStewardship.value.departmentId)
 const divisionId = computed(() => datasetStewardship.value.divisionId)
@@ -319,25 +312,30 @@ async function updateOwner(newOwnerId: number | null) {
     return
   }
 
-  const ownerId = newOwnerId
-  const owner = users.value.find((user) => user.id === ownerId)
-  if (owner === undefined) {
-    throw new Error(`Could not find user with id ${ownerId}`)
+  if (isNil(newOwnerId)) {
+    throw new Error("Owner id is required")
   }
 
-  dataset.value.ownerId = owner.id
-  datasetStewardship.value.ownerId = owner.id
+  try {
+    const { user: owner } = await usersApi.get(newOwnerId)
+    datasetStewardship.value.ownerId = newOwnerId
 
-  const {
-    departmentId: newDepartmentId,
-    divisionId: newDivisionId,
-    branchId: newBranchId,
-    unitId: newUnitId,
-  } = owner.groupMembership || {}
-  await updateDepartment(newDepartmentId)
-  await updateDivision(newDivisionId)
-  await updateBranch(newBranchId)
-  await updateUnit(newUnitId)
+    const {
+      departmentId: newDepartmentId,
+      divisionId: newDivisionId,
+      branchId: newBranchId,
+      unitId: newUnitId,
+    } = owner.groupMembership || {}
+    await updateDepartment(newDepartmentId)
+    await updateDivision(newDivisionId)
+    await updateBranch(newBranchId)
+    await updateUnit(newUnitId)
+  } catch (error) {
+    console.error(error)
+    snack.notify(`Failed to update owner information: ${error}`, {
+      color: "error",
+    })
+  }
 }
 
 function updateSupport(supportId: number | null) {
