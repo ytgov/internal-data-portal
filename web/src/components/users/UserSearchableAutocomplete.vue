@@ -34,41 +34,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, useSlots, watch } from "vue"
+import { ref, watch } from "vue"
 import { debounce, isEmpty, isNil } from "lodash"
 
 import useUsers from "@/use/use-users"
-
-// Slot passthrough with TypeScript
-import type { VAutocomplete } from "vuetify/lib/components/index.mjs"
-
-type WrappedSlotNames = keyof VAutocomplete["$slots"]
-const wrappedSlotNames = new Set<WrappedSlotNames>([
-  "append-inner",
-  "append-item",
-  "append",
-  "chip",
-  "clear",
-  "details",
-  "item",
-  "label",
-  "loader",
-  "message",
-  "no-data",
-  "prepend-inner",
-  "prepend-item",
-  "prepend",
-  "selection",
-])
-
-const slots = useSlots()
-
-const slotsNamesToPassThrough = computed(() => {
-  return Object.keys(slots).filter((slotName): slotName is WrappedSlotNames =>
-    wrappedSlotNames.has(slotName as WrappedSlotNames)
-  )
-})
-// End of slot passthrough with TypeScript
+import useVuetifySlotNamesPassThrough from "@/use/use-vuetify-slot-names-pass-through"
+import { VAutocomplete } from "vuetify/lib/components/index.mjs"
 
 const props = defineProps<{
   modelValue: number | null | undefined
@@ -123,4 +94,22 @@ const debouncedSearch = debounce((newSearchToken: string) => {
 function clearUsers() {
   users.value = []
 }
+
+const slotsNamesToPassThrough = useVuetifySlotNamesPassThrough<VAutocomplete>([
+  "append-inner",
+  "append-item",
+  "append",
+  "chip",
+  "clear",
+  "details",
+  "item",
+  "label",
+  "loader",
+  "message",
+  "no-data",
+  "prepend-inner",
+  "prepend-item",
+  "prepend",
+  "selection",
+])
 </script>
