@@ -27,6 +27,16 @@
             @click:clear="clearSearchQuery"
           />
         </v-col>
+        <v-col class="d-none d-md-flex justify-end align-center">
+          <v-btn
+            icon="mdi-cached"
+            color="primary"
+            variant="outlined"
+            size="x-small"
+            title="Refresh Datasets"
+            @click="refresh"
+          />
+        </v-col>
       </v-row>
     </template>
     <template #item.name="{ value, item: { slug } }">
@@ -200,8 +210,6 @@ function removeDisableRowHighlight(event: MouseEvent) {
     row.classList.remove("no-highlight")
   }
 }
-
-defineExpose({ refresh })
 </script>
 
 <style scoped>

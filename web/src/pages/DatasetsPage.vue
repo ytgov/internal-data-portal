@@ -1,41 +1,32 @@
 <template>
   <v-container>
-    <div class="d-flex justify-space-between align-baseline mb-3">
-      <h2 class="">All Dataset</h2>
+    <h2 class="d-flex flex-column flex-md-row justify-space-between">
+      All Dataset
 
       <v-btn
-        icon="mdi-cached"
+        class="mb-3"
         color="primary"
-        variant="outlined"
-        size="x-small"
-        title="Refresh Datasets"
-        @click="refresh"
-      />
-    </div>
+        :to="{ name: 'DatasetNewPage' }"
+      >
+        Add Dataset
+      </v-btn>
+    </h2>
 
-    <DatasetsTable ref="datasetsTable" />
+    <DatasetsTable />
   </v-container>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
-
 import DatasetsTable from "@/components/datasets/DatasetsTable.vue"
 
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 
 const { setBreadcrumbs } = useBreadcrumbs()
 
-const datasetsTable = ref<InstanceType<typeof DatasetsTable>>()
-
 setBreadcrumbs([
   {
-    title: "All Dataset",
+    title: "All Datasets",
     to: { name: "DatasetsPage" },
   },
 ])
-
-function refresh() {
-  datasetsTable.value?.refresh()
-}
 </script>
