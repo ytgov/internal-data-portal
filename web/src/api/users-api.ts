@@ -64,6 +64,7 @@ export type UserCreationAttributes = Partial<User> & {
 // Keep in sync with api/src/models/user.ts -> scopes
 export type UsersFilters = {
   withPresenceOf?: string[]
+  withDeleted?: boolean
 }
 
 export const usersApi = {
@@ -87,8 +88,13 @@ export const usersApi = {
     const { data } = await http.get("/api/users", { params })
     return data
   },
-  async get(id: number): Promise<{ user: User }> {
-    const { data } = await http.get(`/api/users/${id}`)
+  async get(
+    id: number,
+    params: {
+      withDeleted?: boolean
+    } = {}
+  ): Promise<{ user: User }> {
+    const { data } = await http.get(`/api/users/${id}`, { params })
     return data
   },
   async create(attributes: UserCreationAttributes): Promise<{

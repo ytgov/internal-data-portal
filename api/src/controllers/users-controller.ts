@@ -39,7 +39,10 @@ export class UsersController extends BaseController {
   }
 
   async show() {
-    const user = await this.loadUser()
+    const withDeleted = this.query.withDeleted === "true"
+    const user = await this.loadUser({
+      withDeleted,
+    })
     if (isNil(user)) {
       return this.response.status(404).json({ message: "User not found." })
     }
@@ -127,8 +130,9 @@ export class UsersController extends BaseController {
     return User.build(this.request.body)
   }
 
-  private async loadUser() {
+  private async loadUser({ withDeleted = false }: { withDeleted?: boolean } = {}) {
     return User.findByPk(this.params.userId, {
+      paranoid: !withDeleted,
       include: [
         "roles",
         {

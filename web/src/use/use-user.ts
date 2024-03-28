@@ -8,9 +8,11 @@ export { type User, type UserUpdate }
 export function useUser(
   id: Ref<number | null | undefined>,
   {
+    withDeleted = false,
     immediate = true,
   }: {
     immediate?: boolean
+    withDeleted?: boolean
   } = {}
 ) {
   const state = reactive<{
@@ -31,7 +33,7 @@ export function useUser(
 
     state.isLoading = true
     try {
-      const { user } = await usersApi.get(staticId)
+      const { user } = await usersApi.get(staticId, { withDeleted })
       state.user = user
       state.isErrored = false
       return user

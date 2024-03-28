@@ -80,7 +80,7 @@ watch(
 )
 
 const { modelValue: userId } = toRefs(props)
-const { user } = useUser(userId)
+const { user } = useUser(userId, { withDeleted: true })
 const { users, isLoading, search } = useUsers(usersQuery, { isWatchEnabled: false })
 
 watch<[number | null | undefined, User | null, User[]], true>(
