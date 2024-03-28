@@ -36,13 +36,27 @@ export class SearchController extends BaseController {
       return {}
     }
 
+    const parts = searchToken.split(" ")
+    if (parts.length === 1) {
+      return {
+        [Op.or]: [
+          where(fn("LOWER", col("email")), { [Op.like]: `%${searchToken}%` }),
+          where(fn("LOWER", col("first_name")), { [Op.like]: `%${searchToken}%` }),
+          where(fn("LOWER", col("last_name")), { [Op.like]: `%${searchToken}%` }),
+          where(fn("LOWER", col("position")), { [Op.like]: `%${searchToken}%` }),
+        ],
+      }
+    }
+
     return {
-      [Op.or]: [
-        where(fn("LOWER", col("email")), { [Op.like]: `%${searchToken}%` }),
-        where(fn("LOWER", col("first_name")), { [Op.like]: `%${searchToken}%` }),
-        where(fn("LOWER", col("last_name")), { [Op.like]: `%${searchToken}%` }),
-        where(fn("LOWER", col("position")), { [Op.like]: `%${searchToken}%` }),
-      ],
+      [Op.and]: parts.map((part) => ({
+        [Op.or]: [
+          where(fn("LOWER", col("email")), { [Op.like]: `%${part}%` }),
+          where(fn("LOWER", col("first_name")), { [Op.like]: `%${part}%` }),
+          where(fn("LOWER", col("last_name")), { [Op.like]: `%${part}%` }),
+          where(fn("LOWER", col("position")), { [Op.like]: `%${part}%` }),
+        ],
+      })),
     }
   }
 }
