@@ -1,12 +1,13 @@
 import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
 
-import usersApi, { type User } from "@/api/users-api"
+import usersApi, { type UsersFilters, type User } from "@/api/users-api"
 
-export { type User }
+export { type User, type UsersFilters }
 
 export function useUsers(
   options: Ref<{
     where?: Record<string, unknown>
+    filters?: UsersFilters
     page?: number
     perPage?: number
   }> = ref({}),

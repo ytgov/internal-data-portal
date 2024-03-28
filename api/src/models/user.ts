@@ -18,6 +18,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   NonAttribute,
+  Op,
   col,
   fn,
   where,
@@ -264,6 +265,23 @@ User.init(
       byEmailIgnoreCase: (email: string) => {
         return {
           where: where(fn("LOWER", col("email")), email.toLowerCase()),
+        }
+      },
+      withPresenceOf(attributes: string[]) {
+        if (attributes.length === 0) {
+          throw new Error("Must provide at least one attribute to search for.")
+        }
+
+        const where = {
+          [Op.or]: attributes.map((attribute) => ({
+            [attribute]: {
+              [Op.and]: [{ [Op.not]: null }, { [Op.ne]: "" }],
+            },
+          })),
+        }
+
+        return {
+          where,
         }
       },
     },

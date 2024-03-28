@@ -1,33 +1,62 @@
 <template>
   <v-autocomplete
+    v-model:search="searchToken"
     :model-value="modelValue"
     :items="users"
     :loading="isLoading"
     label="User by Email"
     item-value="id"
-    item-title="email"
+    :item-title="itemTitle"
     prepend-inner-icon="mdi-magnify"
     auto-select-first
     v-bind="$attrs"
     @update:model-value="updateModelValue"
-    @update:search="debouncedSearch"
+    @update:search="debouncedSearchWrapper"
     @click:clear="clearUsers"
   >
-    <template #prepend-item>
-      <v-list-item><em>Search for a user ...</em></v-list-item>
+    <template
+      v-for="slotName in slotsNamesToPassThrough"
+      #[slotName]="slotProps"
+    >
+      <slot
+        v-if="slotName === 'prepend-item'"
+        :name="slotName"
+        v-bind="slotProps"
+      >
+        <v-list-item><em>Search for a user ...</em></v-list-item>
+      </slot>
+      <slot
+        v-else
+        :name="slotName"
+        v-bind="slotProps"
+      ></slot>
     </template>
   </v-autocomplete>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from "vue"
-import { debounce, isEmpty, isNil } from "lodash"
+import { ref, toRefs, watch } from "vue"
+import { assign, debounce, isEmpty, isNil } from "lodash"
 
-import useUsers from "@/use/use-users"
+import useUser from "@/use/use-user"
+import useUsers, { type UsersFilters, type User } from "@/use/use-users"
+import useVuetifySlotNamesPassThrough from "@/use/use-vuetify-slot-names-pass-through"
 
-const props = defineProps<{
-  modelValue: number | null | undefined
-}>()
+import { VAutocomplete } from "vuetify/lib/components/index.mjs"
+
+type UserAttributes = keyof User
+
+const props = withDefaults(
+  defineProps<{
+    modelValue: number | null | undefined
+    itemTitle?: UserAttributes
+    filters?: UsersFilters
+  }>(),
+  {
+    itemTitle: "email",
+    filters: () => ({}),
+  }
+)
 
 const emit = defineEmits<{
   "update:modelValue": [value: number | undefined]
@@ -36,25 +65,34 @@ const emit = defineEmits<{
 const searchToken = ref("")
 const usersQuery = ref<{
   where?: Record<string, unknown>
+  filters?: UsersFilters
   perPage: number
 }>({
   perPage: 5,
+  filters: props.filters,
 })
-const { users, isLoading, search, refresh } = useUsers(usersQuery, { isWatchEnabled: false })
 
 watch(
-  () => props.modelValue,
-  async (newValue) => {
-    if (isNil(newValue)) return
+  () => props.filters,
+  (newValue) => {
+    assign(usersQuery.value, { filters: newValue })
+  }
+)
 
-    const isExistingUser = users.value.some((user) => user.id === newValue)
+const { modelValue: userId } = toRefs(props)
+const { user } = useUser(userId, { withDeleted: true })
+const { users, isLoading, search } = useUsers(usersQuery, { isWatchEnabled: false })
+
+watch<[number | null | undefined, User | null, User[]], true>(
+  () => [props.modelValue, user.value, users.value],
+  async ([newUserId, newUser, newUsers]) => {
+    if (isNil(newUserId)) return
+    if (isNil(newUser)) return
+
+    const isExistingUser = newUsers.some((user) => user.id === newUserId)
     if (isExistingUser) return
 
-    usersQuery.value.where = {
-      id: newValue,
-    }
-    await refresh()
-    delete usersQuery.value.where
+    users.value.unshift(newUser)
   },
   {
     immediate: true,
@@ -65,17 +103,41 @@ function updateModelValue(value: number | undefined) {
   emit("update:modelValue", value)
 }
 
-const debouncedSearch = debounce((newSearchToken: string) => {
-  const isStaleSearch = users.value.some((user) => user.email === newSearchToken)
+const searchWrapper = (newSearchToken: string) => {
+  const searchAttribute: UserAttributes = props.itemTitle
+  const isStaleSearch =
+    users.value.some(
+      (user) => user[searchAttribute] === newSearchToken || user.id === parseInt(newSearchToken)
+    ) || props.modelValue === parseInt(newSearchToken)
   if (isStaleSearch) return
 
   searchToken.value = newSearchToken
   if (isEmpty(searchToken.value)) return
 
   search(searchToken.value)
-}, 300)
+}
+
+const debouncedSearchWrapper = debounce(searchWrapper, 300)
 
 function clearUsers() {
   users.value = []
 }
+
+const slotsNamesToPassThrough = useVuetifySlotNamesPassThrough<VAutocomplete>([
+  "append-inner",
+  "append-item",
+  "append",
+  "chip",
+  "clear",
+  "details",
+  "item",
+  "label",
+  "loader",
+  "message",
+  "no-data",
+  "prepend-inner",
+  "prepend-item",
+  "prepend",
+  "selection",
+])
 </script>

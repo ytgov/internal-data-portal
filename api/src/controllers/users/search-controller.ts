@@ -1,4 +1,4 @@
-import { Op, WhereOptions, col, fn, where } from "sequelize"
+import { ModelStatic, Op, WhereOptions, col, fn, where } from "sequelize"
 import { isEmpty, isNil } from "lodash"
 
 import { User } from "@/models"
@@ -8,10 +8,18 @@ import BaseController from "@/controllers/base-controller"
 
 export class SearchController extends BaseController {
   async index() {
-    const searchQuery = this.buildSearchQuery()
+    const filters = this.query.filters as Record<string, unknown>
 
-    const totalCount = await User.count({ where: searchQuery })
-    const users = await User.findAll({
+    let filteredUsers: ModelStatic<User> = User
+    if (!isEmpty(filters)) {
+      Object.entries(filters).forEach(([key, value]) => {
+        filteredUsers = filteredUsers.scope({ method: [key, value] })
+      })
+    }
+
+    const searchQuery = this.buildSearchQuery()
+    const totalCount = await filteredUsers.count({ where: searchQuery })
+    const users = await filteredUsers.findAll({
       where: searchQuery,
       limit: this.pagination.limit,
       offset: this.pagination.offset,
@@ -36,13 +44,27 @@ export class SearchController extends BaseController {
       return {}
     }
 
+    const parts = searchToken.split(" ")
+    if (parts.length === 1) {
+      return {
+        [Op.or]: [
+          where(fn("LOWER", col("email")), { [Op.like]: `%${searchToken}%` }),
+          where(fn("LOWER", col("first_name")), { [Op.like]: `%${searchToken}%` }),
+          where(fn("LOWER", col("last_name")), { [Op.like]: `%${searchToken}%` }),
+          where(fn("LOWER", col("position")), { [Op.like]: `%${searchToken}%` }),
+        ],
+      }
+    }
+
     return {
-      [Op.or]: [
-        where(fn("LOWER", col("email")), { [Op.like]: `%${searchToken}%` }),
-        where(fn("LOWER", col("first_name")), { [Op.like]: `%${searchToken}%` }),
-        where(fn("LOWER", col("last_name")), { [Op.like]: `%${searchToken}%` }),
-        where(fn("LOWER", col("position")), { [Op.like]: `%${searchToken}%` }),
-      ],
+      [Op.and]: parts.map((part) => ({
+        [Op.or]: [
+          where(fn("LOWER", col("email")), { [Op.like]: `%${part}%` }),
+          where(fn("LOWER", col("first_name")), { [Op.like]: `%${part}%` }),
+          where(fn("LOWER", col("last_name")), { [Op.like]: `%${part}%` }),
+          where(fn("LOWER", col("position")), { [Op.like]: `%${part}%` }),
+        ],
+      })),
     }
   }
 }
