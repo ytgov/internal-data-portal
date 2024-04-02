@@ -1,8 +1,8 @@
 import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
 
-import datasetsApi, { type Dataset } from "@/api/datasets-api"
+import datasetsApi, { type Dataset, type DatasetsFilters } from "@/api/datasets-api"
 
-export { type Dataset }
+export { type Dataset, type DatasetsFilters }
 
 export function useDatasets(
   options: Ref<{
