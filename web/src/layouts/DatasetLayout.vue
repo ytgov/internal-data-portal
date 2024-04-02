@@ -3,10 +3,7 @@
     v-if="isNil(dataset) || isLoading"
     class="d-flex justify-center"
   >
-    <v-progress-circular
-      indeterminate
-      color="yg-blue"
-    />
+    <PageLoader />
   </div>
   <v-container
     v-else
@@ -38,6 +35,8 @@ import { isNil } from "lodash"
 import useCurrentUser, { RoleTypes } from "@/use/use-current-user"
 import useDataset from "@/use/use-dataset"
 import { AccessTypes } from "@/api/access-grants-api"
+
+import PageLoader from "@/components/PageLoader.vue"
 
 const props = defineProps({
   slug: {
