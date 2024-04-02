@@ -23,14 +23,13 @@ export class EmailSubscribersController extends BaseController {
     const { to, subject, content } = this.request.body
 
     try {
-      const mailer = new DatasetMailer()
-      await mailer.emailSubscribers({
+      await DatasetMailer.deliverNow('emailSubscribers', {
         to,
         subject,
         content,
       })
 
-      return this.response.status(200).json({ message: "Emailed subscribers" })
+      return this.response.status(200).json({ message: "Emailed subscribers." })
     } catch (error) {
       return this.response.status(422).json({ message: `Failed to email subscribers: ${error}` })
     }

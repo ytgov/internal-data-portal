@@ -6,6 +6,9 @@ import nodemailer, { type Transporter } from "nodemailer"
 
 import { MAIL_FROM, MAIL_HOST, MAIL_PORT } from "@/config"
 
+type MethodNamesOf<T> = { [P in keyof T]: T[P] extends CallableFunction ? P : never }[keyof T]
+type ArgumentTypes<T> = T extends (params: infer U) => unknown ? U : never
+
 export type MailerOptions = {
   mailFrom?: string
   mailHost?: string
@@ -15,8 +18,8 @@ export type MailerOptions = {
 export type SendMailOptions = {
   to: string
   subject: string
-  text: string
   html: string
+  text?: string
 }
 
 export class BaseMailer {
@@ -24,8 +27,6 @@ export class BaseMailer {
   protected mailFrom: string
   protected mailHost: string
   protected mailPort: number
-
-  protected mailerName = "base_mailer"
 
   constructor({
     mailFrom = MAIL_FROM,
@@ -42,32 +43,44 @@ export class BaseMailer {
     })
   }
 
-  async sendMail({ to, subject, text, html }: SendMailOptions) {
-    const info = await this.transporter.sendMail({
+  static async deliverNow<T extends BaseMailer, M extends MethodNamesOf<T>>(
+    this: new (mailerOptions?: MailerOptions) => T,
+    method: M,
+    params: ArgumentTypes<T[M]>,
+    mailerOptions?: MailerOptions
+  ) {
+    const instance = new this(mailerOptions)
+    return (instance[method] as CallableFunction)(params)
+  }
+
+  async sendMail({ to, subject, html, text }: SendMailOptions) {
+    return this.transporter.sendMail({
       from: this.mailFrom,
       to,
       subject,
-      text,
       html,
+      text: text || html,
     })
-    return info
   }
 
-  static async sendMail(options: SendMailOptions, mailerOptions?: MailerOptions) {
-    const mailer = new BaseMailer(mailerOptions)
-    return mailer.sendMail(options)
+  renderHtml(name: string, data?: object | undefined) {
+    return this.render(`${name}.html`, data)
   }
 
-  render(name: string, data?: object | undefined) {
-    const templatePath = this.templatePath(`${name}.html`)
+  renderText(name: string, data?: object | undefined) {
+    return this.render(`${name}.txt`, data)
+  }
+
+  private render(name: string, data?: object | undefined) {
+    const templatePath = this.templatePath(name)
     const templateString = readFileSync(templatePath, "utf8")
     const compiledTemplate = template(templateString)
-    const html = compiledTemplate(data)
-    return html
+    const body = compiledTemplate(data)
+    return body
   }
 
-  protected templatePath(path: string) {
-    return resolve(__dirname, `../templates/${this.mailerName}`, path)
+  private templatePath(path: string) {
+    return resolve(__dirname, `../templates`, path)
   }
 }
 
