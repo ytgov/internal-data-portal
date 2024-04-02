@@ -135,6 +135,7 @@
                   v-model="dataset.deactivatedAt"
                   :field-options="{
                     label: 'Date Deactivated',
+                    variant: 'outlined',
                   }"
                   @update:model-value="saveAndNotify"
                 />
