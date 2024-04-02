@@ -64,13 +64,14 @@ export class DatasetEntriesController extends BaseController {
       return genericFileName
     }
 
-    const dataset = await Dataset.findByPk(datasetId)
-    if (isNil(dataset)) {
+    const datasets = await Dataset.findAll({ where: { id: datasetId } })
+    const names = datasets.map((dataset) => dataset.name).join("-")
+
+    if (isEmpty(names)) {
       return genericFileName
     }
 
-    const { name } = dataset
-    return `Export, ${name}, ${date}.csv`
+    return `Export, ${names}, ${date}.csv`
   }
 }
 
