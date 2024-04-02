@@ -84,7 +84,7 @@
                 <v-checkbox
                   v-model="dataset.isLiveData"
                   label="Live data?"
-                  @update:model-value="saveAndNotify"
+                  @update:model-value="liveDataSaveAndNotify"
                 />
               </v-col>
               <v-col
@@ -92,11 +92,22 @@
                 md="9"
               >
                 <DatePicker
+                  v-if="dataset.isLiveData"
                   v-model="dataset.publishedAt"
                   :field-options="{
-                    label: 'Date Published',
+                    label: 'Date Published *',
+                    variant: 'outlined',
                   }"
                   @update:model-value="saveAndNotify"
+                />
+                <DatePicker
+                  v-else
+                  :model-value="dataset.publishedAt"
+                  :field-options="{
+                    label: 'Date Published',
+                    disabled: true,
+                    variant: 'outlined',
+                  }"
                 />
               </v-col>
             </v-row>
@@ -185,6 +196,17 @@ const snack = useSnack()
 const form = ref<InstanceType<typeof VForm> | null>(null)
 const isValid = ref(null)
 const isInactive = computed<boolean>(() => !isNil(dataset.value?.deactivatedAt))
+
+async function liveDataSaveAndNotify(value: boolean | null) {
+  if (isNil(dataset.value)) return
+
+  if (value === true) {
+    dataset.value.publishedAt = new Date().toISOString()
+  } else {
+    dataset.value.publishedAt = null
+  }
+  await saveAndNotify()
+}
 
 async function deactivateDatasetAndSaveAndNotify(value: boolean | null) {
   if (isNil(dataset.value)) return
