@@ -26,6 +26,7 @@ import {
   DatasetEntriesController,
   DatasetFieldsController,
   DatasetIntegrationsController,
+  Datasets,
   DatasetsController,
   DatasetStewardshipsController,
   QaScenarios,
@@ -68,6 +69,9 @@ router
   .route("/api/datasets/:datasetIdOrSlug")
   .get(DatasetsController.show)
   .patch(DatasetsController.update)
+router
+  .route("/api/datasets/:datasetIdOrSlug/email-subscribers")
+  .post(Datasets.EmailSubscribersController.create)
 
 router
   .route("/api/access-grants")
