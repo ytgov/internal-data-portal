@@ -112,6 +112,13 @@ services:
       retries: 3
       start_period: 5s
 
+  mailslurper:
+    image: derekahn/mailslurper
+    ports:
+      - 2500:2500
+      - 8081:8080
+      - 8085:8085
+
   # For easily generating large PlantUML diagrams
   # Not relevant to production environment.
   # Accessible at http://localhost:9999
