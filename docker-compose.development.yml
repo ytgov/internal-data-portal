@@ -16,6 +16,9 @@ x-default-environment: &default-environment
   VITE_AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com"
   RELEASE_TAG: "${RELEASE_TAG:-development}"
   GIT_COMMIT_HASH: "${GIT_COMMIT_HASH:-not-set}"
+  MAIL_HOST: "mailslurper"
+  MAIL_PORT: 2500
+  MAIL_FROM: "idp.development@yukon.ca"
 
 services:
   api:
