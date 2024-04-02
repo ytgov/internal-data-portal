@@ -1,8 +1,8 @@
 import { ModelStatic, WhereOptions } from "sequelize"
-import { isEmpty } from "lodash"
+import { isEmpty, isNil } from "lodash"
 import { createReadStream } from "fs"
 
-import { DatasetEntry } from "@/models"
+import { Dataset, DatasetEntry } from "@/models"
 import { DatasetEntriesPolicy } from "@/policies"
 import { CreateCsvService } from "@/services/dataset-entries"
 
@@ -41,11 +41,11 @@ export class DatasetEntriesController extends BaseController {
     where: WhereOptions<DatasetEntry>
   ) {
     try {
+      const fileName = await this.buildFileName()
       const filePath = await CreateCsvService.perform(datasetEntriesScope, where)
 
       this.response.header("Content-Type", "text/csv")
-      const date = new Date().toISOString().split("T")[0]
-      this.response.attachment(`Export, Dataset Entries, ${date}.csv`)
+      this.response.attachment(fileName)
 
       const fileStream = createReadStream(filePath)
       fileStream.pipe(this.response)
@@ -53,6 +53,24 @@ export class DatasetEntriesController extends BaseController {
       console.error("Failed to generate CSV", error)
       this.response.status(500).send(`Failed to generate CSV: ${error}`)
     }
+  }
+
+  private async buildFileName() {
+    const { datasetId } = this.query.where as unknown as { datasetId: number }
+
+    const date = new Date().toISOString().split("T")[0]
+    const genericFileName = `Export, Dataset Entries, ${date}.csv`
+    if (isNil(datasetId)) {
+      return genericFileName
+    }
+
+    const dataset = await Dataset.findByPk(datasetId)
+    if (isNil(dataset)) {
+      return genericFileName
+    }
+
+    const { name } = dataset
+    return `Export, ${name}, ${date}.csv`
   }
 }
 
