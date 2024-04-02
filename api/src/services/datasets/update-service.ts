@@ -1,3 +1,5 @@
+import { isEmpty, isNil } from "lodash"
+
 import { Dataset, User } from "@/models"
 
 import BaseService from "@/services/base-service"
@@ -14,7 +16,21 @@ export class UpdateService extends BaseService {
   }
 
   async perform(): Promise<Dataset> {
-    await this.dataset.update(this.attributes)
+    const { isLiveData, publishedAt, ...otherAttributes } = this.attributes
+
+    if (isLiveData && isEmpty(publishedAt)) {
+      throw new Error("publishedAt is required when isLiveData is true")
+    }
+
+    if (isNil(isLiveData) && !isEmpty(publishedAt)) {
+      throw new Error("isLiveData is required when publishedAt is provided")
+    }
+
+    await this.dataset.update({
+      isLiveData,
+      publishedAt,
+      ...otherAttributes,
+    })
 
     // TODO: log user who performed update?
 
