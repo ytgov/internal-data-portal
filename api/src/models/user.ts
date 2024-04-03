@@ -28,6 +28,7 @@ import { DateTime } from "luxon"
 import sequelize from "@/db/db-client"
 
 import AccessGrant from "@/models/access-grant"
+import AccessRequest from "@/models/access-request"
 import Role, { RoleTypes } from "@/models/role"
 import UserGroup from "@/models/user-groups"
 import UserGroupMembership from "@/models/user-group-membership"
@@ -97,15 +98,49 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
   declare countAccessGrantSupports: HasManyCountAssociationsMixin
   declare createAccessGrantSupports: HasManyCreateAssociationMixin<AccessGrant>
 
+  declare getAccessRequestsAsRequestor: HasManyGetAssociationsMixin<AccessRequest>
+  declare setAccessRequestsAsRequestor: HasManySetAssociationsMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare hasAccessRequestAsRequestor: HasManyHasAssociationMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare hasAccessRequestsAsRequestor: HasManyHasAssociationsMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare addAccessRequestAsRequestor: HasManyAddAssociationMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare addAccessRequestsAsRequestor: HasManyAddAssociationsMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare removeAccessRequestAsRequestor: HasManyRemoveAssociationMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare removeAccessRequestsAsRequestor: HasManyRemoveAssociationsMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare countAccessRequestsAsRequestor: HasManyCountAssociationsMixin
+  declare createAccessRequestsAsRequestor: HasManyCreateAssociationMixin<AccessRequest>
+
   declare groupMembership?: NonAttribute<UserGroupMembership>
   declare accessGrants?: NonAttribute<AccessGrant[]>
   declare accessGrantSupports?: NonAttribute<AccessGrant[]>
+  declare accessRequestsAsRequestor?: NonAttribute<AccessRequest[]>
   declare roles?: NonAttribute<Role[]>
 
   declare static associations: {
     groupMembership: Association<User, UserGroupMembership>
     accessGrants: Association<User, AccessGrant>
     accessGrantSupports: Association<User, AccessGrant>
+    accessRequestsAsRequestor: Association<User, AccessRequest>
     roles: Association<User, Role>
   }
 
@@ -126,6 +161,10 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
     this.hasMany(AccessGrant, {
       foreignKey: "supportId",
       as: "accessGrantSupports",
+    })
+    this.hasMany(AccessRequest, {
+      foreignKey: "requestorId",
+      as: "accessRequestsAsRequestor",
     })
   }
 
@@ -163,6 +202,10 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
 
   get unit(): NonAttribute<UserGroup | undefined> {
     return this.groupMembership?.unit
+  }
+
+  get displayName(): NonAttribute<string> {
+    return `${this.firstName} ${this.lastName}`
   }
 
   /**

@@ -8,6 +8,7 @@
     prepend-inner-icon="mdi-magnify"
     auto-select-first
     chips
+    clear-on-select
     clearable
     closable-chips
     multiple
