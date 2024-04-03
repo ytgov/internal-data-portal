@@ -21,8 +21,8 @@
 
 ### Mail Server
 
-- Mail Slurper - [MailSlurper](https://github.com/mailslurper/mailslurper/wiki/Getting-Started)
-- [MailSlurper Docker Image](https://hub.docker.com/r/derekahn/mailslurper)
+- Mail Dev - [MailDev](https://github.com/maildev/maildev?tab=readme-ov-file#docker-run)
+- [MailDev Docker Image](https://hub.docker.com/r/maildev/maildev)
 
 ---
 
@@ -124,9 +124,9 @@ by default.
 
 You can also skip seeding if database is not empty by setting the `SKIP_SEEDING_UNLESS_EMPTY=true` environment variable.
 
-### Mail Service (a.k.a mailslurper)
+### Mail Service (a.k.a mail server)
 
-1. Access the web interface at http://localhost:8081
+1. Access the web interface at http://localhost:1080
 
 ## Testing
 

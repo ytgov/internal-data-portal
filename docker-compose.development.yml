@@ -16,8 +16,8 @@ x-default-environment: &default-environment
   VITE_AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com"
   RELEASE_TAG: "${RELEASE_TAG:-development}"
   GIT_COMMIT_HASH: "${GIT_COMMIT_HASH:-not-set}"
-  MAIL_HOST: "mailslurper"
-  MAIL_PORT: 2500
+  MAIL_HOST: "mail"
+  MAIL_PORT: 1025
   MAIL_FROM: "idp.development@yukon.ca"
 
 services:
@@ -115,12 +115,11 @@ services:
       retries: 3
       start_period: 5s
 
-  mailslurper:
-    image: derekahn/mailslurper
+  mail:
+    image: maildev/maildev
     ports:
-      - 2500:2500
-      - 8081:8080
-      - 8085:8085
+      - "1080:1080" # Web UI
+      - "1025:1025" # SMTP
 
   # For easily generating large PlantUML diagrams
   # Not relevant to production environment.
