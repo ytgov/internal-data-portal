@@ -20,13 +20,13 @@ export class EmailSubscribersController extends BaseController {
         .json({ message: "You are not authorized to email subscribers on this dataset." })
     }
 
-    const { to, subject, content } = this.request.body
+    const { to, subject, body } = this.request.body
 
     try {
       await DatasetMailer.deliverNow('emailSubscribers', {
         to,
         subject,
-        content,
+        body,
       })
 
       return this.response.status(200).json({ message: "Emailed subscribers." })
