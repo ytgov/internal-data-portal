@@ -65,7 +65,6 @@ export class EmailSubscribersController extends BaseController {
       // TODO: push this into a service
       await DatasetMailer.deliverNow("emailSubscribers", {
         to,
-        from: this.currentUser.displayName,
         subject,
         body,
       })
