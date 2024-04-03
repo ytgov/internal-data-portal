@@ -149,7 +149,7 @@ async function emailUsersAndClose() {
 
     await nextTick()
     emit("created")
-    snack.notify("Emailed subsribers", { color: "success" })
+    snack.notify("Subsribers emailed!", { color: "success" })
   } catch (error) {
     snack.notify(`Failed to email subscribers ${error}`, { color: "error" })
   } finally {
