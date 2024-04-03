@@ -3,8 +3,9 @@
     v-model:search="search"
     :model-value="modelValue"
     label="Enter some emails"
-    :hide-no-data="false"
     :items="items"
+    :loading="isLoading"
+    :hide-no-data="false"
     :delimiters="[';']"
     chips
     closable-chips
@@ -44,11 +45,12 @@ const emit = defineEmits<{
 
 const items = ref<string[]>([])
 const search = ref(null)
+const isLoading = ref(false)
 
 watch(
   () => props.datasetId,
   async (newDatasetId) => {
-    items.value = []
+    isLoading.value = true
     try {
       const { users } = await emailSubscribersApi.list(newDatasetId)
       const usersEmails = users.map((user) => user.email)
@@ -56,6 +58,8 @@ watch(
       emit("update:modelValue", usersEmails)
     } catch (error) {
       console.error(`Failed to fetch subscribers for dataset ${newDatasetId}: ${error}`)
+    } finally {
+      isLoading.value = false
     }
   },
   {
