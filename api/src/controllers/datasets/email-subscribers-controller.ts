@@ -1,12 +1,51 @@
 import { isNil } from "lodash"
+import { Op, WhereOptions } from "sequelize"
 
-import { Dataset } from "@/models"
+import { AccessRequest, Dataset, User } from "@/models"
 import { DatasetsPolicy } from "@/policies"
-
-import BaseController from "@/controllers/base-controller"
 import { DatasetMailer } from "@/mailers"
 
+import BaseController from "@/controllers/base-controller"
+
 export class EmailSubscribersController extends BaseController {
+  async index() {
+    const dataset = await this.loadDataset()
+    if (isNil(dataset)) {
+      return this.response.status(404).json({ message: "Dataset not found." })
+    }
+
+    const policy = this.buildPolicy(dataset)
+    if (!policy.update()) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to view subscribers of this dataset." })
+    }
+
+    const where = this.query.where as WhereOptions<AccessRequest>
+    const include = [
+      {
+        association: "accessRequestsAsRequestor",
+        where: {
+          ...where,
+          datasetId: dataset.id,
+          deniedAt: { [Op.is]: null },
+          revokedAt: { [Op.is]: null },
+        },
+        required: true,
+      },
+    ]
+    const totalCount = await User.count({
+      include,
+    })
+    const users = await User.findAll({
+      include,
+      limit: this.pagination.limit,
+      offset: this.pagination.offset,
+    })
+
+    return this.response.json({ users, totalCount })
+  }
+
   async create() {
     const dataset = await this.loadDataset()
     if (isNil(dataset)) {
@@ -23,7 +62,7 @@ export class EmailSubscribersController extends BaseController {
     const { to, subject, body } = this.request.body
 
     try {
-      await DatasetMailer.deliverNow('emailSubscribers', {
+      await DatasetMailer.deliverNow("emailSubscribers", {
         to,
         subject,
         body,
