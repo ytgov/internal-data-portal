@@ -15,16 +15,24 @@
           cols="12"
           md="4"
         >
-          <v-text-field
-            model-value="click clear to remove search query ..."
-            prepend-inner-icon="mdi-magnify"
-            label="TODO: Search"
+          <TagsAutocomplete
+            :model-value="tagNames"
+            label="Search"
             variant="outlined"
             clearable
-            hide-details
             persistent-clear
-            readonly
+            @update:model-value="updateWithTagNamesFilterQuery"
             @click:clear="clearSearchQuery"
+          />
+        </v-col>
+        <v-col class="d-none d-md-flex justify-end align-center">
+          <v-btn
+            icon="mdi-cached"
+            color="primary"
+            variant="outlined"
+            size="x-small"
+            title="Refresh Datasets"
+            @click="refresh"
           />
         </v-col>
       </v-row>
@@ -78,8 +86,8 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import { compact, isNil } from "lodash"
+import { useRoute, useRouter, type LocationQueryValue } from "vue-router"
+import { cloneDeep, compact, isNil } from "lodash"
 import { useI18n } from "vue-i18n"
 
 import acronymize from "@/utils/acronymize"
@@ -89,6 +97,8 @@ import useDatasets from "@/use/use-datasets"
 import ColumnRouterLink from "@/components/datasets/datasets-table/ColumnRouterLink.vue"
 import RequestAccessButton from "@/components/datasets/datasets-table/RequestAccessButton.vue"
 import SubscribeToDatasetButton from "@/components/datasets/datasets-table/SubscribeToDatasetButton.vue"
+import TagsAutocomplete from "@/components/tags/TagsAutocomplete.vue"
+import { DatasetsFilters } from "@/api/datasets-api"
 
 type Tag = {
   id: number
@@ -122,6 +132,7 @@ const router = useRouter()
 
 const itemsPerPage = ref(parseInt(route.query.perPage as string) || 10)
 const page = ref(parseInt(route.query.page as string) || 1)
+const tagNames = computed(() => (route.query.filters as unknown as DatasetsFilters)?.withTagNames)
 
 function updatePage(newPage: number) {
   if (isLoading.value) return
@@ -152,6 +163,22 @@ const datasetsQuery = computed(() => ({
   page: page.value,
 }))
 const { datasets, isLoading, totalCount, fetch: refresh } = useDatasets(datasetsQuery)
+
+function updateWithTagNamesFilterQuery(newTagNames: string[]) {
+  const query = cloneDeep(route.query)
+
+  if (isNil(query.filters)) {
+    query.filters = {
+      withTagNames: newTagNames,
+    } as unknown as LocationQueryValue
+  } else {
+    ;(query.filters as DatasetsFilters).withTagNames = newTagNames
+  }
+
+  router.push({
+    query,
+  })
+}
 
 function clearSearchQuery() {
   router.push({ query: { ...route.query, filters: undefined } })
@@ -200,8 +227,6 @@ function removeDisableRowHighlight(event: MouseEvent) {
     row.classList.remove("no-highlight")
   }
 }
-
-defineExpose({ refresh })
 </script>
 
 <style scoped>

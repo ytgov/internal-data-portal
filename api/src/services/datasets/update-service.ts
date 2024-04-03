@@ -19,7 +19,23 @@ export class UpdateService extends BaseService {
     // TODO: log user who performed update?
 
     return this.dataset.reload({
-      include: ["owner", "creator", "stewardship"],
+      include: [
+        {
+          association: "owner",
+          include: [
+            {
+              association: "groupMembership",
+              include: ["department", "division", "branch", "unit"],
+            },
+          ],
+        },
+        "creator",
+        "integration",
+        "stewardship",
+        "accessGrants",
+        "accessRequests",
+        "visualizationControl",
+      ],
     })
   }
 }

@@ -49,7 +49,9 @@ const props = withDefaults(
   }
 )
 
-const emit = defineEmits(["update:modelValue"])
+const emit = defineEmits<{
+  "update:modelValue": [tagNames: string[]]
+}>()
 
 const selectedTagNames = ref<string[]>(props.modelValue)
 

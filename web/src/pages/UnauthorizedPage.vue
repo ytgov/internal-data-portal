@@ -10,6 +10,19 @@
         <v-btn
           color="primary"
           variant="outlined"
+          @click="goBack"
+          >Back</v-btn
+        >
+      </v-col>
+      <v-spacer />
+    </v-row>
+    <v-row>
+      <v-spacer />
+      <v-col>
+        <!-- href="/" performs a more aggressive refresh than using to="xxx" -->
+        <v-btn
+          color="primary"
+          variant="outlined"
           href="/"
           >Reboot App</v-btn
         >
@@ -52,6 +65,10 @@ const isLoading = ref(true)
 onMounted(async () => {
   await refresh()
 })
+
+function goBack() {
+  window.history.back()
+}
 
 function logoutWithRedirect() {
   return logout({

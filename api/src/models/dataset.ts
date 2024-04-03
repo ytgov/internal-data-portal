@@ -1,3 +1,4 @@
+import { isNil } from "lodash"
 import {
   Association,
   BelongsToCreateAssociationMixin,
@@ -379,6 +380,15 @@ Dataset.init(
               ],
             },
           ],
+        }
+      },
+    },
+    validate: {
+      bothIsLiveDataAndPublishedAtOrNeither(this: Dataset) {
+        if (this.isLiveData === true && isNil(this.publishedAt)) {
+          throw new Error("publishedAt is required when isLiveData is true")
+        } else if (this.isLiveData !== true && !isNil(this.publishedAt)) {
+          throw new Error("isLiveData is required when publishedAt is provided")
         }
       },
     },
