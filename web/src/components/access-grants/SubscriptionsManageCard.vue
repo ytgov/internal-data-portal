@@ -13,6 +13,7 @@
       <EmailUsersDialog
         v-else
         :dataset-id="dataset.id"
+        :dataset-name="dataset.name"
       />
     </v-card-title>
     <v-card-text>

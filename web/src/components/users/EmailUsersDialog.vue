@@ -87,12 +87,10 @@ import useSnack from "@/use/use-snack"
 
 import SubscribersEmailsCombobox from "@/components/users/SubscribersEmailsCombobox.vue"
 
-const props = defineProps({
-  datasetId: {
-    type: Number,
-    default: () => null,
-  },
-})
+const props = defineProps<{
+  datasetId: number
+  datasetName: string
+}>()
 
 const emit = defineEmits(["created"])
 
@@ -100,7 +98,7 @@ const snack = useSnack()
 
 const mail = ref<Mail>({
   to: [],
-  subject: "",
+  subject: `${props.datasetName} API: `,
   body: "",
 })
 
@@ -162,7 +160,7 @@ async function emailUsersAndClose() {
 function resetMail() {
   mail.value = {
     to: [],
-    subject: "",
+    subject: `${props.datasetName} API: `,
     body: "",
   }
 }
