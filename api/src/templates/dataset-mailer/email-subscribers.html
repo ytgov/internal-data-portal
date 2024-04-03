@@ -1,1 +1,35 @@
-<%= body %>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title><%= subject %></title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+      }
+      .container {
+        width: 80%;
+        margin: 20px auto;
+        padding: 20px;
+      }
+
+      pre {
+        font-family: Arial, sans-serif; /* Use a font that matches your body text */
+        font-size: 1em; /* Match the font size of surrounding content */
+        overflow: auto; /* Adds a scrollbar if the content is wider than the block */
+        white-space: pre-wrap; /* Ensures text wraps and doesn't overflow */
+        word-wrap: break-word; /* Breaks long words to ensure they wrap */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <p><pre><%= body %></pre></p>
+    </div>
+  </body>
+</html>

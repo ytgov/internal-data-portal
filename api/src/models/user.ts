@@ -99,13 +99,34 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
   declare createAccessGrantSupports: HasManyCreateAssociationMixin<AccessGrant>
 
   declare getAccessRequestsAsRequestor: HasManyGetAssociationsMixin<AccessRequest>
-  declare setAccessRequestsAsRequestor: HasManySetAssociationsMixin<AccessRequest, AccessRequest["requestorId"]>
-  declare hasAccessRequestAsRequestor: HasManyHasAssociationMixin<AccessRequest, AccessRequest["requestorId"]>
-  declare hasAccessRequestsAsRequestor: HasManyHasAssociationsMixin<AccessRequest, AccessRequest["requestorId"]>
-  declare addAccessRequestAsRequestor: HasManyAddAssociationMixin<AccessRequest, AccessRequest["requestorId"]>
-  declare addAccessRequestsAsRequestor: HasManyAddAssociationsMixin<AccessRequest, AccessRequest["requestorId"]>
-  declare removeAccessRequestAsRequestor: HasManyRemoveAssociationMixin<AccessRequest, AccessRequest["requestorId"]>
-  declare removeAccessRequestsAsRequestor: HasManyRemoveAssociationsMixin<AccessRequest, AccessRequest["requestorId"]>
+  declare setAccessRequestsAsRequestor: HasManySetAssociationsMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare hasAccessRequestAsRequestor: HasManyHasAssociationMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare hasAccessRequestsAsRequestor: HasManyHasAssociationsMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare addAccessRequestAsRequestor: HasManyAddAssociationMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare addAccessRequestsAsRequestor: HasManyAddAssociationsMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare removeAccessRequestAsRequestor: HasManyRemoveAssociationMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
+  declare removeAccessRequestsAsRequestor: HasManyRemoveAssociationsMixin<
+    AccessRequest,
+    AccessRequest["requestorId"]
+  >
   declare countAccessRequestsAsRequestor: HasManyCountAssociationsMixin
   declare createAccessRequestsAsRequestor: HasManyCreateAssociationMixin<AccessRequest>
 
@@ -181,6 +202,10 @@ export class User extends BaseModel<InferAttributes<User>, InferCreationAttribut
 
   get unit(): NonAttribute<UserGroup | undefined> {
     return this.groupMembership?.unit
+  }
+
+  get displayName(): NonAttribute<string> {
+    return `${this.firstName} ${this.lastName}`
   }
 
   /**

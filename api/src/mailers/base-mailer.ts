@@ -71,6 +71,9 @@ export class BaseMailer {
     return this.render(`${name}.txt`, data)
   }
 
+  /**
+   * TODO: add EJS or Pug for rendering, and add MJML for responsive emails
+   */
   private render(name: string, data?: object | undefined) {
     const templatePath = this.templatePath(name)
     const templateString = readFileSync(templatePath, "utf8")
