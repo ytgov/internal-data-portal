@@ -68,7 +68,7 @@ export class EmailSubscribersController extends BaseController {
         body,
       })
 
-      return this.response.status(200).json({ message: "Emailed subscribers." })
+      return this.response.status(201).json({ message: "Emailed subscribers." })
     } catch (error) {
       return this.response.status(422).json({ message: `Failed to email subscribers: ${error}` })
     }
