@@ -42,6 +42,9 @@ export class DatasetIntegration extends Model<
   declare status: DatasetIntegrationStatusTypes
   declare errorCode: CreationOptional<string | null>
   declare errorDetails: CreationOptional<string | null>
+  declare estimatedSizeInBytes: CreationOptional<number | null>
+  declare estimatedNumberOfRecords: CreationOptional<number | null>
+  declare estimatedResponseTimeInMs: CreationOptional<number | null>
   declare lastSuccessAt: CreationOptional<Date | null>
   declare lastFailureAt: CreationOptional<Date | null>
   declare createdAt: CreationOptional<Date>
@@ -136,6 +139,18 @@ DatasetIntegration.init(
     },
     errorDetails: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    estimatedSizeInBytes: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    estimatedNumberOfRecords: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    estimatedResponseTimeInMs: {
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
     lastSuccessAt: {
