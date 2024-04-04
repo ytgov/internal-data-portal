@@ -6,12 +6,6 @@
     target="_blank"
     @submit.prevent="getAccessTokenAndSubmit"
   >
-    <input
-      ref="accessTokenInput"
-      type="hidden"
-      name="IDP_AUTHORIZATION_TOKEN"
-      value="UNSET"
-    />
     <v-btn
       color="primary"
       type="submit"
@@ -44,7 +38,6 @@ const props = defineProps({
 const { getAccessTokenSilently } = useAuth0()
 
 const form = ref<HTMLFormElement | null>(null)
-const accessTokenInput = ref<HTMLInputElement | null>(null)
 
 const downloadUrl = computed(() => {
   const serializedParams = stringifyQuery(props.query)
@@ -56,17 +49,25 @@ async function getAccessTokenAndSubmit() {
     throw new Error("Form element is not available")
   }
 
-  if (isNil(accessTokenInput.value)) {
-    throw new Error("Access token input element is not available")
-  }
-
+  let accessToken: string
   try {
-    const newAccessToken = await getAccessTokenSilently()
-    accessTokenInput.value.value = newAccessToken
-
-    form.value.submit()
+    accessToken = await getAccessTokenSilently()
   } catch (error) {
     console.error("Error fetching new access token:", error)
+    throw error
   }
+
+  const accessTokenInput = await buildAccessTokenInput(accessToken)
+  form.value.appendChild(accessTokenInput)
+
+  form.value.submit()
+}
+
+async function buildAccessTokenInput(accessToken: string): Promise<HTMLInputElement> {
+  const accessTokenInput = document.createElement("input")
+  accessTokenInput.type = "hidden"
+  accessTokenInput.name = "IDP_AUTHORIZATION_TOKEN"
+  accessTokenInput.value = accessToken
+  return accessTokenInput
 }
 </script>
