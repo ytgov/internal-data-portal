@@ -43,17 +43,16 @@ export class CreateService extends BaseService {
     const parsedJsonData = this.parseJsonData(integration, allRawJsonData)
     const normalizedData = this.nomalizeData(parsedJsonData, headerKeys)
 
-    normalizedData.forEach((entry) => {
+    let filteredData = normalizedData
+    const searchToken = this.options.searchToken
+    if (!isNil(searchToken) && !isEmpty(searchToken)) {
+      filteredData = this.filterData(normalizedData, headerKeys, searchToken)
+    }
+
+    for (const entry of filteredData) {
       const dataFromFields = headerKeys.map((field) => entry[field])
-
-      let dataFromSearch = dataFromFields
-      const searchToken = this.options.searchToken
-      if (!isNil(searchToken) && !isEmpty(searchToken)) {
-        dataFromSearch = dataFromFields.filter((value) => this.matchesSearch(value, searchToken))
-      }
-
-      this.csvStream.write(dataFromSearch)
-    })
+      this.csvStream.write(dataFromFields)
+    }
 
     return
   }
@@ -70,6 +69,19 @@ export class CreateService extends BaseService {
       default:
         return false
     }
+  }
+
+  private filterData(
+    parsedJsonData: DatasetIntegrationParsedJsonDataType,
+    headerKeys: string[],
+    searchToken: string
+  ): DatasetIntegrationParsedJsonDataType {
+    return parsedJsonData.filter((entry) => {
+      return headerKeys.some((key) => {
+        const value = entry[key]
+        return this.matchesSearch(value, searchToken)
+      })
+    })
   }
 
   private nomalizeData(
