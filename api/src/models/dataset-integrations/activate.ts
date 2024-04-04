@@ -12,7 +12,7 @@ import DatasetIntegration, {
 
 export async function activate(
   datasetIntegration: DatasetIntegration
-): Promise<DatasetIntegration> {
+): Promise<DatasetIntegrationRawJsonDataType> {
   const { url, headerKey, headerValue } = datasetIntegration
 
   if (isNil(url)) {
@@ -34,16 +34,22 @@ export async function activate(
     status,
     lastSuccessAt,
   } = datasetIntegration
+  let allRawJsonData: DatasetIntegrationRawJsonDataType | null = null
   try {
-    ;({ rawJsonData, estimatedResponseTimeInMs, estimatedSizeInBytes, estimatedNumberOfRecords } =
-      await fetchRawIntegrationData(url, headers))
+    ;({
+      allRawJsonData,
+      rawJsonData,
+      estimatedResponseTimeInMs,
+      estimatedSizeInBytes,
+      estimatedNumberOfRecords,
+    } = await fetchRawIntegrationData(url, headers))
     status = DatasetIntegrationStatusTypes.OK
     lastSuccessAt = new Date()
   } catch (error) {
     throw new Error(`Failed to establish integration with ${url}: ${error}`)
   }
 
-  return datasetIntegration.set({
+  datasetIntegration.set({
     status,
     rawJsonData,
     estimatedResponseTimeInMs,
@@ -51,12 +57,15 @@ export async function activate(
     estimatedNumberOfRecords,
     lastSuccessAt,
   })
+
+  return allRawJsonData
 }
 
 async function fetchRawIntegrationData(
   url: string,
   headers?: Record<string, string>
 ): Promise<{
+  allRawJsonData: DatasetIntegrationRawJsonDataType
   rawJsonData: DatasetIntegrationRawJsonDataType
   estimatedResponseTimeInMs: number
   estimatedSizeInBytes: number
@@ -75,6 +84,7 @@ async function fetchRawIntegrationData(
   const truncatedData = truncateDeep(data, MAX_RECORDS)
 
   return {
+    allRawJsonData: data,
     rawJsonData: truncatedData,
     estimatedResponseTimeInMs,
     estimatedSizeInBytes,

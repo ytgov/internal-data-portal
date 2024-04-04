@@ -72,20 +72,16 @@ export class DatasetIntegration extends Model<
     this.belongsTo(Dataset, { as: "dataset" })
   }
 
-  async activate(this: DatasetIntegration): Promise<NonAttribute<DatasetIntegration>> {
+  async activate(
+    this: DatasetIntegration
+  ): Promise<NonAttribute<DatasetIntegrationRawJsonDataType>> {
     return activate(this)
   }
 
-  isRefreshRequired(): NonAttribute<boolean> {
-    return this.changed("url") || this.changed("headerKey") || this.changed("headerValue")
-  }
-
-  async refreshIfRequired(this: DatasetIntegration): Promise<NonAttribute<DatasetIntegration>> {
-    if (this.isRefreshRequired()) {
-      return this.activate()
-    }
-
-    return this
+  async refresh(
+    this: DatasetIntegration
+  ): Promise<NonAttribute<DatasetIntegrationRawJsonDataType>> {
+    return this.activate()
   }
 }
 
