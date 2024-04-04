@@ -80,7 +80,7 @@ export class DatasetIntegration extends Model<
     return this.changed("url") || this.changed("headerKey") || this.changed("headerValue")
   }
 
-  async refresh(this: DatasetIntegration): Promise<NonAttribute<DatasetIntegration>> {
+  async refreshIfRequired(this: DatasetIntegration): Promise<NonAttribute<DatasetIntegration>> {
     if (this.isRefreshRequired()) {
       return this.activate()
     }
