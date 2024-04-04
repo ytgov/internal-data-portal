@@ -1,12 +1,7 @@
-import axios from "axios"
 import { isArray, isNil, isString } from "lodash"
 import jmespath from "jmespath"
 
 import db, { DatasetEntry, DatasetIntegration, User } from "@/models"
-import {
-  DatasetIntegrationRawJsonDataType,
-  DatasetIntegrationStatusTypes,
-} from "@/models/dataset-integration"
 
 import BaseService from "@/services/base-service"
 import { CreationAttributes } from "sequelize"
@@ -25,45 +20,10 @@ export class UpdateService extends BaseService {
   }
 
   async perform(): Promise<DatasetIntegration> {
-    const { url, headerKey, headerValue } = this.attributes
-
-    // TODO: consider recreating dataset as this is more of an upsert at this point?
-    // START: data refresh
-    let status: DatasetIntegrationStatusTypes = this.datasetIntegration.status
-    let rawJsonData: DatasetIntegrationRawJsonDataType | null = this.datasetIntegration.rawJsonData
-    let lastSuccessAt: Date | null = this.datasetIntegration.lastSuccessAt
-    if (
-      (!isNil(url) && url !== this.datasetIntegration.url) ||
-      (!isNil(headerKey) && headerKey !== this.datasetIntegration.headerKey) ||
-      (!isNil(headerValue) && headerValue !== this.datasetIntegration.headerValue)
-    ) {
-      let headers = {}
-      if (!isNil(headerKey)) {
-        headers = { [headerKey]: headerValue }
-      }
-
-      // This should not be required, but TypeScript is flaking.
-      if (isNil(url)) {
-        throw new Error("URL is required")
-      }
-
-      try {
-        rawJsonData = await this.fetchRawIntegrationData(url, headers)
-        status = DatasetIntegrationStatusTypes.OK
-        lastSuccessAt = new Date()
-      } catch (error) {
-        throw new Error(`Failed to establish integration with ${url}: ${error}`)
-      }
-    }
-    // END: data refresh
-
     return db.transaction(async () => {
-      await this.datasetIntegration.update({
-        ...this.attributes,
-        status,
-        rawJsonData,
-        lastSuccessAt,
-      })
+      this.datasetIntegration.set(this.attributes)
+      await this.datasetIntegration.refresh()
+      await this.datasetIntegration.save()
 
       if (this.isPreview !== true) {
         await this.parseJsonData(this.datasetIntegration)
@@ -75,17 +35,6 @@ export class UpdateService extends BaseService {
 
       return this.datasetIntegration
     })
-  }
-
-  private async fetchRawIntegrationData(
-    url: string,
-    headers?: Record<string, string>
-  ): Promise<DatasetIntegrationRawJsonDataType> {
-    const { data } = await axios.get(url, {
-      headers,
-    })
-
-    return data
   }
 
   private async parseJsonData(datasetIntegration: DatasetIntegration) {
