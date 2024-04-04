@@ -6,6 +6,11 @@
     target="_blank"
     @submit.prevent="getAccessTokenAndSubmit"
   >
+    <input
+      type="hidden"
+      name="IDP_AUTHORIZATION_TOKEN"
+      :value="accessToken"
+    />
     <v-btn
       color="primary"
       type="submit"
@@ -16,7 +21,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue"
+import { computed, ref, nextTick } from "vue"
 import { isNil } from "lodash"
 
 import { useAuth0 } from "@auth0/auth0-vue"
@@ -38,6 +43,7 @@ const props = defineProps({
 const { getAccessTokenSilently } = useAuth0()
 
 const form = ref<HTMLFormElement | null>(null)
+const accessToken = ref<string | null>(null)
 
 const downloadUrl = computed(() => {
   const serializedParams = stringifyQuery(props.query)
@@ -49,25 +55,15 @@ async function getAccessTokenAndSubmit() {
     throw new Error("Form element is not available")
   }
 
-  let accessToken: string
   try {
-    accessToken = await getAccessTokenSilently()
+    accessToken.value = await getAccessTokenSilently()
   } catch (error) {
     console.error("Error fetching new access token:", error)
     throw error
   }
 
-  const accessTokenInput = await buildAccessTokenInput(accessToken)
-  form.value.appendChild(accessTokenInput)
+  await nextTick() // Wait for accessToken to be updated in the DOM
 
   form.value.submit()
-}
-
-async function buildAccessTokenInput(accessToken: string): Promise<HTMLInputElement> {
-  const accessTokenInput = document.createElement("input")
-  accessTokenInput.type = "hidden"
-  accessTokenInput.name = "IDP_AUTHORIZATION_TOKEN"
-  accessTokenInput.value = accessToken
-  return accessTokenInput
 }
 </script>
