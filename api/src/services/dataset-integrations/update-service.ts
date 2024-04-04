@@ -13,8 +13,8 @@ export class UpdateService extends BaseService {
   constructor(
     private datasetIntegration: DatasetIntegration,
     private attributes: Attributes,
-    private isPreview: boolean,
-    private currentUser: User
+    private currentUser: User,
+    private controlFlags: { skipDataProcessing: boolean }
   ) {
     super()
   }
@@ -23,13 +23,14 @@ export class UpdateService extends BaseService {
     return db.transaction(async () => {
       this.datasetIntegration.set(this.attributes)
       await this.datasetIntegration.refresh()
-      await this.datasetIntegration.save()
 
-      if (this.isPreview !== true) {
-        await this.parseJsonData(this.datasetIntegration)
-        // TODO: create fields if none exist during dataset import
-        await this.bulkReplaceDatasetEntries(this.datasetIntegration)
+      if (this.controlFlags.skipDataProcessing) {
+        return this.datasetIntegration.save()
       }
+
+      await this.parseJsonData(this.datasetIntegration)
+      // TODO: create fields if none exist during dataset import
+      await this.bulkReplaceDatasetEntries(this.datasetIntegration)
 
       // TODO: log user action
 

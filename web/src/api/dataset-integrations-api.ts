@@ -45,7 +45,7 @@ export const datasetIntegrationsApi = {
   async update(
     datasetIntegrationId: number,
     attributes: Partial<DatasetIntegration>,
-    controlFlags: { isPreview?: boolean } = {}
+    controlFlags: { skipDataProcessing?: boolean } = {}
   ): Promise<{
     datasetIntegration: DatasetIntegration
   }> {

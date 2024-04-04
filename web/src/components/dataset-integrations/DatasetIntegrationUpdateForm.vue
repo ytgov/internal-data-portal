@@ -35,7 +35,7 @@
           :loading="isLoading"
           variant="outlined"
           color="primary"
-          @click="updateDatasetIntegration({ isPreview: true })"
+          @click="updateDatasetIntegration({ skipDataProcessing: true })"
         >
           Update Preview
         </v-btn>
@@ -225,7 +225,9 @@ function updateAndCompleteIntegration() {
   emit("completed")
 }
 
-async function updateDatasetIntegration({ isPreview = false }: { isPreview?: boolean } = {}) {
+async function updateDatasetIntegration({
+  skipDataProcessing = false,
+}: { skipDataProcessing?: boolean } = {}) {
   if (!isValid.value) {
     snack.notify("Please fill out all required fields", {
       color: "error",
@@ -252,7 +254,7 @@ async function updateDatasetIntegration({ isPreview = false }: { isPreview?: boo
     const { datasetIntegration: newDatasetIntegration } = await datasetIntegrationsApi.update(
       datasetIntegrationId,
       attributes,
-      { isPreview }
+      { skipDataProcessing }
     )
     datasetIntegration.value = newDatasetIntegration
     snack.notify("Dataset integration saved!", {
