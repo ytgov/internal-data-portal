@@ -34,7 +34,7 @@ export class UpdateService extends BaseService {
 
       // TODO: log user action
 
-      return this.datasetIntegration
+      return this.datasetIntegration.save()
     })
   }
 
@@ -46,7 +46,7 @@ export class UpdateService extends BaseService {
     }
 
     if (isNil(jmesPathTransform) && isArray(rawJsonData)) {
-      return datasetIntegration.update({
+      return datasetIntegration.set({
         parsedJsonData: rawJsonData,
       })
     }
@@ -56,7 +56,7 @@ export class UpdateService extends BaseService {
     }
 
     const parsedJsonData = jmespath.search(rawJsonData, jmesPathTransform)
-    return datasetIntegration.update({
+    return datasetIntegration.set({
       parsedJsonData,
     })
   }
