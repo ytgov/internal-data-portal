@@ -15,15 +15,19 @@ import {
 import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
+import { activate } from "@/models/dataset-integrations"
 
 // Keep in sync with web/src/api/dataset-fields-api.ts
 export enum DatasetIntegrationStatusTypes {
   OK = "ok",
   ERRORED = "errored",
+  PENDING = "pending",
 }
 
 export type DatasetIntegrationRawJsonDataType = Record<string, unknown>
 export type DatasetIntegrationParsedJsonDataType = Record<string, unknown>[]
+
+export const MAX_RECORDS = 100 // TODO: consider making this configurable?
 
 export class DatasetIntegration extends Model<
   InferAttributes<DatasetIntegration>,
@@ -66,6 +70,14 @@ export class DatasetIntegration extends Model<
 
   static establishAssociations() {
     this.belongsTo(Dataset, { as: "dataset" })
+  }
+
+  async activate(this: DatasetIntegration): Promise<NonAttribute<DatasetIntegration>> {
+    return activate(this)
+  }
+
+  async refresh(this: DatasetIntegration): Promise<NonAttribute<DatasetIntegration>> {
+    return this.activate()
   }
 }
 
