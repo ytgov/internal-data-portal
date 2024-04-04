@@ -1,5 +1,5 @@
 import { CsvFormatterStream } from "fast-csv"
-import { isArray, isEmpty, isNil, isUndefined } from "lodash"
+import { isArray, isEmpty, isNil, isString, isUndefined } from "lodash"
 import jmespath from "jmespath"
 
 import { Dataset, DatasetIntegration, User } from "@/models"
@@ -39,14 +39,15 @@ export class CreateService extends BaseService {
 
     const allRawJsonData = await integration.refresh()
     await integration.save()
+
     const parsedJsonData = this.parseJsonData(integration, allRawJsonData)
+    const normalizedData = this.nomalizeData(parsedJsonData, headerKeys)
 
-    const searchToken = this.options.searchToken
-
-    parsedJsonData.forEach((entry) => {
+    normalizedData.forEach((entry) => {
       const dataFromFields = headerKeys.map((field) => entry[field])
 
       let dataFromSearch = dataFromFields
+      const searchToken = this.options.searchToken
       if (!isNil(searchToken) && !isEmpty(searchToken)) {
         dataFromSearch = dataFromFields.filter((value) => this.matchesSearch(value, searchToken))
       }
@@ -69,6 +70,38 @@ export class CreateService extends BaseService {
       default:
         return false
     }
+  }
+
+  private nomalizeData(
+    parsedJsonData: DatasetIntegrationParsedJsonDataType,
+    headerKeys: string[]
+  ): DatasetIntegrationParsedJsonDataType {
+    if (headerKeys.length === 0) {
+      throw new Error("Header keys array is empty")
+    }
+
+    const firstEntry = parsedJsonData[0]
+    if (isNil(firstEntry)) {
+      throw new Error("Parsed JSON data is empty")
+    }
+
+    const isSimpleStringArray = isString(firstEntry) && headerKeys.length === 1
+    if (isSimpleStringArray) {
+      const firstHeaderKey = headerKeys[0]
+      return parsedJsonData.map((value) => ({ [firstHeaderKey]: value }))
+    }
+
+    if (typeof firstEntry !== "object") {
+      throw new Error("Parsed JSON data is not an object")
+    }
+
+    const firstEntryKeys = Object.keys(firstEntry)
+    const allKeysPresent = headerKeys.every((key) => firstEntryKeys.includes(key))
+    if (allKeysPresent === false) {
+      throw new Error("There is a mismatch between header keys and parsed JSON data keys.")
+    }
+
+    return parsedJsonData
   }
 
   private parseJsonData(
