@@ -28,7 +28,7 @@ const props = withDefaults(
 )
 
 const { modelValue: userId } = toRefs(props)
-const { user, isLoading } = useUser(userId)
+const { user, isLoading } = useUser(userId, { withDeleted: true })
 
 const fieldValue = computed(() => {
   if (isNil(props.modelValue)) {
