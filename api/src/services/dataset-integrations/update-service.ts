@@ -27,6 +27,8 @@ export class UpdateService extends BaseService {
   async perform(): Promise<DatasetIntegration> {
     const { url, headerKey, headerValue } = this.attributes
 
+    // TODO: consider recreating dataset as this is more of an upsert at this point?
+    // START: data refresh
     let status: DatasetIntegrationStatusTypes = this.datasetIntegration.status
     let rawJsonData: DatasetIntegrationRawJsonDataType | null = this.datasetIntegration.rawJsonData
     let lastSuccessAt: Date | null = this.datasetIntegration.lastSuccessAt
@@ -53,6 +55,7 @@ export class UpdateService extends BaseService {
         throw new Error(`Failed to establish integration with ${url}: ${error}`)
       }
     }
+    // END: data refresh
 
     return db.transaction(async () => {
       await this.datasetIntegration.update({
