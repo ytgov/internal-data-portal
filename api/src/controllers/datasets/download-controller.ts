@@ -1,46 +1,50 @@
-import { isEmpty, isNil } from "lodash"
-import { WhereOptions } from "sequelize"
-import { createReadStream } from "fs"
+import { isNil } from "lodash"
+import { format } from "fast-csv"
 
-import { Dataset, DatasetEntry } from "@/models"
-import { DatasetEntries } from "@/services"
+import { Dataset } from "@/models"
+import { CreateService } from "@/services/datasets/download"
 
 import { BaseController } from "@/controllers/base-controller"
-import { DatasetEntriesPolicy } from "@/policies"
 
 export class DownloadController extends BaseController {
   async create() {
+    const dataset = await this.loadDataset()
+    if (isNil(dataset)) {
+      return this.response.status(404).send("Dataset not found.")
+    }
+
+    // TODO: add policy check
+
+    const searchToken = this.query.searchToken as string
+
+    const fileName = await this.buildFileName(dataset.name)
+    this.response.status(201)
+    this.response.header("Content-Type", "text/csv")
+    this.response.attachment(fileName)
+    const csvStream = format({ headers: false })
+    csvStream.pipe(this.response)
+
     try {
-      const dataset = await this.loadDataset()
-      if (isNil(dataset)) {
-        return this.response.status(404).send("Dataset not found.")
-      }
-
-      const fileName = await this.buildFileName(dataset.name)
-      this.response.header("Content-Type", "text/csv")
-      this.response.attachment(fileName)
-
-      const where = this.query.where as WhereOptions<DatasetEntry>
-      const searchToken = this.query.searchToken as string
-      const scopedDatasetEntries = DatasetEntriesPolicy.applyScope(DatasetEntry, this.currentUser)
-      let filteredDatasetEntries = scopedDatasetEntries
-      if (!isEmpty(searchToken)) {
-        filteredDatasetEntries = scopedDatasetEntries.scope({ method: ["search", searchToken] })
-      }
-
-      const filePath = await DatasetEntries.CreateCsvService.perform(filteredDatasetEntries, where)
-
-      const fileStream = createReadStream(filePath)
-      fileStream.pipe(this.response)
+      await CreateService.perform(csvStream, dataset, this.currentUser, { searchToken })
     } catch (error) {
       console.error("Failed to generate CSV", error)
       this.response.status(500).send(`Failed to generate CSV: ${error}`)
+    } finally {
+      csvStream.end()
     }
   }
 
   private async loadDataset(): Promise<Dataset | null> {
     const { datasetIdOrSlug } = this.request.params
-    return Dataset.findBySlugOrPk(datasetIdOrSlug)
+    return Dataset.findBySlugOrPk(datasetIdOrSlug, {
+      include: [
+        "integration",
+        {
+          association: "fields",
+          where: { isExcludedFromSearch: false },
+        },
+      ],
+    })
   }
 
   private async buildFileName(datasetName: string) {

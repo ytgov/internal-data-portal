@@ -29,7 +29,9 @@
           <DownloadAsCsvButton
             v-if="visualizationControl?.isDownloadableAsCsv"
             :dataset-id="datasetId"
-            :query="datasetEntriesQuery"
+            :query="{
+              searchToken,
+            }"
           />
         </v-col>
       </v-row>
