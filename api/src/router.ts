@@ -14,9 +14,11 @@ import { UnauthorizedError } from "express-jwt"
 
 import { APPLICATION_NAME, GIT_COMMIT_HASH, NODE_ENV, RELEASE_TAG } from "@/config"
 
-import jwtMiddleware from "@/middlewares/jwt-middleware"
 import { ensureAndAuthorizeCurrentUser } from "@/middlewares/authorization-middleware"
+import bodyAuthorizationHoistMiddleware from "@/middlewares/body-authorization-hoist-middleware"
+import jwtMiddleware from "@/middlewares/jwt-middleware"
 import pathFormatMiddleware from "@/middlewares/path-format-middleware"
+import temporaryAccessCookieHoistMiddleware from "@/middlewares/temporary-access-cookie-hoist-middleware"
 
 import {
   AccessGrantsController,
@@ -39,7 +41,6 @@ import {
   UsersController,
   VisualizationControlsController,
 } from "@/controllers"
-import temporaryAccessCookieHoistMiddleware from "./middlewares/temporary-access-cookie-hoist-middleware"
 
 export const router = Router()
 
@@ -51,15 +52,20 @@ router.route("/_status").get((req: Request, res: Response) => {
   })
 })
 
-// api routes
+// Authenticated routes
 router.use(
-  "/api",
+  "/",
+  bodyAuthorizationHoistMiddleware,
   temporaryAccessCookieHoistMiddleware,
   jwtMiddleware,
   ensureAndAuthorizeCurrentUser,
   pathFormatMiddleware
 )
 
+// Non-API routes
+router.route("/datasets/:datasetIdOrSlug/download").post(Datasets.DownloadController.create)
+
+// API routes
 // Add all the standard api controller routes here
 router.route("/api/current-user").get(CurrentUserController.show)
 router.route("/api/temporary-access-cookie").post(TemporaryAccessCookieController.create)

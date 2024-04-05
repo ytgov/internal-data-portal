@@ -44,13 +44,24 @@
                 class="d-flex justify-center mt-3"
               >
                 <v-btn
+                  v-if="isNil(dataset.integration.id)"
                   color="primary"
                   :to="{
-                    name: 'DatasetApiManagePage',
+                    name: 'DatasetIntegrationNewPage',
                     params: { slug },
                   }"
                 >
-                  {{ !isNil(dataset.integration.id) ? "Manage API Link" : "Add API Link" }}
+                  Add API Link
+                </v-btn>
+                <v-btn
+                  v-else
+                  color="primary"
+                  :to="{
+                    name: 'DatasetIntegrationManagePage',
+                    params: { slug },
+                  }"
+                >
+                  Manage API Link
                 </v-btn>
               </v-col>
             </v-row>

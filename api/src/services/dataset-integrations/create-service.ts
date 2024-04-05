@@ -1,11 +1,7 @@
 import { isNil } from "lodash"
-import axios from "axios"
 
 import { DatasetIntegration, User } from "@/models"
-import {
-  DatasetIntegrationRawJsonDataType,
-  DatasetIntegrationStatusTypes,
-} from "@/models/dataset-integration"
+import { DatasetIntegrationStatusTypes } from "@/models/dataset-integration"
 
 import BaseService from "@/services/base-service"
 
@@ -30,47 +26,17 @@ export class CreateService extends BaseService {
       throw new Error("url is required")
     }
 
-    let headers = {}
-    if (!isNil(optionalAttributes.headerKey)) {
-      headers = {
-        [optionalAttributes.headerKey]: optionalAttributes.headerValue,
-      }
-    }
-
-    let status: DatasetIntegrationStatusTypes
-    let rawJsonData: DatasetIntegrationRawJsonDataType | null = null
-    let lastSuccessAt: Date | null = null
-    try {
-      rawJsonData = await this.fetchRawIntegrationData(url, headers)
-      status = DatasetIntegrationStatusTypes.OK
-      lastSuccessAt = new Date()
-    } catch (error) {
-      throw new Error(`Failed to establish integration with ${url}: ${error}`)
-    }
-
-    const datasetIntegration = await DatasetIntegration.create({
+    const datasetIntegration = DatasetIntegration.build({
       datasetId,
       url,
+      status: DatasetIntegrationStatusTypes.PENDING,
       ...optionalAttributes,
-      status,
-      rawJsonData,
-      lastSuccessAt,
     })
+    await datasetIntegration.activate()
 
     // TODO: log creating user
 
-    return datasetIntegration
-  }
-
-  private async fetchRawIntegrationData(
-    url: string,
-    headers?: Record<string, string>
-  ): Promise<DatasetIntegrationRawJsonDataType> {
-    const { data } = await axios.get(url, {
-      headers,
-    })
-
-    return data
+    return datasetIntegration.save()
   }
 }
 

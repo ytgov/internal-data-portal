@@ -117,6 +117,7 @@ const snack = useSnack()
 const datasetFieldTypes = Object.values(DatasetFieldDataTypes)
 const datasetField = ref<Partial<DatasetField>>({
   datasetId: props.datasetId,
+  dataType: DatasetFieldDataTypes.TEXT,
 })
 
 const router = useRouter()
@@ -177,6 +178,7 @@ async function createAndClose() {
 function resetDatasetField() {
   datasetField.value = {
     datasetId: props.datasetId,
+    dataType: DatasetFieldDataTypes.TEXT,
   }
 }
 </script>

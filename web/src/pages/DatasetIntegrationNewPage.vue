@@ -27,16 +27,10 @@
           v-if="isNil(dataset)"
           type="card"
         />
-        <DatasetIntegrationUpdateForm
-          v-else-if="!isNil(dataset.integration.id)"
-          :dataset-id="dataset.id"
-          :dataset-integration-id="dataset.integration.id"
-          @completed="returnToParentPage"
-        />
         <DatasetIntegrationCreateForm
           v-else
           :dataset-id="dataset.id"
-          @completed="refresh"
+          @completed="goToManagePage"
         />
       </v-col>
     </v-row>
@@ -52,7 +46,6 @@ import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useDataset from "@/use/use-dataset"
 
 import DatasetIntegrationCreateForm from "@/components/dataset-integrations/DatasetIntegrationCreateForm.vue"
-import DatasetIntegrationUpdateForm from "@/components/dataset-integrations/DatasetIntegrationUpdateForm.vue"
 
 const props = defineProps({
   slug: {
@@ -62,12 +55,12 @@ const props = defineProps({
 })
 
 const { slug } = toRefs(props)
-const { dataset, refresh } = useDataset(slug)
+const { dataset } = useDataset(slug)
 const router = useRouter()
 
-function returnToParentPage() {
+function goToManagePage() {
   router.push({
-    name: "DatasetDescriptionManagePage",
+    name: "DatasetIntegrationManagePage",
     params: { slug: props.slug },
   })
 }
@@ -98,7 +91,7 @@ setBreadcrumbs([
   {
     title: "Link API",
     to: {
-      name: "DatasetApiManagePage",
+      name: "DatasetIntegrationNewPage",
       params: { slug: props.slug },
     },
   },

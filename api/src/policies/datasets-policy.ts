@@ -52,6 +52,24 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     return false
   }
 
+  // TODO: condider refactoring; effectively the same as VisualizationControlsPolicy#show
+  // Maybe this should be shared logic?
+  download(): boolean {
+    if (this.update()) {
+      return true
+    }
+
+    if (this.record.isAccessibleViaOpenAccessGrantBy(this.user)) {
+      return true
+    }
+
+    if (this.record.hasApprovedAccessRequestFor(this.user)) {
+      return true
+    }
+
+    return false
+  }
+
   static applyScope(modelClass: ModelStatic<Dataset>, user: User): ModelStatic<Dataset> {
     if (user.isSystemAdmin || user.isBusinessAnalyst) {
       return modelClass

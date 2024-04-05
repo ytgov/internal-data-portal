@@ -28,7 +28,10 @@
         <v-col class="d-flex justify-end align-center">
           <DownloadAsCsvButton
             v-if="visualizationControl?.isDownloadableAsCsv"
-            :query="datasetEntriesQuery"
+            :dataset-id="datasetId"
+            :query="{
+              searchToken,
+            }"
           />
         </v-col>
       </v-row>
