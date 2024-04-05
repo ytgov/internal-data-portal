@@ -1,5 +1,4 @@
-import { isArray, isNil, isString } from "lodash"
-import jmespath from "jmespath"
+import { isNil, isString } from "lodash"
 
 import db, { DatasetEntry, DatasetIntegration, User } from "@/models"
 
@@ -29,36 +28,13 @@ export class UpdateService extends BaseService {
       }
 
       await this.datasetIntegration.refresh()
-      await this.parseJsonData(this.datasetIntegration)
+      await this.datasetIntegration.applyJMESPathTransform()
       // TODO: create fields if none exist during dataset import
       await this.bulkReplaceDatasetEntries(this.datasetIntegration)
 
       // TODO: log user action
 
       return this.datasetIntegration.save()
-    })
-  }
-
-  private async parseJsonData(datasetIntegration: DatasetIntegration) {
-    const { rawJsonData, jmesPathTransform } = datasetIntegration
-
-    if (isNil(rawJsonData)) {
-      throw new Error("An integration must have data to be parsed.")
-    }
-
-    if (isNil(jmesPathTransform) && isArray(rawJsonData)) {
-      return datasetIntegration.set({
-        parsedJsonData: rawJsonData,
-      })
-    }
-
-    if (isNil(jmesPathTransform)) {
-      throw new Error("An integration must parse to an array to be valid")
-    }
-
-    const parsedJsonData = jmespath.search(rawJsonData, jmesPathTransform)
-    return datasetIntegration.set({
-      parsedJsonData,
     })
   }
 

@@ -21,7 +21,7 @@ export class CreateService extends BaseService {
     return db.transaction(async () => {
       await this.datasetIntegration.refresh()
 
-      await this.parseJsonData(this.datasetIntegration)
+      await this.datasetIntegration.applyJMESPathTransform()
       // TODO: create fields if none exist during dataset import
       await this.bulkReplaceDatasetEntries(this.datasetIntegration)
       return this.datasetIntegration.save()

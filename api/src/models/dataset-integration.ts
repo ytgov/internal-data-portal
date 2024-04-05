@@ -15,7 +15,7 @@ import {
 import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
-import { activate } from "@/models/dataset-integrations"
+import { activate, applyJMESPathTransform } from "@/models/dataset-integrations"
 
 // Keep in sync with web/src/api/dataset-fields-api.ts
 export enum DatasetIntegrationStatusTypes {
@@ -82,6 +82,12 @@ export class DatasetIntegration extends Model<
     this: DatasetIntegration
   ): Promise<NonAttribute<DatasetIntegrationRawJsonDataType>> {
     return this.activate()
+  }
+
+  async applyJMESPathTransform(
+    this: DatasetIntegration
+  ): Promise<NonAttribute<DatasetIntegration>> {
+    return applyJMESPathTransform(this)
   }
 }
 
