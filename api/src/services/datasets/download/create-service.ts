@@ -1,6 +1,6 @@
 import { CsvFormatterStream } from "fast-csv"
 import { isArray, isEmpty, isNil, isString, isUndefined } from "lodash"
-import jmespath from "jmespath"
+import { search } from "jmespath"
 
 import { Dataset, DatasetIntegration, User } from "@/models"
 import {
@@ -40,7 +40,7 @@ export class CreateService extends BaseService {
     const allRawJsonData = await integration.refresh()
     await integration.save()
 
-    const parsedJsonData = this.parseJsonData(integration, allRawJsonData)
+    const parsedJsonData = this.applyJMESPathTransform(integration, allRawJsonData)
     const normalizedData = this.nomalizeData(parsedJsonData, headerKeys)
 
     let filteredData = normalizedData
@@ -116,7 +116,7 @@ export class CreateService extends BaseService {
     return parsedJsonData
   }
 
-  private parseJsonData(
+  private applyJMESPathTransform(
     datasetIntegration: DatasetIntegration,
     allRawJsonData: DatasetIntegrationRawJsonDataType
   ): DatasetIntegrationParsedJsonDataType {
@@ -130,7 +130,7 @@ export class CreateService extends BaseService {
       throw new Error("An integration must parse to an array to be valid")
     }
 
-    const parsedJsonData = jmespath.search(allRawJsonData, jmesPathTransform)
+    const parsedJsonData = search(allRawJsonData, jmesPathTransform)
     return parsedJsonData
   }
 }
