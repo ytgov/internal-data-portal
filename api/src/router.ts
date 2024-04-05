@@ -79,6 +79,7 @@ router
   .route("/api/datasets/:datasetIdOrSlug/email-subscribers")
   .get(Datasets.EmailSubscribersController.index)
   .post(Datasets.EmailSubscribersController.create)
+router.route("/api/datasets/:datasetIdOrSlug/refresh").post(Datasets.RefreshController.create)
 
 router
   .route("/api/access-grants")

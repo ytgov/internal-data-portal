@@ -42,6 +42,10 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     return false
   }
 
+  refresh(): boolean {
+    return this.showUnlimited()
+  }
+
   private showLimited(): boolean {
     if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
       return true
