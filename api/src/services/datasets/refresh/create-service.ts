@@ -2,8 +2,10 @@ import db, { DatasetIntegration, User } from "@/models"
 
 import BaseService from "@/services/base-service"
 
-// TODO: reduce massive duplication with
-// api/src/services/dataset-integrations/update-service.ts
+/**
+ * Note that will this is the same as the dataset-integrations/update-service.ts currently,
+ * its purpose is not quite the same, so keeping it separte for now despite the duplication.
+ */
 export class CreateService extends BaseService {
   constructor(
     private datasetIntegration: DatasetIntegration,
