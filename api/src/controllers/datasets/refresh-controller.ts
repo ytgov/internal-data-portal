@@ -10,29 +10,30 @@ export class RefreshController extends BaseController {
   async create() {
     const dataset = await this.loadDataset()
     if (isNil(dataset)) {
-      return this.response.status(404).send("Dataset not found.")
+      return this.response.status(404).json({ message: "Dataset not found." })
     }
 
     const policy = this.buildPolicy(dataset)
     if (!policy.refresh()) {
-      return this.response.status(403).send("You are not allowed to refresh this dataset.")
+      return this.response
+        .status(403)
+        .json({ message: "You are not allowed to refresh this dataset." })
     }
 
     const { integration } = dataset
     if (isNil(integration)) {
-      return this.response.status(422).send("Dataset has no integration to refresh.")
+      return this.response.status(422).json({ message: "Dataset has no integration to refresh." })
     }
 
     try {
       await CreateService.perform(integration, this.currentUser)
+      return this.response.status(201).json({ message: "Dataset integration refreshed." })
     } catch (error) {
       console.error(`Failed to refresh dataset: ${error}`)
       return this.response
         .status(500)
-        .send(`Failed to refresh dataset due to server error: ${error}`)
+        .json({ message: `Failed to refresh dataset due to server error: ${error}` })
     }
-
-    return this.response.status(201).send("Dataset refresh started.")
   }
 
   private buildPolicy(dataset: Dataset) {
