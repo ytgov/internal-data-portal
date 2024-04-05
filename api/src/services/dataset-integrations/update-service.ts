@@ -23,16 +23,17 @@ export class UpdateService extends BaseService {
     return db.transaction(async () => {
       this.datasetIntegration.set(this.attributes)
 
+      if (this.controlFlags.skipDataProcessing) {
+        await this.datasetIntegration.refresh()
+        return this.datasetIntegration.save()
+      }
+
       if (
         this.datasetIntegration.changed("url") ||
         this.datasetIntegration.changed("headerKey") ||
         this.datasetIntegration.changed("headerValue")
       ) {
         await this.datasetIntegration.refresh()
-      }
-
-      if (this.controlFlags.skipDataProcessing) {
-        return this.datasetIntegration.save()
       }
 
       await this.parseJsonData(this.datasetIntegration)
