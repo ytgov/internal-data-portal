@@ -33,6 +33,13 @@
               searchToken,
             }"
           />
+          <RefreshDatasetButton
+            :dataset-id="datasetId"
+            class="ml-3"
+            color="primary"
+            variant="outlined"
+            @completed="refreshDatasetEntries"
+          />
         </v-col>
       </v-row>
     </template>
@@ -59,6 +66,7 @@ import useDatasetEntries, { DatasetEntry } from "@/use/use-dataset-entries"
 import useVisualizationControl from "@/use/use-visualization-control"
 
 import DownloadAsCsvButton from "@/components/dataset-entries/DownloadAsCsvButton.vue"
+import RefreshDatasetButton from "@/components/datasets/RefreshDatasetButton.vue"
 
 const props = defineProps({
   datasetId: {
