@@ -15,7 +15,7 @@ export class DownloadController extends BaseController {
     }
 
     const policy = this.buildPolicy(dataset)
-    if (!policy.download()) {
+    if (!policy.show({ unlimited: true })) {
       return this.response.status(403).send("You are not allowed to download this dataset.")
     }
 

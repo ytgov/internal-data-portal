@@ -14,22 +14,12 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     super(user, record)
   }
 
-  show(): boolean {
-    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
-      return true
-    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
-      return true
-    } else if (
-      [
-        AccessTypes.OPEN_ACCESS,
-        AccessTypes.SELF_SERVE_ACCESS,
-        AccessTypes.SCREENED_ACCESS,
-      ].includes(this.userAccessType())
-    ) {
-      return true
+  show({ unlimited = false }: { unlimited?: boolean } = {}): boolean {
+    if (unlimited) {
+      return this.showUnlimited()
     }
 
-    return false
+    return this.showLimited()
   }
 
   create(): boolean {
@@ -52,9 +42,25 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     return false
   }
 
-  // TODO: condider refactoring; effectively the same as VisualizationControlsPolicy#show
-  // Maybe this should be shared logic?
-  download(): boolean {
+  private showLimited(): boolean {
+    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
+      return true
+    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
+      return true
+    } else if (
+      [
+        AccessTypes.OPEN_ACCESS,
+        AccessTypes.SELF_SERVE_ACCESS,
+        AccessTypes.SCREENED_ACCESS,
+      ].includes(this.userAccessType())
+    ) {
+      return true
+    }
+
+    return false
+  }
+
+  private showUnlimited(): boolean {
     if (this.update()) {
       return true
     }
