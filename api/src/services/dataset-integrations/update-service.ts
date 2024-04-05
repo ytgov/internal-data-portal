@@ -28,14 +28,7 @@ export class UpdateService extends BaseService {
         return this.datasetIntegration.save()
       }
 
-      if (
-        this.datasetIntegration.changed("url") ||
-        this.datasetIntegration.changed("headerKey") ||
-        this.datasetIntegration.changed("headerValue")
-      ) {
-        await this.datasetIntegration.refresh()
-      }
-
+      await this.datasetIntegration.refresh()
       await this.parseJsonData(this.datasetIntegration)
       // TODO: create fields if none exist during dataset import
       await this.bulkReplaceDatasetEntries(this.datasetIntegration)
