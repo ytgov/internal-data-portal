@@ -75,6 +75,7 @@ router
   .route("/api/datasets/:datasetIdOrSlug")
   .get(DatasetsController.show)
   .patch(DatasetsController.update)
+router.route("/api/datasets/:datasetIdOrSlug/files").post(Datasets.FilesController.create)
 router
   .route("/api/datasets/:datasetIdOrSlug/email-subscribers")
   .get(Datasets.EmailSubscribersController.index)
