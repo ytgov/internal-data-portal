@@ -63,7 +63,7 @@ import { isEmpty } from "lodash"
 import { type VBtn, type VForm } from "vuetify/lib/components/index.mjs"
 
 import { required } from "@/utils/validators"
-import datasetFilesApi from "@/api/dataset-files-api"
+import datasetFilesApi from "@/api/datasets/dataset-files-api"
 import useSnack from "@/use/use-snack"
 
 const props = defineProps<{
