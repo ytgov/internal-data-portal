@@ -41,20 +41,29 @@
               <v-col
                 cols="12"
                 md="4"
-                class="d-flex flex-column justify-center"
+                class="d-flex flex-column justify-start"
               >
+                <template v-if="isEmpty(dataset.integration) && isEmpty(dataset.file)">
+                  <v-btn
+                    color="primary"
+                    :to="{
+                      name: 'DatasetIntegrationNewPage',
+                      params: { slug },
+                    }"
+                  >
+                    Add API Link
+                  </v-btn>
+                  <DatasetFileCreateDialog
+                    :dataset-id="dataset.id"
+                    :activator-props="{
+                      class: 'mt-2',
+                      color: 'primary',
+                      variant: 'outlined',
+                    }"
+                  />
+                </template>
                 <v-btn
-                  v-if="isEmpty(dataset.integration)"
-                  color="primary"
-                  :to="{
-                    name: 'DatasetIntegrationNewPage',
-                    params: { slug },
-                  }"
-                >
-                  Add API Link
-                </v-btn>
-                <v-btn
-                  v-else
+                  v-else-if="!isEmpty(dataset.integration)"
                   color="primary"
                   :to="{
                     name: 'DatasetIntegrationManagePage',
@@ -63,15 +72,6 @@
                 >
                   Manage API Link
                 </v-btn>
-                <DatasetFileUploadDialog
-                  v-if="isEmpty(dataset.file)"
-                  :dataset-id="dataset.id"
-                  :activator-props="{
-                    class: 'mt-2',
-                    color: 'primary',
-                    variant: 'outlined',
-                  }"
-                />
               </v-col>
             </v-row>
             <v-row>
@@ -202,7 +202,7 @@ import { useDataset } from "@/use/use-dataset"
 
 import DatePicker from "@/components/DatePicker.vue"
 import SaveStateProgress from "@/components/SaveStateProgress.vue"
-import DatasetFileUploadDialog from "@/components/dataset-files/DatasetFileUploadDialog.vue"
+import DatasetFileCreateDialog from "@/components/dataset-files/DatasetFileCreateDialog.vue"
 
 const props = defineProps({
   slug: {
