@@ -44,7 +44,7 @@
                 class="d-flex justify-center mt-3"
               >
                 <v-btn
-                  v-if="isNil(dataset.integration.id)"
+                  v-if="isEmpty(dataset.integration)"
                   color="primary"
                   :to="{
                     name: 'DatasetIntegrationNewPage',
@@ -183,7 +183,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, toRefs } from "vue"
-import { debounce, isNil } from "lodash"
+import { debounce, isNil, isEmpty } from "lodash"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
 

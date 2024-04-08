@@ -3,7 +3,7 @@
     <v-card-title> Data Access </v-card-title>
     <v-card-text>
       <v-skeleton-loader
-        v-if="isNil(dataset)"
+        v-if="isNil(dataset) || isEmpty(dataset.integration)"
         type="card"
       />
       <v-form
@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 import { toRefs } from "vue"
-import { isNil } from "lodash"
+import { isNil, isEmpty } from "lodash"
 
 import useDataset from "@/use/use-dataset"
 

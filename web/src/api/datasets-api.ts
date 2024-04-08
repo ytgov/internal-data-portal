@@ -48,7 +48,7 @@ export type Dataset = {
 export type DatasetDetailedResult = Dataset & {
   owner: User
   creator: User
-  integration: DatasetIntegration
+  integration?: DatasetIntegration
   stewardship: DatasetStewardship
   visualizationControl: VisualizationControl
 
