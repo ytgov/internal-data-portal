@@ -121,11 +121,10 @@ async function uploadAndClose() {
 
   const formData = new FormData()
   formData.append("file", selectedFiles.value[0])
-  formData.append("datasetId", String(props.datasetId))
 
   isLoading.value = true
   try {
-    const { datasetFile: newDatasetFile } = await datasetFilesApi.create(formData)
+    const { datasetFile: newDatasetFile } = await datasetFilesApi.create(props.datasetId, formData)
     close()
 
     await nextTick()

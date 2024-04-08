@@ -15,10 +15,13 @@ export type DatasetFile = {
 }
 
 export const datasetFieldsApi = {
-  async create(attributes: FormData): Promise<{
+  async create(
+    datasetId: number,
+    attributes: FormData
+  ): Promise<{
     datasetFile: DatasetFile
   }> {
-    const { data } = await http.post("/api/dataset-files", attributes, {
+    const { data } = await http.post(`/api/datasets/${datasetId}/files`, attributes, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
