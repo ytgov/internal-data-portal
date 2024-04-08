@@ -63,7 +63,7 @@ import { isEmpty } from "lodash"
 import { type VBtn, type VForm } from "vuetify/lib/components/index.mjs"
 
 import { required } from "@/utils/validators"
-import datasetFilesApi, { DatasetFile } from "@/api/dataset-files-api"
+import datasetFilesApi from "@/api/dataset-files-api"
 import useSnack from "@/use/use-snack"
 
 const props = defineProps<{
@@ -74,10 +74,6 @@ const emit = defineEmits(["created"])
 
 const snack = useSnack()
 
-const datasetFile = ref<Partial<DatasetFile>>({
-  datasetId: props.datasetId,
-})
-
 const router = useRouter()
 const route = useRoute()
 const showDialog = ref(route.query.showUpload === "true")
@@ -85,14 +81,6 @@ const form = ref<InstanceType<typeof VForm> | null>(null)
 const selectedFiles = ref<File[]>([])
 const isLoading = ref(false)
 const isValid = ref(false)
-
-watch(
-  () => props.datasetId,
-  () => {
-    resetDatasetFile()
-  },
-  { immediate: true }
-)
 
 watch(
   () => showDialog.value,
@@ -107,7 +95,6 @@ watch(
 
 function close() {
   showDialog.value = false
-  resetDatasetFile()
   form.value?.resetValidation()
 }
 
@@ -124,22 +111,16 @@ async function uploadAndClose() {
 
   isLoading.value = true
   try {
-    const { datasetFile: newDatasetFile } = await datasetFilesApi.create(props.datasetId, formData)
+    const { datasetFile } = await datasetFilesApi.create(props.datasetId, formData)
     close()
 
     await nextTick()
-    emit("created", newDatasetFile.id)
+    emit("created", datasetFile.id)
     snack.notify("Dataset file created", { color: "success" })
   } catch (error) {
     snack.notify(`Failed to create dataset file ${error}`, { color: "error" })
   } finally {
     isLoading.value = false
-  }
-}
-
-function resetDatasetFile() {
-  datasetFile.value = {
-    datasetId: props.datasetId,
   }
 }
 </script>
