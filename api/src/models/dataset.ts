@@ -31,6 +31,7 @@ import sequelize from "@/db/db-client"
 import AccessGrant from "@/models/access-grant"
 import AccessRequest from "@/models/access-request"
 import DatasetField from "@/models/dataset-field"
+import DatasetFile from "@/models/dataset-file"
 import DatasetIntegration from "@/models/dataset-integration"
 import DatasetStewardship from "@/models/dataset-stewardship"
 import Tag from "@/models/tag"
@@ -74,6 +75,10 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
   declare getCreator: BelongsToGetAssociationMixin<User>
   declare setCreator: BelongsToSetAssociationMixin<User, User["id"]>
   declare createCreator: BelongsToCreateAssociationMixin<User>
+
+  declare getFile: HasOneGetAssociationMixin<DatasetFile>
+  declare setFile: HasOneSetAssociationMixin<DatasetFile, DatasetFile["datasetId"]>
+  declare createFile: HasOneCreateAssociationMixin<DatasetFile>
 
   declare getIntegration: HasOneGetAssociationMixin<DatasetIntegration>
   declare setIntegration: HasOneSetAssociationMixin<
@@ -159,6 +164,7 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
 
   declare owner?: NonAttribute<User>
   declare creator?: NonAttribute<User>
+  declare file?: NonAttribute<DatasetFile>
   declare integration?: NonAttribute<DatasetIntegration>
   declare stewardship?: NonAttribute<DatasetStewardship>
   declare visualizationControl?: NonAttribute<VisualizationControl>
@@ -172,8 +178,9 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
     accessGrants: Association<Dataset, AccessGrant>
     accessRequests: Association<Dataset, AccessRequest>
     creator: Association<Dataset, User>
-    integration: Association<Dataset, DatasetIntegration>
     fields: Association<Dataset, DatasetField>
+    file: Association<Dataset, DatasetFile>
+    integration: Association<Dataset, DatasetIntegration>
     owner: Association<Dataset, User>
     stewardship: Association<Dataset, DatasetStewardship>
     taggings: Association<Dataset, Tagging>
@@ -189,6 +196,10 @@ export class Dataset extends BaseModel<InferAttributes<Dataset>, InferCreationAt
     this.belongsTo(User, {
       foreignKey: "creatorId",
       as: "creator",
+    })
+    this.hasOne(DatasetFile, {
+      foreignKey: "datasetId",
+      as: "file",
     })
     this.hasOne(DatasetIntegration, {
       foreignKey: "datasetId",
