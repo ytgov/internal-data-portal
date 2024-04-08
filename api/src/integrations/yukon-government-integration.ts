@@ -1,10 +1,14 @@
 import axios from "axios"
 import { isEmpty, pick } from "lodash"
 
-import { YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY } from "@/config"
+import { NODE_ENV, YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY } from "@/config"
+
+// Use optimized direct URL for production, and the slow open API Gateway URL for development.
+const baseURL =
+  NODE_ENV === "production" ? "https://directory-api-prd.ynet.gov.yk.ca" : "https://api.gov.yk.ca"
 
 export const yukonGovernmentApi = axios.create({
-  baseURL: "https://api.gov.yk.ca",
+  baseURL,
   headers: {
     "Ocp-Apim-Subscription-Key": YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY,
   },
