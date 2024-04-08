@@ -358,6 +358,7 @@ async function save() {
   try {
     const { dataset: newDataset } = await datasetsApi.create({
       ...dataset.value,
+      ownerId: datasetStewardship.value.ownerId,
       stewardshipAttributes: datasetStewardship.value,
     })
     snack.notify("Created new dataset!", {
