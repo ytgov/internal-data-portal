@@ -60,6 +60,7 @@
                       color: 'primary',
                       variant: 'outlined',
                     }"
+                    @created="refresh"
                   />
                 </template>
                 <v-btn
@@ -212,7 +213,7 @@ const props = defineProps({
 })
 
 const { slug } = toRefs(props)
-const { dataset, isLoading, save } = useDataset(slug)
+const { dataset, isLoading, save, refresh } = useDataset(slug)
 const snack = useSnack()
 
 const form = ref<InstanceType<typeof VForm> | null>(null)
