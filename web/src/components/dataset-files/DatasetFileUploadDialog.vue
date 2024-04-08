@@ -23,6 +23,7 @@
           <v-row>
             <v-col>
               <v-file-input
+                v-model="selectedFiles"
                 label="File input *"
                 variant="outlined"
                 :rules="[required]"
@@ -57,6 +58,7 @@
 <script lang="ts" setup>
 import { nextTick, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import { isEmpty } from "lodash"
 
 import { type VBtn, type VForm } from "vuetify/lib/components/index.mjs"
 
@@ -80,6 +82,7 @@ const router = useRouter()
 const route = useRoute()
 const showDialog = ref(route.query.showUpload === "true")
 const form = ref<InstanceType<typeof VForm> | null>(null)
+const selectedFiles = ref<File[]>([])
 const isLoading = ref(false)
 const isValid = ref(false)
 
@@ -109,16 +112,20 @@ function close() {
 }
 
 async function uploadAndClose() {
-  if (!isValid.value) {
+  if (!isValid.value || isEmpty(selectedFiles.value)) {
     snack.notify("Please fill out all required fields", {
       color: "error",
     })
     return
   }
 
+  const formData = new FormData()
+  formData.append("file", selectedFiles.value[0])
+  formData.append("datasetId", String(props.datasetId))
+
   isLoading.value = true
   try {
-    const { datasetFile: newDatasetFile } = await datasetFilesApi.create(datasetFile.value)
+    const { datasetFile: newDatasetFile } = await datasetFilesApi.create(formData)
     close()
 
     await nextTick()
