@@ -1,7 +1,9 @@
-import { isArray, isEmpty, isNil, omit } from "lodash"
+import { isArray, isEmpty, isNil } from "lodash"
 
-import { Dataset, DatasetFile } from "@/models"
+import { Dataset } from "@/models"
 import { DatasetsPolicy } from "@/policies"
+import { CreateService } from "@/services/datasets/files"
+import { ShowSerializer } from "@/serializers/dataset-files"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -32,19 +34,23 @@ export class FilesController extends BaseController {
     }
 
     try {
-      const { name, data, size, mimetype, md5 } = this.request.files.file
+      const { file } = this.request.files
+      const { name, data, size, mimetype, md5 } = file
 
-      const datasetFile = await DatasetFile.create({
-        datasetId: dataset.id,
-        name,
-        data,
-        sizeInBytes: size,
-        mimeType: mimetype,
-        md5Hash: md5,
-      })
-
+      const datasetFile = await CreateService.perform(
+        {
+          datasetId: dataset.id,
+          name,
+          data,
+          sizeInBytes: size,
+          mimeType: mimetype,
+          md5Hash: md5,
+        },
+        this.currentUser
+      )
+      const serializedDatasetFile = ShowSerializer.perform(datasetFile, this.currentUser)
       return this.response.json({
-        datasetFile: omit(datasetFile, "data"),
+        datasetFile: serializedDatasetFile,
         message: "Dataset file uploaded successfully.",
       })
     } catch (error) {
