@@ -73,6 +73,17 @@
                 >
                   Manage API Link
                 </v-btn>
+                <DatasetFileUpdateDialog
+                  v-else-if="!isEmpty(dataset.file)"
+                  :dataset-id="dataset.id"
+                  :dataset-file-id="dataset.file.id"
+                  :activator-props="{
+                    color: 'primary',
+                  }"
+                />
+                <template v-else>
+                  Error: Dataset has both an integrated and uploaded source, contact support.
+                </template>
               </v-col>
             </v-row>
             <v-row>
@@ -204,6 +215,7 @@ import { useDataset } from "@/use/use-dataset"
 import DatePicker from "@/components/DatePicker.vue"
 import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import DatasetFileCreateDialog from "@/components/dataset-files/DatasetFileCreateDialog.vue"
+import DatasetFileUpdateDialog from "@/components/dataset-files/DatasetFileUpdateDialog.vue"
 
 const props = defineProps({
   slug: {

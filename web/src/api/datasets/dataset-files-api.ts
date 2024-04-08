@@ -28,6 +28,24 @@ export const datasetFieldsApi = {
     })
     return data
   },
+  async update(
+    datasetId: number,
+    datasetFileId: number,
+    attributes: FormData
+  ): Promise<{
+    datasetFile: DatasetFile
+  }> {
+    const { data } = await http.patch(
+      `/api/datasets/${datasetId}/files/${datasetFileId}`,
+      attributes,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    )
+    return data
+  },
 }
 
 export default datasetFieldsApi

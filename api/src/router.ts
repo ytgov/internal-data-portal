@@ -77,6 +77,9 @@ router
   .patch(DatasetsController.update)
 router.route("/api/datasets/:datasetIdOrSlug/files").post(Datasets.FilesController.create)
 router
+  .route("/api/datasets/:datasetIdOrSlug/files/:datasetFileId")
+  .patch(Datasets.FilesController.update)
+router
   .route("/api/datasets/:datasetIdOrSlug/email-subscribers")
   .get(Datasets.EmailSubscribersController.index)
   .post(Datasets.EmailSubscribersController.create)
