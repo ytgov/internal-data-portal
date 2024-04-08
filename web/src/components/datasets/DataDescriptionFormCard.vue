@@ -41,7 +41,7 @@
               <v-col
                 cols="12"
                 md="4"
-                class="d-flex justify-center mt-3"
+                class="d-flex flex-column justify-center"
               >
                 <v-btn
                   v-if="isEmpty(dataset.integration)"
@@ -63,6 +63,15 @@
                 >
                   Manage API Link
                 </v-btn>
+                <DatasetFileUploadDialog
+                  v-if="isEmpty(dataset.file)"
+                  :dataset-id="dataset.id"
+                  :activator-props="{
+                    class: 'mt-2',
+                    color: 'primary',
+                    variant: 'outlined',
+                  }"
+                />
               </v-col>
             </v-row>
             <v-row>
@@ -193,6 +202,7 @@ import { useDataset } from "@/use/use-dataset"
 
 import DatePicker from "@/components/DatePicker.vue"
 import SaveStateProgress from "@/components/SaveStateProgress.vue"
+import DatasetFileUploadDialog from "@/components/dataset-files/DatasetFileUploadDialog.vue"
 
 const props = defineProps({
   slug: {
