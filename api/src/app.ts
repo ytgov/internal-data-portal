@@ -1,8 +1,9 @@
-import express, { type Request, type Response } from "express"
 import cookieParser from "cookie-parser"
 import cors from "cors"
-import path from "path"
+import express, { type Request, type Response } from "express"
+import fileUpload from "express-fileupload"
 import helmet from "helmet"
+import path from "path"
 import qs from "qs"
 
 import { AUTH0_DOMAIN, FRONTEND_URL } from "@/config"
@@ -20,6 +21,11 @@ app.set("query parser", (params: string) => {
 app.use(cookieParser())
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+app.use(
+  fileUpload({
+    limits: { fileSize: 50 * 1024 * 1024 * 1024 }, // 50 GB
+  })
+)
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
