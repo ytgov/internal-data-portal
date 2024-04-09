@@ -3,7 +3,7 @@ import { isNil } from "lodash"
 
 import datasetsApi, { DatasetDetailedResult, Policy } from "@/api/datasets-api"
 
-export function useDataset(slug: Ref<string>) {
+export function useDataset(slugOrId: Ref<string | number>) {
   const state = reactive<{
     dataset: DatasetDetailedResult | null
     policy: Policy | null
@@ -19,7 +19,7 @@ export function useDataset(slug: Ref<string>) {
   async function fetch() {
     state.isLoading = true
     try {
-      const { dataset, policy } = await datasetsApi.get(unref(slug))
+      const { dataset, policy } = await datasetsApi.get(unref(slugOrId))
       state.dataset = dataset
       state.policy = policy
       state.isErrored = false
@@ -40,7 +40,7 @@ export function useDataset(slug: Ref<string>) {
 
     state.isLoading = true
     try {
-      const { dataset } = await datasetsApi.update(unref(slug), state.dataset)
+      const { dataset } = await datasetsApi.update(unref(slugOrId), state.dataset)
       state.dataset = dataset
       state.isErrored = false
       return dataset
@@ -54,7 +54,7 @@ export function useDataset(slug: Ref<string>) {
   }
 
   watch(
-    () => unref(slug),
+    () => unref(slugOrId),
     async () => {
       await fetch()
     },
