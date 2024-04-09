@@ -16,7 +16,6 @@ import { isNil } from "lodash"
 import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
-import { applyJMESPathTransform } from "@/models/dataset-integrations"
 
 // Keep in sync with web/src/api/dataset-fields-api.ts
 export enum DatasetIntegrationStatusTypes {
@@ -71,12 +70,6 @@ export class DatasetIntegration extends Model<
 
   static establishAssociations() {
     this.belongsTo(Dataset, { as: "dataset" })
-  }
-
-  async applyJMESPathTransform(
-    this: DatasetIntegration
-  ): Promise<NonAttribute<DatasetIntegration>> {
-    return applyJMESPathTransform(this)
   }
 }
 

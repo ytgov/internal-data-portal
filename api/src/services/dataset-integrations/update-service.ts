@@ -1,5 +1,9 @@
 import db, { DatasetIntegration, User } from "@/models"
-import { BulkReplaceDatasetEntriesService, RefreshService } from "@/services/dataset-integrations"
+import {
+  ApplyJMESPathTransformService,
+  BulkReplaceDatasetEntriesService,
+  RefreshService,
+} from "@/services/dataset-integrations"
 
 import BaseService from "@/services/base-service"
 
@@ -25,7 +29,7 @@ export class UpdateService extends BaseService {
       }
 
       await RefreshService.perform(this.datasetIntegration)
-      await this.datasetIntegration.applyJMESPathTransform()
+      await ApplyJMESPathTransformService.perform(this.datasetIntegration)
       // TODO: create fields if none exist during dataset import
       await BulkReplaceDatasetEntriesService.perform(this.datasetIntegration)
 
