@@ -1,13 +1,4 @@
 import axios from "axios"
+import MockAdapter from "axios-mock-adapter"
 
-jest.mock("axios", () => {
-  const mockedAxios = jest.createMockFromModule('axios') as jest.Mocked<typeof axios>
-  mockedAxios.create.mockReturnValue(mockedAxios)
-
-  return {
-    __esModule: true,
-    default: mockedAxios,
-  }
-})
-
-export const mockedAxios = jest.mocked(axios)
+export const mockedAxios = new MockAdapter(axios)
