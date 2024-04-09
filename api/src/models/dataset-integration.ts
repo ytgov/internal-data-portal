@@ -17,7 +17,6 @@ import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
 import {
-  activate,
   applyJMESPathTransform,
   bulkReplaceDatasetEntries,
 } from "@/models/dataset-integrations"
@@ -75,18 +74,6 @@ export class DatasetIntegration extends Model<
 
   static establishAssociations() {
     this.belongsTo(Dataset, { as: "dataset" })
-  }
-
-  async activate(
-    this: DatasetIntegration
-  ): Promise<NonAttribute<DatasetIntegrationRawJsonDataType>> {
-    return activate(this)
-  }
-
-  async refresh(
-    this: DatasetIntegration
-  ): Promise<NonAttribute<DatasetIntegrationRawJsonDataType>> {
-    return this.activate()
   }
 
   async applyJMESPathTransform(

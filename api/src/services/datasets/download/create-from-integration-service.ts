@@ -7,6 +7,7 @@ import {
   DatasetIntegrationParsedJsonDataType,
   DatasetIntegrationRawJsonDataType,
 } from "@/models/dataset-integration"
+import { DatasetIntegrations } from "@/services"
 
 import BaseService from "@/services/base-service"
 
@@ -28,7 +29,7 @@ export class CreateFromIntegrationService extends BaseService {
     const headerKeys = this.datasetFields.map((field) => field.name)
     this.csvStream.write(headers)
 
-    const allRawJsonData = await this.datasetIntegration.refresh()
+    const allRawJsonData = await DatasetIntegrations.RefreshService.perform(this.datasetIntegration)
     await this.datasetIntegration.save()
 
     const parsedJsonData = this.applyJMESPathTransform(this.datasetIntegration, allRawJsonData)

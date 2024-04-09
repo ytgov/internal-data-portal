@@ -1,4 +1,5 @@
 import db, { DatasetIntegration, User } from "@/models"
+import { DatasetIntegrations } from "@/services"
 
 import BaseService from "@/services/base-service"
 
@@ -16,7 +17,7 @@ export class CreateService extends BaseService {
 
   async perform(): Promise<DatasetIntegration> {
     return db.transaction(async () => {
-      await this.datasetIntegration.refresh()
+      await DatasetIntegrations.RefreshService.perform(this.datasetIntegration)
 
       await this.datasetIntegration.applyJMESPathTransform()
       // TODO: create fields if none exist during dataset import
