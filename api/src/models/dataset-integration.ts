@@ -11,11 +11,16 @@ import {
   Model,
   NonAttribute,
 } from "sequelize"
+import { isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
-import { activate, applyJMESPathTransform, bulkReplaceDatasetEntries } from "@/models/dataset-integrations"
+import {
+  activate,
+  applyJMESPathTransform,
+  bulkReplaceDatasetEntries,
+} from "@/models/dataset-integrations"
 
 // Keep in sync with web/src/api/dataset-fields-api.ts
 export enum DatasetIntegrationStatusTypes {
@@ -90,9 +95,7 @@ export class DatasetIntegration extends Model<
     return applyJMESPathTransform(this)
   }
 
-  async bulkReplaceDatasetEntries(
-    this: DatasetIntegration
-  ): Promise<void> {
+  async bulkReplaceDatasetEntries(this: DatasetIntegration): Promise<void> {
     return bulkReplaceDatasetEntries(this)
   }
 }
@@ -134,6 +137,10 @@ DatasetIntegration.init(
       allowNull: true,
       get() {
         const value = this.getDataValue("rawJsonData") as unknown as string
+        if (isNil(value)) {
+          return value
+        }
+
         return JSON.parse(value)
       },
       set(value: string) {
@@ -148,6 +155,10 @@ DatasetIntegration.init(
       allowNull: true,
       get() {
         const value = this.getDataValue("parsedJsonData") as unknown as string
+        if (isNil(value)) {
+          return value
+        }
+
         return JSON.parse(value)
       },
       set(value: string) {
