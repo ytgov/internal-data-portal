@@ -53,6 +53,7 @@ export class DownloadController extends BaseController {
     return Dataset.findBySlugOrPk(datasetIdOrSlug, {
       include: [
         // for data rendering logic
+        "file",
         "integration",
         {
           association: "fields",
