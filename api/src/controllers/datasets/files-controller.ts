@@ -26,11 +26,11 @@ export class FilesController extends BaseController {
       isEmpty(this.request.files) ||
       isNil(this.request.files.file)
     ) {
-      return this.response.status(400).send("No files were uploaded.")
+      return this.response.status(400).json({ message: "No files were uploaded." })
     } else if (isArray(this.request.files.file)) {
-      return this.response.status(422).send("Only one file can be uploaded at a time.")
+      return this.response.status(422).json({ message: "Only one file can be uploaded at a time." })
     } else if (this.request.files.file.truncated) {
-      return this.response.status(413).send("The file is too large.")
+      return this.response.status(413).json({ message: "The file is too large." })
     }
 
     try {
@@ -82,11 +82,11 @@ export class FilesController extends BaseController {
       isEmpty(this.request.files) ||
       isNil(this.request.files.file)
     ) {
-      return this.response.status(400).send("No files were uploaded.")
+      return this.response.status(400).json({ message: "No files were uploaded." })
     } else if (isArray(this.request.files.file)) {
-      return this.response.status(422).send("Only one file can be uploaded at a time.")
+      return this.response.status(422).json({ message: "Only one file can be uploaded at a time." })
     } else if (this.request.files.file.truncated) {
-      return this.response.status(413).send("The file is too large.")
+      return this.response.status(413).json({ message: "The file is too large." })
     }
 
     try {
