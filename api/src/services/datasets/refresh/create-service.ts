@@ -21,7 +21,7 @@ export class CreateService extends BaseService {
 
       await this.datasetIntegration.applyJMESPathTransform()
       // TODO: create fields if none exist during dataset import
-      await this.datasetIntegration.bulkReplaceDatasetEntries()
+      await DatasetIntegrations.BulkReplaceDatasetEntriesService.perform(this.datasetIntegration)
 
       // TODO: log user action
 

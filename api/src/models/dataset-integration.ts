@@ -16,10 +16,7 @@ import { isNil } from "lodash"
 import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
-import {
-  applyJMESPathTransform,
-  bulkReplaceDatasetEntries,
-} from "@/models/dataset-integrations"
+import { applyJMESPathTransform } from "@/models/dataset-integrations"
 
 // Keep in sync with web/src/api/dataset-fields-api.ts
 export enum DatasetIntegrationStatusTypes {
@@ -80,10 +77,6 @@ export class DatasetIntegration extends Model<
     this: DatasetIntegration
   ): Promise<NonAttribute<DatasetIntegration>> {
     return applyJMESPathTransform(this)
-  }
-
-  async bulkReplaceDatasetEntries(this: DatasetIntegration): Promise<void> {
-    return bulkReplaceDatasetEntries(this)
   }
 }
 
