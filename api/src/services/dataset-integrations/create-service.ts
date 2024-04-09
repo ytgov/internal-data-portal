@@ -1,7 +1,8 @@
 import { isNil } from "lodash"
 
-import { DatasetIntegration, User } from "@/models"
+import db, { DatasetIntegration, User } from "@/models"
 import { DatasetIntegrationStatusTypes } from "@/models/dataset-integration"
+import { ActivateService } from "@/services/dataset-integrations"
 
 import BaseService from "@/services/base-service"
 
@@ -26,17 +27,20 @@ export class CreateService extends BaseService {
       throw new Error("url is required")
     }
 
-    const datasetIntegration = DatasetIntegration.build({
-      datasetId,
-      url,
-      status: DatasetIntegrationStatusTypes.PENDING,
-      ...optionalAttributes,
+    return db.transaction(async () => {
+      const datasetIntegration = DatasetIntegration.build({
+        datasetId,
+        url,
+        status: DatasetIntegrationStatusTypes.PENDING,
+        ...optionalAttributes,
+      })
+
+      await ActivateService.perform(datasetIntegration)
+
+      // TODO: log creating user
+
+      return datasetIntegration.reload()
     })
-    await datasetIntegration.activate()
-
-    // TODO: log creating user
-
-    return datasetIntegration.save()
   }
 }
 
