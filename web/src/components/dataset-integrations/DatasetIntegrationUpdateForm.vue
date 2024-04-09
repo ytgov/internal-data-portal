@@ -46,10 +46,12 @@
         <v-textarea
           :model-value="prettifiedRawJsonData"
           label="API Result Preview"
+          hint="This result has been truncted for display purposes."
           append-inner-icon="mdi-lock"
           rows="10"
           variant="outlined"
           readonly
+          persistent-hint
         />
       </v-col>
     </v-row>
