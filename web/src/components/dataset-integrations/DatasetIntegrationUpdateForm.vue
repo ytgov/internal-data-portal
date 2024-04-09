@@ -64,15 +64,17 @@
           variant="outlined"
         >
           <template #details>
-            See
-            <a
-              class="mx-1"
-              href="https://jmespath.org/"
-              target="_blank"
-              rel="noopener noreferrer"
-              >JMESPath</a
-            >
-            for more information.
+            <span>
+              See
+              <a
+                class="mx-1"
+                href="https://jmespath.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >JMESPath</a
+              >
+              for more information.
+            </span>
           </template>
         </v-text-field>
       </v-col>
