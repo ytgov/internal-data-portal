@@ -23,7 +23,10 @@ app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(
   fileUpload({
-    limits: { fileSize: 50 * 1024 * 1024 * 1024 }, // 50 GB
+    // 2 GB, capped by estimated memory size, because current uploads run entirely in memory.
+    // See https://github.com/icefoganalytics/internal-data-portal/issues/95
+    // for how to handle larger files.
+    limits: { fileSize: 2 * 1024 * 1024 * 1024 },
   })
 )
 app.use(
