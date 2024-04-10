@@ -138,6 +138,7 @@ export class DatasetsController extends BaseController {
           ],
         },
         "creator",
+        "file",
         "integration",
         "stewardship",
         "accessGrants",

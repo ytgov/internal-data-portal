@@ -24,7 +24,7 @@
       >
         <!-- TODO: make the skeleton loader an external component that matches the form -->
         <v-skeleton-loader
-          v-if="isNil(dataset) || isNil(dataset.integration.id)"
+          v-if="isNil(dataset) || isEmpty(dataset.integration)"
           type="card"
         />
         <DatasetIntegrationUpdateForm
@@ -41,7 +41,7 @@
 <script lang="ts" setup>
 import { toRefs } from "vue"
 import { useRouter } from "vue-router"
-import { isNil } from "lodash"
+import { isNil, isEmpty } from "lodash"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useDataset from "@/use/use-dataset"

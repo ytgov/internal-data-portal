@@ -46,10 +46,12 @@
         <v-textarea
           :model-value="prettifiedRawJsonData"
           label="API Result Preview"
+          hint="This result has been truncted for display purposes."
           append-inner-icon="mdi-lock"
           rows="10"
           variant="outlined"
           readonly
+          persistent-hint
         />
       </v-col>
     </v-row>
@@ -62,15 +64,17 @@
           variant="outlined"
         >
           <template #details>
-            See
-            <a
-              class="mx-1"
-              href="https://jmespath.org/"
-              target="_blank"
-              rel="noopener noreferrer"
-              >JMESPath</a
-            >
-            for more information.
+            <span>
+              See
+              <a
+                class="mx-1"
+                href="https://jmespath.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >JMESPath</a
+              >
+              for more information.
+            </span>
           </template>
         </v-text-field>
       </v-col>

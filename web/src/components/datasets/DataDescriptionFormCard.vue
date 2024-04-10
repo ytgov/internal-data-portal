@@ -41,20 +41,30 @@
               <v-col
                 cols="12"
                 md="4"
-                class="d-flex justify-center mt-3"
+                class="d-flex flex-column justify-start"
               >
+                <template v-if="isEmpty(dataset.integration) && isEmpty(dataset.file)">
+                  <v-btn
+                    color="primary"
+                    :to="{
+                      name: 'DatasetIntegrationNewPage',
+                      params: { slug },
+                    }"
+                  >
+                    Add API Link
+                  </v-btn>
+                  <DatasetFileCreateDialog
+                    :dataset-id="dataset.id"
+                    :activator-props="{
+                      class: 'mt-2',
+                      color: 'primary',
+                      variant: 'outlined',
+                    }"
+                    @created="refresh"
+                  />
+                </template>
                 <v-btn
-                  v-if="isNil(dataset.integration.id)"
-                  color="primary"
-                  :to="{
-                    name: 'DatasetIntegrationNewPage',
-                    params: { slug },
-                  }"
-                >
-                  Add API Link
-                </v-btn>
-                <v-btn
-                  v-else
+                  v-else-if="!isEmpty(dataset.integration)"
                   color="primary"
                   :to="{
                     name: 'DatasetIntegrationManagePage',
@@ -63,6 +73,17 @@
                 >
                   Manage API Link
                 </v-btn>
+                <DatasetFileUpdateDialog
+                  v-else-if="!isEmpty(dataset.file)"
+                  :dataset-id="dataset.id"
+                  :dataset-file-id="dataset.file.id"
+                  :activator-props="{
+                    color: 'primary',
+                  }"
+                />
+                <template v-else>
+                  Error: Dataset has both an integrated and uploaded source, contact support.
+                </template>
               </v-col>
             </v-row>
             <v-row>
@@ -183,7 +204,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, toRefs } from "vue"
-import { debounce, isNil } from "lodash"
+import { debounce, isNil, isEmpty } from "lodash"
 
 import { type VForm } from "vuetify/lib/components/index.mjs"
 
@@ -193,6 +214,8 @@ import { useDataset } from "@/use/use-dataset"
 
 import DatePicker from "@/components/DatePicker.vue"
 import SaveStateProgress from "@/components/SaveStateProgress.vue"
+import DatasetFileCreateDialog from "@/components/dataset-files/DatasetFileCreateDialog.vue"
+import DatasetFileUpdateDialog from "@/components/dataset-files/DatasetFileUpdateDialog.vue"
 
 const props = defineProps({
   slug: {
@@ -202,7 +225,7 @@ const props = defineProps({
 })
 
 const { slug } = toRefs(props)
-const { dataset, isLoading, save } = useDataset(slug)
+const { dataset, isLoading, save, refresh } = useDataset(slug)
 const snack = useSnack()
 
 const form = ref<InstanceType<typeof VForm> | null>(null)

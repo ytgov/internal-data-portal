@@ -30,6 +30,7 @@ export class UpdateService extends BaseService {
           ],
         },
         "creator",
+        "file",
         "integration",
         "stewardship",
         "accessGrants",

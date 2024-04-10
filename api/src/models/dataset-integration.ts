@@ -11,11 +11,11 @@ import {
   Model,
   NonAttribute,
 } from "sequelize"
+import { isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
 
 import Dataset from "@/models/dataset"
-import { activate } from "@/models/dataset-integrations"
 
 // Keep in sync with web/src/api/dataset-fields-api.ts
 export enum DatasetIntegrationStatusTypes {
@@ -53,7 +53,7 @@ export class DatasetIntegration extends Model<
   declare lastFailureAt: CreationOptional<Date | null>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
-  declare deletedAt: CreationOptional<Date>
+  declare deletedAt: CreationOptional<Date | null>
 
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
@@ -70,18 +70,6 @@ export class DatasetIntegration extends Model<
 
   static establishAssociations() {
     this.belongsTo(Dataset, { as: "dataset" })
-  }
-
-  async activate(
-    this: DatasetIntegration
-  ): Promise<NonAttribute<DatasetIntegrationRawJsonDataType>> {
-    return activate(this)
-  }
-
-  async refresh(
-    this: DatasetIntegration
-  ): Promise<NonAttribute<DatasetIntegrationRawJsonDataType>> {
-    return this.activate()
   }
 }
 
@@ -122,6 +110,10 @@ DatasetIntegration.init(
       allowNull: true,
       get() {
         const value = this.getDataValue("rawJsonData") as unknown as string
+        if (isNil(value)) {
+          return value
+        }
+
         return JSON.parse(value)
       },
       set(value: string) {
@@ -136,6 +128,10 @@ DatasetIntegration.init(
       allowNull: true,
       get() {
         const value = this.getDataValue("parsedJsonData") as unknown as string
+        if (isNil(value)) {
+          return value
+        }
+
         return JSON.parse(value)
       },
       set(value: string) {

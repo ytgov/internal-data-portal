@@ -14,6 +14,7 @@ import { DatasetField } from "@/models/dataset-field"
 import { VisualizationControl } from "@/models/visualization-control"
 import { DatasetEntry } from "@/models/dataset-entry"
 import { DatasetIntegration } from "@/models/dataset-integration"
+import { DatasetFile } from "@/models/dataset-file"
 
 // Estabilish associations between models, order likely matters
 Role.establishAssociations()
@@ -30,6 +31,7 @@ DatasetField.establishAssociations()
 VisualizationControl.establishAssociations()
 DatasetEntry.establishAssociations()
 DatasetIntegration.establishAssociations()
+DatasetFile.establishAssociations()
 
 export {
   AccessGrant,
@@ -37,6 +39,7 @@ export {
   Dataset,
   DatasetEntry,
   DatasetField,
+  DatasetFile,
   DatasetIntegration,
   DatasetStewardship,
   Role,

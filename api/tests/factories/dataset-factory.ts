@@ -61,13 +61,6 @@ export const datasetFactory = DatasetFactory.define(
       slug,
       name,
       description: faker.lorem.paragraph(),
-      isSpatialData: faker.datatype.boolean(0.5),
-      isLiveData: faker.datatype.boolean(0.5),
-      termsOfUse: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
-      credits: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
-      ownerNotes: faker.datatype.boolean(0.5) ? faker.lorem.paragraph() : null,
-      publishedAt: null,
-      deactivatedAt: null,
     })
   }
 )

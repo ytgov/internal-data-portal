@@ -1,10 +1,22 @@
 import { pick } from "lodash"
 
-import { AccessGrant, AccessRequest, Dataset, DatasetIntegration, User } from "@/models"
+import {
+  AccessGrant,
+  AccessRequest,
+  Dataset,
+  DatasetFile,
+  DatasetIntegration,
+  User,
+} from "@/models"
 import BaseSerializer from "@/serializers/base-serializer"
 
-export type DatasetShowView = Omit<Partial<Dataset>, "integration"> & {
+export type SimplifiedDataset = Omit<Partial<Dataset>, "integration" | "file"> & {
+  file?: Partial<DatasetFile>
+  integration?: Partial<DatasetIntegration>
+}
+export type DatasetShowView = SimplifiedDataset & {
   // associations
+  file?: Partial<DatasetFile>
   integration?: Partial<DatasetIntegration>
 
   // magic fields
@@ -30,6 +42,7 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
           "ownerNotes",
         ]),
         creator: this.record.creator,
+        file: pick(this.record.file, ["id", "name", "sizeInBytes", "mimeType"]),
         integration: pick(this.record.integration, [
           "id",
           "url",
@@ -43,11 +56,7 @@ export class ShowSerializer extends BaseSerializer<Dataset> {
     return this.baseView()
   }
 
-  private baseView(
-    extraAttributes: Omit<Partial<Dataset>, "integration"> & {
-      integration?: Partial<DatasetIntegration>
-    } = {}
-  ): DatasetShowView {
+  private baseView(extraAttributes: SimplifiedDataset = {}): DatasetShowView {
     const currentUserAccessGrant = this.record.mostPermissiveAccessGrantFor(this.currentUser)
     const currentUserAccessRequest =
       this.record.accessRequests?.filter(

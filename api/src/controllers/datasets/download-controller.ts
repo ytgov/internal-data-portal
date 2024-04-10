@@ -15,7 +15,7 @@ export class DownloadController extends BaseController {
     }
 
     const policy = this.buildPolicy(dataset)
-    if (!policy.download()) {
+    if (!policy.show({ unlimited: true })) {
       return this.response.status(403).send("You are not allowed to download this dataset.")
     }
 
@@ -32,8 +32,9 @@ export class DownloadController extends BaseController {
       await CreateService.perform(csvStream, dataset, this.currentUser, { searchToken })
     } catch (error) {
       console.error(`Failed to generate CSV: ${error}`)
-      csvStream.write(`Failed to generate CSV due to server error.\n`)
-      csvStream.write(`Error: ${error}\n`)
+      this.response.write(`\n\nFailed to generate CSV due to server error.`)
+      this.response.write(`\nError: ${error}\n`)
+      this.response.end()
     } finally {
       csvStream.end()
     }
@@ -53,6 +54,7 @@ export class DownloadController extends BaseController {
     return Dataset.findBySlugOrPk(datasetIdOrSlug, {
       include: [
         // for data rendering logic
+        "file",
         "integration",
         {
           association: "fields",

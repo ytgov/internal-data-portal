@@ -17,7 +17,7 @@ import db from "@/models"
 
 // Global Mocks
 import "@/support/mock-current-user"
-import "@/support/mock-axios"
+import { mockedAxios } from "@/support/mock-axios"
 
 /*
   e.g.
@@ -58,4 +58,8 @@ async function cleanDatabase() {
 
 beforeEach(async () => {
   await cleanDatabase()
+})
+
+afterEach(() => {
+  mockedAxios.reset()
 })

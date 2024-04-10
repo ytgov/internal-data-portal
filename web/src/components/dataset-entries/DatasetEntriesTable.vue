@@ -33,6 +33,24 @@
               searchToken,
             }"
           />
+          <RefreshDatasetButton
+            v-if="!isEmpty(dataset?.integration)"
+            :dataset-id="datasetId"
+            class="ml-3"
+            color="primary"
+            variant="outlined"
+            @completed="refreshDatasetEntries"
+          />
+          <v-btn
+            v-else
+            title="Refresh"
+            icon="mdi-refresh"
+            class="ml-3"
+            size="x-small"
+            color="primary"
+            variant="outlined"
+            @click="refresh"
+          />
         </v-col>
       </v-row>
     </template>
@@ -54,11 +72,13 @@ import { computed, ref, toRefs } from "vue"
 import { debounce, isEmpty } from "lodash"
 
 import { MAX_PER_PAGE } from "@/api/base-api"
+import useDataset from "@/use/use-dataset"
 import useDatasetFields from "@/use/use-dataset-fields"
 import useDatasetEntries, { DatasetEntry } from "@/use/use-dataset-entries"
 import useVisualizationControl from "@/use/use-visualization-control"
 
 import DownloadAsCsvButton from "@/components/dataset-entries/DownloadAsCsvButton.vue"
+import RefreshDatasetButton from "@/components/datasets/RefreshDatasetButton.vue"
 
 const props = defineProps({
   datasetId: {
@@ -82,6 +102,9 @@ const itemsPerPageOptions = [
   { value: 100, title: "100" },
   { value: -1, title: "$vuetify.dataFooter.itemsPerPageAll" },
 ]
+
+const { datasetId } = toRefs(props)
+const { dataset } = useDataset(datasetId)
 
 const { visualizationControlId } = toRefs(props)
 const { visualizationControl, refresh: refreshVisualizationControl } =

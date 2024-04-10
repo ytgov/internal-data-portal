@@ -13,19 +13,7 @@ export class VisualizationControlsPolicy extends BasePolicy<VisualizationControl
   }
 
   show(): boolean {
-    if (this.datasetsPolicy.update()) {
-      return true
-    }
-
-    if (this.dataset.isAccessibleViaOpenAccessGrantBy(this.user)) {
-      return true
-    }
-
-    if (this.dataset.hasApprovedAccessRequestFor(this.user)) {
-      return true
-    }
-
-    return false
+    return this.datasetsPolicy.show({ unlimited: true })
   }
 
   update(): boolean {

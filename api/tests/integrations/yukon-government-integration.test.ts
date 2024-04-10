@@ -8,16 +8,14 @@ describe("api/src/integrations/yukon-government-integration.ts", () => {
       test("when searching for employees, returns axios get response", async () => {
         // Arrange
         const mockedAxoisResponse = {
-          data: {
-            employees: [
-              {
-                email: "john.doe@example.com",
-              },
-            ],
-            count: 1,
-          },
+          employees: [
+            {
+              email: "john.doe@example.com",
+            },
+          ],
+          count: 1,
         }
-        mockedAxios.get.mockResolvedValue(mockedAxoisResponse)
+        mockedAxios.onGet("https://api.gov.yk.ca/directory/employees").reply(200, mockedAxoisResponse)
 
         // Act
         const { employees, count } = await yukonGovernmentIntegration.searchEmployees()
