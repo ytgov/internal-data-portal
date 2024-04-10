@@ -83,9 +83,16 @@ const routes: RouteRecordRaw[] = [
       },
       // TODO: Make this page a tab in the DatasetLayout, after I make that pattern more flexible
       {
-        path: "datasets/:slug/api/manage",
-        name: "DatasetApiManagePage",
-        component: () => import("@/pages/DatasetApiManagePage.vue"),
+        path: "datasets/:slug/integration/new",
+        name: "DatasetIntegrationNewPage",
+        component: () => import("@/pages/DatasetIntegrationNewPage.vue"),
+        props: true,
+      },
+      // TODO: Make this page a tab in the DatasetLayout, after I make that pattern more flexible
+      {
+        path: "datasets/:slug/integration/manage",
+        name: "DatasetIntegrationManagePage",
+        component: () => import("@/pages/DatasetIntegrationManagePage.vue"),
         props: true,
       },
       {

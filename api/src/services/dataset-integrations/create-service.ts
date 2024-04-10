@@ -1,11 +1,8 @@
 import { isNil } from "lodash"
-import axios from "axios"
 
-import { DatasetIntegration, User } from "@/models"
-import {
-  DatasetIntegrationRawJsonDataType,
-  DatasetIntegrationStatusTypes,
-} from "@/models/dataset-integration"
+import db, { DatasetIntegration, User } from "@/models"
+import { DatasetIntegrationStatusTypes } from "@/models/dataset-integration"
+import { ActivateService } from "@/services/dataset-integrations"
 
 import BaseService from "@/services/base-service"
 
@@ -30,47 +27,20 @@ export class CreateService extends BaseService {
       throw new Error("url is required")
     }
 
-    let headers = {}
-    if (!isNil(optionalAttributes.headerKey)) {
-      headers = {
-        [optionalAttributes.headerKey]: optionalAttributes.headerValue,
-      }
-    }
+    return db.transaction(async () => {
+      const datasetIntegration = DatasetIntegration.build({
+        datasetId,
+        url,
+        status: DatasetIntegrationStatusTypes.PENDING,
+        ...optionalAttributes,
+      })
 
-    let status: DatasetIntegrationStatusTypes
-    let rawJsonData: DatasetIntegrationRawJsonDataType | null = null
-    let lastSuccessAt: Date | null = null
-    try {
-      rawJsonData = await this.fetchRawIntegrationData(url, headers)
-      status = DatasetIntegrationStatusTypes.OK
-      lastSuccessAt = new Date()
-    } catch (error) {
-      throw new Error(`Failed to establish integration with ${url}: ${error}`)
-    }
+      await ActivateService.perform(datasetIntegration)
 
-    const datasetIntegration = await DatasetIntegration.create({
-      datasetId,
-      url,
-      ...optionalAttributes,
-      status,
-      rawJsonData,
-      lastSuccessAt,
+      // TODO: log creating user
+
+      return datasetIntegration.reload()
     })
-
-    // TODO: log creating user
-
-    return datasetIntegration
-  }
-
-  private async fetchRawIntegrationData(
-    url: string,
-    headers?: Record<string, string>
-  ): Promise<DatasetIntegrationRawJsonDataType> {
-    const { data } = await axios.get(url, {
-      headers,
-    })
-
-    return data
   }
 }
 

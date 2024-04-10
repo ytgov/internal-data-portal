@@ -11,6 +11,7 @@ import {
   Model,
   NonAttribute,
 } from "sequelize"
+import { isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
 
@@ -20,10 +21,13 @@ import Dataset from "@/models/dataset"
 export enum DatasetIntegrationStatusTypes {
   OK = "ok",
   ERRORED = "errored",
+  PENDING = "pending",
 }
 
 export type DatasetIntegrationRawJsonDataType = Record<string, unknown>
 export type DatasetIntegrationParsedJsonDataType = Record<string, unknown>[]
+
+export const MAX_RECORDS = 100 // TODO: consider making this configurable?
 
 export class DatasetIntegration extends Model<
   InferAttributes<DatasetIntegration>,
@@ -42,11 +46,14 @@ export class DatasetIntegration extends Model<
   declare status: DatasetIntegrationStatusTypes
   declare errorCode: CreationOptional<string | null>
   declare errorDetails: CreationOptional<string | null>
+  declare estimatedSizeInBytes: CreationOptional<number | null>
+  declare estimatedNumberOfRecords: CreationOptional<number | null>
+  declare estimatedResponseTimeInMs: CreationOptional<number | null>
   declare lastSuccessAt: CreationOptional<Date | null>
   declare lastFailureAt: CreationOptional<Date | null>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
-  declare deletedAt: CreationOptional<Date>
+  declare deletedAt: CreationOptional<Date | null>
 
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
@@ -103,6 +110,10 @@ DatasetIntegration.init(
       allowNull: true,
       get() {
         const value = this.getDataValue("rawJsonData") as unknown as string
+        if (isNil(value)) {
+          return value
+        }
+
         return JSON.parse(value)
       },
       set(value: string) {
@@ -117,6 +128,10 @@ DatasetIntegration.init(
       allowNull: true,
       get() {
         const value = this.getDataValue("parsedJsonData") as unknown as string
+        if (isNil(value)) {
+          return value
+        }
+
         return JSON.parse(value)
       },
       set(value: string) {
@@ -136,6 +151,18 @@ DatasetIntegration.init(
     },
     errorDetails: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    estimatedSizeInBytes: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    estimatedNumberOfRecords: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    estimatedResponseTimeInMs: {
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
     lastSuccessAt: {

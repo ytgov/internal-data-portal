@@ -5,24 +5,24 @@
 ### API (Back-end)
 
 - [Node](https://nodejs.org/en) + [Express](https://expressjs.com/)
-
 - [Typescript](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html)
-
 - [Knex](https://knexjs.org/guide/)
 
 ### Front-End
 
 - [Vue 3](https://vuejs.org/guide/introduction.html) + [Vuetify](https://vuetifyjs.com/en/getting-started/installation/#installation)
-
 - [Typescript](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html)
-
 - [Axios](https://github.com/axios/axios)
 
 ### Database
 
 - Microsoft SQL Server - [MSSQL](https://www.postgresql.org/docs/current/app-psql.html)
-
 - [Docker Compose](https://docs.docker.com/compose/compose-file/)
+
+### Mail Server
+
+- Mail Dev - [MailDev](https://github.com/maildev/maildev?tab=readme-ov-file#docker-run)
+- [MailDev Docker Image](https://hub.docker.com/r/maildev/maildev)
 
 ---
 
@@ -82,6 +82,14 @@
 
 2. Log in to the front-end service at http://localhost:8080
 
+
+#### Troubleshooting
+
+If you are getting a bunch of "Login required" errors in the console, make sure that you have disabled any kind of enhanced tracking protection.
+
+Auth0 use third-party cookies for authentication, and they get blocked by all major browsers
+by default.
+
 ### DB Service (a.k.a database service)
 
 1. Boot only the db service using:
@@ -116,12 +124,9 @@
 
 You can also skip seeding if database is not empty by setting the `SKIP_SEEDING_UNLESS_EMPTY=true` environment variable.
 
-### Troubleshooting
+### Mail Service (a.k.a mail server)
 
-If you are getting a bunch of "Login required" errors in the console, make sure that you have disabled any kind of enhanced tracking protection.
-
-Auth0 use third-party cookies for authentication, and they get blocked by all major browsers
-by default.
+1. Access the web interface at http://localhost:1080
 
 ## Testing
 

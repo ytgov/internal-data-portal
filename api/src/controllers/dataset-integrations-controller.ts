@@ -57,13 +57,13 @@ export class DatasetIntegrationsController extends BaseController {
     }
 
     const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
-    const isPreview = this.query.isPreview === "true"
+    const skipDataProcessing = this.query.skipDataProcessing === "true"
     try {
       const updatedDatasetIntegration = await UpdateService.perform(
         datasetIntegration,
         permittedAttributes,
-        isPreview,
-        this.currentUser
+        this.currentUser,
+        { skipDataProcessing }
       )
       return this.response.status(200).json({ datasetIntegration: updatedDatasetIntegration })
     } catch (error) {

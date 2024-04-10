@@ -14,6 +14,7 @@ export { UsersController } from "./users-controller"
 export { VisualizationControlsController } from "./visualization-controls-controller"
 
 export * as AccessRequests from "./access-requests"
+export * as Datasets from "./datasets"
 export * as Users from "./users"
 export * as UserGroups from "./user-groups"
 export * as QaScenarios from "./qa-scenarios"

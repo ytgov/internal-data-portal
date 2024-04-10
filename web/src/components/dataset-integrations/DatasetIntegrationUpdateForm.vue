@@ -35,7 +35,7 @@
           :loading="isLoading"
           variant="outlined"
           color="primary"
-          @click="updateDatasetIntegration({ isPreview: true })"
+          @click="updateDatasetIntegration({ skipDataProcessing: true })"
         >
           Update Preview
         </v-btn>
@@ -46,10 +46,12 @@
         <v-textarea
           :model-value="prettifiedRawJsonData"
           label="API Result Preview"
+          hint="This result has been truncted for display purposes."
           append-inner-icon="mdi-lock"
           rows="10"
           variant="outlined"
           readonly
+          persistent-hint
         />
       </v-col>
     </v-row>
@@ -62,15 +64,17 @@
           variant="outlined"
         >
           <template #details>
-            See
-            <a
-              class="mx-1"
-              href="https://jmespath.org/"
-              target="_blank"
-              rel="noopener noreferrer"
-              >JMESPath</a
-            >
-            for more information.
+            <span>
+              See
+              <a
+                class="mx-1"
+                href="https://jmespath.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >JMESPath</a
+              >
+              for more information.
+            </span>
           </template>
         </v-text-field>
       </v-col>
@@ -225,7 +229,9 @@ function updateAndCompleteIntegration() {
   emit("completed")
 }
 
-async function updateDatasetIntegration({ isPreview = false }: { isPreview?: boolean } = {}) {
+async function updateDatasetIntegration({
+  skipDataProcessing = false,
+}: { skipDataProcessing?: boolean } = {}) {
   if (!isValid.value) {
     snack.notify("Please fill out all required fields", {
       color: "error",
@@ -252,7 +258,7 @@ async function updateDatasetIntegration({ isPreview = false }: { isPreview?: boo
     const { datasetIntegration: newDatasetIntegration } = await datasetIntegrationsApi.update(
       datasetIntegrationId,
       attributes,
-      { isPreview }
+      { skipDataProcessing }
     )
     datasetIntegration.value = newDatasetIntegration
     snack.notify("Dataset integration saved!", {

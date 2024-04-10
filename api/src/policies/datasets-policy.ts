@@ -14,7 +14,39 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     super(user, record)
   }
 
-  show(): boolean {
+  show({ unlimited = false }: { unlimited?: boolean } = {}): boolean {
+    if (unlimited) {
+      return this.showUnlimited()
+    }
+
+    return this.showLimited()
+  }
+
+  create(): boolean {
+    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
+      return true
+    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
+      return true
+    }
+
+    return false
+  }
+
+  update(): boolean {
+    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
+      return true
+    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
+      return true
+    }
+
+    return false
+  }
+
+  refresh(): boolean {
+    return this.showUnlimited()
+  }
+
+  private showLimited(): boolean {
     if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
       return true
     } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
@@ -32,20 +64,16 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     return false
   }
 
-  create(): boolean {
-    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
-      return true
-    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
+  private showUnlimited(): boolean {
+    if (this.update()) {
       return true
     }
 
-    return false
-  }
-
-  update(): boolean {
-    if (this.user.isSystemAdmin || this.user.isBusinessAnalyst) {
+    if (this.record.isAccessibleViaOpenAccessGrantBy(this.user)) {
       return true
-    } else if (this.user.isDataOwner && this.record.ownerId === this.user.id) {
+    }
+
+    if (this.record.hasApprovedAccessRequestFor(this.user)) {
       return true
     }
 

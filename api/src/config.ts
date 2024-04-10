@@ -40,4 +40,9 @@ export const DB_PORT = parseInt(process.env.DB_PORT || "1433")
 export const RELEASE_TAG = process.env.RELEASE_TAG || ""
 export const GIT_COMMIT_HASH = process.env.GIT_COMMIT_HASH || ""
 
-export const YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY = process.env.YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY || ""
+export const YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY =
+  process.env.YUKON_GOVERNMENT_OCP_APIM_SUBSCRIPTION_KEY || ""
+
+export const MAIL_FROM = process.env.MAIL_FROM || "idp@yukon.ca"
+export const MAIL_HOST = process.env.MAIL_HOST || "smtp.gov.yk.ca"
+export const MAIL_PORT = parseInt(process.env.MAIL_PORT || "25")

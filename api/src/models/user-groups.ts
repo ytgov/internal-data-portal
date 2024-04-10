@@ -49,7 +49,7 @@ export class UserGroup extends Model<
   declare lastDivisionDirectorySyncAt: Date | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
-  declare deletedAt: CreationOptional<Date>
+  declare deletedAt: CreationOptional<Date | null>
 
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#foohasmanybar
