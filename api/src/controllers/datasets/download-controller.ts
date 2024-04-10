@@ -32,8 +32,9 @@ export class DownloadController extends BaseController {
       await CreateService.perform(csvStream, dataset, this.currentUser, { searchToken })
     } catch (error) {
       console.error(`Failed to generate CSV: ${error}`)
-      csvStream.write(`Failed to generate CSV due to server error.\n`)
-      csvStream.write(`Error: ${error}\n`)
+      this.response.write(`\n\nFailed to generate CSV due to server error.`)
+      this.response.write(`\nError: ${error}\n`)
+      this.response.end()
     } finally {
       csvStream.end()
     }
