@@ -44,7 +44,7 @@ export function datasetEntriesSearch(): Literal {
           AND LOWER(
             JSON_VALUE(
               dataset_entries.json_data,
-              CONCAT('$.', dataset_fields.name)
+              CONCAT('$."', dataset_fields.name, '"')
             )
           ) LIKE LOWER(:searchTokenWildcard)
         )
@@ -53,7 +53,7 @@ export function datasetEntriesSearch(): Literal {
           AND TRY_CAST(
             JSON_VALUE(
               dataset_entries.json_data,
-              CONCAT('$.', dataset_fields.name)
+              CONCAT('$."', dataset_fields.name, '"')
             ) AS NVARCHAR
           ) = :searchToken
         )

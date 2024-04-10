@@ -686,6 +686,60 @@ describe("api/src/models/dataset-entries/dataset-entries-search.ts", () => {
           }),
         ])
       })
+
+      test("when dataset field name includes spaces, includes the expected results", async () => {
+        // Arrange
+        const user = await userFactory.create()
+        const dataset = await datasetFactory.create({
+          creatorId: user.id,
+          ownerId: user.id,
+        })
+        await visualizationControlFactory.create({
+          datasetId: dataset.id,
+        })
+        await datasetFieldFactory.create({
+          datasetId: dataset.id,
+          name: "full name",
+          dataType: DatasetField.DataTypes.TEXT,
+        })
+        const datasetEntry1 = await datasetEntryFactory.create({
+          datasetId: dataset.id,
+          jsonData: { "full name": "Marlen Test" },
+        })
+        const datasetEntry2 = await datasetEntryFactory.create({
+          datasetId: dataset.id,
+          jsonData: { "full name": "Mark Test" },
+        })
+        await datasetEntryFactory.create({
+          datasetId: dataset.id,
+          jsonData: { "full name": "Mandy Test" },
+        })
+
+        // Act
+        const searchToken = "mar"
+        const query = datasetEntriesSearch()
+        const scope = DatasetEntry.scope({
+          where: { id: { [Op.in]: query } },
+        })
+        const result = await scope.findAll({
+          replacements: { searchTokenWildcard: `%${searchToken}%`, searchToken },
+        })
+
+        // Assert
+        expect.assertions(1)
+        expect(result).toEqual([
+          expect.objectContaining({
+            jsonData: expect.objectContaining({
+              "full name": datasetEntry1.jsonData["full name"],
+            }),
+          }),
+          expect.objectContaining({
+            jsonData: expect.objectContaining({
+              "full name": datasetEntry2.jsonData["full name"],
+            }),
+          }),
+        ])
+      })
     })
   })
 })
