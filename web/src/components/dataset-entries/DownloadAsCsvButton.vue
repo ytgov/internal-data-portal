@@ -47,7 +47,7 @@ const accessToken = ref<string | null>(null)
 
 const downloadUrl = computed(() => {
   const serializedParams = stringifyQuery(props.query)
-  return `${API_BASE_URL}/datasets/${props.datasetId}/download.csv?${serializedParams}`
+  return `${API_BASE_URL}/download/datasets/${props.datasetId}.csv?${serializedParams}`
 })
 
 async function getAccessTokenAndSubmit() {

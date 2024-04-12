@@ -2,8 +2,8 @@ import { CsvFormatterStream } from "fast-csv"
 import { isEmpty, isUndefined } from "lodash"
 
 import { Dataset, User } from "@/models"
-import CreateFromIntegrationService from "@/services/datasets/download/create-from-integration-service"
-import CreateFromFileService from "@/services/datasets/download/create-from-file-service"
+import CreateFromIntegrationService from "@/services/download/datasets/create-from-integration-service"
+import CreateFromFileService from "@/services/download/datasets/create-from-file-service"
 
 import BaseService from "@/services/base-service"
 
