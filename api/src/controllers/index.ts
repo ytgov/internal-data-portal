@@ -15,6 +15,7 @@ export { VisualizationControlsController } from "./visualization-controls-contro
 
 export * as AccessRequests from "./access-requests"
 export * as Datasets from "./datasets"
+export * as Download from "./download"
 export * as Users from "./users"
 export * as UserGroups from "./user-groups"
 export * as QaScenarios from "./qa-scenarios"

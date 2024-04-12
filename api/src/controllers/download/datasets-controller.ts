@@ -3,11 +3,11 @@ import { format } from "fast-csv"
 
 import { Dataset } from "@/models"
 import { DatasetsPolicy } from "@/policies"
-import { CreateService } from "@/services/datasets/download"
+import { CreateService } from "@/services/download/datasets"
 
 import { BaseController } from "@/controllers/base-controller"
 
-export class DownloadController extends BaseController {
+export class DatasetsController extends BaseController {
   async create() {
     const dataset = await this.loadDataset()
     if (isNil(dataset)) {
@@ -72,4 +72,4 @@ export class DownloadController extends BaseController {
   }
 }
 
-export default DownloadController
+export default DatasetsController
