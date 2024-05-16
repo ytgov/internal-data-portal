@@ -31,9 +31,11 @@ export class ApplyJMESPathTransformService extends BaseService {
     }
 
     const normalizedData = this.nomalizeData(searchedRawJsonData)
-    return this.datasetIntegration.set({
+    await this.datasetIntegration.update({
       parsedJsonData: normalizedData,
     })
+
+    return this.datasetIntegration
   }
 
   private nomalizeData(
