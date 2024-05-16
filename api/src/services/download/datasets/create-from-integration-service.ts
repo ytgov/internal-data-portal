@@ -37,8 +37,7 @@ export class CreateFromIntegrationService extends BaseService {
       this.datasetIntegration,
       allRawJsonData
     )
-    // TODO: do something more traditional with here?
-    this.validateDataOrError(parsedAndNormalizedJsonData, headerKeys)
+    this.assertSelfConsistentDataStructure(parsedAndNormalizedJsonData, headerKeys)
 
     let filteredData = parsedAndNormalizedJsonData
     const searchToken = this.options.searchToken
@@ -81,7 +80,7 @@ export class CreateFromIntegrationService extends BaseService {
     })
   }
 
-  private validateDataOrError(
+  private assertSelfConsistentDataStructure(
     parsedJsonData: DatasetIntegrationParsedJsonDataType,
     headerKeys: string[]
   ): void {
