@@ -28,6 +28,7 @@ export type DatasetIntegrationRawJsonDataType = Record<string, unknown>
 export type DatasetIntegrationParsedJsonDataType = Record<string, unknown>[]
 
 export const MAX_RECORDS = 100 // TODO: consider making this configurable?
+export const DEFAULT_KEY = "data"
 
 export class DatasetIntegration extends Model<
   InferAttributes<DatasetIntegration>,
