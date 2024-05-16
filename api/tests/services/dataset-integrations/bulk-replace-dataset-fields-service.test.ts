@@ -62,6 +62,71 @@ describe("api/src/services/dataset-integrations/bulk-replace-dataset-fields-serv
           }),
         ])
       })
+
+      test("when json data entry contains a number, it creates an integer dataset field", async () => {
+        // Arrange
+        const user = await userFactory.create()
+        const dataset = await datasetFactory.create({
+          creatorId: user.id,
+          ownerId: user.id,
+        })
+        const datasetIntegration = await datasetIntegrationFactory.create({
+          datasetId: dataset.id,
+          parsedJsonData: [
+            {
+              Address: "1234 Elm Street",
+              Building_ID: 987654,
+              Community: "Dawson City",
+            },
+          ],
+        })
+
+        // Act
+        const result = await BulkReplaceDatasetFieldsService.perform(datasetIntegration)
+
+        // Assert
+        expect(result).toHaveLength(3)
+        expect(result).toEqual([
+          expect.objectContaining({
+            datasetId: datasetIntegration.datasetId,
+            name: "Address",
+            displayName: "Address",
+            dataType: DatasetField.DataTypes.TEXT,
+          }),
+          expect.objectContaining({
+            datasetId: datasetIntegration.datasetId,
+            name: "Building_ID",
+            displayName: "Building ID",
+            dataType: DatasetField.DataTypes.INTEGER,
+          }),
+          expect.objectContaining({
+            datasetId: datasetIntegration.datasetId,
+            name: "Community",
+            displayName: "Community",
+            dataType: DatasetField.DataTypes.TEXT,
+          }),
+        ])
+      })
+
+      test("when json data is empty, it throws an error", async () => {
+        // Arrange
+        const user = await userFactory.create()
+        const dataset = await datasetFactory.create({
+          creatorId: user.id,
+          ownerId: user.id,
+        })
+        const datasetIntegration = await datasetIntegrationFactory.create({
+          datasetId: dataset.id,
+          parsedJsonData: [],
+        })
+
+        // Assert
+        expect.assertions(1)
+        await expect(
+          // Act
+          BulkReplaceDatasetFieldsService.perform(datasetIntegration)
+        ).rejects.toThrow(/An integration must have data to build dataset fields/)
+      })
     })
   })
 })

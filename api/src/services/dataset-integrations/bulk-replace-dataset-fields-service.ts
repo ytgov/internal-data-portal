@@ -1,8 +1,7 @@
-import { isNil, isNumber, isString, startCase } from "lodash"
+import { isEmpty, isNil, isNumber, startCase } from "lodash"
 import { CreationAttributes } from "sequelize"
 
 import db, { DatasetField, DatasetIntegration } from "@/models"
-import { type DatasetEntryJsonDataType } from "@/models/dataset-entry"
 import { DatasetFieldDataTypes } from "@/models/dataset-field"
 import BaseService from "@/services/base-service"
 
@@ -21,12 +20,11 @@ export class BulkReplaceDatasetFieldsService extends BaseService {
         },
       })
 
-      if (isNil(parsedJsonData)) {
+      if (isNil(parsedJsonData) || isEmpty(parsedJsonData)) {
         throw new Error("An integration must have data to build dataset fields.")
       }
 
-      const firstRecord = this.normalizedRecord(parsedJsonData[0])
-
+      const firstRecord = parsedJsonData[0]
       const datasetFieldsAttributes: CreationAttributes<DatasetField>[] = Object.entries(
         firstRecord
       ).map(([key, value]) => {
@@ -49,16 +47,6 @@ export class BulkReplaceDatasetFieldsService extends BaseService {
     }
 
     return DatasetField.DataTypes.TEXT
-  }
-
-  private normalizedRecord(record: Record<string, unknown> | string): DatasetEntryJsonDataType {
-    if (isString(record)) {
-      return {
-        value: record,
-      }
-    }
-
-    return record as DatasetEntryJsonDataType
   }
 }
 
