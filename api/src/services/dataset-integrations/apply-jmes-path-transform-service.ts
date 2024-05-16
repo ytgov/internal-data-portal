@@ -1,6 +1,7 @@
-import { isArray, isNil, isString } from "lodash"
+import { isArray, isNil } from "lodash"
 import { search } from "jmespath"
 
+import isStringArray from "@/utils/is-string-array"
 import DatasetIntegration, {
   DEFAULT_KEY,
   DatasetIntegrationParsedJsonDataType,
@@ -38,8 +39,10 @@ export class ApplyJMESPathTransformService extends BaseService {
   private nomalizeData(
     rawJsonData: string[] | Record<string, unknown>[]
   ): DatasetIntegrationParsedJsonDataType {
-    if (rawJsonData.every(isString)) {
-      return rawJsonData.map((value) => ({ [DEFAULT_KEY]: value }))
+    if (isStringArray(rawJsonData)) {
+      return rawJsonData.map((value) => ({
+        [DEFAULT_KEY]: value,
+      }))
     }
 
     return rawJsonData
