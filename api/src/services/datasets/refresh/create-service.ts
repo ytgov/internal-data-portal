@@ -1,4 +1,4 @@
-import db, { DatasetIntegration, User } from "@/models"
+import db, { DatasetField, DatasetIntegration, User } from "@/models"
 import { DatasetIntegrations } from "@/services"
 
 import BaseService from "@/services/base-service"
@@ -18,15 +18,29 @@ export class CreateService extends BaseService {
   async perform(): Promise<DatasetIntegration> {
     return db.transaction(async () => {
       await DatasetIntegrations.RefreshService.perform(this.datasetIntegration)
-
       await DatasetIntegrations.ApplyJMESPathTransformService.perform(this.datasetIntegration)
-      // TODO: create fields if none exist during dataset import
-      await DatasetIntegrations.BulkReplaceDatasetEntriesService.perform(this.datasetIntegration)
 
+      if (!(await this.hasDataSetFields())) {
+        await DatasetIntegrations.BulkReplaceDatasetFieldsService.perform(this.datasetIntegration)
+      }
+
+      await DatasetIntegrations.BulkReplaceDatasetEntriesService.perform(this.datasetIntegration)
       // TODO: log user action
 
       return this.datasetIntegration.save()
     })
+  }
+
+  // TODO: consider if we should always add fields, but mark them as hidden by default
+  private async hasDataSetFields(): Promise<boolean> {
+    const { datasetId } = this.datasetIntegration
+    const count = await DatasetField.count({
+      where: {
+        datasetId,
+      },
+    })
+
+    return count > 0
   }
 }
 
