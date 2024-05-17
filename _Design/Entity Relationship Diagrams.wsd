@@ -34,6 +34,28 @@ entity "access_requests" {
   deleted_at : datetime2(0)
 }
 
+entity "dataset_entries" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  * raw_json_data : nvarchar(MAX)
+  * json_data : nvarchar(MAX)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "dataset_entry_previews" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  * dataset_entry_id : int <<FK>>
+  * json_data : nvarchar(MAX)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
 entity "dataset_fields" {
   * id : int <<PK>>
   --
@@ -199,7 +221,9 @@ entity "visualization_controls" {
 
 ' Define relationships
 access_grants }o--|| access_requests : access_grant_id
+dataset_entries::id }o--|| dataset_entry_previews::dataset_entry_id
 datasets }o--|| access_grants : dataset_id
+datasets::id }o--|| dataset_entries::dataset_id
 datasets }o--|| dataset_fields : dataset_id
 datasets }o--|| dataset_integrations : dataset_id
 datasets }o--|| taggings : taggable_id, tagging_type = 'Dataset'
