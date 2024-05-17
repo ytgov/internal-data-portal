@@ -15,6 +15,7 @@
       />
       <v-form
         v-else
+        ref="form"
         class="mt-6"
       >
         <v-row>
@@ -99,8 +100,9 @@
               v-model="visualizationControl.previewRowLimit"
               label="Max Results"
               type="number"
+              :rules="[minimum(10)]"
               variant="outlined"
-              min="0"
+              min="10"
               @input="debouncedSaveAndNotify"
               @click:clear="saveAndNotify"
             />
@@ -112,9 +114,10 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs } from "vue"
+import { computed, ref, toRefs } from "vue"
 import { debounce, isNil } from "lodash"
 
+import { minimum } from "@/utils/validators"
 import useSnack from "@/use/use-snack"
 import useVisualizationControl from "@/use/use-visualization-control"
 
@@ -147,8 +150,21 @@ const previewExcludedDatasetFieldsIds = computed(() => {
 })
 
 const snack = useSnack()
+const form = ref<HTMLFormElement | null>(null)
 
 async function saveAndNotify() {
+  if (isNil(form.value)) {
+    throw new Error("Form is not defined")
+  }
+
+  const { valid } = await form.value.validate()
+  if (!valid) {
+    snack.notify("Input validation failed", {
+      color: "error",
+    })
+    return
+  }
+
   try {
     await save()
     emit("saved")
