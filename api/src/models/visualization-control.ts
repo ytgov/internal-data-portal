@@ -141,6 +141,9 @@ VisualizationControl.init(
     previewRowLimit: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      validate: {
+        min: 10,
+      },
     },
     createdAt: {
       type: DataTypes.DATE,
