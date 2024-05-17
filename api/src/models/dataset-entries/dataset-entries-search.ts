@@ -28,15 +28,15 @@ export function datasetEntriesSearch(): Literal {
       dataset_entries.deleted_at IS NULL
       AND (
         (
-          visualization_controls.has_search_customizations = 1
-          AND visualization_controls.has_fields_excluded_from_search = 1
-          AND dataset_fields.is_excluded_from_search = 0
+          visualization_controls.has_preview_customizations = 1
+          AND visualization_controls.has_fields_excluded_from_preview = 1
+          AND dataset_fields.is_excluded_from_preview = 0
         )
         OR (
-          visualization_controls.has_search_customizations = 1
-          AND visualization_controls.has_fields_excluded_from_search = 0
+          visualization_controls.has_preview_customizations = 1
+          AND visualization_controls.has_fields_excluded_from_preview = 0
         )
-        OR visualization_controls.has_search_customizations = 0
+        OR visualization_controls.has_preview_customizations = 0
       )
       AND (
         (
@@ -89,20 +89,20 @@ export function datasetEntriesSearch(): Literal {
         AND visualization_controls.deleted_at IS NULL
       WHERE
         (
-          visualization_controls.has_search_customizations = 1
-          AND visualization_controls.has_search_row_limits = 1
-          AND numbered_search_results.search_result_number <= visualization_controls.search_row_limit_maximum
+          visualization_controls.has_preview_customizations = 1
+          AND visualization_controls.has_preview_row_limit = 1
+          AND numbered_search_results.search_result_number <= visualization_controls.preview_row_limit
         )
         OR (
-          visualization_controls.has_search_customizations = 1
-          AND visualization_controls.has_search_row_limits = 1
-          AND visualization_controls.search_row_limit_maximum IS NULL
+          visualization_controls.has_preview_customizations = 1
+          AND visualization_controls.has_preview_row_limit = 1
+          AND visualization_controls.preview_row_limit IS NULL
         )
         OR (
-          visualization_controls.has_search_customizations = 1
-          AND visualization_controls.has_search_row_limits = 0
+          visualization_controls.has_preview_customizations = 1
+          AND visualization_controls.has_preview_row_limit = 0
         )
-        OR visualization_controls.has_search_customizations = 0
+        OR visualization_controls.has_preview_customizations = 0
     )
   `)
 

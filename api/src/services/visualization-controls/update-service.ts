@@ -2,7 +2,7 @@ import db, { DatasetField, User, VisualizationControl } from "@/models"
 
 import BaseService from "@/services/base-service"
 
-type DatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromSearch">[]
+type DatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromPreview">[]
 type Attributes = Partial<VisualizationControl> & {
   searchExcludedDatasetFieldsAttributes?: DatasetFieldsAttributes
 }
@@ -36,21 +36,21 @@ export class UpdateService extends BaseService {
   private async bulkReplaceSearchExcludeOnDatasetFields(attributes: DatasetFieldsAttributes) {
     await DatasetField.update(
       {
-        isExcludedFromSearch: false,
+        isExcludedFromPreview: false,
       },
       {
         where: {
           datasetId: this.visualizationControl.datasetId,
-          isExcludedFromSearch: true,
+          isExcludedFromPreview: true,
         },
       }
     )
     const datasetFieldIds = attributes
-      .filter((attributes) => attributes.isExcludedFromSearch)
+      .filter((attributes) => attributes.isExcludedFromPreview)
       .map((attributes) => attributes.id)
     await DatasetField.update(
       {
-        isExcludedFromSearch: true,
+        isExcludedFromPreview: true,
       },
       {
         where: {

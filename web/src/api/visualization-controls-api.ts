@@ -7,10 +7,10 @@ export type VisualizationControl = {
   id: number
   datasetId: Dataset["id"]
   isDownloadableAsCsv: boolean
-  hasSearchCustomizations: boolean
-  hasFieldsExcludedFromSearch: boolean
-  hasSearchRowLimits: boolean
-  searchRowLimitMaximum: number | null
+  hasPreview: boolean
+  hasFieldsExcludedFromPreview: boolean
+  hasPreviewRowLimit: boolean
+  previewRowLimit: number | null
   createdAt: string
   updatedAt: string
 
@@ -18,7 +18,7 @@ export type VisualizationControl = {
   searchExcludedDatasetFields: DatasetField[]
 }
 
-export type searchExcludedDatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromSearch">
+export type searchExcludedDatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromPreview">
 
 export type VisualizationControlUpdate = Partial<VisualizationControl> & {
   searchExcludedDatasetFieldsAttributes?: searchExcludedDatasetFieldsAttributes[]

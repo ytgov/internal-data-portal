@@ -34,10 +34,10 @@ export class VisualizationControl extends Model<
   declare id: CreationOptional<number>
   declare datasetId: ForeignKey<Dataset["id"]>
   declare isDownloadableAsCsv: CreationOptional<boolean>
-  declare hasSearchCustomizations: CreationOptional<boolean>
-  declare hasFieldsExcludedFromSearch: CreationOptional<boolean>
-  declare hasSearchRowLimits: CreationOptional<boolean>
-  declare searchRowLimitMaximum: CreationOptional<number | null>
+  declare hasPreview: CreationOptional<boolean>
+  declare hasFieldsExcludedFromPreview: CreationOptional<boolean>
+  declare hasPreviewRowLimit: CreationOptional<boolean>
+  declare previewRowLimit: CreationOptional<number | null>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date | null>
@@ -96,7 +96,7 @@ export class VisualizationControl extends Model<
       sourceKey: "datasetId",
       foreignKey: "datasetId",
       scope: {
-        isExcludedFromSearch: true,
+        isExcludedFromPreview: true,
       },
     })
   }
@@ -123,22 +123,22 @@ VisualizationControl.init(
       allowNull: false,
       defaultValue: false,
     },
-    hasSearchCustomizations: {
+    hasPreview: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
-    hasFieldsExcludedFromSearch: {
+    hasFieldsExcludedFromPreview: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
-    hasSearchRowLimits: {
+    hasPreviewRowLimit: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
-    searchRowLimitMaximum: {
+    previewRowLimit: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },

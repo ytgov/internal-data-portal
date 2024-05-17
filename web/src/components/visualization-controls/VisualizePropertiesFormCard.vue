@@ -35,7 +35,7 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.hasSearchCustomizations"
+              v-model="visualizationControl.hasPreview"
               label="Enable search customization?"
               @update:model-value="saveAndNotify"
             />
@@ -53,7 +53,7 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.hasFieldsExcludedFromSearch"
+              v-model="visualizationControl.hasFieldsExcludedFromPreview"
               label="Exclude fields from search?"
               @update:model-value="saveAndNotify"
             />
@@ -85,7 +85,7 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.hasSearchRowLimits"
+              v-model="visualizationControl.hasPreviewRowLimit"
               label="Limit search results?"
               @update:model-value="saveAndNotify"
             />
@@ -96,7 +96,7 @@
             class="py-0"
           >
             <v-text-field
-              v-model="visualizationControl.searchRowLimitMaximum"
+              v-model="visualizationControl.previewRowLimit"
               label="Max Results"
               type="number"
               variant="outlined"
@@ -167,7 +167,7 @@ const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
 async function saveSearchExcludedDatasetFieldsAndNotify(datasetFieldIds: number[]) {
   const searchExcludedDatasetFieldsAttributes = datasetFieldIds.map((datasetFieldId) => ({
     id: datasetFieldId,
-    isExcludedFromSearch: true,
+    isExcludedFromPreview: true,
   }))
 
   try {

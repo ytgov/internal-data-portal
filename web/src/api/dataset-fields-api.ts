@@ -16,7 +16,7 @@ export type DatasetField = {
   dataType: DatasetFieldDataTypes
   description: string
   note: string
-  isExcludedFromSearch: boolean
+  isExcludedFromPreview: boolean
   createdAt: string
   updatedAt: string
 }

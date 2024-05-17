@@ -15,10 +15,10 @@ export const visualizationControlFactory = BaseFactory.define<VisualizationContr
       id: sequence,
       datasetId: params.datasetId,
       isDownloadableAsCsv: faker.datatype.boolean(),
-      hasSearchCustomizations: faker.datatype.boolean(),
-      hasFieldsExcludedFromSearch: faker.datatype.boolean(),
-      hasSearchRowLimits: faker.datatype.boolean(),
-      searchRowLimitMaximum: faker.number.int({ min: 1, max: 100 }),
+      hasPreview: faker.datatype.boolean(),
+      hasFieldsExcludedFromPreview: faker.datatype.boolean(),
+      hasPreviewRowLimit: faker.datatype.boolean(),
+      previewRowLimit: faker.number.int({ min: 1, max: 100 }),
     })
   }
 )

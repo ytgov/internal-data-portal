@@ -23,11 +23,11 @@ export class VisualizationControlsPolicy extends BasePolicy<VisualizationControl
   permittedAttributes(): Path[] {
     return [
       "isDownloadableAsCsv",
-      "hasSearchCustomizations",
-      "hasFieldsExcludedFromSearch",
-      "hasSearchRowLimits",
-      "searchRowLimitMaximum",
-      { searchExcludedDatasetFieldsAttributes: ["id", "isExcludedFromSearch"] },
+      "hasPreview",
+      "hasFieldsExcludedFromPreview",
+      "hasPreviewRowLimit",
+      "previewRowLimit",
+      { searchExcludedDatasetFieldsAttributes: ["id", "isExcludedFromPreview"] },
     ]
   }
 

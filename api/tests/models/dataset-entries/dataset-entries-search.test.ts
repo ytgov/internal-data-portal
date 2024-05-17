@@ -77,14 +77,14 @@ describe("api/src/models/dataset-entries/dataset-entries-search.ts", () => {
         })
         await visualizationControlFactory.create({
           datasetId: dataset.id,
-          hasSearchCustomizations: true,
-          hasFieldsExcludedFromSearch: true,
+          hasPreview: true,
+          hasFieldsExcludedFromPreview: true,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
           name: "email",
           dataType: DatasetField.DataTypes.TEXT,
-          isExcludedFromSearch: true,
+          isExcludedFromPreview: true,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
@@ -257,14 +257,14 @@ describe("api/src/models/dataset-entries/dataset-entries-search.ts", () => {
         })
         await visualizationControlFactory.create({
           datasetId: dataset.id,
-          hasSearchCustomizations: true,
-          hasFieldsExcludedFromSearch: false,
+          hasPreview: true,
+          hasFieldsExcludedFromPreview: false,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
           name: "email",
           dataType: DatasetField.DataTypes.TEXT,
-          isExcludedFromSearch: true,
+          isExcludedFromPreview: true,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
@@ -324,14 +324,14 @@ describe("api/src/models/dataset-entries/dataset-entries-search.ts", () => {
         })
         await visualizationControlFactory.create({
           datasetId: dataset.id,
-          hasSearchCustomizations: false,
-          hasFieldsExcludedFromSearch: true,
+          hasPreview: false,
+          hasFieldsExcludedFromPreview: true,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
           name: "email",
           dataType: DatasetField.DataTypes.TEXT,
-          isExcludedFromSearch: true,
+          isExcludedFromPreview: true,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
@@ -391,9 +391,9 @@ describe("api/src/models/dataset-entries/dataset-entries-search.ts", () => {
         })
         await visualizationControlFactory.create({
           datasetId: dataset.id,
-          hasSearchCustomizations: true,
-          hasSearchRowLimits: true,
-          searchRowLimitMaximum: 2,
+          hasPreview: true,
+          hasPreviewRowLimit: true,
+          previewRowLimit: 2,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
@@ -448,9 +448,9 @@ describe("api/src/models/dataset-entries/dataset-entries-search.ts", () => {
         })
         await visualizationControlFactory.create({
           datasetId: dataset.id,
-          hasSearchCustomizations: false,
-          hasSearchRowLimits: true,
-          searchRowLimitMaximum: 2,
+          hasPreview: false,
+          hasPreviewRowLimit: true,
+          previewRowLimit: 2,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
@@ -510,9 +510,9 @@ describe("api/src/models/dataset-entries/dataset-entries-search.ts", () => {
         })
         await visualizationControlFactory.create({
           datasetId: dataset.id,
-          hasSearchCustomizations: true,
-          hasSearchRowLimits: false,
-          searchRowLimitMaximum: 2,
+          hasPreview: true,
+          hasPreviewRowLimit: false,
+          previewRowLimit: 2,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
@@ -572,9 +572,9 @@ describe("api/src/models/dataset-entries/dataset-entries-search.ts", () => {
         })
         await visualizationControlFactory.create({
           datasetId: dataset.id,
-          hasSearchCustomizations: true,
-          hasSearchRowLimits: true,
-          searchRowLimitMaximum: null,
+          hasPreview: true,
+          hasPreviewRowLimit: true,
+          previewRowLimit: null,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
@@ -634,9 +634,9 @@ describe("api/src/models/dataset-entries/dataset-entries-search.ts", () => {
         })
         await visualizationControlFactory.create({
           datasetId: dataset.id,
-          hasSearchCustomizations: true,
-          hasSearchRowLimits: true,
-          searchRowLimitMaximum: 2,
+          hasPreview: true,
+          hasPreviewRowLimit: true,
+          previewRowLimit: 2,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,

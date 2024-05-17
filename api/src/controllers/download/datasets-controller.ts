@@ -58,7 +58,7 @@ export class DatasetsController extends BaseController {
         "integration",
         {
           association: "fields",
-          where: { isExcludedFromSearch: false },
+          where: { isExcludedFromPreview: false },
         },
         // for policy logic
         {
