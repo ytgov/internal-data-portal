@@ -64,12 +64,12 @@
             class="py-0"
           >
             <DatasetFieldsSelect
-              :model-value="searchExcludedDatasetFieldsIds"
+              :model-value="previewExcludedDatasetFieldsIds"
               :dataset-id="visualizationControl.datasetId"
               :is-saving="isLoading"
               label="Excluded Fields"
               variant="outlined"
-              @update:model-value="saveSearchExcludedDatasetFieldsAndNotify"
+              @update:model-value="savePreviewExcludedDatasetFieldsAndNotify"
             />
           </v-col>
         </v-row>
@@ -132,16 +132,16 @@ const emit = defineEmits(["saved"])
 
 const { visualizationControlId } = toRefs(props)
 const { visualizationControl, save, isLoading } = useVisualizationControl(visualizationControlId)
-const searchExcludedDatasetFieldsIds = computed(() => {
+const previewExcludedDatasetFieldsIds = computed(() => {
   if (isNil(visualizationControl.value)) {
     return []
   }
 
-  if (isNil(visualizationControl.value.searchExcludedDatasetFields)) {
+  if (isNil(visualizationControl.value.previewExcludedDatasetFields)) {
     return []
   }
 
-  return visualizationControl.value.searchExcludedDatasetFields.map(
+  return visualizationControl.value.previewExcludedDatasetFields.map(
     (datasetField) => datasetField.id
   )
 })
@@ -164,15 +164,15 @@ async function saveAndNotify() {
 
 const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
 
-async function saveSearchExcludedDatasetFieldsAndNotify(datasetFieldIds: number[]) {
-  const searchExcludedDatasetFieldsAttributes = datasetFieldIds.map((datasetFieldId) => ({
+async function savePreviewExcludedDatasetFieldsAndNotify(datasetFieldIds: number[]) {
+  const previewExcludedDatasetFieldsAttributes = datasetFieldIds.map((datasetFieldId) => ({
     id: datasetFieldId,
     isExcludedFromPreview: true,
   }))
 
   try {
     await save({
-      searchExcludedDatasetFieldsAttributes,
+      previewExcludedDatasetFieldsAttributes,
     })
     emit("saved")
     snack.notify("Visualization properties saved", {

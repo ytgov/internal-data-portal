@@ -4,7 +4,7 @@ import { DatasetField, User, VisualizationControl } from "@/models"
 import BaseSerializer from "@/serializers/base-serializer"
 
 export type VisualizationControlShowView = Partial<VisualizationControl> & {
-  searchExcludedDatasetFields: DatasetField[]
+  previewExcludedDatasetFields: DatasetField[]
 }
 
 export class ShowSerializer extends BaseSerializer<VisualizationControl> {
@@ -16,8 +16,8 @@ export class ShowSerializer extends BaseSerializer<VisualizationControl> {
   }
 
   perform(): VisualizationControlShowView {
-    if (isUndefined(this.record.searchExcludedDatasetFields)) {
-      throw new Error("Expected record to have a searchExcludedDatasetFields association")
+    if (isUndefined(this.record.previewExcludedDatasetFields)) {
+      throw new Error("Expected record to have a previewExcludedDatasetFields association")
     }
 
     return {
@@ -32,7 +32,7 @@ export class ShowSerializer extends BaseSerializer<VisualizationControl> {
         "createdAt",
         "updatedAt",
       ]),
-      searchExcludedDatasetFields: this.record.searchExcludedDatasetFields,
+      previewExcludedDatasetFields: this.record.previewExcludedDatasetFields,
     }
   }
 }

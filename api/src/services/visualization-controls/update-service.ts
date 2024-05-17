@@ -4,7 +4,7 @@ import BaseService from "@/services/base-service"
 
 type DatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromPreview">[]
 type Attributes = Partial<VisualizationControl> & {
-  searchExcludedDatasetFieldsAttributes?: DatasetFieldsAttributes
+  previewExcludedDatasetFieldsAttributes?: DatasetFieldsAttributes
 }
 
 export class UpdateService extends BaseService {
@@ -20,15 +20,15 @@ export class UpdateService extends BaseService {
     return db.transaction(async () => {
       await this.visualizationControl.update(this.attributes)
 
-      const { searchExcludedDatasetFieldsAttributes } = this.attributes
-      if (searchExcludedDatasetFieldsAttributes) {
-        await this.bulkReplaceSearchExcludeOnDatasetFields(searchExcludedDatasetFieldsAttributes)
+      const { previewExcludedDatasetFieldsAttributes } = this.attributes
+      if (previewExcludedDatasetFieldsAttributes) {
+        await this.bulkReplaceSearchExcludeOnDatasetFields(previewExcludedDatasetFieldsAttributes)
       }
 
       // TODO: log user action
 
       return this.visualizationControl.reload({
-        include: ["searchExcludedDatasetFields"],
+        include: ["previewExcludedDatasetFields"],
       })
     })
   }

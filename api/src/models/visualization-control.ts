@@ -49,50 +49,50 @@ export class VisualizationControl extends Model<
   declare setDataset: BelongsToSetAssociationMixin<Dataset, Dataset["id"]>
   declare createDataset: BelongsToCreateAssociationMixin<Dataset>
 
-  declare getSearchExcludedDatasetFields: HasManyGetAssociationsMixin<DatasetField>
-  declare setSearchExcludedDatasetFields: HasManySetAssociationsMixin<
+  declare getPreviewExcludedDatasetFields: HasManyGetAssociationsMixin<DatasetField>
+  declare setPreviewExcludedDatasetFields: HasManySetAssociationsMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare hasSearchExcludedDatasetField: HasManyHasAssociationMixin<
+  declare hasPreviewExcludedDatasetField: HasManyHasAssociationMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare hasSearchExcludedDatasetFields: HasManyHasAssociationsMixin<
+  declare hasPreviewExcludedDatasetFields: HasManyHasAssociationsMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare addSearchExcludedDatasetField: HasManyAddAssociationMixin<
+  declare addPreviewExcludedDatasetField: HasManyAddAssociationMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare addSearchExcludedDatasetFields: HasManyAddAssociationsMixin<
+  declare addPreviewExcludedDatasetFields: HasManyAddAssociationsMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare removeSearchExcludedDatasetField: HasManyRemoveAssociationMixin<
+  declare removePreviewExcludedDatasetField: HasManyRemoveAssociationMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare removeSearchExcludedDatasetFields: HasManyRemoveAssociationsMixin<
+  declare removePreviewExcludedDatasetFields: HasManyRemoveAssociationsMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare countSearchExcludedDatasetFields: HasManyCountAssociationsMixin
-  declare createSearchExcludedDatasetField: HasManyCreateAssociationMixin<DatasetField>
+  declare countPreviewExcludedDatasetFields: HasManyCountAssociationsMixin
+  declare createPreviewExcludedDatasetField: HasManyCreateAssociationMixin<DatasetField>
 
   declare dataset?: NonAttribute<Dataset>
-  declare searchExcludedDatasetFields?: NonAttribute<DatasetField[]>
+  declare previewExcludedDatasetFields?: NonAttribute<DatasetField[]>
 
   declare static associations: {
     dataset: Association<VisualizationControl, Dataset>
-    searchExcludedDatasetFields: Association<VisualizationControl, DatasetField>
+    previewExcludedDatasetFields: Association<VisualizationControl, DatasetField>
   }
 
   static establishAssociations() {
     this.belongsTo(Dataset, { as: "dataset" })
     this.hasMany(DatasetField, {
-      as: "searchExcludedDatasetFields",
+      as: "previewExcludedDatasetFields",
       sourceKey: "datasetId",
       foreignKey: "datasetId",
       scope: {

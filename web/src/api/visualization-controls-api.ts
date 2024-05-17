@@ -15,13 +15,13 @@ export type VisualizationControl = {
   updatedAt: string
 
   // Associations
-  searchExcludedDatasetFields: DatasetField[]
+  previewExcludedDatasetFields: DatasetField[]
 }
 
-export type searchExcludedDatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromPreview">
+export type previewExcludedDatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromPreview">
 
 export type VisualizationControlUpdate = Partial<VisualizationControl> & {
-  searchExcludedDatasetFieldsAttributes?: searchExcludedDatasetFieldsAttributes[]
+  previewExcludedDatasetFieldsAttributes?: previewExcludedDatasetFieldsAttributes[]
 }
 
 export const visualizationControlsApi = {

@@ -27,7 +27,7 @@ export class VisualizationControlsPolicy extends BasePolicy<VisualizationControl
       "hasFieldsExcludedFromPreview",
       "hasPreviewRowLimit",
       "previewRowLimit",
-      { searchExcludedDatasetFieldsAttributes: ["id", "isExcludedFromPreview"] },
+      { previewExcludedDatasetFieldsAttributes: ["id", "isExcludedFromPreview"] },
     ]
   }
 
