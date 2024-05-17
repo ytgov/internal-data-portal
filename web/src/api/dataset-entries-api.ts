@@ -15,23 +15,24 @@ export type DatasetEntry = {
   updatedAt: string
 }
 
+export type DatasetEntriesFilters = {
+  search?: string
+}
+
 export const datasetEntriesApi = {
-  async list({
-    where,
-    searchToken,
-    page,
-    perPage,
-  }: {
-    where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
-    searchToken?: string
-    page?: number
-    perPage?: number
-  } = {}): Promise<{
+  async list(
+    params: {
+      where?: Record<string, unknown> // TODO: consider adding Sequelize types to front-end?
+      filters?: DatasetEntriesFilters
+      page?: number
+      perPage?: number
+    } = {}
+  ): Promise<{
     datasetEntries: DatasetEntry[]
     totalCount: number
   }> {
     const { data } = await http.get("/api/dataset-entries", {
-      params: { where, searchToken, page, perPage },
+      params,
     })
     return data
   },

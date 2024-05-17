@@ -13,13 +13,15 @@ import BaseController from "@/controllers/base-controller"
 export class DatasetEntriesController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<DatasetEntry>
-    const searchToken = this.query.searchToken as string
+    const filters = this.query.filters as Record<string, unknown>
 
     const scopedDatasetEntries = DatasetEntriesPolicy.applyScope(DatasetEntry, this.currentUser)
 
     let filteredDatasetEntries = scopedDatasetEntries
-    if (!isEmpty(searchToken)) {
-      filteredDatasetEntries = scopedDatasetEntries.scope({ method: ["search", searchToken] })
+    if (!isEmpty(filters)) {
+      Object.entries(filters).forEach(([key, value]) => {
+        filteredDatasetEntries = filteredDatasetEntries.scope({ method: [key, value] })
+      })
     }
 
     if (this.format === "csv") {

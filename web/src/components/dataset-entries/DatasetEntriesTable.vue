@@ -134,7 +134,9 @@ const datasetEntriesQuery = computed(() => ({
   where: {
     datasetId: props.datasetId,
   },
-  searchToken: searchToken.value,
+  filters: {
+    search: searchToken.value,
+  },
   perPage: itemsPerPage.value,
   page: page.value,
 }))

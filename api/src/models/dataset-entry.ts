@@ -11,6 +11,7 @@ import {
   NonAttribute,
   Op,
 } from "sequelize"
+import { isEmpty } from "lodash"
 
 import sequelize from "@/db/db-client"
 
@@ -117,16 +118,20 @@ DatasetEntry.init(
     ],
     scopes: {
       search(searchToken: string) {
+        if (isEmpty(searchToken)) {
+          return {}
+        }
+
         return {
           where: {
             id: {
               [Op.in]: datasetEntriesSearch(),
-            }
+            },
           },
           replacements: {
             searchTokenWildcard: `%${searchToken}%`,
             searchToken,
-          }
+          },
         }
       },
     },
