@@ -11,12 +11,14 @@ import {
   NonAttribute,
   Op,
 } from "sequelize"
+import { isEmpty } from "lodash"
 
 import sequelize from "@/db/db-client"
 
 import BaseModel from "@/models/base-model"
 import Dataset from "@/models/dataset"
 import DatasetEntry, { DatasetEntryJsonDataType } from "@/models/dataset-entry"
+import VisualizationControl from "@/models/visualization-control"
 
 export class DatasetEntryPreview extends BaseModel<
   InferAttributes<DatasetEntryPreview>,
@@ -43,15 +45,22 @@ export class DatasetEntryPreview extends BaseModel<
 
   declare dataset?: NonAttribute<Dataset>
   declare datasetEntry?: NonAttribute<DatasetEntry>
+  declare visualizationControl?: NonAttribute<VisualizationControl>
 
   declare static associations: {
     dataset: Association<DatasetEntryPreview, Dataset>
     datasetEntry: Association<DatasetEntryPreview, DatasetEntry>
+    visualizationControl: Association<DatasetEntryPreview, VisualizationControl>
   }
 
   static establishAssociations() {
     this.belongsTo(Dataset, { as: "dataset" })
     this.belongsTo(DatasetEntry, { as: "datasetEntry" })
+    this.belongsTo(VisualizationControl, {
+      as: "visualizationControl",
+      foreignKey: "datasetId",
+      targetKey: "datasetId",
+    })
   }
 }
 
@@ -122,6 +131,37 @@ DatasetEntryPreview.init(
         },
       },
     ],
+    scopes: {
+      search(searchToken: string) {
+        console.warn("DatasetEntryPreview.search() has not been implemented yet.")
+        if (isEmpty(searchToken)) {
+          return {}
+        }
+
+        return {
+          where: {
+           // TODO: Implement DatasetEntryPreview search
+          },
+          replacements: {
+            searchTokenWildcard: `%${searchToken}%`,
+            searchToken,
+          },
+        }
+      },
+      withPreviewEnabled() {
+        return {
+          include: [
+            {
+              association: "visualizationControl",
+              attributes: [],
+              where: {
+                hasPreview: true,
+              },
+            },
+          ],
+        }
+      },
+    },
   }
 )
 
