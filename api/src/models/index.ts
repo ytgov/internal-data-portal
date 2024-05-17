@@ -13,6 +13,7 @@ import { AccessRequest } from "@/models/access-request"
 import { DatasetField } from "@/models/dataset-field"
 import { VisualizationControl } from "@/models/visualization-control"
 import { DatasetEntry } from "@/models/dataset-entry"
+import { DatasetEntryPreview } from "@/models/dataset-entry-preview"
 import { DatasetIntegration } from "@/models/dataset-integration"
 import { DatasetFile } from "@/models/dataset-file"
 
@@ -30,6 +31,7 @@ DatasetStewardship.establishAssociations()
 DatasetField.establishAssociations()
 VisualizationControl.establishAssociations()
 DatasetEntry.establishAssociations()
+DatasetEntryPreview.establishAssociations()
 DatasetIntegration.establishAssociations()
 DatasetFile.establishAssociations()
 
@@ -38,6 +40,7 @@ export {
   AccessRequest,
   Dataset,
   DatasetEntry,
+  DatasetEntryPreview,
   DatasetField,
   DatasetFile,
   DatasetIntegration,
