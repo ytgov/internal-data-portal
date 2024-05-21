@@ -36,7 +36,7 @@
           >
             <v-checkbox
               v-model="visualizationControl.hasPreview"
-              label="Enable search customization?"
+              label="Enable preview?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -54,7 +54,7 @@
           >
             <v-checkbox
               v-model="visualizationControl.hasFieldsExcludedFromPreview"
-              label="Exclude fields from search?"
+              label="Exclude fields from preview?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -86,7 +86,7 @@
           >
             <v-checkbox
               v-model="visualizationControl.hasPreviewRowLimit"
-              label="Limit search results?"
+              label="Limit preview results?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -100,7 +100,7 @@
               label="Max Results"
               type="number"
               variant="outlined"
-              clearable
+              min="0"
               @input="debouncedSaveAndNotify"
               @click:clear="saveAndNotify"
             />
