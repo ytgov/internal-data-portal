@@ -21,26 +21,40 @@
     </template>
   </div>
 
-  <v-spacer class="mt-6"/>
+  <v-spacer class="mt-6" />
   <v-skeleton-loader
     v-if="isNil(dataset)"
     type="table"
   />
-  <DatasetEntriesTable
-    v-else
-    :dataset-id="dataset.id"
-    :visualization-control-id="dataset.visualizationControl.id"
-  />
+  <template v-else>
+    <SwitchableDatasetEntryPreviewsTable
+      v-if="isSwitchablePreviewAvailable"
+      :dataset-id="dataset.id"
+      :visualization-control-id="dataset.visualizationControl.id"
+    />
+    <DatasetEntriesTable
+      v-else-if="isFullViewAvailable"
+      :dataset-id="dataset.id"
+      :visualization-control-id="dataset.visualizationControl.id"
+    />
+    <DatasetEntryPreviewsTable
+      v-else
+      :dataset-id="dataset.id"
+      :visualization-control-id="dataset.visualizationControl.id"
+    />
+  </template>
 </template>
 
 <script setup lang="ts">
-import { toRefs } from "vue"
+import { computed, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 import { useDataset } from "@/use/use-dataset"
 
 import DatasetEntriesTable from "@/components/dataset-entries/DatasetEntriesTable.vue"
+import DatasetEntryPreviewsTable from "@/components/dataset-entry-previews/DatasetEntryPreviewsTable.vue"
+import SwitchableDatasetEntryPreviewsTable from "@/components/dataset-entry-previews/SwitchableDatasetEntryPreviewsTable.vue"
 
 const props = defineProps({
   slug: {
@@ -51,6 +65,15 @@ const props = defineProps({
 
 const { slug } = toRefs(props)
 const { dataset, policy } = useDataset(slug)
+
+const isSwitchablePreviewAvailable = computed(() => {
+  return policy.value?.update
+})
+
+const isFullViewAvailable = computed(() => {
+  // TODO: show when user has full read rights
+  return false
+})
 
 const { setBreadcrumbs } = useBreadcrumbs()
 
