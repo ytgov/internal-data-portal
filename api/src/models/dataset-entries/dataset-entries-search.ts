@@ -2,6 +2,7 @@ import { literal } from "sequelize"
 import { Literal } from "sequelize/types/utils"
 
 import { compactSql } from "@/utils/compact-sql"
+import { JsonDataType } from "@/db/utils/mssql-json-object-types"
 
 /**
  * Requires replacements to be passed in to query.
@@ -9,45 +10,34 @@ import { compactSql } from "@/utils/compact-sql"
  */
 export function datasetEntriesSearch(): Literal {
   /**
-   * Only applies search field exclusions when enabled.
-   *
    * TODO: add ability to inject early filtering,
    * or at least early filtering on dataset_id, as this will vastly speed up the query.
+   *
+   * See https://learn.microsoft.com/en-us/sql/t-sql/functions/openjson-transact-sql?view=sql-server-ver16#return-value
    */
-  const searchResultsQuery = compactSql(/*sql*/ `
+  const matchingEntries = compactSql(/*sql*/ `
     (
       SELECT
-        DISTINCT dataset_entries.id as dataset_entry_id
+        dataset_entries.id
       FROM
         dataset_entries
-        INNER JOIN dataset_fields ON dataset_fields.dataset_id = dataset_entries.dataset_id
-        AND dataset_fields.deleted_at IS NULL
+        CROSS APPLY OPENJSON(dataset_entries.json_data) AS json_values
       WHERE
         dataset_entries.deleted_at IS NULL
         AND (
           (
-            dataset_fields.data_type = 'text'
-            AND LOWER(
-              JSON_VALUE(
-                dataset_entries.json_data,
-                CONCAT('$."', dataset_fields.name, '"')
-              )
-            ) LIKE LOWER(:searchTokenWildcard)
+            json_values.[type] = ${JsonDataType.STRING}
+            AND LOWER(json_values.value) LIKE LOWER(:searchTokenWildcard)
           )
           OR (
-            dataset_fields.data_type = 'integer'
-            AND TRY_CAST(
-              JSON_VALUE(
-                dataset_entries.json_data,
-                CONCAT('$."', dataset_fields.name, '"')
-              ) AS NVARCHAR
-            ) = :searchToken
+            json_values.[type] = ${JsonDataType.NUMBER}
+            AND TRY_CAST(json_values.value AS NVARCHAR) = :searchToken
           )
         )
     )
   `)
 
-  return literal(searchResultsQuery)
+  return literal(matchingEntries)
 }
 
 export default datasetEntriesSearch
