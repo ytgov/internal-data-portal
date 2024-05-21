@@ -1,6 +1,7 @@
 import db, { DatasetField, User, VisualizationControl } from "@/models"
 
 import BaseService from "@/services/base-service"
+import RefreshDatasetEntryPreviewService from "@/services/visualization-controls/refresh-dataset-entry-preview-service"
 
 type DatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromPreview">[]
 type Attributes = Partial<VisualizationControl> & {
@@ -23,6 +24,10 @@ export class UpdateService extends BaseService {
       const { previewExcludedDatasetFieldsAttributes } = this.attributes
       if (previewExcludedDatasetFieldsAttributes) {
         await this.bulkReplaceSearchExcludeOnDatasetFields(previewExcludedDatasetFieldsAttributes)
+      }
+
+      if (this.visualizationControl.hasPreview) {
+        await RefreshDatasetEntryPreviewService.perform(this.visualizationControl, this.currentUser)
       }
 
       // TODO: log user action
