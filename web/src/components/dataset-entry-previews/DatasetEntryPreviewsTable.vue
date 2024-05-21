@@ -33,8 +33,7 @@
       #tbody
     >
       <v-container>
-        To display data in the table, please navigate to the 'Fields' tab and add the relevant
-        fields. This step is necessary to visualize the data.
+        To display data in the table, please add at least one field to the preview.
       </v-container>
     </template>
   </v-data-table-server>
