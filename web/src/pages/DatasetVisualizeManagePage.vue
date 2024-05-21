@@ -13,7 +13,7 @@
   <div class="d-flex justify-end">
     <v-switch
       v-model="showPreview"
-      :label="`Preview: ${showPreview ? 'On' : 'Off'}`"
+      :label="showPreview ? 'Preview' : 'Full'"
       color="primary"
       inset
     />
