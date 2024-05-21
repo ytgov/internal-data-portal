@@ -37,7 +37,7 @@ export class VisualizationControl extends Model<
   declare hasPreview: CreationOptional<boolean>
   declare hasFieldsExcludedFromPreview: CreationOptional<boolean>
   declare hasPreviewRowLimit: CreationOptional<boolean>
-  declare previewRowLimit: CreationOptional<number | null>
+  declare previewRowLimit: CreationOptional<number>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date | null>
@@ -131,16 +131,17 @@ VisualizationControl.init(
     hasFieldsExcludedFromPreview: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
     hasPreviewRowLimit: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
     previewRowLimit: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: 10,
       validate: {
         min: 10,
       },
