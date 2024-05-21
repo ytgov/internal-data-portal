@@ -18,7 +18,7 @@ export const visualizationControlFactory = BaseFactory.define<VisualizationContr
       hasPreview: faker.datatype.boolean(),
       hasFieldsExcludedFromPreview: faker.datatype.boolean(),
       hasPreviewRowLimit: faker.datatype.boolean(),
-      previewRowLimit: faker.number.int({ min: 1, max: 100 }),
+      previewRowLimit: faker.number.int({ min: 10, max: 100 }),
     })
   }
 )

@@ -10,7 +10,7 @@ export type VisualizationControl = {
   hasPreview: boolean
   hasFieldsExcludedFromPreview: boolean
   hasPreviewRowLimit: boolean
-  previewRowLimit: number | null
+  previewRowLimit: number
   createdAt: string
   updatedAt: string
 
