@@ -15,6 +15,7 @@ import { isEmpty } from "lodash"
 
 import sequelize from "@/db/db-client"
 
+import { datasetEntryPreviewsSearch } from "@/models/dataset-entry-previews"
 import BaseModel from "@/models/base-model"
 import Dataset from "@/models/dataset"
 import DatasetEntry, { DatasetEntryJsonDataType } from "@/models/dataset-entry"
@@ -133,14 +134,15 @@ DatasetEntryPreview.init(
     ],
     scopes: {
       search(searchToken: string) {
-        console.warn("DatasetEntryPreview.search() has not been implemented yet.")
         if (isEmpty(searchToken)) {
           return {}
         }
 
         return {
           where: {
-           // TODO: Implement DatasetEntryPreview search
+            id: {
+              [Op.in]: datasetEntryPreviewsSearch(),
+            },
           },
           replacements: {
             searchTokenWildcard: `%${searchToken}%`,
