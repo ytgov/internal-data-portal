@@ -1,4 +1,4 @@
-import { pick } from "lodash"
+import { isEmpty, pick } from "lodash"
 
 import nestableTransaction from "@/db/utils/nestable-transaction"
 import {
@@ -33,6 +33,9 @@ export class RefreshDatasetEntryPreviewService extends BaseService {
         },
       })
       const previewableDatasetFieldNames = previewableDatasetFields.map((field) => field.name)
+      if (isEmpty(previewableDatasetFieldNames)) {
+        return []
+      }
 
       const datasetEntriesForPreview = await DatasetEntry.findAll({
         where: {
