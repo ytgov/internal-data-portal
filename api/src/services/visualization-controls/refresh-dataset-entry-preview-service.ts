@@ -1,6 +1,7 @@
 import { pick } from "lodash"
 
-import db, {
+import nestableTransaction from "@/db/utils/nestable-transaction"
+import {
   DatasetEntry,
   DatasetEntryPreview,
   DatasetField,
@@ -18,7 +19,7 @@ export class RefreshDatasetEntryPreviewService extends BaseService {
   }
 
   async perform(): Promise<DatasetEntryPreview[]> {
-    return db.transaction(async () => {
+    return nestableTransaction(async () => {
       await DatasetEntryPreview.destroy({
         where: {
           datasetId: this.visualizationControl.datasetId,
