@@ -71,8 +71,7 @@ const isSwitchablePreviewAvailable = computed(() => {
 })
 
 const isFullViewAvailable = computed(() => {
-  // TODO: show when user has full read rights
-  return false
+  return policy.value?.showUnlimited
 })
 
 const { setBreadcrumbs } = useBreadcrumbs()
