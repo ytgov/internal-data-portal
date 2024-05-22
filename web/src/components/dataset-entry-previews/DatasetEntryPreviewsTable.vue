@@ -27,10 +27,9 @@
         </v-col>
       </v-row>
     </template>
-    <!-- TODO: remove this once fields are auto-generated on dataset import -->
     <template
-      v-if="isEmpty(headers) && !isEmpty(datasetEntryPreviewsData)"
-      #tbody
+      v-if="isEmpty(headers) && isEmpty(datasetEntryPreviewsData)"
+      #no-data
     >
       <v-container>
         To display data in the table, please add at least one field to the preview.
