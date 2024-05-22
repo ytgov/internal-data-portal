@@ -1,3 +1,8 @@
+/**
+ * Don't overuse this, it's not a full SQL parser.
+ * It's only purpose is to make SQL formatted by Sequelize 6 a bit more readable during development.
+ * It is no longer needed in Sequelize 7.
+ */
 export function compactSql(sql: string) {
   const multiLineCommentPattern = /\/\*[\s\S]*?\*\//g
   const singleLineCommentPattern = /--.*$/gm
