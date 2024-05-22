@@ -4,27 +4,21 @@
 
 <script lang="ts" setup>
 import { computed } from "vue"
-import { useRoute } from "vue-router"
 
-defineProps({
+const props = defineProps({
   slug: {
     type: String,
     required: true,
   },
+  isManaging: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-const route = useRoute()
-
-// TODO: maybe vary route by user role?
 const routeName = computed(() => {
-  switch (route.name) {
-    case "DatasetDescriptionManagePage":
-    case "DatasetFieldsManagePage":
-    case "DatasetAccessManagePage":
-    case "DatasetVisualizeManagePage":
-      return "DatasetDescriptionManagePage"
-    default:
-      return "DatasetDescriptionReadPage"
-  }
+  if (props.isManaging) return "DatasetDescriptionManagePage"
+
+  return "DatasetDescriptionReadPage"
 })
 </script>

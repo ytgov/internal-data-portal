@@ -20,6 +20,7 @@
         :key="index"
         :value="index"
         :slug="slug"
+        :is-managing="isManaging"
       />
     </v-tabs>
 
@@ -29,6 +30,7 @@
 
 <script lang="ts" setup>
 import { computed, toRefs, defineAsyncComponent, ref } from "vue"
+import { useRoute } from "vue-router"
 import { isNil } from "lodash"
 
 import useDataset from "@/use/use-dataset"
@@ -63,6 +65,21 @@ type TabComponents = {
 
 const canUpdateDataset = computed(() => {
   return policy.value?.update === true
+})
+
+const route = useRoute()
+const isManaging = computed(() => {
+  if (canUpdateDataset.value === false) return false
+
+  switch (route.name) {
+    case "DatasetDescriptionManagePage":
+    case "DatasetFieldsManagePage":
+    case "DatasetAccessManagePage":
+    case "DatasetVisualizeManagePage":
+      return true
+    default:
+      return false
+  }
 })
 
 const availableTabs = computed<TabComponents[]>(() => {
