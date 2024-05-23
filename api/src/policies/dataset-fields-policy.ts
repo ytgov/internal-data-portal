@@ -46,31 +46,56 @@ export class DatasetFieldsPolicy extends PolicyFactory<DatasetField, DatasetFiel
       user,
       [AccessTypes.OPEN_ACCESS]
     )
+    const datasetsAccessibleViaAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(user, [
+      AccessTypes.OPEN_ACCESS,
+      AccessTypes.SELF_SERVE_ACCESS,
+      AccessTypes.SCREENED_ACCESS,
+    ])
     const datasetsWithApprovedAccessRequestsForUserQuery =
       datasetsWithApprovedAccessRequestsFor(user)
     if (user.isDataOwner) {
       const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
       return {
         where: {
-          datasetId: {
-            [Op.or]: [
-              { [Op.in]: datasetsAccessibleViaOwnerQuery },
-              { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
-              { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
-            ],
-          },
+          [Op.or]: [
+            {
+              datasetId: {
+                [Op.or]: [
+                  { [Op.in]: datasetsAccessibleViaOwnerQuery },
+                  { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
+                  { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
+                ],
+              },
+            },
+            {
+              datasetId: {
+                [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery,
+              },
+              isExcludedFromPreview: false,
+            },
+          ],
         },
       }
     }
 
     return {
       where: {
-        datasetId: {
-          [Op.or]: [
-            { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
-            { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
-          ],
-        },
+        [Op.or]: [
+          {
+            datasetId: {
+              [Op.or]: [
+                { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
+                { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
+              ],
+            },
+          },
+          {
+            datasetId: {
+              [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery,
+            },
+            isExcludedFromPreview: false,
+          },
+        ],
       },
     }
   }

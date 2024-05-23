@@ -211,9 +211,14 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
             ownerId: datasetOwner.id,
           })
 
+        const accessibleDatasetField = await datasetFieldFactory.create({
+          datasetId: screenedDataset.id,
+          isExcludedFromPreview: false,
+        })
         // inaccessible dataset field - via screened access
         await datasetFieldFactory.create({
           datasetId: screenedDataset.id,
+          isExcludedFromPreview: true,
         })
         // inaccessible dataset field - for control case
         await datasetFieldFactory.create({
@@ -225,8 +230,14 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         const result = await scopedQuery.findAll()
 
         // Assert
-        expect(DatasetField.count()).resolves.toBe(2)
-        expect(result).toHaveLength(0)
+        expect(DatasetField.count()).resolves.toBe(3)
+        expect(result).toHaveLength(1)
+        expect(result).toEqual([
+          expect.objectContaining({
+            id: accessibleDatasetField.id,
+            isExcludedFromPreview: false,
+          }),
+        ])
       })
 
       test("when user has role type user, and field belongs to dataset with accessible screened access grants, with an approved request, returns the datasets fields", async () => {
