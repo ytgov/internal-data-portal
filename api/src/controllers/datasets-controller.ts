@@ -1,4 +1,4 @@
-import { WhereOptions } from "sequelize"
+import { Op, WhereOptions } from "sequelize"
 import { isEmpty, isNil } from "lodash"
 
 import { Dataset } from "@/models"
@@ -142,8 +142,12 @@ export class DatasetsController extends BaseController {
         "integration",
         "stewardship",
         "accessGrants",
-        "accessRequests",
         "visualizationControl",
+        {
+          association: "accessRequests",
+          where: { revokedAt: { [Op.is]: null } },
+          required: false,
+        },
       ],
     })
 
