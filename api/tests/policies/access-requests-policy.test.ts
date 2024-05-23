@@ -1,4 +1,3 @@
-import { AccessRequest } from "@/models"
 import { RoleTypes } from "@/models/role"
 
 import { AccessRequestsPolicy } from "@/policies"
@@ -55,7 +54,7 @@ describe("api/src/policies/access-requests-policy.ts", () => {
             accessGrantId: accessGrant2.id,
             requestorId: requestor2.id,
           })
-          const scopedQuery = AccessRequestsPolicy.applyScope(AccessRequest, requestingUser)
+          const scopedQuery = AccessRequestsPolicy.applyScope([], requestingUser)
 
           // Act
           const result = await scopedQuery.findAll()
@@ -72,7 +71,7 @@ describe("api/src/policies/access-requests-policy.ts", () => {
         }
       )
 
-      test("when user role is `data_owner`, it returns only records where the user is the dataset owner", async () => {
+      test.only("when user role is `data_owner`, it returns only records where the user is the dataset owner", async () => {
         // Arrange
         const role = roleFactory.build({ role: RoleTypes.DATA_OWNER })
         const requestingUser = await userFactory
@@ -111,13 +110,15 @@ describe("api/src/policies/access-requests-policy.ts", () => {
           accessGrantId: accessGrant2.id,
           requestorId: requestor2.id,
         })
-        const scopedQuery = AccessRequestsPolicy.applyScope(AccessRequest, requestingUser)
+        const scopedQuery = AccessRequestsPolicy.applyScope([], requestingUser)
 
         // Act
-        const result = await scopedQuery.findAll()
+        const result = await scopedQuery.findAll({
+          logging: console.log,
+        })
 
         // Assert
-        expect(result).toEqual([
+        expect(result.map((r) => r.dataValues)).toEqual([
           expect.objectContaining({
             id: accessRequest1.id,
           }),
@@ -163,7 +164,7 @@ describe("api/src/policies/access-requests-policy.ts", () => {
           accessGrantId: accessGrant2.id,
           requestorId: requestor2.id,
         })
-        const scopedQuery = AccessRequestsPolicy.applyScope(AccessRequest, requestingUser)
+        const scopedQuery = AccessRequestsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()

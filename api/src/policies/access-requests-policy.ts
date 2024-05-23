@@ -1,11 +1,9 @@
-import { ModelStatic, NonAttribute } from "sequelize"
+import { Attributes, FindOptions, NonAttribute } from "sequelize"
 import { isNil } from "lodash"
 
 import { Path } from "@/utils/deep-pick"
-
 import { Dataset, AccessRequest, User, UserGroupMembership, UserGroup, AccessGrant } from "@/models"
-
-import BasePolicy from "@/policies/base-policy"
+import { PolicyFactory } from "@/policies/base-policy"
 import DatasetsPolicy from "@/policies/datasets-policy"
 
 export type AccessRequestWithDataset = AccessRequest & { dataset: NonAttribute<Dataset> }
@@ -23,9 +21,10 @@ export type AccessRequestForCreate = AccessRequest & {
   }
 }
 
-export class AccessRequestsPolicy extends BasePolicy<
+export class AccessRequestsPolicy extends PolicyFactory<
+  AccessRequest,
   AccessRequestWithDataset | AccessRequestForCreate
-> {
+>(AccessRequest) {
   private readonly datasetsPolicy: DatasetsPolicy
 
   constructor(user: User, record: AccessRequestWithDataset | AccessRequestForCreate) {
@@ -48,23 +47,29 @@ export class AccessRequestsPolicy extends BasePolicy<
     return this.datasetsPolicy.update()
   }
 
-  static applyScope(
-    modelClass: ModelStatic<AccessRequest>,
-    user: User
-  ): ModelStatic<AccessRequest> {
+  static policyScope(user: User): FindOptions<Attributes<AccessRequest>> {
     if (user.isSystemAdmin || user.isBusinessAnalyst) {
-      return modelClass
+      return {}
     }
 
     if (user.isDataOwner) {
-      return modelClass.scope({ method: ["withDatasetOwnerId", user.id] })
+      return {
+        include: [
+          {
+            association: "dataset",
+            where: {
+              ownerId: user.id,
+            },
+          },
+        ],
+      }
     }
 
-    return modelClass.scope({
+    return {
       where: {
         requestorId: user.id,
       },
-    })
+    }
   }
 
   permittedAttributesForUpdate(): Path[] {

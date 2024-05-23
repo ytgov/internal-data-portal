@@ -33,6 +33,11 @@ export class BasePolicy<M extends Model> {
     return false
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static policyScope<M extends Model>(user: User): FindOptions<Attributes<M>> {
+    throw new Error("Derived classes must implement policyScope method")
+  }
+
   permitAttributes(record: Partial<M>): Partial<M> {
     return deepPick(record, this.permittedAttributes())
   }
@@ -89,8 +94,8 @@ export type BaseScopeOptions = string | ScopeOptions
 
 export const POLICY_SCOPE_NAME = "policyScope"
 
-export function PolicyFactory<M extends Model>(modelClass: ModelStatic<M>) {
-  const policyClass = class Policy extends BasePolicy<M> {
+export function PolicyFactory<M extends Model, T extends Model = M>(modelClass: ModelStatic<M>) {
+  const policyClass = class Policy extends BasePolicy<T> {
     static applyScope(scopes: BaseScopeOptions[], user: User): ModelStatic<M> {
       this.ensurePolicyScope()
 
@@ -107,11 +112,6 @@ export function PolicyFactory<M extends Model>(modelClass: ModelStatic<M>) {
       }
 
       modelClass.addScope(POLICY_SCOPE_NAME, this.policyScope.bind(modelClass))
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    static policyScope(user: User): FindOptions<Attributes<M>> {
-      throw new Error("Derived classes must implement policyScope method")
     }
   }
 
