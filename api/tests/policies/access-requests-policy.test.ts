@@ -71,7 +71,7 @@ describe("api/src/policies/access-requests-policy.ts", () => {
         }
       )
 
-      test.only("when user role is `data_owner`, it returns only records where the user is the dataset owner", async () => {
+      test("when user role is `data_owner`, it returns only records where the user is the dataset owner", async () => {
         // Arrange
         const role = roleFactory.build({ role: RoleTypes.DATA_OWNER })
         const requestingUser = await userFactory
