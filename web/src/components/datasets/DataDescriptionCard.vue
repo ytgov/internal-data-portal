@@ -33,7 +33,9 @@
         <v-chip
           v-else-if="
             !isNil(currentUserAccessGrant) &&
-            currentUserAccessGrant.accessType === AccessTypes.SELF_SERVE_ACCESS &&
+            [AccessTypes.SELF_SERVE_ACCESS, AccessTypes.SCREENED_ACCESS].includes(
+              currentUserAccessGrant.accessType
+            ) &&
             !isNil(currentUserAccessRequest) &&
             !isNil(currentUserAccessRequest.approvedAt)
           "
