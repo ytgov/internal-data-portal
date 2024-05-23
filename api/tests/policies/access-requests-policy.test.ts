@@ -113,9 +113,7 @@ describe("api/src/policies/access-requests-policy.ts", () => {
         const scopedQuery = AccessRequestsPolicy.applyScope([], requestingUser)
 
         // Act
-        const result = await scopedQuery.findAll({
-          logging: console.log,
-        })
+        const result = await scopedQuery.findAll()
 
         // Assert
         expect(result.map((r) => r.dataValues)).toEqual([
