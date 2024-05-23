@@ -12,6 +12,7 @@ import {
   userFactory,
   userGroupFactory,
   userGroupMembershipFactory,
+  visualizationControlFactory,
 } from "@/factories"
 import { AccessTypes, GrantLevels } from "@/models/access-grant"
 
@@ -448,6 +449,71 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
             id: accessibleDatasetField.id,
           }),
         ])
+      })
+
+      test("when user has role type user, and field belongs to dataset with limited access and preview mode disabled, restricts all datasets fields", async () => {
+        // Arrange
+        const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const requestingUserGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const role = roleFactory.build({ role: RoleTypes.USER })
+        const requestingUser = await userFactory
+          .transient({
+            include: ["groupMembership"],
+          })
+          .associations({
+            roles: [role],
+            groupMembership: requestingUserGroupMembership,
+          })
+          .create()
+
+        const datasetOwner = await userFactory
+          .associations({
+            groupMembership: datasetOwnerGroupMembership,
+          })
+          .create()
+
+        const accessGrant = accessGrantFactory.build({
+          creatorId: datasetOwner.id,
+          grantLevel: GrantLevels.GOVERNMENT_WIDE,
+          accessType: AccessTypes.SCREENED_ACCESS,
+        })
+        const dataset = await datasetFactory
+          .associations({
+            accessGrants: [accessGrant],
+          })
+          .create({
+            creatorId: datasetOwner.id,
+            ownerId: datasetOwner.id,
+          })
+        await visualizationControlFactory.create({
+          datasetId: dataset.id,
+          hasPreview: false,
+        })
+
+        // inaccessible via preview mode disabled
+        await datasetFieldFactory.create({
+          datasetId: dataset.id,
+          isExcludedFromPreview: false,
+        })
+        // inaccessible via screened access
+        await datasetFieldFactory.create({
+          datasetId: dataset.id,
+          isExcludedFromPreview: true,
+        })
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
+
+        // Act
+        const result = await scopedQuery.findAll()
+
+        // Assert
+        expect(await DatasetField.count()).toBe(2)
+        expect(result).toHaveLength(0)
+        expect(result).toEqual([])
       })
     })
   })

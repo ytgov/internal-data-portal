@@ -8,10 +8,10 @@ import {
   datasetsAccessibleViaAccessGrantsBy,
   datasetsAccessibleViaOwner,
   datasetsWithApprovedAccessRequestsFor,
+  datasetsWithPreviewDisabled,
 } from "@/models/datasets"
-import DatasetsPolicy from "@/policies/datasets-policy"
-
 import { PolicyFactory } from "@/policies/base-policy"
+import DatasetsPolicy from "@/policies/datasets-policy"
 
 export type DatasetFieldWithDataset = DatasetField & { dataset: NonAttribute<Dataset> }
 
@@ -53,6 +53,15 @@ export class DatasetFieldsPolicy extends PolicyFactory<DatasetField, DatasetFiel
     ])
     const datasetsWithApprovedAccessRequestsForUserQuery =
       datasetsWithApprovedAccessRequestsFor(user)
+    const datasetsWithPreviewDisabledQuery = datasetsWithPreviewDisabled()
+
+    const accessibleViaPreviewQuery = {
+      datasetId: {
+        [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery,
+        [Op.notIn]: datasetsWithPreviewDisabledQuery,
+      },
+      isExcludedFromPreview: false,
+    }
     if (user.isDataOwner) {
       const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
       return {
@@ -67,12 +76,7 @@ export class DatasetFieldsPolicy extends PolicyFactory<DatasetField, DatasetFiel
                 ],
               },
             },
-            {
-              datasetId: {
-                [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery,
-              },
-              isExcludedFromPreview: false,
-            },
+            accessibleViaPreviewQuery,
           ],
         },
       }
@@ -89,12 +93,7 @@ export class DatasetFieldsPolicy extends PolicyFactory<DatasetField, DatasetFiel
               ],
             },
           },
-          {
-            datasetId: {
-              [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery,
-            },
-            isExcludedFromPreview: false,
-          },
+          accessibleViaPreviewQuery,
         ],
       },
     }
