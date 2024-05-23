@@ -1,7 +1,8 @@
-import { WhereOptions } from "sequelize"
+import { Op, WhereOptions } from "sequelize"
 import { isEmpty, isNil } from "lodash"
 
 import { Dataset } from "@/models"
+import { BaseScopeOptions } from "@/policies/base-policy"
 import { DatasetsPolicy } from "@/policies"
 import { CreateService, UpdateService } from "@/services/datasets"
 import { ShowSerializer, TableSerializer } from "@/serializers/datasets"
@@ -13,17 +14,16 @@ export class DatasetsController extends BaseController {
     const where = this.query.where as WhereOptions<Dataset>
     const filters = this.query.filters as Record<string, unknown>
 
-    const scopedDatasets = DatasetsPolicy.applyScope(Dataset, this.currentUser)
-
-    let filteredDatasets = scopedDatasets
+    const scopes: BaseScopeOptions[] = []
     if (!isEmpty(filters)) {
       Object.entries(filters).forEach(([key, value]) => {
-        filteredDatasets = filteredDatasets.scope({ method: [key, value] })
+        scopes.push({ method: [key, value] })
       })
     }
+    const scopedDatasets = DatasetsPolicy.applyScope(scopes, this.currentUser)
 
-    const totalCount = await filteredDatasets.count({ where })
-    const datasets = await filteredDatasets.findAll({
+    const totalCount = await scopedDatasets.count({ where })
+    const datasets = await scopedDatasets.findAll({
       where,
       limit: this.pagination.limit,
       offset: this.pagination.offset,
@@ -142,8 +142,12 @@ export class DatasetsController extends BaseController {
         "integration",
         "stewardship",
         "accessGrants",
-        "accessRequests",
         "visualizationControl",
+        {
+          association: "accessRequests",
+          where: { revokedAt: { [Op.is]: null } },
+          required: false,
+        },
       ],
     })
 

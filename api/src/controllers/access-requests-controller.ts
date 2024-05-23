@@ -4,6 +4,7 @@ import { isEmpty, isNil } from "lodash"
 import { AccessRequest, Dataset } from "@/models"
 import { TableSerializer } from "@/serializers/access-requests"
 import { CreateService } from "@/services/access-requests"
+import { BaseScopeOptions } from "@/policies/base-policy"
 import { AccessRequestsPolicy } from "@/policies"
 import { type AccessRequestForCreate } from "@/policies/access-requests-policy"
 
@@ -14,17 +15,16 @@ export class AccessRequestsController extends BaseController {
     const where = this.query.where as WhereOptions<AccessRequest>
     const filters = this.query.filters as Record<string, unknown>
 
-    const scopedAccessRequests = AccessRequestsPolicy.applyScope(AccessRequest, this.currentUser)
-
-    let filteredAccessRequests = scopedAccessRequests
+    const scopes: BaseScopeOptions[] = []
     if (!isEmpty(filters)) {
       Object.entries(filters).forEach(([key, value]) => {
-        filteredAccessRequests = filteredAccessRequests.scope({ method: [key, value] })
+        scopes.push({ method: [key, value] })
       })
     }
+    const scopedAccessRequests = AccessRequestsPolicy.applyScope(scopes, this.currentUser)
 
-    const totalCount = await filteredAccessRequests.count({ where })
-    const accessRequests = await filteredAccessRequests.findAll({
+    const totalCount = await scopedAccessRequests.count({ where })
+    const accessRequests = await scopedAccessRequests.findAll({
       where,
       include: [
         {

@@ -1,4 +1,4 @@
-import { ModelStatic, Op } from "sequelize"
+import { Attributes, FindOptions, Op } from "sequelize"
 
 import { DatasetEntry, User } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
@@ -8,13 +8,12 @@ import {
   datasetsWithApprovedAccessRequestsFor,
 } from "@/models/datasets"
 
-import BasePolicy from "@/policies/base-policy"
+import { PolicyFactory } from "@/policies/base-policy"
 
-export class DatasetEntriesPolicy extends BasePolicy<DatasetEntry> {
-  // TODO: move this code to a shared location, somewhere
-  static applyScope(modelClass: ModelStatic<DatasetEntry>, user: User): ModelStatic<DatasetEntry> {
+export class DatasetEntriesPolicy extends PolicyFactory(DatasetEntry) {
+  static policyScope(user: User): FindOptions<Attributes<DatasetEntry>> {
     if (user.isSystemAdmin || user.isBusinessAnalyst) {
-      return modelClass
+      return {}
     }
 
     const datasetsAccessibleViaOpenAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(
@@ -25,7 +24,7 @@ export class DatasetEntriesPolicy extends BasePolicy<DatasetEntry> {
       datasetsWithApprovedAccessRequestsFor(user)
     if (user.isDataOwner) {
       const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
-      return modelClass.scope({
+      return {
         where: {
           datasetId: {
             [Op.or]: [
@@ -35,10 +34,10 @@ export class DatasetEntriesPolicy extends BasePolicy<DatasetEntry> {
             ],
           },
         },
-      })
+      }
     }
 
-    return modelClass.scope({
+    return {
       where: {
         datasetId: {
           [Op.or]: [
@@ -47,7 +46,7 @@ export class DatasetEntriesPolicy extends BasePolicy<DatasetEntry> {
           ],
         },
       },
-    })
+    }
   }
 }
 
