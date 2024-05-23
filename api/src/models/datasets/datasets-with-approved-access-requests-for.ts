@@ -17,6 +17,7 @@ export function datasetsWithApprovedAccessRequestsFor(user: User): Literal {
       WHERE
         access_requests.requestor_id = ${user.id}
         AND access_requests.approved_at IS NOT NULL
+        AND access_requests.revoked_at IS NULL
     )
   `)
 
