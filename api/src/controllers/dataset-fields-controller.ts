@@ -12,7 +12,7 @@ export class DatasetFieldsController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<DatasetField>
 
-    const scopedDatasetFields = DatasetFieldsPolicy.applyScope(DatasetField, this.currentUser)
+    const scopedDatasetFields = DatasetFieldsPolicy.applyScope([], this.currentUser)
 
     const totalCount = await scopedDatasetFields.count({ where })
     const datasetFields = await scopedDatasetFields.findAll({
@@ -90,7 +90,9 @@ export class DatasetFieldsController extends BaseController {
       await DestroyService.perform(datasetField, this.currentUser)
       return this.response.status(204).end()
     } catch (error) {
-      return this.response.status(422).json({ message: `Dataset field destruction failed: ${error}` })
+      return this.response
+        .status(422)
+        .json({ message: `Dataset field destruction failed: ${error}` })
     }
   }
 

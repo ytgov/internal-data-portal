@@ -1,4 +1,4 @@
-import { ModelStatic, NonAttribute, Op } from "sequelize"
+import { Attributes, FindOptions, NonAttribute, Op } from "sequelize"
 
 import { Path } from "@/utils/deep-pick"
 
@@ -11,11 +11,13 @@ import {
 } from "@/models/datasets"
 import DatasetsPolicy from "@/policies/datasets-policy"
 
-import BasePolicy from "@/policies/base-policy"
+import { PolicyFactory } from "@/policies/base-policy"
 
 export type DatasetFieldWithDataset = DatasetField & { dataset: NonAttribute<Dataset> }
 
-export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
+export class DatasetFieldsPolicy extends PolicyFactory<DatasetField, DatasetFieldWithDataset>(
+  DatasetField
+) {
   private readonly datasetsPolicy: DatasetsPolicy
 
   constructor(user: User, record: DatasetFieldWithDataset) {
@@ -35,9 +37,9 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
     return this.datasetsPolicy.update()
   }
 
-  static applyScope(modelClass: ModelStatic<DatasetField>, user: User): ModelStatic<DatasetField> {
+  static policyScope(user: User): FindOptions<Attributes<DatasetField>> {
     if (user.isSystemAdmin || user.isBusinessAnalyst) {
-      return modelClass
+      return {}
     }
 
     const datasetsAccessibleViaOpenAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(
@@ -48,7 +50,7 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
       datasetsWithApprovedAccessRequestsFor(user)
     if (user.isDataOwner) {
       const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
-      return modelClass.scope({
+      return {
         where: {
           datasetId: {
             [Op.or]: [
@@ -58,10 +60,10 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
             ],
           },
         },
-      })
+      }
     }
 
-    return modelClass.scope({
+    return {
       where: {
         datasetId: {
           [Op.or]: [
@@ -70,7 +72,7 @@ export class DatasetFieldsPolicy extends BasePolicy<DatasetFieldWithDataset> {
           ],
         },
       },
-    })
+    }
   }
 
   permittedAttributes(): Path[] {
