@@ -47,7 +47,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
             creatorId: datasetOwner.id,
             ownerId: datasetOwner.id,
           })
-          const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestingUser)
+          const scopedQuery = DatasetsPolicy.applyScope([], requestingUser)
 
           // Act
           const result = await scopedQuery.findAll()
@@ -91,7 +91,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
           creatorId: datasetOwner.id,
           ownerId: datasetOwner.id,
         })
-        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestingUser)
+        const scopedQuery = DatasetsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -149,7 +149,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
             creatorId: datasetOwner.id,
             ownerId: datasetOwner.id,
           })
-        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestingUser)
+        const scopedQuery = DatasetsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -198,7 +198,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
           creatorId: otherUser.id,
           ownerId: otherUser.id,
         })
-        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestingUser)
+        const scopedQuery = DatasetsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -260,7 +260,7 @@ describe("api/src/policies/datasets-policy.ts", () => {
           creatorId: otherUser.id,
           ownerId: otherUser.id,
         })
-        const scopedQuery = DatasetsPolicy.applyScope(Dataset, requestingUser)
+        const scopedQuery = DatasetsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()

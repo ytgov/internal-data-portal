@@ -37,7 +37,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
           const accessibleDatasetField = await datasetFieldFactory.create({
             datasetId: dataset.id,
           })
-          const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+          const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
           // Act
           const result = await scopedQuery.findAll()
@@ -84,7 +84,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         await datasetFieldFactory.create({
           datasetId: dataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -149,7 +149,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         await datasetFieldFactory.create({
           datasetId: inaccessibleDataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -219,7 +219,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         await datasetFieldFactory.create({
           datasetId: inaccessibleDataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -291,7 +291,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         await datasetFieldFactory.create({
           datasetId: inaccessibleDataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -351,7 +351,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         await datasetFieldFactory.create({
           datasetId: inaccessibleDataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -422,7 +422,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         await datasetFieldFactory.create({
           datasetId: inaccessibleDataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
