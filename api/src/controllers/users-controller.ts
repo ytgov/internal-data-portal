@@ -1,8 +1,9 @@
-import { ModelStatic, WhereOptions } from "sequelize"
+import { WhereOptions } from "sequelize"
 import { isEmpty, isNil } from "lodash"
 
 import { User } from "@/models"
 import { UserSerializers } from "@/serializers"
+import { BaseScopeOptions } from "@/policies/base-policy"
 import { UsersPolicy } from "@/policies"
 import { CreateService, DestroyService, UpdateService } from "@/services/users"
 
@@ -13,12 +14,13 @@ export class UsersController extends BaseController {
     const where = this.query.where as WhereOptions<User>
     const filters = this.query.filters as Record<string, unknown>
 
-    let filteredUsers: ModelStatic<User> = User
+    const scopes: BaseScopeOptions[] = []
     if (!isEmpty(filters)) {
       Object.entries(filters).forEach(([key, value]) => {
-        filteredUsers = filteredUsers.scope({ method: [key, value] })
+        scopes.push({ method: [key, value] })
       })
     }
+    const filteredUsers = User.scope(scopes)
 
     const totalCount = await filteredUsers.count({ where })
     const users = await filteredUsers.findAll({
