@@ -26,10 +26,14 @@ export class RefreshDatasetEntryPreviewService extends BaseService {
         },
       })
 
+      const fieldExclusionCondition =
+        this.visualizationControl.hasFieldsExcludedFromPreview == true
+          ? { isExcludedFromPreview: false }
+          : {}
       const previewableDatasetFields = await DatasetField.findAll({
         where: {
           datasetId: this.visualizationControl.datasetId,
-          isExcludedFromPreview: false,
+          ...fieldExclusionCondition,
         },
       })
       const previewableDatasetFieldNames = previewableDatasetFields.map((field) => field.name)

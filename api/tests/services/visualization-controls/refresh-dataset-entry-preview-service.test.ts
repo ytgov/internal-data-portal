@@ -24,6 +24,7 @@ describe("api/src/services/visualization-controls/refresh-dataset-entry-preview-
         })
         const visualizationControl = await visualizationControlFactory.create({
           datasetId: dataset.id,
+          hasFieldsExcludedFromPreview: true,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
@@ -97,7 +98,7 @@ describe("api/src/services/visualization-controls/refresh-dataset-entry-preview-
         ])
       })
 
-      test("when there are no fields that are not excluded from preview, it returns an empty array", async () => {
+      test("when all fields that are excluded from preview, it returns an empty array", async () => {
         // Arrange
         const user = await userFactory.create()
         const dataset = await datasetFactory.create({
@@ -106,6 +107,7 @@ describe("api/src/services/visualization-controls/refresh-dataset-entry-preview-
         })
         const visualizationControl = await visualizationControlFactory.create({
           datasetId: dataset.id,
+          hasFieldsExcludedFromPreview: true,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
@@ -134,6 +136,7 @@ describe("api/src/services/visualization-controls/refresh-dataset-entry-preview-
         })
         const visualizationControl = await visualizationControlFactory.create({
           datasetId: dataset.id,
+          hasFieldsExcludedFromPreview: true,
         })
         await datasetFieldFactory.create({
           datasetId: dataset.id,
@@ -245,6 +248,68 @@ describe("api/src/services/visualization-controls/refresh-dataset-entry-preview-
 
         // Assert
         expect(result.length).toBe(10)
+      })
+
+      test("when visualization control has field exclusions disabled, it includes all fields in preview", async () => {
+        // Arrange
+        const user = await userFactory.create()
+        const dataset = await datasetFactory.create({
+          creatorId: user.id,
+          ownerId: user.id,
+        })
+        const visualizationControl = await visualizationControlFactory.create({
+          datasetId: dataset.id,
+          hasFieldsExcludedFromPreview: false,
+        })
+        await datasetFieldFactory.create({
+          datasetId: dataset.id,
+          name: "field1",
+          isExcludedFromPreview: true,
+        })
+        await datasetFieldFactory.create({
+          datasetId: dataset.id,
+          name: "field2",
+          isExcludedFromPreview: false,
+        })
+        const datasetEntry1 = await datasetEntryFactory.create({
+          datasetId: dataset.id,
+          jsonData: {
+            field1: "value1",
+            field2: "value2",
+            field3: "value3",
+          },
+        })
+        const datasetEntry2 = await datasetEntryFactory.create({
+          datasetId: dataset.id,
+          jsonData: {
+            field1: "value4",
+            field2: "value5",
+            field3: "value6",
+          },
+        })
+
+        // Act
+        const result = await RefreshDatasetEntryPreviewService.perform(visualizationControl, user)
+
+        // Assert
+        expect(result.map((r) => r.dataValues)).toEqual([
+          expect.objectContaining({
+            datasetId: visualizationControl.datasetId,
+            datasetEntryId: datasetEntry1.id,
+            jsonData: JSON.stringify({
+              field1: "value1",
+              field2: "value2",
+            }),
+          }),
+          expect.objectContaining({
+            datasetId: visualizationControl.datasetId,
+            datasetEntryId: datasetEntry2.id,
+            jsonData: JSON.stringify({
+              field1: "value4",
+              field2: "value5",
+            }),
+          }),
+        ])
       })
     })
   })
