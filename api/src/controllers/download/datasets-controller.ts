@@ -56,10 +56,7 @@ export class DatasetsController extends BaseController {
         // for data rendering logic
         "file",
         "integration",
-        {
-          association: "fields",
-          where: { isExcludedFromSearch: false },
-        },
+        "fields",
         // for policy logic
         {
           association: "owner",

@@ -8,10 +8,11 @@ import {
   datasetsAccessibleViaAccessGrantsBy,
   datasetsAccessibleViaOwner,
   datasetsWithApprovedAccessRequestsFor,
+  datasetsWithFieldExclusionsDisabled,
+  datasetsWithPreviewDisabled,
 } from "@/models/datasets"
-import DatasetsPolicy from "@/policies/datasets-policy"
-
 import { PolicyFactory } from "@/policies/base-policy"
+import DatasetsPolicy from "@/policies/datasets-policy"
 
 export type DatasetFieldWithDataset = DatasetField & { dataset: NonAttribute<Dataset> }
 
@@ -46,37 +47,71 @@ export class DatasetFieldsPolicy extends PolicyFactory<DatasetField, DatasetFiel
       user,
       [AccessTypes.OPEN_ACCESS]
     )
+    const datasetsAccessibleViaAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(user, [
+      AccessTypes.OPEN_ACCESS,
+      AccessTypes.SELF_SERVE_ACCESS,
+      AccessTypes.SCREENED_ACCESS,
+    ])
     const datasetsWithApprovedAccessRequestsForUserQuery =
       datasetsWithApprovedAccessRequestsFor(user)
+    const datasetsWithPreviewDisabledQuery = datasetsWithPreviewDisabled()
+    const datasetsWithFieldExclusionsDisabledQuery = datasetsWithFieldExclusionsDisabled()
+
+    const accessibleViaPreviewQuery = {
+      datasetId: {
+        [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery,
+        [Op.notIn]: datasetsWithPreviewDisabledQuery,
+      },
+      [Op.or]: [
+        {
+          isExcludedFromPreview: false,
+        },
+        {
+          datasetId: {
+            [Op.in]: datasetsWithFieldExclusionsDisabledQuery,
+          },
+        },
+      ],
+    }
     if (user.isDataOwner) {
       const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
       return {
         where: {
-          datasetId: {
-            [Op.or]: [
-              { [Op.in]: datasetsAccessibleViaOwnerQuery },
-              { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
-              { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
-            ],
-          },
+          [Op.or]: [
+            {
+              datasetId: {
+                [Op.or]: [
+                  { [Op.in]: datasetsAccessibleViaOwnerQuery },
+                  { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
+                  { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
+                ],
+              },
+            },
+            accessibleViaPreviewQuery,
+          ],
         },
       }
     }
 
     return {
       where: {
-        datasetId: {
-          [Op.or]: [
-            { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
-            { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
-          ],
-        },
+        [Op.or]: [
+          {
+            datasetId: {
+              [Op.or]: [
+                { [Op.in]: datasetsWithApprovedAccessRequestsForUserQuery },
+                { [Op.in]: datasetsAccessibleViaOpenAccessGrantsByUserQuery },
+              ],
+            },
+          },
+          accessibleViaPreviewQuery,
+        ],
       },
     }
   }
 
   permittedAttributes(): Path[] {
-    return ["name", "displayName", "dataType", "description", "note", "isExcludedFromSearch"]
+    return ["name", "displayName", "dataType", "description", "note", "isExcludedFromPreview"]
   }
 
   permittedAttributesForCreate(): Path[] {

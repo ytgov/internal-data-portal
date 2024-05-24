@@ -1,39 +1,44 @@
 import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
 
-import datasetFieldsApi, { type DatasetField } from "@/api/dataset-fields-api"
+import datasetEntryPreviewsApi, {
+  type DatasetEntryPreview,
+  type DatasetEntryPreviewFilters,
+} from "@/api/dataset-entry-previews-api"
 
-export { type DatasetField }
+export { type DatasetEntryPreview, type DatasetEntryPreviewFilters }
 
-export function useDatasetFields(
+export function useDatasetEntryPreview(
   queryOptions: Ref<{
     where?: Record<string, unknown>
+    filters?: DatasetEntryPreviewFilters
     page?: number
     perPage?: number
-  }> = ref({}),
-  { skipWatchIf = () => false }: { skipWatchIf?: () => boolean } = {}
+  }> = ref({})
 ) {
   const state = reactive<{
-    datasetFields: DatasetField[]
+    datasetEntryPreviews: DatasetEntryPreview[]
     totalCount: number
     isLoading: boolean
     isErrored: boolean
   }>({
-    datasetFields: [],
+    datasetEntryPreviews: [],
     totalCount: 0,
     isLoading: false,
     isErrored: false,
   })
 
-  async function fetch(): Promise<DatasetField[]> {
+  async function fetch(): Promise<DatasetEntryPreview[]> {
     state.isLoading = true
     try {
-      const { datasetFields, totalCount } = await datasetFieldsApi.list(unref(queryOptions))
+      const { datasetEntryPreviews, totalCount } = await datasetEntryPreviewsApi.list(
+        unref(queryOptions)
+      )
       state.isErrored = false
-      state.datasetFields = datasetFields
+      state.datasetEntryPreviews = datasetEntryPreviews
       state.totalCount = totalCount
-      return datasetFields
+      return datasetEntryPreviews
     } catch (error) {
-      console.error("Failed to fetch dataset fields:", error)
+      console.error("Failed to fetch dataset entry previews:", error)
       state.isErrored = true
       throw error
     } finally {
@@ -44,8 +49,6 @@ export function useDatasetFields(
   watch(
     () => unref(queryOptions),
     async () => {
-      if (skipWatchIf()) return
-
       await fetch()
     },
     { deep: true, immediate: true }
@@ -58,4 +61,4 @@ export function useDatasetFields(
   }
 }
 
-export default useDatasetFields
+export default useDatasetEntryPreview

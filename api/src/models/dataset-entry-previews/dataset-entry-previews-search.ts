@@ -8,7 +8,7 @@ import { JsonDataType } from "@/db/utils/mssql-json-object-types"
  * Requires replacements to be passed in to query.
  * e.g. { replacements: { searchTokenWildcard: `%${searchToken}%`, searchToken }
  */
-export function datasetEntriesSearch(): Literal {
+export function datasetEntryPreviewsSearch(): Literal {
   /**
    * TODO: add ability to inject early filtering,
    * or at least early filtering on dataset_id, as this will vastly speed up the query.
@@ -18,12 +18,12 @@ export function datasetEntriesSearch(): Literal {
   const matchingEntries = compactSql(/*sql*/ `
     (
       SELECT
-        dataset_entries.id
+        dataset_entry_previews.id
       FROM
-        dataset_entries
-        CROSS APPLY OPENJSON(dataset_entries.json_data) AS json_values
+        dataset_entry_previews
+        CROSS APPLY OPENJSON(dataset_entry_previews.json_data) AS json_values
       WHERE
-        dataset_entries.deleted_at IS NULL
+        dataset_entry_previews.deleted_at IS NULL
         AND (
           (
             json_values.[type] = ${JsonDataType.STRING}
@@ -40,4 +40,4 @@ export function datasetEntriesSearch(): Literal {
   return literal(matchingEntries)
 }
 
-export default datasetEntriesSearch
+export default datasetEntryPreviewsSearch

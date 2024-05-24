@@ -71,9 +71,14 @@ export class DatasetsController extends BaseController {
 
     try {
       const serializedDataset = ShowSerializer.perform(dataset, this.currentUser)
+      // TODO: consider developing a standard pattern for this?
+      const serializedPolicy = {
+        ...policy.toJSON(),
+        showUnlimited: policy.show({ unlimited: true }),
+      }
       return this.response.status(200).json({
         dataset: serializedDataset,
-        policy,
+        policy: serializedPolicy,
       })
     } catch (error) {
       return this.response.status(500).json({ message: `Dataset serialization failed: ${error}` })

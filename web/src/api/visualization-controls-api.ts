@@ -7,21 +7,21 @@ export type VisualizationControl = {
   id: number
   datasetId: Dataset["id"]
   isDownloadableAsCsv: boolean
-  hasSearchCustomizations: boolean
-  hasFieldsExcludedFromSearch: boolean
-  hasSearchRowLimits: boolean
-  searchRowLimitMaximum: number | null
+  hasPreview: boolean
+  hasFieldsExcludedFromPreview: boolean
+  hasPreviewRowLimit: boolean
+  previewRowLimit: number
   createdAt: string
   updatedAt: string
 
   // Associations
-  searchExcludedDatasetFields: DatasetField[]
+  previewExcludedDatasetFields: DatasetField[]
 }
 
-export type searchExcludedDatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromSearch">
+export type previewExcludedDatasetFieldsAttributes = Pick<DatasetField, "id" | "isExcludedFromPreview">
 
 export type VisualizationControlUpdate = Partial<VisualizationControl> & {
-  searchExcludedDatasetFieldsAttributes?: searchExcludedDatasetFieldsAttributes[]
+  previewExcludedDatasetFieldsAttributes?: previewExcludedDatasetFieldsAttributes[]
 }
 
 export const visualizationControlsApi = {

@@ -34,6 +34,28 @@ entity "access_requests" {
   deleted_at : datetime2(0)
 }
 
+entity "dataset_entries" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  * raw_json_data : nvarchar(MAX)
+  * json_data : nvarchar(MAX)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
+entity "dataset_entry_previews" {
+  * id : int <<PK>>
+  --
+  * dataset_id : int <<FK>>
+  * dataset_entry_id : int <<FK>>
+  * json_data : nvarchar(MAX)
+  created_at : datetime2(0)
+  updated_at : datetime2(0)
+  deleted_at : datetime2(0)
+}
+
 entity "dataset_fields" {
   * id : int <<PK>>
   --
@@ -43,7 +65,7 @@ entity "dataset_fields" {
   * data_type : nvarchar(100)
   description : nvarchar(1000)
   note : nvarchar(MAX)
-  is_excluded_from_search : bit
+  is_excluded_from_preview : bit
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
@@ -188,10 +210,10 @@ entity "visualization_controls" {
   --
   * dataset_id : int <<FK>>
   is_downloadable_as_csv : bit
-  has_search_row_limits : bit
-  search_row_limit_maximum : int
-  has_search_customizations : bit
-  has_fields_excluded_from_search : bit
+  has_preview_row_limit : bit
+  preview_row_limit : int
+  has_preview : bit
+  has_fields_excluded_from_preview : bit
   created_at : datetime2(0)
   updated_at : datetime2(0)
   deleted_at : datetime2(0)
@@ -199,7 +221,9 @@ entity "visualization_controls" {
 
 ' Define relationships
 access_grants }o--|| access_requests : access_grant_id
+dataset_entries::id }o--|| dataset_entry_previews::dataset_entry_id
 datasets }o--|| access_grants : dataset_id
+datasets::id }o--|| dataset_entries::dataset_id
 datasets }o--|| dataset_fields : dataset_id
 datasets }o--|| dataset_integrations : dataset_id
 datasets }o--|| taggings : taggable_id, tagging_type = 'Dataset'

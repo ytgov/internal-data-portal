@@ -15,6 +15,7 @@
       />
       <v-form
         v-else
+        ref="form"
         class="mt-6"
       >
         <v-row>
@@ -35,8 +36,8 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.hasSearchCustomizations"
-              label="Enable search customization?"
+              v-model="visualizationControl.hasPreview"
+              label="Enable preview?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -53,8 +54,8 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.hasFieldsExcludedFromSearch"
-              label="Exclude fields from search?"
+              v-model="visualizationControl.hasFieldsExcludedFromPreview"
+              label="Exclude fields from preview?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -64,12 +65,12 @@
             class="py-0"
           >
             <DatasetFieldsSelect
-              :model-value="searchExcludedDatasetFieldsIds"
+              :model-value="previewExcludedDatasetFieldsIds"
               :dataset-id="visualizationControl.datasetId"
               :is-saving="isLoading"
               label="Excluded Fields"
               variant="outlined"
-              @update:model-value="saveSearchExcludedDatasetFieldsAndNotify"
+              @update:model-value="savePreviewExcludedDatasetFieldsAndNotify"
             />
           </v-col>
         </v-row>
@@ -85,8 +86,8 @@
             class="py-0"
           >
             <v-checkbox
-              v-model="visualizationControl.hasSearchRowLimits"
-              label="Limit search results?"
+              v-model="visualizationControl.hasPreviewRowLimit"
+              label="Limit preview results?"
               @update:model-value="saveAndNotify"
             />
           </v-col>
@@ -96,11 +97,12 @@
             class="py-0"
           >
             <v-text-field
-              v-model="visualizationControl.searchRowLimitMaximum"
+              v-model="visualizationControl.previewRowLimit"
               label="Max Results"
               type="number"
+              :rules="[minimum(10)]"
               variant="outlined"
-              clearable
+              min="10"
               @input="debouncedSaveAndNotify"
               @click:clear="saveAndNotify"
             />
@@ -112,9 +114,10 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs } from "vue"
+import { computed, ref, toRefs } from "vue"
 import { debounce, isNil } from "lodash"
 
+import { minimum } from "@/utils/validators"
 import useSnack from "@/use/use-snack"
 import useVisualizationControl from "@/use/use-visualization-control"
 
@@ -132,23 +135,36 @@ const emit = defineEmits(["saved"])
 
 const { visualizationControlId } = toRefs(props)
 const { visualizationControl, save, isLoading } = useVisualizationControl(visualizationControlId)
-const searchExcludedDatasetFieldsIds = computed(() => {
+const previewExcludedDatasetFieldsIds = computed(() => {
   if (isNil(visualizationControl.value)) {
     return []
   }
 
-  if (isNil(visualizationControl.value.searchExcludedDatasetFields)) {
+  if (isNil(visualizationControl.value.previewExcludedDatasetFields)) {
     return []
   }
 
-  return visualizationControl.value.searchExcludedDatasetFields.map(
+  return visualizationControl.value.previewExcludedDatasetFields.map(
     (datasetField) => datasetField.id
   )
 })
 
 const snack = useSnack()
+const form = ref<HTMLFormElement | null>(null)
 
 async function saveAndNotify() {
+  if (isNil(form.value)) {
+    throw new Error("Form is not defined")
+  }
+
+  const { valid } = await form.value.validate()
+  if (!valid) {
+    snack.notify("Input validation failed", {
+      color: "error",
+    })
+    return
+  }
+
   try {
     await save()
     emit("saved")
@@ -164,15 +180,15 @@ async function saveAndNotify() {
 
 const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
 
-async function saveSearchExcludedDatasetFieldsAndNotify(datasetFieldIds: number[]) {
-  const searchExcludedDatasetFieldsAttributes = datasetFieldIds.map((datasetFieldId) => ({
+async function savePreviewExcludedDatasetFieldsAndNotify(datasetFieldIds: number[]) {
+  const previewExcludedDatasetFieldsAttributes = datasetFieldIds.map((datasetFieldId) => ({
     id: datasetFieldId,
-    isExcludedFromSearch: true,
+    isExcludedFromPreview: true,
   }))
 
   try {
     await save({
-      searchExcludedDatasetFieldsAttributes,
+      previewExcludedDatasetFieldsAttributes,
     })
     emit("saved")
     snack.notify("Visualization properties saved", {

@@ -16,11 +16,11 @@
     <v-tabs v-model="activeTab">
       <component
         :is="component"
-        v-for="({ component, attributes }, index) in availableTabs"
+        v-for="({ component }, index) in availableTabs"
         :key="index"
         :value="index"
         :slug="slug"
-        v-bind="attributes"
+        :is-managing="isManaging"
       />
     </v-tabs>
 
@@ -30,11 +30,10 @@
 
 <script lang="ts" setup>
 import { computed, toRefs, defineAsyncComponent, ref } from "vue"
+import { useRoute } from "vue-router"
 import { isNil } from "lodash"
 
-import useCurrentUser, { RoleTypes } from "@/use/use-current-user"
 import useDataset from "@/use/use-dataset"
-import { AccessTypes } from "@/api/access-grants-api"
 
 import PageLoader from "@/components/PageLoader.vue"
 
@@ -47,8 +46,6 @@ const props = defineProps({
 
 const { slug } = toRefs(props)
 const { dataset, isLoading, policy } = useDataset(slug)
-
-const { currentUser } = useCurrentUser()
 
 const activeTab = ref(null)
 
@@ -64,61 +61,37 @@ const VisualizeTab = defineAsyncComponent(
 
 type TabComponents = {
   component: typeof DescriptionTab | typeof FieldsTab | typeof AccessTab
-  attributes: {
-    locked: boolean
-  }
 }
 
 const canUpdateDataset = computed(() => {
   return policy.value?.update === true
 })
 
-// TODO: consider return fields policy in dataset policy
-// e.g. policy.value?.fields.show or something
-const isReadableByUser = computed(() => {
-  if (dataset.value?.currentUserAccessGrant?.accessType === AccessTypes.OPEN_ACCESS) {
-    return true
-  }
+const route = useRoute()
+const isManaging = computed(() => {
+  if (canUpdateDataset.value === false) return false
 
-  return !isNil(dataset.value?.currentUserAccessRequest?.approvedAt)
+  switch (route.name) {
+    case "DatasetDescriptionManagePage":
+    case "DatasetFieldsManagePage":
+    case "DatasetAccessManagePage":
+    case "DatasetVisualizeManagePage":
+      return true
+    default:
+      return false
+  }
 })
 
-const tabImports = computed<{
-  [key in RoleTypes]: TabComponents[]
-}>(() => ({
-  [RoleTypes.DATA_OWNER]: [
-    { component: DescriptionTab, attributes: { locked: false } },
-    { component: FieldsTab, attributes: { locked: false } },
-    { component: AccessTab, attributes: { locked: !canUpdateDataset.value } },
-    { component: VisualizeTab, attributes: { locked: !canUpdateDataset.value } },
-  ],
-  [RoleTypes.SYSTEM_ADMIN]: [
-    { component: DescriptionTab, attributes: { locked: false } },
-    { component: FieldsTab, attributes: { locked: false } },
-    { component: AccessTab, attributes: { locked: false } },
-    { component: VisualizeTab, attributes: { locked: false } },
-  ],
-  [RoleTypes.BUSINESS_ANALYST]: [
-    { component: DescriptionTab, attributes: { locked: false } },
-    { component: FieldsTab, attributes: { locked: false } },
-    { component: AccessTab, attributes: { locked: false } },
-    { component: VisualizeTab, attributes: { locked: false } },
-  ],
-  [RoleTypes.USER]: [
-    { component: DescriptionTab, attributes: { locked: false } },
-    { component: FieldsTab, attributes: { locked: !isReadableByUser.value } },
-    { component: VisualizeTab, attributes: { locked: !isReadableByUser.value } },
-  ],
-}))
+const availableTabs = computed<TabComponents[]>(() => {
+  if (canUpdateDataset.value) {
+    return [
+      { component: DescriptionTab },
+      { component: FieldsTab },
+      { component: AccessTab },
+      { component: VisualizeTab },
+    ]
+  }
 
-const availableTabs = computed<Set<TabComponents>>(() => {
-  const tabs = new Set<TabComponents>()
-
-  currentUser.value?.roleTypes.forEach((role) => {
-    const roleTabs = tabImports.value[role]
-    roleTabs.forEach((tab) => tabs.add(tab))
-  })
-
-  return tabs
+  return [{ component: DescriptionTab }, { component: FieldsTab }, { component: VisualizeTab }]
 })
 </script>
