@@ -2,8 +2,8 @@ import { WhereOptions } from "sequelize"
 import { isEmpty } from "lodash"
 
 import { DatasetEntryPreview } from "@/models"
+import { BaseScopeOptions } from "@/policies/base-policy"
 import { DatasetEntryPreviewsPolicy } from "@/policies"
-
 import BaseController from "@/controllers/base-controller"
 
 export class DatasetEntryPreviewsController extends BaseController {
@@ -11,21 +11,19 @@ export class DatasetEntryPreviewsController extends BaseController {
     const where = this.query.where as WhereOptions<DatasetEntryPreview>
     const filters = this.query.filters as Record<string, unknown>
 
+    const scopes: BaseScopeOptions[] = []
+    if (!isEmpty(filters)) {
+      Object.entries(filters).forEach(([key, value]) => {
+        scopes.push({ method: [key, value] })
+      })
+    }
     const scopedDatasetEntryPreview = DatasetEntryPreviewsPolicy.applyScope(
-      DatasetEntryPreview,
+      scopes,
       this.currentUser
     )
 
-    let filteredDatasetEntryPreview = scopedDatasetEntryPreview
-    if (!isEmpty(filters)) {
-      Object.entries(filters).forEach(([key, value]) => {
-        filteredDatasetEntryPreview = filteredDatasetEntryPreview.scope({ method: [key, value] })
-      })
-    }
-
-
-    const totalCount = await filteredDatasetEntryPreview.count({ where })
-    const datasetEntryPreviews = await filteredDatasetEntryPreview.findAll({
+    const totalCount = await scopedDatasetEntryPreview.count({ where })
+    const datasetEntryPreviews = await scopedDatasetEntryPreview.findAll({
       where,
       limit: this.pagination.limit,
       offset: this.pagination.offset,

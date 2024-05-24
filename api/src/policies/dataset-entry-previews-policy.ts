@@ -1,45 +1,47 @@
-import { ModelStatic, Op } from "sequelize"
+import { Attributes, FindOptions, Op } from "sequelize"
 
 import { DatasetEntryPreview, User } from "@/models"
-import { datasetsAccessibleViaAccessGrantsBy, datasetsAccessibleViaOwner } from "@/models/datasets"
+import {
+  datasetsAccessibleViaAccessGrantsBy,
+  datasetsAccessibleViaOwner,
+  datasetsWithPreviewDisabled,
+} from "@/models/datasets"
+import { PolicyFactory } from "@/policies/base-policy"
 
-import BasePolicy from "@/policies/base-policy"
-
-export class DatasetEntryPreviewsPolicy extends BasePolicy<DatasetEntryPreview> {
-  // TODO: move this code to a shared location, somewhere?
-  static applyScope(
-    modelClass: ModelStatic<DatasetEntryPreview>,
-    user: User
-  ): ModelStatic<DatasetEntryPreview> {
+export class DatasetEntryPreviewsPolicy extends PolicyFactory(DatasetEntryPreview) {
+  static policyScope(user: User): FindOptions<Attributes<DatasetEntryPreview>> {
     if (user.isSystemAdmin || user.isBusinessAnalyst) {
-      return modelClass
+      return {}
     }
 
-    const datasetEntryPreviewsWithPreviewEnabledScope = modelClass.scope("withPreviewEnabled")
-
-    // TODO: add restriction where preview customization is enabled
     const datasetsAccessibleViaAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(user)
+    const datasetsWithPreviewDisabledQuery = datasetsWithPreviewDisabled()
+
     if (user.isDataOwner) {
       const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
-      return datasetEntryPreviewsWithPreviewEnabledScope.scope({
+      return {
         where: {
           datasetId: {
             [Op.or]: [
               { [Op.in]: datasetsAccessibleViaOwnerQuery },
-              { [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery },
+              {
+                [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery,
+                [Op.notIn]: datasetsWithPreviewDisabledQuery,
+              },
             ],
           },
         },
-      })
+      }
     }
 
-    return datasetEntryPreviewsWithPreviewEnabledScope.scope({
+    return {
       where: {
         datasetId: {
-          [Op.or]: [{ [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery }],
+          [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery,
+          [Op.notIn]: datasetsWithPreviewDisabledQuery,
         },
       },
-    })
+    }
   }
 }
 
