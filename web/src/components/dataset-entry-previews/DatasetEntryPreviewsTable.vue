@@ -6,7 +6,7 @@
     :items="datasetEntryPreviewsData"
     :items-length="totalCount"
     :items-per-page-options="itemsPerPageOptions"
-    :loading="isLoadingDatasetFields || isLoadingDatasetEntryPreviews"
+    :loading="isLoading"
     class="elevation-1"
     loading-text="Loading... this might take a while"
   >
@@ -32,7 +32,8 @@
       #body
     >
       <v-container>
-        No data. Please enabled preview, and add at least one field that is not excluded from preview.
+        No data. Please enabled preview, and add at least one field that is not excluded from
+        preview.
       </v-container>
     </template>
     <template
@@ -47,12 +48,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue"
+import { computed, ref, toRefs } from "vue"
 import { debounce, isEmpty } from "lodash"
 
 import { MAX_PER_PAGE } from "@/api/base-api"
 import useDatasetFields from "@/use/use-dataset-fields"
 import useDatasetEntryPreviews, { DatasetEntryPreview } from "@/use/use-dataset-entry-previews"
+import useVisualizationControl from "@/use/use-visualization-control"
 
 const props = defineProps({
   datasetId: {
@@ -77,10 +79,22 @@ const itemsPerPageOptions = [
   { value: -1, title: "$vuetify.dataFooter.itemsPerPageAll" },
 ]
 
+const { visualizationControlId } = toRefs(props)
+const {
+  visualizationControl,
+  isLoading: isLoadingVisualizationControl,
+  refresh: refreshVisualizationControl,
+} = useVisualizationControl(visualizationControlId)
+
+const fieldExclusionCondition = computed(() =>
+  visualizationControl.value?.hasFieldsExcludedFromPreview == true
+    ? { isExcludedFromPreview: false }
+    : {}
+)
 const datasetFieldsQuery = computed(() => ({
   where: {
     datasetId: props.datasetId,
-    isExcludedFromPreview: false,
+    ...fieldExclusionCondition.value,
   },
   // TODO: figure out a better solution than using max page size
   // Using a paginated iterator for datasetFields would be pretty slick.
@@ -91,7 +105,9 @@ const {
   datasetFields,
   isLoading: isLoadingDatasetFields,
   refresh: refreshDatasetFields,
-} = useDatasetFields(datasetFieldsQuery)
+} = useDatasetFields(datasetFieldsQuery, {
+  skipWatchIf: () => isLoadingVisualizationControl.value,
+})
 
 const headers = computed(() => {
   return datasetFields.value.map((datasetField) => {
@@ -125,15 +141,23 @@ const datasetEntryPreviewsData = computed<DatasetEntryPreview["jsonData"][]>(() 
   })
 })
 
+const isLoading = computed(() => {
+  return (
+    isLoadingVisualizationControl.value ||
+    isLoadingDatasetFields.value ||
+    isLoadingDatasetEntryPreviews.value
+  )
+})
+
 function updateSearchToken(value: string) {
   searchToken.value = value
 }
 
 const debouncedUpdateSearchToken = debounce(updateSearchToken, 1000)
 
-function refresh() {
-  refreshDatasetFields()
-  refreshDatasetEntryPreviews()
+async function refresh() {
+  await refreshVisualizationControl()
+  return Promise.all([refreshDatasetFields(), refreshDatasetEntryPreviews()])
 }
 
 defineExpose({

@@ -9,7 +9,8 @@ export function useDatasetFields(
     where?: Record<string, unknown>
     page?: number
     perPage?: number
-  }> = ref({})
+  }> = ref({}),
+  { skipWatchIf = () => false }: { skipWatchIf?: () => boolean } = {}
 ) {
   const state = reactive<{
     datasetFields: DatasetField[]
@@ -43,6 +44,8 @@ export function useDatasetFields(
   watch(
     () => unref(queryOptions),
     async () => {
+      if (skipWatchIf()) return
+
       await fetch()
     },
     { deep: true, immediate: true }
