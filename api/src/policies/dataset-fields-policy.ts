@@ -8,6 +8,7 @@ import {
   datasetsAccessibleViaAccessGrantsBy,
   datasetsAccessibleViaOwner,
   datasetsWithApprovedAccessRequestsFor,
+  datasetsWithFieldExclusionsDisabled,
   datasetsWithPreviewDisabled,
 } from "@/models/datasets"
 import { PolicyFactory } from "@/policies/base-policy"
@@ -54,13 +55,23 @@ export class DatasetFieldsPolicy extends PolicyFactory<DatasetField, DatasetFiel
     const datasetsWithApprovedAccessRequestsForUserQuery =
       datasetsWithApprovedAccessRequestsFor(user)
     const datasetsWithPreviewDisabledQuery = datasetsWithPreviewDisabled()
+    const datasetsWithFieldExclusionsDisabledQuery = datasetsWithFieldExclusionsDisabled()
 
     const accessibleViaPreviewQuery = {
       datasetId: {
         [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery,
         [Op.notIn]: datasetsWithPreviewDisabledQuery,
       },
-      isExcludedFromPreview: false,
+      [Op.or]: [
+        {
+          isExcludedFromPreview: false,
+        },
+        {
+          datasetId: {
+            [Op.in]: datasetsWithFieldExclusionsDisabledQuery,
+          },
+        },
+      ],
     }
     if (user.isDataOwner) {
       const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
