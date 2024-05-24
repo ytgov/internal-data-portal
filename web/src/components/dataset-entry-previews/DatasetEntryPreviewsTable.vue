@@ -32,7 +32,7 @@
       #body
     >
       <v-container>
-        No data. Please add at least one field that is not excluded from preview.
+        No data. Please enabled preview, and add at least one field that is not excluded from preview.
       </v-container>
     </template>
     <template
@@ -40,7 +40,7 @@
       #no-data
     >
       <v-container>
-        No data. Please add some data to be able to see a preview.
+        No data. Please enable preview, and add some data to be able to see a preview.
       </v-container>
     </template>
   </v-data-table-server>
