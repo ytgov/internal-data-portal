@@ -28,11 +28,19 @@
       </v-row>
     </template>
     <template
-      v-if="isEmpty(headers) && isEmpty(datasetEntryPreviewsData)"
+      v-if="isEmpty(headers) && !isEmpty(datasetEntryPreviewsData)"
+      #body
+    >
+      <v-container>
+        No data. Please add at least one field that is not excluded from preview.
+      </v-container>
+    </template>
+    <template
+      v-else-if="isEmpty(datasetEntryPreviewsData)"
       #no-data
     >
       <v-container>
-        To display data in the table, please add at least one field to the preview.
+        No data. Please add some data to be able to see a preview.
       </v-container>
     </template>
   </v-data-table-server>
