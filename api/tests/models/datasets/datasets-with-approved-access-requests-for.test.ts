@@ -50,13 +50,12 @@ describe("api/src/models/datasets/datasets-with-approved-access-requests-for.ts"
       const result = await scope.findAll()
 
       // Assert
-      await expect(Dataset.count()).resolves.toBe(2)
+      expect(await Dataset.count()).toBe(2)
       expect(result).toEqual([
         expect.objectContaining({
           id: screenedDataset.id,
         }),
       ])
-      expect.assertions(2)
     })
 
     test("when access requests are not approved, it does not return datasets", async () => {
@@ -91,12 +90,11 @@ describe("api/src/models/datasets/datasets-with-approved-access-requests-for.ts"
       const result = await scope.findAll()
 
       // Assert
-      await expect(Dataset.count()).resolves.toBe(1)
+      expect(await Dataset.count()).toBe(1)
       expect(result).toHaveLength(0)
-      expect.assertions(2)
     })
 
-    test('when access request is approved, then later revoked, it does not return datasets', async () => {
+    test("when access request is approved, then later revoked, it does not return datasets", async () => {
       // Arrange
       const requestingUser = await userFactory.create()
 
@@ -138,9 +136,8 @@ describe("api/src/models/datasets/datasets-with-approved-access-requests-for.ts"
       const result = await scope.findAll()
 
       // Assert
-      await expect(Dataset.count()).resolves.toBe(2)
+      expect(await Dataset.count()).toBe(2)
       expect(result).toEqual([])
-      expect.assertions(2)
     })
   })
 })
