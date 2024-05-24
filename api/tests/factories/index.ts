@@ -2,6 +2,7 @@
 export { accessGrantFactory } from "./access-grant-factory"
 export { accessRequestFactory } from "./access-request-factory"
 export { datasetEntryFactory } from "./dataset-entry-factory"
+export { datasetEntryPreviewFactory } from "./dataset-entry-preview-factory"
 export { datasetFactory } from "./dataset-factory"
 export { datasetFieldFactory } from "./dataset-field-factory"
 export { datasetIntegrationFactory } from "./dataset-integration-factory"

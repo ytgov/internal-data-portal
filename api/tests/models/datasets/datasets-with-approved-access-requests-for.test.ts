@@ -50,7 +50,7 @@ describe("api/src/models/datasets/datasets-with-approved-access-requests-for.ts"
       const result = await scope.findAll()
 
       // Assert
-      expect(Dataset.count()).resolves.toBe(2)
+      expect(await Dataset.count()).toBe(2)
       expect(result).toEqual([
         expect.objectContaining({
           id: screenedDataset.id,
@@ -90,8 +90,54 @@ describe("api/src/models/datasets/datasets-with-approved-access-requests-for.ts"
       const result = await scope.findAll()
 
       // Assert
-      expect(Dataset.count()).resolves.toBe(1)
+      expect(await Dataset.count()).toBe(1)
       expect(result).toHaveLength(0)
+    })
+
+    test("when access request is approved, then later revoked, it does not return datasets", async () => {
+      // Arrange
+      const requestingUser = await userFactory.create()
+
+      const datasetOwner = await userFactory.create()
+
+      const screenedAccessGrant = accessGrantFactory.build({
+        creatorId: datasetOwner.id,
+        grantLevel: GrantLevels.GOVERNMENT_WIDE,
+        accessType: AccessTypes.SCREENED_ACCESS,
+      })
+      const screenedDataset = await datasetFactory
+        .associations({
+          accessGrants: [screenedAccessGrant],
+        })
+        .create({
+          creatorId: datasetOwner.id,
+          ownerId: datasetOwner.id,
+        })
+      await accessRequestFactory.create({
+        datasetId: screenedDataset.id,
+        accessGrantId: screenedAccessGrant.id,
+        requestorId: requestingUser.id,
+        approvedAt: new Date(),
+        revokedAt: new Date(),
+      })
+      // inaccessible Dataset - for control case
+      await datasetFactory
+        .associations({
+          accessGrants: [],
+        })
+        .create({
+          creatorId: datasetOwner.id,
+          ownerId: datasetOwner.id,
+        })
+
+      // Act
+      const query = datasetsWithApprovedAccessRequestsFor(requestingUser)
+      const scope = Dataset.scope({ where: { id: { [Op.in]: query } } })
+      const result = await scope.findAll()
+
+      // Assert
+      expect(await Dataset.count()).toBe(2)
+      expect(result).toEqual([])
     })
   })
 })

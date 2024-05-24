@@ -93,7 +93,7 @@ export class VisualizationControlsController extends BaseController {
             "accessRequests",
           ],
         },
-        "searchExcludedDatasetFields",
+        "previewExcludedDatasetFields",
       ],
     })
   }

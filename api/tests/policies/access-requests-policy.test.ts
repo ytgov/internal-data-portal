@@ -1,4 +1,3 @@
-import { AccessRequest } from "@/models"
 import { RoleTypes } from "@/models/role"
 
 import { AccessRequestsPolicy } from "@/policies"
@@ -55,7 +54,7 @@ describe("api/src/policies/access-requests-policy.ts", () => {
             accessGrantId: accessGrant2.id,
             requestorId: requestor2.id,
           })
-          const scopedQuery = AccessRequestsPolicy.applyScope(AccessRequest, requestingUser)
+          const scopedQuery = AccessRequestsPolicy.applyScope([], requestingUser)
 
           // Act
           const result = await scopedQuery.findAll()
@@ -111,13 +110,13 @@ describe("api/src/policies/access-requests-policy.ts", () => {
           accessGrantId: accessGrant2.id,
           requestorId: requestor2.id,
         })
-        const scopedQuery = AccessRequestsPolicy.applyScope(AccessRequest, requestingUser)
+        const scopedQuery = AccessRequestsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
 
         // Assert
-        expect(result).toEqual([
+        expect(result.map((r) => r.dataValues)).toEqual([
           expect.objectContaining({
             id: accessRequest1.id,
           }),
@@ -163,7 +162,7 @@ describe("api/src/policies/access-requests-policy.ts", () => {
           accessGrantId: accessGrant2.id,
           requestorId: requestor2.id,
         })
-        const scopedQuery = AccessRequestsPolicy.applyScope(AccessRequest, requestingUser)
+        const scopedQuery = AccessRequestsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()

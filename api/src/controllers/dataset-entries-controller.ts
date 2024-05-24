@@ -4,6 +4,7 @@ import { createReadStream } from "fs"
 
 import { Dataset, DatasetEntry } from "@/models"
 import { DatasetEntriesPolicy } from "@/policies"
+import { BaseScopeOptions } from "@/policies/base-policy"
 import { CreateCsvService } from "@/services/dataset-entries"
 
 import BaseController from "@/controllers/base-controller"
@@ -13,20 +14,21 @@ import BaseController from "@/controllers/base-controller"
 export class DatasetEntriesController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<DatasetEntry>
-    const searchToken = this.query.searchToken as string
+    const filters = this.query.filters as Record<string, unknown>
 
-    const scopedDatasetEntries = DatasetEntriesPolicy.applyScope(DatasetEntry, this.currentUser)
-
-    let filteredDatasetEntries = scopedDatasetEntries
-    if (!isEmpty(searchToken)) {
-      filteredDatasetEntries = scopedDatasetEntries.scope({ method: ["search", searchToken] })
+    const scopes: BaseScopeOptions[] = []
+    if (!isEmpty(filters)) {
+      Object.entries(filters).forEach(([key, value]) => {
+        scopes.push({ method: [key, value] })
+      })
     }
+    const scopedDatasetEntries = DatasetEntriesPolicy.applyScope(scopes, this.currentUser)
 
     if (this.format === "csv") {
-      return this.respondWithCsv(filteredDatasetEntries, where)
+      return this.respondWithCsv(scopedDatasetEntries, where)
     } else {
-      const totalCount = await filteredDatasetEntries.count({ where })
-      const datasetEntries = await filteredDatasetEntries.findAll({
+      const totalCount = await scopedDatasetEntries.count({ where })
+      const datasetEntries = await scopedDatasetEntries.findAll({
         where,
         limit: this.pagination.limit,
         offset: this.pagination.offset,

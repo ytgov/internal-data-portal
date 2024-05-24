@@ -1,13 +1,16 @@
 import { type Ref, reactive, toRefs, ref, unref, watch } from "vue"
 
-import datasetEntriesApi, { type DatasetEntry } from "@/api/dataset-entries-api"
+import datasetEntriesApi, {
+  type DatasetEntry,
+  type DatasetEntriesFilters,
+} from "@/api/dataset-entries-api"
 
-export { type DatasetEntry }
+export { type DatasetEntry, type DatasetEntriesFilters }
 
 export function useDatasetEntries(
   queryOptions: Ref<{
     where?: Record<string, unknown>
-    searchToken?: string
+    filters?: DatasetEntriesFilters
     page?: number
     perPage?: number
   }> = ref({})

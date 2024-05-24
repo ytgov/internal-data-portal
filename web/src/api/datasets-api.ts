@@ -10,8 +10,6 @@ import { type User } from "@/api/users-api"
 import { type UserGroup } from "@/api/user-groups-api"
 import { type VisualizationControl } from "@/api/visualization-controls-api"
 
-export { type Policy }
-
 export enum DatasetErrorTypes {
   OK = "ok",
   ERRORED = "errored",
@@ -66,6 +64,10 @@ export type DatasetsFilters = {
   withTagNames?: string[]
 }
 
+export type DatasetPolicy = Policy & {
+  showUnlimited: boolean
+}
+
 export const datasetsApi = {
   DatasetErrorTypes,
   async list(params: {
@@ -82,7 +84,7 @@ export const datasetsApi = {
   },
   async get(idOrSlug: number | string): Promise<{
     dataset: DatasetDetailedResult
-    policy: Policy
+    policy: DatasetPolicy
   }> {
     const { data } = await http.get(`/api/datasets/${idOrSlug}`)
     return data

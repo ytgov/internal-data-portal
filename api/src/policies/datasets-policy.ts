@@ -1,13 +1,13 @@
-import { ModelStatic, Op } from "sequelize"
+import { Attributes, FindOptions, Op } from "sequelize"
 import { isNil } from "lodash"
 
 import { Path } from "@/utils/deep-pick"
 import { Dataset, User, AccessGrant } from "@/models"
 import { AccessTypes } from "@/models/access-grant"
-import BasePolicy from "@/policies/base-policy"
+import { PolicyFactory } from "@/policies/base-policy"
 import { datasetsAccessibleViaAccessGrantsBy, datasetsAccessibleViaOwner } from "@/models/datasets"
 
-export class DatasetsPolicy extends BasePolicy<Dataset> {
+export class DatasetsPolicy extends PolicyFactory(Dataset) {
   private _mostPermissiveAccessGrant: AccessGrant | null = null
 
   constructor(user: User, record: Dataset) {
@@ -80,15 +80,15 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
     return false
   }
 
-  static applyScope(modelClass: ModelStatic<Dataset>, user: User): ModelStatic<Dataset> {
+  static policyScope(user: User): FindOptions<Attributes<Dataset>> {
     if (user.isSystemAdmin || user.isBusinessAnalyst) {
-      return modelClass
+      return {}
     }
 
+    const datasetsAccessibleViaAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(user)
     if (user.isDataOwner) {
-      const datasetsAccessibleViaAccessGrantsByUserQuery = datasetsAccessibleViaAccessGrantsBy(user)
       const datasetsAccessibleViaOwnerQuery = datasetsAccessibleViaOwner(user)
-      return modelClass.scope({
+      return {
         where: {
           id: {
             [Op.or]: [
@@ -97,10 +97,16 @@ export class DatasetsPolicy extends BasePolicy<Dataset> {
             ],
           },
         },
-      })
+      }
     }
 
-    return modelClass.scope({ method: ["accessibleViaAccessGrantsBy", user] })
+    return {
+      where: {
+        id: {
+          [Op.in]: datasetsAccessibleViaAccessGrantsByUserQuery,
+        },
+      },
+    }
   }
 
   permittedAttributes(): Path[] {

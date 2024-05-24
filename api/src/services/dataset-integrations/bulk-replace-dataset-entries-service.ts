@@ -1,8 +1,7 @@
-import { isNil, isString } from "lodash"
+import { isNil } from "lodash"
 import { CreationAttributes } from "sequelize"
 
 import db, { DatasetEntry, DatasetIntegration } from "@/models"
-import { type DatasetEntryJsonDataType } from "@/models/dataset-entry"
 
 import BaseService from "@/services/base-service"
 
@@ -27,19 +26,11 @@ export class BulkReplaceDatasetEntriesService extends BaseService {
 
       const datasetEntriesAttributes: CreationAttributes<DatasetEntry>[] = parsedJsonData.map(
         (rawJsonData) => {
-          let jsonData: DatasetEntryJsonDataType
-          if (isString(rawJsonData)) {
-            jsonData = {
-              value: rawJsonData,
-            } as DatasetEntryJsonDataType
-          } else {
-            jsonData = rawJsonData as DatasetEntryJsonDataType
-          }
-
           return {
             datasetId,
             rawJsonData,
-            jsonData,
+            // TODO: fix types, and pipeline, so this cast is not necessary
+            jsonData: rawJsonData as Record<string, string | number>,
           }
         }
       )

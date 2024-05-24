@@ -14,9 +14,9 @@
     v-if="isNil(dataset)"
     type="table"
   />
-  <DatasetEntriesTable
+  <SwitchableDatasetEntryPreviewsTable
     v-else
-    ref="datasetEntriesTable"
+    ref="switchableDatasetEntryPreviewsTable"
     :dataset-id="dataset.id"
     :visualization-control-id="dataset.visualizationControl.id"
   />
@@ -29,7 +29,7 @@ import { isNil } from "lodash"
 import { useBreadcrumbs } from "@/use/use-breadcrumbs"
 import { useDataset } from "@/use/use-dataset"
 
-import DatasetEntriesTable from "@/components/dataset-entries/DatasetEntriesTable.vue"
+import SwitchableDatasetEntryPreviewsTable from "@/components/dataset-entry-previews/SwitchableDatasetEntryPreviewsTable.vue"
 import VisualizePropertiesFormCard from "@/components/visualization-controls/VisualizePropertiesFormCard.vue"
 
 const props = defineProps({
@@ -42,14 +42,16 @@ const props = defineProps({
 const { slug } = toRefs(props)
 const { dataset } = useDataset(slug)
 
-const datasetEntriesTable = ref<InstanceType<typeof DatasetEntriesTable> | null>(null)
+const switchableDatasetEntryPreviewsTable = ref<InstanceType<
+  typeof SwitchableDatasetEntryPreviewsTable
+> | null>(null)
 
 function refreshTable() {
-  if (isNil(datasetEntriesTable.value)) {
+  if (isNil(switchableDatasetEntryPreviewsTable.value)) {
     return
   }
 
-  datasetEntriesTable.value.refresh()
+  switchableDatasetEntryPreviewsTable.value.refresh()
 }
 
 const { setBreadcrumbs } = useBreadcrumbs()

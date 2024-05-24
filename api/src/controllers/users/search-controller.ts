@@ -1,7 +1,8 @@
-import { ModelStatic, Op, WhereOptions, col, fn, where } from "sequelize"
+import { Op, WhereOptions, col, fn, where } from "sequelize"
 import { isEmpty, isNil } from "lodash"
 
 import { User } from "@/models"
+import { BaseScopeOptions } from "@/policies/base-policy"
 import { UserSerializers } from "@/serializers"
 
 import BaseController from "@/controllers/base-controller"
@@ -10,12 +11,13 @@ export class SearchController extends BaseController {
   async index() {
     const filters = this.query.filters as Record<string, unknown>
 
-    let filteredUsers: ModelStatic<User> = User
+    const scopes: BaseScopeOptions[] = []
     if (!isEmpty(filters)) {
       Object.entries(filters).forEach(([key, value]) => {
-        filteredUsers = filteredUsers.scope({ method: [key, value] })
+        scopes.push({ method: [key, value] })
       })
     }
+    const filteredUsers = User.scope(scopes)
 
     const searchQuery = this.buildSearchQuery()
     const totalCount = await filteredUsers.count({ where: searchQuery })

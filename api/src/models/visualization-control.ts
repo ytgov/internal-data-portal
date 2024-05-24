@@ -34,10 +34,10 @@ export class VisualizationControl extends Model<
   declare id: CreationOptional<number>
   declare datasetId: ForeignKey<Dataset["id"]>
   declare isDownloadableAsCsv: CreationOptional<boolean>
-  declare hasSearchCustomizations: CreationOptional<boolean>
-  declare hasFieldsExcludedFromSearch: CreationOptional<boolean>
-  declare hasSearchRowLimits: CreationOptional<boolean>
-  declare searchRowLimitMaximum: CreationOptional<number | null>
+  declare hasPreview: CreationOptional<boolean>
+  declare hasFieldsExcludedFromPreview: CreationOptional<boolean>
+  declare hasPreviewRowLimit: CreationOptional<boolean>
+  declare previewRowLimit: CreationOptional<number>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
   declare deletedAt: CreationOptional<Date | null>
@@ -49,54 +49,54 @@ export class VisualizationControl extends Model<
   declare setDataset: BelongsToSetAssociationMixin<Dataset, Dataset["id"]>
   declare createDataset: BelongsToCreateAssociationMixin<Dataset>
 
-  declare getSearchExcludedDatasetFields: HasManyGetAssociationsMixin<DatasetField>
-  declare setSearchExcludedDatasetFields: HasManySetAssociationsMixin<
+  declare getPreviewExcludedDatasetFields: HasManyGetAssociationsMixin<DatasetField>
+  declare setPreviewExcludedDatasetFields: HasManySetAssociationsMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare hasSearchExcludedDatasetField: HasManyHasAssociationMixin<
+  declare hasPreviewExcludedDatasetField: HasManyHasAssociationMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare hasSearchExcludedDatasetFields: HasManyHasAssociationsMixin<
+  declare hasPreviewExcludedDatasetFields: HasManyHasAssociationsMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare addSearchExcludedDatasetField: HasManyAddAssociationMixin<
+  declare addPreviewExcludedDatasetField: HasManyAddAssociationMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare addSearchExcludedDatasetFields: HasManyAddAssociationsMixin<
+  declare addPreviewExcludedDatasetFields: HasManyAddAssociationsMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare removeSearchExcludedDatasetField: HasManyRemoveAssociationMixin<
+  declare removePreviewExcludedDatasetField: HasManyRemoveAssociationMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare removeSearchExcludedDatasetFields: HasManyRemoveAssociationsMixin<
+  declare removePreviewExcludedDatasetFields: HasManyRemoveAssociationsMixin<
     DatasetField,
     DatasetField["datasetId"]
   >
-  declare countSearchExcludedDatasetFields: HasManyCountAssociationsMixin
-  declare createSearchExcludedDatasetField: HasManyCreateAssociationMixin<DatasetField>
+  declare countPreviewExcludedDatasetFields: HasManyCountAssociationsMixin
+  declare createPreviewExcludedDatasetField: HasManyCreateAssociationMixin<DatasetField>
 
   declare dataset?: NonAttribute<Dataset>
-  declare searchExcludedDatasetFields?: NonAttribute<DatasetField[]>
+  declare previewExcludedDatasetFields?: NonAttribute<DatasetField[]>
 
   declare static associations: {
     dataset: Association<VisualizationControl, Dataset>
-    searchExcludedDatasetFields: Association<VisualizationControl, DatasetField>
+    previewExcludedDatasetFields: Association<VisualizationControl, DatasetField>
   }
 
   static establishAssociations() {
     this.belongsTo(Dataset, { as: "dataset" })
     this.hasMany(DatasetField, {
-      as: "searchExcludedDatasetFields",
+      as: "previewExcludedDatasetFields",
       sourceKey: "datasetId",
       foreignKey: "datasetId",
       scope: {
-        isExcludedFromSearch: true,
+        isExcludedFromPreview: true,
       },
     })
   }
@@ -123,24 +123,28 @@ VisualizationControl.init(
       allowNull: false,
       defaultValue: false,
     },
-    hasSearchCustomizations: {
+    hasPreview: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
     },
-    hasFieldsExcludedFromSearch: {
+    hasFieldsExcludedFromPreview: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
-    hasSearchRowLimits: {
+    hasPreviewRowLimit: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
-    searchRowLimitMaximum: {
+    previewRowLimit: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: 10,
+      validate: {
+        min: 10,
+      },
     },
     createdAt: {
       type: DataTypes.DATE,

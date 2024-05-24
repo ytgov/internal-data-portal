@@ -12,6 +12,7 @@ import {
   userFactory,
   userGroupFactory,
   userGroupMembershipFactory,
+  visualizationControlFactory,
 } from "@/factories"
 import { AccessTypes, GrantLevels } from "@/models/access-grant"
 
@@ -37,7 +38,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
           const accessibleDatasetField = await datasetFieldFactory.create({
             datasetId: dataset.id,
           })
-          const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+          const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
           // Act
           const result = await scopedQuery.findAll()
@@ -84,7 +85,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         await datasetFieldFactory.create({
           datasetId: dataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -149,7 +150,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         await datasetFieldFactory.create({
           datasetId: inaccessibleDataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -211,22 +212,33 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
             ownerId: datasetOwner.id,
           })
 
+        const accessibleDatasetField = await datasetFieldFactory.create({
+          datasetId: screenedDataset.id,
+          isExcludedFromPreview: false,
+        })
         // inaccessible dataset field - via screened access
         await datasetFieldFactory.create({
           datasetId: screenedDataset.id,
+          isExcludedFromPreview: true,
         })
         // inaccessible dataset field - for control case
         await datasetFieldFactory.create({
           datasetId: inaccessibleDataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
 
         // Assert
-        expect(DatasetField.count()).resolves.toBe(2)
-        expect(result).toHaveLength(0)
+        expect(DatasetField.count()).resolves.toBe(3)
+        expect(result).toHaveLength(1)
+        expect(result).toEqual([
+          expect.objectContaining({
+            id: accessibleDatasetField.id,
+            isExcludedFromPreview: false,
+          }),
+        ])
       })
 
       test("when user has role type user, and field belongs to dataset with accessible screened access grants, with an approved request, returns the datasets fields", async () => {
@@ -291,7 +303,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         await datasetFieldFactory.create({
           datasetId: inaccessibleDataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -351,7 +363,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         await datasetFieldFactory.create({
           datasetId: inaccessibleDataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -422,7 +434,7 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
         await datasetFieldFactory.create({
           datasetId: inaccessibleDataset.id,
         })
-        const scopedQuery = DatasetFieldsPolicy.applyScope(DatasetField, requestingUser)
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
 
         // Act
         const result = await scopedQuery.findAll()
@@ -437,6 +449,71 @@ describe("api/src/policies/dataset-fields-policy.ts", () => {
             id: accessibleDatasetField.id,
           }),
         ])
+      })
+
+      test("when user has role type user, and field belongs to dataset with limited access and preview mode disabled, restricts all datasets fields", async () => {
+        // Arrange
+        const department = await userGroupFactory.create({ type: UserGroupTypes.DEPARTMENT })
+        const requestingUserGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const datasetOwnerGroupMembership = userGroupMembershipFactory.build({
+          departmentId: department.id,
+        })
+        const role = roleFactory.build({ role: RoleTypes.USER })
+        const requestingUser = await userFactory
+          .transient({
+            include: ["groupMembership"],
+          })
+          .associations({
+            roles: [role],
+            groupMembership: requestingUserGroupMembership,
+          })
+          .create()
+
+        const datasetOwner = await userFactory
+          .associations({
+            groupMembership: datasetOwnerGroupMembership,
+          })
+          .create()
+
+        const accessGrant = accessGrantFactory.build({
+          creatorId: datasetOwner.id,
+          grantLevel: GrantLevels.GOVERNMENT_WIDE,
+          accessType: AccessTypes.SCREENED_ACCESS,
+        })
+        const dataset = await datasetFactory
+          .associations({
+            accessGrants: [accessGrant],
+          })
+          .create({
+            creatorId: datasetOwner.id,
+            ownerId: datasetOwner.id,
+          })
+        await visualizationControlFactory.create({
+          datasetId: dataset.id,
+          hasPreview: false,
+        })
+
+        // inaccessible via preview mode disabled
+        await datasetFieldFactory.create({
+          datasetId: dataset.id,
+          isExcludedFromPreview: false,
+        })
+        // inaccessible via screened access
+        await datasetFieldFactory.create({
+          datasetId: dataset.id,
+          isExcludedFromPreview: true,
+        })
+        const scopedQuery = DatasetFieldsPolicy.applyScope([], requestingUser)
+
+        // Act
+        const result = await scopedQuery.findAll()
+
+        // Assert
+        expect(await DatasetField.count()).toBe(2)
+        expect(result).toHaveLength(0)
+        expect(result).toEqual([])
       })
     })
   })

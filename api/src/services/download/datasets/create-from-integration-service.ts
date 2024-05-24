@@ -4,6 +4,7 @@ import { search } from "jmespath"
 
 import { DatasetField, DatasetIntegration, User } from "@/models"
 import {
+  DEFAULT_KEY,
   DatasetIntegrationParsedJsonDataType,
   DatasetIntegrationRawJsonDataType,
 } from "@/models/dataset-integration"
@@ -32,13 +33,16 @@ export class CreateFromIntegrationService extends BaseService {
     const allRawJsonData = await DatasetIntegrations.RefreshService.perform(this.datasetIntegration)
     await this.datasetIntegration.save()
 
-    const parsedJsonData = this.applyJMESPathTransform(this.datasetIntegration, allRawJsonData)
-    const normalizedData = this.nomalizeData(parsedJsonData, headerKeys)
+    const parsedAndNormalizedJsonData = this.applyJMESPathTransformAndNormalize(
+      this.datasetIntegration,
+      allRawJsonData
+    )
+    this.assertSelfConsistentDataStructure(parsedAndNormalizedJsonData, headerKeys)
 
-    let filteredData = normalizedData
+    let filteredData = parsedAndNormalizedJsonData
     const searchToken = this.options.searchToken
     if (!isNil(searchToken) && !isEmpty(searchToken)) {
-      filteredData = this.filterData(normalizedData, headerKeys, searchToken)
+      filteredData = this.filterData(parsedAndNormalizedJsonData, headerKeys, searchToken)
     }
 
     for (const entry of filteredData) {
@@ -76,10 +80,10 @@ export class CreateFromIntegrationService extends BaseService {
     })
   }
 
-  private nomalizeData(
+  private assertSelfConsistentDataStructure(
     parsedJsonData: DatasetIntegrationParsedJsonDataType,
     headerKeys: string[]
-  ): DatasetIntegrationParsedJsonDataType {
+  ): void {
     if (headerKeys.length === 0) {
       throw new Error("Header keys array is empty")
     }
@@ -87,12 +91,6 @@ export class CreateFromIntegrationService extends BaseService {
     const firstEntry = parsedJsonData[0]
     if (isNil(firstEntry)) {
       throw new Error("Parsed JSON data is empty")
-    }
-
-    const isSimpleStringArray = isString(firstEntry) && headerKeys.length === 1
-    if (isSimpleStringArray) {
-      const firstHeaderKey = headerKeys[0]
-      return parsedJsonData.map((value) => ({ [firstHeaderKey]: value }))
     }
 
     if (typeof firstEntry !== "object") {
@@ -105,25 +103,33 @@ export class CreateFromIntegrationService extends BaseService {
       throw new Error("There is a mismatch between header keys and parsed JSON data keys.")
     }
 
-    return parsedJsonData
+    return
   }
 
-  private applyJMESPathTransform(
+  private applyJMESPathTransformAndNormalize(
     datasetIntegration: DatasetIntegration,
     allRawJsonData: DatasetIntegrationRawJsonDataType
   ): DatasetIntegrationParsedJsonDataType {
     const { jmesPathTransform } = datasetIntegration
 
-    if (isNil(jmesPathTransform) && isArray(allRawJsonData)) {
-      return allRawJsonData
+    if (isNil(allRawJsonData)) {
+      throw new Error("An integration must have data to be parsed.")
     }
 
-    if (isNil(jmesPathTransform)) {
+    let searchedAllRawJsonData = allRawJsonData
+    if (!isNil(jmesPathTransform)) {
+      searchedAllRawJsonData = search(allRawJsonData, jmesPathTransform)
+    }
+
+    if (!isArray(searchedAllRawJsonData)) {
       throw new Error("An integration must parse to an array to be valid")
     }
 
-    const parsedJsonData = search(allRawJsonData, jmesPathTransform)
-    return parsedJsonData
+    if (searchedAllRawJsonData.every(isString)) {
+      return searchedAllRawJsonData.map((value) => ({ [DEFAULT_KEY]: value }))
+    }
+
+    return searchedAllRawJsonData
   }
 }
 
