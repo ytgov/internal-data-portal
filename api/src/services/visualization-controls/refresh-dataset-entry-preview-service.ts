@@ -41,12 +41,16 @@ export class RefreshDatasetEntryPreviewService extends BaseService {
         return []
       }
 
+      const limitCondition =
+        this.visualizationControl.hasPreviewRowLimit == true
+          ? { limit: this.visualizationControl.previewRowLimit }
+          : {}
       const datasetEntriesForPreview = await DatasetEntry.findAll({
         where: {
           datasetId: this.visualizationControl.datasetId,
         },
         offset: 0,
-        limit: this.visualizationControl.previewRowLimit,
+        ...limitCondition,
       })
       const datasetEntryPreviewsAttributes = datasetEntriesForPreview.map((datasetEntry) => {
         const jsonData = pick(datasetEntry.jsonData, previewableDatasetFieldNames)

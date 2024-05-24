@@ -311,6 +311,36 @@ describe("api/src/services/visualization-controls/refresh-dataset-entry-preview-
           }),
         ])
       })
+
+      test("when visualization control preview row limit is disabled, it includes all entries in preview", async () => {
+        const user = await userFactory.create()
+        const dataset = await datasetFactory.create({
+          creatorId: user.id,
+          ownerId: user.id,
+        })
+        const visualizationControl = await visualizationControlFactory.create({
+          datasetId: dataset.id,
+          hasPreviewRowLimit: false,
+          previewRowLimit: 10,
+        })
+        await datasetFieldFactory.create({
+          datasetId: dataset.id,
+          name: "field1",
+          isExcludedFromPreview: false,
+        })
+        await datasetEntryFactory.createList(12, {
+          datasetId: dataset.id,
+          jsonData: {
+            field1: faker.lorem.word(),
+          },
+        })
+
+        // Act
+        const result = await RefreshDatasetEntryPreviewService.perform(visualizationControl, user)
+
+        // Assert
+        expect(result.length).toBe(12)
+      })
     })
   })
 })
