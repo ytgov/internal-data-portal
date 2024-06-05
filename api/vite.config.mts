@@ -18,5 +18,11 @@ export default defineConfig({
         singleThread: true,
       },
     },
+    // Mocking
+    clearMocks: true,
+    mockReset: true,
+    restoreMocks: true,
+    unstubEnvs: true,
+    unstubGlobals: true,
   },
 })
