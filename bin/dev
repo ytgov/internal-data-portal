@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby
 
+require_relative './github_api'
+
 class DevHelper
   # Support dashes in command names
   COMMAND_TO_METHOD = {
-    "ts-node" => :ts_node
+    "ts-node" => :ts_node,
+    "branch-from" => :branch_from,
   }
   METHOD_TO_COMMAND = COMMAND_TO_METHOD.invert
 
@@ -161,6 +164,18 @@ class DevHelper
     compose(*%w[exec db], *args, **kwargs)
   end
 
+  ##
+  # Generates and checks out a new branch based on the Jira issue URL.
+  # Example:
+  #   dev branch-from https://github.com/icefoganalytics/internal-data-portal/issues/98
+  #
+  # Produces:
+  #   git checkout -b issue-98/switch-test-suite-from-jest-to-vitest
+  def branch_from(github_issue_url, *args, **kwargs)
+    branch_name = GithubApi.build_branch_name(github_issue_url)
+    system("git checkout -b #{branch_name}")
+  end
+
   def ownit(*args, **kwargs)
     file_or_directory = args[0]
     raise ScriptError, "Must provide a file or directory path." if file_or_directory.nil?
@@ -203,6 +218,7 @@ class DevHelper
 
   def take_over_needed?(file_or_directory)
     files_owned_by_others = system("find #{file_or_directory} -not -user #{user_id} -print -quit | grep -q .")
+    files_owned_by_others
   end
 
   def user_id

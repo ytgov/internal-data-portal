@@ -1,21 +1,20 @@
-import request from "supertest"
+import { MockedObject } from "vitest"
 
 import { CreateService } from "@/services/datasets"
 
-import app from "@/app"
 import { RoleTypes } from "@/models/role"
 
 import { datasetFactory, roleFactory, userFactory } from "@/factories"
-import { mockCurrentUser } from "@/support"
+import { mockCurrentUser, request } from "@/support"
 
-jest.mock("@/services/datasets")
+vi.mock("@/services/datasets")
 
 describe("api/src/controllers/datasets-controller.ts", () => {
   describe("DatasetsController", () => {
-    let mockedCreateService: jest.MockedObjectDeep<typeof CreateService>
+    let mockedCreateService: MockedObject<typeof CreateService>
 
     beforeEach(() => {
-      mockedCreateService = jest.mocked(CreateService)
+      mockedCreateService = vi.mocked(CreateService)
     })
     describe("#update", () => {
       test("when authorized - role is `data_owner` - and dataset creation is successful", async () => {
@@ -38,7 +37,7 @@ describe("api/src/controllers/datasets-controller.ts", () => {
         mockedCreateService.perform.mockResolvedValue(datasetFactory.build(newDatasetAttributes))
 
         // Act
-        const response = await request(app).post("/api/datasets").send(newDatasetAttributes)
+        const response = await request().post("/api/datasets").send(newDatasetAttributes)
 
         // Assert
         expect.assertions(2)
@@ -70,7 +69,7 @@ describe("api/src/controllers/datasets-controller.ts", () => {
         })
 
         // Act
-        const response = await request(app).post("/api/datasets").send(newDatasetAttributes)
+        const response = await request().post("/api/datasets").send(newDatasetAttributes)
 
         // Assert
         expect.assertions(2)
