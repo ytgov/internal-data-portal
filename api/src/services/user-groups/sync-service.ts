@@ -18,11 +18,11 @@ export class SyncService extends BaseService {
 
         const [userGroup1] = await UserGroup.findOrCreate({
           where: {
-            name: department,
+            name: this.cleanName(department),
             type: UserGroupTypes.DEPARTMENT,
           },
           defaults: {
-            name: department,
+            name: this.cleanName(department),
             type: UserGroupTypes.DEPARTMENT,
             order: DEFAULT_ORDER,
           },
@@ -36,12 +36,12 @@ export class SyncService extends BaseService {
           const [userGroup2] = await UserGroup.findOrCreate({
             where: {
               parentId: userGroup1.id,
-              name: division,
+              name: this.cleanName(division),
               type: UserGroupTypes.DIVISION,
             },
             defaults: {
               parentId: userGroup1.id,
-              name: division,
+              name: this.cleanName(division),
               type: UserGroupTypes.DIVISION,
               order: DEFAULT_ORDER,
             },
@@ -55,12 +55,12 @@ export class SyncService extends BaseService {
             const [userGroup3] = await UserGroup.findOrCreate({
               where: {
                 parentId: userGroup2.id,
-                name: branch,
+                name: this.cleanName(branch),
                 type: UserGroupTypes.BRANCH,
               },
               defaults: {
                 parentId: userGroup2.id,
-                name: branch,
+                name: this.cleanName(branch),
                 type: UserGroupTypes.BRANCH,
                 order: DEFAULT_ORDER,
               },
@@ -74,12 +74,12 @@ export class SyncService extends BaseService {
               await UserGroup.findOrCreate({
                 where: {
                   parentId: userGroup3.id,
-                  name: unit,
+                  name: this.cleanName(unit),
                   type: UserGroupTypes.UNIT,
                 },
                 defaults: {
                   parentId: userGroup3.id,
-                  name: unit,
+                  name: this.cleanName(unit),
                   type: UserGroupTypes.UNIT,
                   order,
                 },
@@ -116,6 +116,10 @@ export class SyncService extends BaseService {
 
       return UserGroup.findAll()
     }
+  }
+
+  private cleanName(name: string) {
+    return name.trim().replace(/\s+/g, " ")
   }
 }
 
