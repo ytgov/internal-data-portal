@@ -1,5 +1,4 @@
 import {
-  Model,
   DataTypes,
   InferAttributes,
   InferCreationAttributes,
@@ -24,6 +23,7 @@ import {
 
 import sequelize from "@/db/db-client"
 import UserGroupMembership from "@/models/user-group-membership"
+import BaseModel from "@/models/base-model"
 
 export enum UserGroupTypes {
   DEPARTMENT = "department",
@@ -35,7 +35,7 @@ export enum UserGroupTypes {
 export const UNASSIGNED_USER_GROUP_NAME = "Unassigned"
 export const DEFAULT_ORDER = -1
 
-export class UserGroup extends Model<
+export class UserGroup extends BaseModel<
   InferAttributes<UserGroup>,
   InferCreationAttributes<UserGroup>
 > {
