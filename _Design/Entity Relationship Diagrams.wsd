@@ -177,12 +177,13 @@ entity "user_groups" {
   * id : int <<PK>>
   --
   * parent_id : int <<FK>>
-  name: nvarchar(255)
-  type: nvarchar(255)
-  order: number
+  * type: nvarchar(255)
+  * name: nvarchar(255)
+  * order: number
+  acronym: nvarchar(10)
   last_division_directory_sync_at: datetime2(0)
-  created_at : datetime2(0)
-  updated_at : datetime2(0)
+  * created_at : datetime2(0)
+  * updated_at : datetime2(0)
   deleted_at : datetime2(0)
 }
 
