@@ -1,6 +1,7 @@
+import { DeepPartial } from "fishery"
+
 import { DatasetStewardship } from "@/models"
 import BaseFactory from "@/factories/base-factory"
-import { DeepPartial } from "fishery"
 
 export const datasetStewardshipFactory = BaseFactory.define<DatasetStewardship>(
   ({ sequence, params, onCreate }) => {
