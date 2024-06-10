@@ -33,6 +33,7 @@ export enum UserGroupTypes {
 }
 
 export const UNASSIGNED_USER_GROUP_NAME = "Unassigned"
+export const UNASSIGNED_USER_GROUP_ACRONYM = "U"
 export const DEFAULT_ORDER = -1
 
 export class UserGroup extends BaseModel<
