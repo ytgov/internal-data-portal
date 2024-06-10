@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { debounce } from "lodash"
+import { debounce, isEmpty } from "lodash"
 import { computed, ref } from "vue"
 
 import { DatasetsFilters } from "@/api/datasets-api"
@@ -91,15 +91,21 @@ async function toggleAdvancedFilters() {
   })
 }
 
-const filters = computed<DatasetsFilters>(() => ({
-  search: searchToken.value,
-  withTagNames: tagNames.value,
-}))
+function presence<T>(value: T): T | undefined {
+  return !isEmpty(value) ? value : undefined
+}
+
+const filters = computed<DatasetsFilters>(() => {
+  return {
+    search: presence(searchToken.value),
+    withTagNames: presence(tagNames.value),
+  }
+})
 
 function emitSearchUpdate(newSearch: string) {
   emit("update:filters", {
     ...filters.value,
-    search: newSearch,
+    search: presence(newSearch),
   })
 }
 
