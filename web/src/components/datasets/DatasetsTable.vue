@@ -90,7 +90,6 @@ import { useRoute, useRouter, type LocationQueryValue } from "vue-router"
 import { cloneDeep, compact, isNil } from "lodash"
 import { useI18n } from "vue-i18n"
 
-import acronymize from "@/utils/acronymize"
 import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
 import useDatasets from "@/use/use-datasets"
 
@@ -188,10 +187,10 @@ function formatOwnership(datasetStewardship: DatasetStewardship | undefined) {
   if (isNil(datasetStewardship)) return
 
   const { department, division, branch, unit } = datasetStewardship
-  const userGroupNames = compact(
-    [department, division, branch, unit].map((userGroup) => userGroup?.name)
+  const userGroupAcronyms = compact([department, division, branch, unit]).map(
+    (userGroup) => userGroup.acronym
   )
-  return userGroupNames.map(acronymize).join("-")
+  return userGroupAcronyms.join("-")
 }
 
 function formatTags(tags: Tag[]) {
