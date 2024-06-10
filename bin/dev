@@ -237,7 +237,18 @@ class DevHelper
 
   def reformat_project_relative_path_filter_for_vitest!(args, prefix)
     if args.length.positive? && args[0].start_with?(prefix)
-      args[0] = args[0].gsub(%r{^#{Regexp.escape(prefix)}}, '')
+      src_path_prefix = "#{prefix}src/"
+      test_path_regex = Regexp.escape(prefix)
+      src_path_regex = Regexp.escape(src_path_prefix)
+
+      if args[0].start_with?(src_path_prefix)
+        args[0] = args[0].gsub(%r{^#{src_path_regex}}, 'tests/')
+                         .gsub(%r{\.ts$}, '.test.ts')
+                         # TODO: handle other file types
+      else
+        args[0] = args[0].gsub(%r{^#{test_path_regex}}, '')
+      end
+
       puts "Reformatted path filter from project relative to service relative for vitest."
     end
   end
