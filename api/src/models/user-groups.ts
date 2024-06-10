@@ -45,7 +45,7 @@ export class UserGroup extends BaseModel<
   declare parentId: ForeignKey<UserGroup["id"]> | null
   declare type: string
   declare name: string
-  declare acronym: string | null
+  declare acronym: string
   declare order: number
   declare lastDivisionDirectorySyncAt: Date | null
   declare createdAt: CreationOptional<Date>
@@ -278,7 +278,7 @@ UserGroup.init(
     },
     acronym: {
       type: DataTypes.STRING(10),
-      allowNull: true,
+      allowNull: false,
     },
     order: {
       type: DataTypes.INTEGER,
