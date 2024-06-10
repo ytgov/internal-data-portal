@@ -98,12 +98,14 @@ class DevHelper
   end
 
   def test_api(*args, **kwargs)
+    reformat_project_relative_path_filter_for_vitest!(args, 'api/')
     run(*%w[test_api npm run test], *args, **kwargs)
   end
 
   alias test test_api
 
   def test_web(*args, **kwargs)
+    reformat_project_relative_path_filter_for_vitest!(args, 'web/')
     run(*%w[test_web npm run test], *args, **kwargs)
   end
 
@@ -231,6 +233,13 @@ class DevHelper
     raise NotImplementedError, "Not implement for platform #{RUBY_PLATFORM}" unless RUBY_PLATFORM =~ /linux/
 
     `id -g`.strip
+  end
+
+  def reformat_project_relative_path_filter_for_vitest!(args, prefix)
+    if args.length.positive? && args[0].start_with?(prefix)
+      args[0] = args[0].gsub(%r{^#{Regexp.escape(prefix)}}, '')
+      puts "Reformatted path filter from project relative to service relative for vitest."
+    end
   end
 end
 
