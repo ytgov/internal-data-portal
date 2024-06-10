@@ -12,7 +12,9 @@
     <template #top>
       <div class="d-flex justify-space-between">
         <AdvancedSearch
-          @update:model-value="updateSearchFilters"
+          :model-value="showAdvancedFilters"
+          @update:model-value="updateAdvancedFilters"
+          @update:filters="updateSearchFilters"
           @click:clear="clearSearchQuery"
         />
         <v-btn
@@ -119,6 +121,7 @@ const router = useRouter()
 
 const itemsPerPage = ref(parseInt(route.query.perPage as string) || 10)
 const page = ref(parseInt(route.query.page as string) || 1)
+const showAdvancedFilters = ref(route.query.showAdvancedFilters === "true")
 
 function updatePage(newPage: number) {
   if (isLoading.value) return
@@ -129,14 +132,10 @@ function updatePage(newPage: number) {
 watch(
   () => [itemsPerPage.value, page.value],
   ([newPerPage, newPage]) => {
-    const { query } = route
-    router.push({
-      query: {
-        ...query,
-        perPage: newPerPage,
-        page: newPage,
-      },
-    })
+    const query = cloneDeep(route.query)
+    query.perPage = newPerPage.toString()
+    query.page = newPage.toString()
+    router.push({ query })
   },
   {
     immediate: true,
@@ -150,6 +149,20 @@ const datasetsQuery = computed(() => ({
 }))
 const { datasets, isLoading, totalCount, fetch: refresh } = useDatasets(datasetsQuery)
 
+function updateAdvancedFilters(newShowAdvancedFilters: boolean, searchFilters: DatasetsFilters) {
+  showAdvancedFilters.value = newShowAdvancedFilters
+
+  const query = cloneDeep(route.query)
+  if (newShowAdvancedFilters) {
+    query.showAdvancedFilters = "true"
+  } else {
+    delete query.showAdvancedFilters
+  }
+
+  query.filters = searchFilters as unknown as LocationQueryValue
+  router.push({ query })
+}
+
 function updateSearchFilters(newFilters: DatasetsFilters) {
   const query = cloneDeep(route.query)
   query.filters = newFilters as unknown as LocationQueryValue
@@ -157,7 +170,9 @@ function updateSearchFilters(newFilters: DatasetsFilters) {
 }
 
 function clearSearchQuery() {
-  router.push({ query: { ...route.query, filters: undefined } })
+  const query = cloneDeep(route.query)
+  delete query.filters
+  router.push({ query })
 }
 
 function formatOwnership(datasetStewardship: DatasetStewardship | undefined) {

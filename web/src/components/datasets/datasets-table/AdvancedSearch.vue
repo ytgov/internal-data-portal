@@ -13,6 +13,7 @@
           hide-details
           clearable
           persistent-clear
+          @update:model-value="debouncedEmitSearchUpdate"
           @click:clear="clearSearchQuery"
         />
       </v-col>
@@ -25,7 +26,7 @@
         >
       </v-col>
     </v-row>
-    <v-row v-if="isShowingAdvancedFilters">
+    <v-row v-if="modelValue">
       <v-col
         cols="12"
         md="4"
@@ -36,6 +37,7 @@
           variant="outlined"
           clearable
           persistent-clear
+          @update:model-value="emitTagNamesUpdate"
           @click:clear="clearTagsFilters"
         />
       </v-col>
@@ -48,17 +50,29 @@ import { debounce } from "lodash"
 import { computed, ref } from "vue"
 
 import { DatasetsFilters } from "@/api/datasets-api"
+import { useRoute } from "vue-router"
+
+import TagsAutocomplete from "@/components/tags/TagsAutocomplete.vue"
+
+const props = withDefaults(
+  defineProps<{
+    modelValue: boolean
+  }>(),
+  {
+    modelValue: false,
+  }
+)
 
 const emit = defineEmits<{
-  "update:modelValue": [searchFilters: DatasetsFilters]
+  "update:modelValue": [showAdvancedFilters: boolean, searchFilters: DatasetsFilters]
+  "update:filters": [searchFilters: DatasetsFilters]
   "click:clear": [void]
 }>()
-import TagsAutocomplete from "@/components/tags/TagsAutocomplete.vue"
-import { watch } from "vue"
 
-const searchToken = ref("")
-const tagNames = ref<string[]>([])
-const isShowingAdvancedFilters = ref(false)
+const route = useRoute()
+const initialFilters = (route.query.filters as DatasetsFilters) ?? {}
+const searchToken = ref<string | undefined>(initialFilters.search)
+const tagNames = ref<string[]>(initialFilters.withTagNames ?? [])
 
 function clearSearchQuery() {
   searchToken.value = ""
@@ -69,9 +83,12 @@ function clearTagsFilters() {
   tagNames.value = []
 }
 
-function toggleAdvancedFilters() {
+async function toggleAdvancedFilters() {
   tagNames.value = []
-  isShowingAdvancedFilters.value = !isShowingAdvancedFilters.value
+  emit("update:modelValue", !props.modelValue, {
+    ...filters.value,
+    withTagNames: undefined,
+  })
 }
 
 const filters = computed<DatasetsFilters>(() => ({
@@ -80,7 +97,7 @@ const filters = computed<DatasetsFilters>(() => ({
 }))
 
 function emitSearchUpdate(newSearch: string) {
-  emit("update:modelValue", {
+  emit("update:filters", {
     ...filters.value,
     search: newSearch,
   })
@@ -88,14 +105,10 @@ function emitSearchUpdate(newSearch: string) {
 
 const debouncedEmitSearchUpdate = debounce(emitSearchUpdate, 1000)
 
-watch(searchToken, (newSearch) => {
-  debouncedEmitSearchUpdate(newSearch)
-})
-
-watch(
-  () => [tagNames.value], // add other non-search filters here
-  () => {
-    emit("update:modelValue", filters.value)
-  }
-)
+function emitTagNamesUpdate(newTagNames: string[]) {
+  emit("update:filters", {
+    ...filters.value,
+    withTagNames: newTagNames,
+  })
+}
 </script>
