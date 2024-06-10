@@ -20,7 +20,7 @@
         <v-btn
           color="primary"
           variant="outlined"
-          prepend-icon="mdi-filter"
+          :prepend-icon="modelValue ? 'mdi-filter-menu' : 'mdi-filter-menu-outline'"
           @click="toggleAdvancedFilters"
           >Advanced Filters</v-btn
         >
