@@ -14,7 +14,6 @@
           clearable
           persistent-clear
           @update:model-value="debouncedEmitSearchUpdate"
-          @click:clear="clearSearchQuery"
         />
       </v-col>
       <v-col align-self="center">
@@ -74,11 +73,6 @@ const route = useRoute()
 const initialFilters = (route.query.filters as DatasetsFilters) ?? {}
 const searchToken = ref<string | undefined>(initialFilters.search)
 const tagNames = ref<string[]>(initialFilters.withTagNames ?? [])
-
-function clearSearchQuery() {
-  searchToken.value = ""
-  emit("click:clear")
-}
 
 function clearTagsFilters() {
   tagNames.value = []
