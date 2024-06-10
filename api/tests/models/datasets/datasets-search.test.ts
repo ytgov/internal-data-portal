@@ -3,7 +3,14 @@ import { Op } from "sequelize"
 import { Dataset } from "@/models"
 import { datasetsSearch } from "@/models/datasets"
 import { TaggableTypes } from "@/models/tagging"
-import { datasetFactory, datasetStewardshipFactory, tagFactory, taggingFactory, userFactory, userGroupFactory } from "@/factories"
+import {
+  datasetFactory,
+  datasetStewardshipFactory,
+  tagFactory,
+  taggingFactory,
+  userFactory,
+  userGroupFactory,
+} from "@/factories"
 import { UserGroupTypes } from "@/models/user-groups"
 
 describe("api/src/models/datasets/datasets-search.ts", () => {
@@ -142,11 +149,11 @@ describe("api/src/models/datasets/datasets-search.ts", () => {
       })
       const department1 = await userGroupFactory.create({
         type: UserGroupTypes.DEPARTMENT,
-        name: "aaa-bbb-ccc"
+        name: "aaa-bbb-ccc",
       })
       const department2 = await userGroupFactory.create({
         type: UserGroupTypes.DEPARTMENT,
-        name: "bbb-ccc-ddd"
+        name: "bbb-ccc-ddd",
       })
       await datasetStewardshipFactory.create({
         datasetId: dataset1.id,
@@ -201,19 +208,19 @@ describe("api/src/models/datasets/datasets-search.ts", () => {
       })
       const department1 = await userGroupFactory.create({
         type: UserGroupTypes.DEPARTMENT,
-        name: "zzzzzzzzz"
+        name: "zzzzzzzzz",
       })
       const department2 = await userGroupFactory.create({
         type: UserGroupTypes.DEPARTMENT,
-        name: "zzzzzzzzzzz"
+        name: "zzzzzzzzzzz",
       })
       const division1 = await userGroupFactory.create({
         type: UserGroupTypes.DIVISION,
-        name: "aaa-bbb-ccc"
+        name: "aaa-bbb-ccc",
       })
       const division2 = await userGroupFactory.create({
         type: UserGroupTypes.DIVISION,
-        name: "bbb-ccc-ddd"
+        name: "bbb-ccc-ddd",
       })
       await datasetStewardshipFactory.create({
         datasetId: dataset1.id,
@@ -270,27 +277,27 @@ describe("api/src/models/datasets/datasets-search.ts", () => {
       })
       const department1 = await userGroupFactory.create({
         type: UserGroupTypes.DEPARTMENT,
-        name: "zzzzzzzzz"
+        name: "zzzzzzzzz",
       })
       const department2 = await userGroupFactory.create({
         type: UserGroupTypes.DEPARTMENT,
-        name: "zzzzzzzzzzz"
+        name: "zzzzzzzzzzz",
       })
       const division1 = await userGroupFactory.create({
         type: UserGroupTypes.DIVISION,
-        name: "zzzzzzzzzzz"
+        name: "zzzzzzzzzzz",
       })
       const division2 = await userGroupFactory.create({
         type: UserGroupTypes.DIVISION,
-        name: "zzzzzzzzzz"
+        name: "zzzzzzzzzz",
       })
       const branch1 = await userGroupFactory.create({
         type: UserGroupTypes.BRANCH,
-        name: "aaa-bbb-ccc"
+        name: "aaa-bbb-ccc",
       })
       const branch2 = await userGroupFactory.create({
         type: UserGroupTypes.BRANCH,
-        name: "bbb-ccc-ddd"
+        name: "bbb-ccc-ddd",
       })
       await datasetStewardshipFactory.create({
         datasetId: dataset1.id,
@@ -349,35 +356,35 @@ describe("api/src/models/datasets/datasets-search.ts", () => {
       })
       const department1 = await userGroupFactory.create({
         type: UserGroupTypes.DEPARTMENT,
-        name: "zzzzzzzzz"
+        name: "zzzzzzzzz",
       })
       const department2 = await userGroupFactory.create({
         type: UserGroupTypes.DEPARTMENT,
-        name: "zzzzzzzzzzz"
+        name: "zzzzzzzzzzz",
       })
       const division1 = await userGroupFactory.create({
         type: UserGroupTypes.DIVISION,
-        name: "zzzzzzzzzzz"
+        name: "zzzzzzzzzzz",
       })
       const division2 = await userGroupFactory.create({
         type: UserGroupTypes.DIVISION,
-        name: "zzzzzzzzzz"
+        name: "zzzzzzzzzz",
       })
       const branch1 = await userGroupFactory.create({
         type: UserGroupTypes.BRANCH,
-        name: "zzzzzzzzzz"
+        name: "zzzzzzzzzz",
       })
       const branch2 = await userGroupFactory.create({
         type: UserGroupTypes.BRANCH,
-        name: "zzzzzzzzzz"
+        name: "zzzzzzzzzz",
       })
       const unit1 = await userGroupFactory.create({
         type: UserGroupTypes.UNIT,
-        name: "aaa-bbb-ccc"
+        name: "aaa-bbb-ccc",
       })
       const unit2 = await userGroupFactory.create({
         type: UserGroupTypes.UNIT,
-        name: "bbb-ccc-ddd"
+        name: "bbb-ccc-ddd",
       })
       await datasetStewardshipFactory.create({
         datasetId: dataset1.id,
@@ -417,6 +424,64 @@ describe("api/src/models/datasets/datasets-search.ts", () => {
         }),
         expect.objectContaining({
           id: dataset2.id,
+        }),
+      ])
+    })
+
+    test("when dataset stewardship department acronym matches exactly, returns the dataset", async () => {
+      // Arrange
+      const user = await userFactory.create()
+      const dataset1 = await datasetFactory.create({
+        creatorId: user.id,
+        ownerId: user.id,
+      })
+      const dataset2 = await datasetFactory.create({
+        creatorId: user.id,
+        ownerId: user.id,
+      })
+      // await datasetFactory.create({
+      //   creatorId: user.id,
+      //   ownerId: user.id,
+      // })
+      const department1 = await userGroupFactory.create({
+        type: UserGroupTypes.DEPARTMENT,
+        name: "zzzzzzzzzzz",
+        acronym: "AAA",
+      })
+      const department2 = await userGroupFactory.create({
+        type: UserGroupTypes.DEPARTMENT,
+        name: "zzzzzzzzzzzz",
+        acronym: "AAABBB",
+      })
+      await datasetStewardshipFactory.create({
+        datasetId: dataset1.id,
+        ownerId: user.id,
+        supportId: user.id,
+        departmentId: department1.id,
+      })
+      await datasetStewardshipFactory.create({
+        datasetId: dataset2.id,
+        ownerId: user.id,
+        supportId: user.id,
+        departmentId: department2.id,
+      })
+
+      const searchToken = "AAA"
+
+      // Act
+      const searchQuery = datasetsSearch()
+      const result = await Dataset.findAll({
+        where: { id: { [Op.in]: searchQuery } },
+        replacements: {
+          searchTokenWildcard: `%${searchToken}%`,
+          searchToken,
+        },
+      })
+
+      // Assert
+      expect(result).toEqual([
+        expect.objectContaining({
+          id: dataset1.id,
         }),
       ])
     })

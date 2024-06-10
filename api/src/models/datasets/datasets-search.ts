@@ -63,7 +63,10 @@ export function datasetsSearch(): Literal {
               AND datasets.id = dataset_stewardships.dataset_id
               AND dataset_stewardships.deleted_at IS NULL
               AND user_groups.deleted_at IS NULL
-              AND LOWER(user_groups.name) LIKE LOWER(:searchTokenWildcard)
+              AND (
+                LOWER(user_groups.name) LIKE LOWER(:searchTokenWildcard)
+                OR user_groups.acronym = :searchToken
+              )
           )
         )
       )

@@ -367,6 +367,7 @@ Dataset.init(
           },
           replacements: {
             searchTokenWildcard: `%${searchToken}%`,
+            searchToken,
           },
         }
       },
