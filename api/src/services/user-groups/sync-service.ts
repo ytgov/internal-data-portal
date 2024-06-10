@@ -1,7 +1,8 @@
-import { UserGroup } from "@/models"
+import { isEmpty } from "lodash"
 
 import acronymize from "@/utils/acronymize"
 import { yukonGovernmentIntegration } from "@/integrations"
+import { UserGroup } from "@/models"
 import { UserGroupTypes } from "@/models/user-groups"
 import BaseService from "@/services/base-service"
 
@@ -18,6 +19,8 @@ export class SyncService extends BaseService {
         const isBranch = unit === null
 
         const departmentName = this.cleanName(department)
+        if (isEmpty(departmentName)) continue
+
         const departmentAcronym = acronymize(departmentName)
         const [userGroup1] = await UserGroup.findOrCreate({
           where: {
@@ -38,6 +41,8 @@ export class SyncService extends BaseService {
 
         if (division !== null) {
           const divisionName = this.cleanName(division)
+          if (isEmpty(divisionName)) continue
+
           const divisionAcronym = acronymize(divisionName)
           const [userGroup2] = await UserGroup.findOrCreate({
             where: {
@@ -60,6 +65,8 @@ export class SyncService extends BaseService {
 
           if (branch !== null) {
             const branchName = this.cleanName(branch)
+            if (isEmpty(branchName)) continue
+
             const branchAcronym = acronymize(branchName)
             const [userGroup3] = await UserGroup.findOrCreate({
               where: {
@@ -82,6 +89,8 @@ export class SyncService extends BaseService {
 
             if (unit !== null) {
               const unitName = this.cleanName(unit)
+              if (isEmpty(unitName)) continue
+
               const unitAcronym = acronymize(unitName)
               await UserGroup.findOrCreate({
                 where: {

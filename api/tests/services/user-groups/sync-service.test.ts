@@ -39,7 +39,13 @@ describe("api/src/services/user-groups/sync-service.ts", () => {
         // Arrange
         const fetchDivisionsResult = {
           divisions: [
-            { department: "Highways and Public Works", division: null, branch: null, unit: null, order: 1 },
+            {
+              department: "Highways and Public Works",
+              division: null,
+              branch: null,
+              unit: null,
+              order: 1,
+            },
           ],
           count: 1,
         }
@@ -57,6 +63,21 @@ describe("api/src/services/user-groups/sync-service.ts", () => {
             order: 1,
           }),
         ])
+      })
+
+      test("when cleaned name is empty, skips creating the user group", async () => {
+        // Arrange
+        const fetchDivisionsResult = {
+          divisions: [{ department: "  ", division: null, branch: null, unit: null, order: 1 }],
+          count: 1,
+        }
+        mockedYukonGovernmentIntegration.fetchDivisions.mockResolvedValue(fetchDivisionsResult)
+
+        // Act
+        const result = await SyncService.perform()
+
+        // Assert
+        expect(result).toEqual([])
       })
     })
   })
