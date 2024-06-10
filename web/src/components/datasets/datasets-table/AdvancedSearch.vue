@@ -91,21 +91,21 @@ async function toggleAdvancedFilters() {
   })
 }
 
-function presence<T>(value: T): T | undefined {
+function emptyToUndefined<T>(value: T): T | undefined {
   return !isEmpty(value) ? value : undefined
 }
 
 const filters = computed<DatasetsFilters>(() => {
   return {
-    search: presence(searchToken.value),
-    withTagNames: presence(tagNames.value),
+    search: emptyToUndefined(searchToken.value),
+    withTagNames: emptyToUndefined(tagNames.value),
   }
 })
 
 function emitSearchUpdate(newSearch: string) {
   emit("update:filters", {
     ...filters.value,
-    search: presence(newSearch),
+    search: emptyToUndefined(newSearch),
   })
 }
 
