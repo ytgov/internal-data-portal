@@ -21,6 +21,7 @@
         <v-btn
           color="primary"
           variant="outlined"
+          prepend-icon="mdi-filter"
           @click="toggleAdvancedFilters"
           >Advanced Filters</v-btn
         >
