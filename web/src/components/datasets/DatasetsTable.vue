@@ -10,32 +10,21 @@
     @update:page="updatePage"
   >
     <template #top>
-      <v-row class="ma-1">
-        <v-col
-          cols="12"
-          md="4"
-        >
-          <TagsAutocomplete
-            :model-value="tagNames"
-            label="Search"
-            variant="outlined"
-            clearable
-            persistent-clear
-            @update:model-value="updateWithTagNamesFilterQuery"
-            @click:clear="clearSearchQuery"
-          />
-        </v-col>
-        <v-col class="d-none d-md-flex justify-end align-center">
-          <v-btn
-            icon="mdi-cached"
-            color="primary"
-            variant="outlined"
-            size="x-small"
-            title="Refresh Datasets"
-            @click="refresh"
-          />
-        </v-col>
-      </v-row>
+      <div class="d-flex justify-space-between">
+        <AdvancedSearch
+          @update:model-value="updateSearchFilters"
+          @click:clear="clearSearchQuery"
+        />
+        <v-btn
+          class="d-none d-md-inline ma-1"
+          icon="mdi-cached"
+          color="primary"
+          variant="outlined"
+          size="x-small"
+          title="Refresh Datasets"
+          @click="refresh"
+        />
+      </div>
     </template>
     <template #item.name="{ value, item: { slug } }">
       {{ value }}
@@ -86,18 +75,17 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue"
-import { useRoute, useRouter, type LocationQueryValue } from "vue-router"
+import { LocationQueryValue, useRoute, useRouter } from "vue-router"
 import { cloneDeep, compact, isNil } from "lodash"
 import { useI18n } from "vue-i18n"
 
 import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
-import useDatasets from "@/use/use-datasets"
+import useDatasets, { DatasetsFilters } from "@/use/use-datasets"
 
+import AdvancedSearch from "@/components/datasets/datasets-table/AdvancedSearch.vue"
 import ColumnRouterLink from "@/components/datasets/datasets-table/ColumnRouterLink.vue"
 import RequestAccessButton from "@/components/datasets/datasets-table/RequestAccessButton.vue"
 import SubscribeToDatasetButton from "@/components/datasets/datasets-table/SubscribeToDatasetButton.vue"
-import TagsAutocomplete from "@/components/tags/TagsAutocomplete.vue"
-import { DatasetsFilters } from "@/api/datasets-api"
 
 type Tag = {
   id: number
@@ -131,7 +119,6 @@ const router = useRouter()
 
 const itemsPerPage = ref(parseInt(route.query.perPage as string) || 10)
 const page = ref(parseInt(route.query.page as string) || 1)
-const tagNames = computed(() => (route.query.filters as unknown as DatasetsFilters)?.withTagNames)
 
 function updatePage(newPage: number) {
   if (isLoading.value) return
@@ -157,26 +144,16 @@ watch(
 )
 
 const datasetsQuery = computed(() => ({
-  filters: route.query.filters as unknown as Record<string, unknown> | undefined,
+  filters: route.query.filters as unknown as DatasetsFilters | undefined,
   perPage: itemsPerPage.value,
   page: page.value,
 }))
 const { datasets, isLoading, totalCount, fetch: refresh } = useDatasets(datasetsQuery)
 
-function updateWithTagNamesFilterQuery(newTagNames: string[]) {
+function updateSearchFilters(newFilters: DatasetsFilters) {
   const query = cloneDeep(route.query)
-
-  if (isNil(query.filters)) {
-    query.filters = {
-      withTagNames: newTagNames,
-    } as unknown as LocationQueryValue
-  } else {
-    ;(query.filters as DatasetsFilters).withTagNames = newTagNames
-  }
-
-  router.push({
-    query,
-  })
+  query.filters = newFilters as unknown as LocationQueryValue
+  router.push({ query })
 }
 
 function clearSearchQuery() {
