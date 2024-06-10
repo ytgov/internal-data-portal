@@ -34,6 +34,30 @@ describe("api/src/services/user-groups/sync-service.ts", () => {
           }),
         ])
       })
+
+      test("when building models, builds the correct acronym", async () => {
+        // Arrange
+        const fetchDivisionsResult = {
+          divisions: [
+            { department: "Highways and Public Works", division: null, branch: null, unit: null, order: 1 },
+          ],
+          count: 1,
+        }
+        mockedYukonGovernmentIntegration.fetchDivisions.mockResolvedValue(fetchDivisionsResult)
+
+        // Act
+        const result = await SyncService.perform()
+
+        // Assert
+        expect(result).toEqual([
+          expect.objectContaining({
+            name: "Highways and Public Works",
+            type: "department",
+            acronym: "HPW",
+            order: 1,
+          }),
+        ])
+      })
     })
   })
 })

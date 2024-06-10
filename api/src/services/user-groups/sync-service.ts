@@ -1,8 +1,9 @@
 import { UserGroup } from "@/models"
 
-import BaseService from "@/services/base-service"
+import acronymize from "@/utils/acronymize"
 import { yukonGovernmentIntegration } from "@/integrations"
 import { UserGroupTypes } from "@/models/user-groups"
+import BaseService from "@/services/base-service"
 
 export const DEFAULT_ORDER = -1
 
@@ -16,14 +17,16 @@ export class SyncService extends BaseService {
         const isDivision = branch === null && unit === null
         const isBranch = unit === null
 
-        const cleanDepartmentName = this.cleanName(department)
+        const departmentName = this.cleanName(department)
+        const departmentAcronym = acronymize(departmentName)
         const [userGroup1] = await UserGroup.findOrCreate({
           where: {
-            name: cleanDepartmentName,
+            name: departmentName,
             type: UserGroupTypes.DEPARTMENT,
           },
           defaults: {
-            name: cleanDepartmentName,
+            name: departmentName,
+            acronym: departmentAcronym,
             type: UserGroupTypes.DEPARTMENT,
             order: DEFAULT_ORDER,
           },
@@ -34,16 +37,18 @@ export class SyncService extends BaseService {
         }
 
         if (division !== null) {
-          const cleanDivisionName = this.cleanName(division)
+          const divisionName = this.cleanName(division)
+          const divisionAcronym = acronymize(divisionName)
           const [userGroup2] = await UserGroup.findOrCreate({
             where: {
               parentId: userGroup1.id,
-              name: cleanDivisionName,
+              name: divisionName,
               type: UserGroupTypes.DIVISION,
             },
             defaults: {
               parentId: userGroup1.id,
-              name: cleanDivisionName,
+              name: divisionName,
+              acronym: divisionAcronym,
               type: UserGroupTypes.DIVISION,
               order: DEFAULT_ORDER,
             },
@@ -54,16 +59,18 @@ export class SyncService extends BaseService {
           }
 
           if (branch !== null) {
-            const cleanBranchName = this.cleanName(branch)
+            const branchName = this.cleanName(branch)
+            const branchAcronym = acronymize(branchName)
             const [userGroup3] = await UserGroup.findOrCreate({
               where: {
                 parentId: userGroup2.id,
-                name: cleanBranchName,
+                name: branchName,
                 type: UserGroupTypes.BRANCH,
               },
               defaults: {
                 parentId: userGroup2.id,
-                name: cleanBranchName,
+                name: branchName,
+                acronym: branchAcronym,
                 type: UserGroupTypes.BRANCH,
                 order: DEFAULT_ORDER,
               },
@@ -74,16 +81,18 @@ export class SyncService extends BaseService {
             }
 
             if (unit !== null) {
-              const cleanUnitName = this.cleanName(unit)
+              const unitName = this.cleanName(unit)
+              const unitAcronym = acronymize(unitName)
               await UserGroup.findOrCreate({
                 where: {
                   parentId: userGroup3.id,
-                  name: cleanUnitName,
+                  name: unitName,
                   type: UserGroupTypes.UNIT,
                 },
                 defaults: {
                   parentId: userGroup3.id,
-                  name: cleanUnitName,
+                  name: unitName,
+                  acronym: unitAcronym,
                   type: UserGroupTypes.UNIT,
                   order,
                 },
