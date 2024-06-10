@@ -16,13 +16,14 @@ export class SyncService extends BaseService {
         const isDivision = branch === null && unit === null
         const isBranch = unit === null
 
+        const cleanDepartmentName = this.cleanName(department)
         const [userGroup1] = await UserGroup.findOrCreate({
           where: {
-            name: this.cleanName(department),
+            name: cleanDepartmentName,
             type: UserGroupTypes.DEPARTMENT,
           },
           defaults: {
-            name: this.cleanName(department),
+            name: cleanDepartmentName,
             type: UserGroupTypes.DEPARTMENT,
             order: DEFAULT_ORDER,
           },
@@ -33,15 +34,16 @@ export class SyncService extends BaseService {
         }
 
         if (division !== null) {
+          const cleanDivisionName = this.cleanName(division)
           const [userGroup2] = await UserGroup.findOrCreate({
             where: {
               parentId: userGroup1.id,
-              name: this.cleanName(division),
+              name: cleanDivisionName,
               type: UserGroupTypes.DIVISION,
             },
             defaults: {
               parentId: userGroup1.id,
-              name: this.cleanName(division),
+              name: cleanDivisionName,
               type: UserGroupTypes.DIVISION,
               order: DEFAULT_ORDER,
             },
@@ -52,15 +54,16 @@ export class SyncService extends BaseService {
           }
 
           if (branch !== null) {
+            const cleanBranchName = this.cleanName(branch)
             const [userGroup3] = await UserGroup.findOrCreate({
               where: {
                 parentId: userGroup2.id,
-                name: this.cleanName(branch),
+                name: cleanBranchName,
                 type: UserGroupTypes.BRANCH,
               },
               defaults: {
                 parentId: userGroup2.id,
-                name: this.cleanName(branch),
+                name: cleanBranchName,
                 type: UserGroupTypes.BRANCH,
                 order: DEFAULT_ORDER,
               },
@@ -71,15 +74,16 @@ export class SyncService extends BaseService {
             }
 
             if (unit !== null) {
+              const cleanUnitName = this.cleanName(unit)
               await UserGroup.findOrCreate({
                 where: {
                   parentId: userGroup3.id,
-                  name: this.cleanName(unit),
+                  name: cleanUnitName,
                   type: UserGroupTypes.UNIT,
                 },
                 defaults: {
                   parentId: userGroup3.id,
-                  name: this.cleanName(unit),
+                  name: cleanUnitName,
                   type: UserGroupTypes.UNIT,
                   order,
                 },
