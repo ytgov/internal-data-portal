@@ -60,6 +60,7 @@ export type DatasetDetailedResult = Dataset & {
 
 // Keep in sync with api/src/models/dataset.ts -> scopes
 export type DatasetsFilters = {
+  search?: string
   withOwnerDepartment?: UserGroup["id"]
   withTagNames?: string[]
 }

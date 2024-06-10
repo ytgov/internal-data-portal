@@ -10,32 +10,23 @@
     @update:page="updatePage"
   >
     <template #top>
-      <v-row class="ma-1">
-        <v-col
-          cols="12"
-          md="4"
-        >
-          <TagsAutocomplete
-            :model-value="tagNames"
-            label="Search"
-            variant="outlined"
-            clearable
-            persistent-clear
-            @update:model-value="updateWithTagNamesFilterQuery"
-            @click:clear="clearSearchQuery"
-          />
-        </v-col>
-        <v-col class="d-none d-md-flex justify-end align-center">
-          <v-btn
-            icon="mdi-cached"
-            color="primary"
-            variant="outlined"
-            size="x-small"
-            title="Refresh Datasets"
-            @click="refresh"
-          />
-        </v-col>
-      </v-row>
+      <div class="d-flex justify-space-between">
+        <AdvancedSearch
+          :model-value="showAdvancedFilters"
+          @update:model-value="updateAdvancedFilters"
+          @update:filters="updateSearchFilters"
+          @click:clear="clearSearchQuery"
+        />
+        <v-btn
+          class="d-none d-md-inline ma-1"
+          icon="mdi-cached"
+          color="primary"
+          variant="outlined"
+          size="x-small"
+          title="Refresh Datasets"
+          @click="refresh"
+        />
+      </div>
     </template>
     <template #item.name="{ value, item: { slug } }">
       {{ value }}
@@ -86,19 +77,17 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue"
-import { useRoute, useRouter, type LocationQueryValue } from "vue-router"
+import { LocationQueryValue, useRoute, useRouter } from "vue-router"
 import { cloneDeep, compact, isNil } from "lodash"
 import { useI18n } from "vue-i18n"
 
-import acronymize from "@/utils/acronymize"
 import { type DatasetStewardship } from "@/api/dataset-stewardships-api"
-import useDatasets from "@/use/use-datasets"
+import useDatasets, { DatasetsFilters } from "@/use/use-datasets"
 
+import AdvancedSearch from "@/components/datasets/datasets-table/AdvancedSearch.vue"
 import ColumnRouterLink from "@/components/datasets/datasets-table/ColumnRouterLink.vue"
 import RequestAccessButton from "@/components/datasets/datasets-table/RequestAccessButton.vue"
 import SubscribeToDatasetButton from "@/components/datasets/datasets-table/SubscribeToDatasetButton.vue"
-import TagsAutocomplete from "@/components/tags/TagsAutocomplete.vue"
-import { DatasetsFilters } from "@/api/datasets-api"
 
 type Tag = {
   id: number
@@ -132,7 +121,7 @@ const router = useRouter()
 
 const itemsPerPage = ref(parseInt(route.query.perPage as string) || 10)
 const page = ref(parseInt(route.query.page as string) || 1)
-const tagNames = computed(() => (route.query.filters as unknown as DatasetsFilters)?.withTagNames)
+const showAdvancedFilters = ref(route.query.showAdvancedFilters === "true")
 
 function updatePage(newPage: number) {
   if (isLoading.value) return
@@ -143,14 +132,10 @@ function updatePage(newPage: number) {
 watch(
   () => [itemsPerPage.value, page.value],
   ([newPerPage, newPage]) => {
-    const { query } = route
-    router.push({
-      query: {
-        ...query,
-        perPage: newPerPage,
-        page: newPage,
-      },
-    })
+    const query = cloneDeep(route.query)
+    query.perPage = newPerPage.toString()
+    query.page = newPage.toString()
+    router.push({ query })
   },
   {
     immediate: true,
@@ -158,40 +143,46 @@ watch(
 )
 
 const datasetsQuery = computed(() => ({
-  filters: route.query.filters as unknown as Record<string, unknown> | undefined,
+  filters: route.query.filters as unknown as DatasetsFilters | undefined,
   perPage: itemsPerPage.value,
   page: page.value,
 }))
 const { datasets, isLoading, totalCount, fetch: refresh } = useDatasets(datasetsQuery)
 
-function updateWithTagNamesFilterQuery(newTagNames: string[]) {
-  const query = cloneDeep(route.query)
+function updateAdvancedFilters(newShowAdvancedFilters: boolean, searchFilters: DatasetsFilters) {
+  showAdvancedFilters.value = newShowAdvancedFilters
 
-  if (isNil(query.filters)) {
-    query.filters = {
-      withTagNames: newTagNames,
-    } as unknown as LocationQueryValue
+  const query = cloneDeep(route.query)
+  if (newShowAdvancedFilters) {
+    query.showAdvancedFilters = "true"
   } else {
-    ;(query.filters as DatasetsFilters).withTagNames = newTagNames
+    delete query.showAdvancedFilters
   }
 
-  router.push({
-    query,
-  })
+  query.filters = searchFilters as unknown as LocationQueryValue
+  router.push({ query })
+}
+
+function updateSearchFilters(newFilters: DatasetsFilters) {
+  const query = cloneDeep(route.query)
+  query.filters = newFilters as unknown as LocationQueryValue
+  router.push({ query })
 }
 
 function clearSearchQuery() {
-  router.push({ query: { ...route.query, filters: undefined } })
+  const query = cloneDeep(route.query)
+  delete query.filters
+  router.push({ query })
 }
 
 function formatOwnership(datasetStewardship: DatasetStewardship | undefined) {
   if (isNil(datasetStewardship)) return
 
   const { department, division, branch, unit } = datasetStewardship
-  const userGroupNames = compact(
-    [department, division, branch, unit].map((userGroup) => userGroup?.name)
+  const userGroupAcronyms = compact([department, division, branch, unit]).map(
+    (userGroup) => userGroup.acronym
   )
-  return userGroupNames.map(acronymize).join("-")
+  return userGroupAcronyms.join("-")
 }
 
 function formatTags(tags: Tag[]) {

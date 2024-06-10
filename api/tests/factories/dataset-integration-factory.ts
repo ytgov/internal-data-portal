@@ -16,7 +16,7 @@ function assertParamsHasDatasetId(
 
 export const datasetIntegrationFactory = BaseFactory.define<DatasetIntegration>(
   ({ sequence, params, onCreate }) => {
-    onCreate((datasetField) => datasetField.save())
+    onCreate((datasetIntegration) => datasetIntegration.save())
 
     assertParamsHasDatasetId(params)
 

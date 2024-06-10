@@ -27,6 +27,8 @@ export enum TaggableTypes {
 }
 
 export class Tagging extends Model<InferAttributes<Tagging>, InferCreationAttributes<Tagging>> {
+  static readonly TaggableTypes = TaggableTypes
+
   declare id: CreationOptional<number>
   declare tagId: ForeignKey<Tag["id"]>
   declare taggableId: number

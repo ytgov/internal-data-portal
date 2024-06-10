@@ -1,11 +1,11 @@
-// Runs once before all tests
-
-// sketchy hack to load paths, I'm pretty sure this isn't how its supposed to be used
-import "tsconfig-paths/register"
-
-import { importAndExecuteInitializers } from "@/initializers"
+import { execSync } from "child_process"
 
 export default async function globalSetup() {
-  // TODO: exclude seeding, or at least separate development and test seeding
-  await importAndExecuteInitializers()
+  try {
+    // Keep in sync with api/bin/boot-app.sh
+    execSync(`npm run initializers`, { stdio: "inherit" })
+  } catch (error) {
+    console.error("Failed to run initializers:", error)
+    process.exit(1)
+  }
 }

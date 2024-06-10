@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express"
 
-import jwtMiddleware from "@/middlewares/jwt-middleware"
 import {
   ensureAndAuthorizeCurrentUser,
   type AuthorizationRequest,
@@ -8,14 +7,10 @@ import {
 
 import { User } from "@/models"
 
-jest.mock("@/middlewares/jwt-middleware")
-jest.mock("@/middlewares/authorization-middleware")
-
 /**
  * Usage:
- * At the top level of a test file add:
- *   jest.mock("@/middlewares/jwt-middleware")
- *   jest.mock("@/middlewares/authorization-middleware")
+ * At the top level of a test file import:
+ *   import { mockCurrentUser } from "@/support"
  *
  * Then where you want to set the current user:
  *   mockCurrentUser(currentUser)
@@ -23,11 +18,12 @@ jest.mock("@/middlewares/authorization-middleware")
  * @param newCurrentUser - The user to set as the current user
  */
 export function mockCurrentUser(newCurrentUser: User) {
-  const mockedJwtMiddleware = jest.mocked(jwtMiddleware)
-  mockedJwtMiddleware.mockImplementation(async (req: Request, res: Response, next: NextFunction) =>
-    next()
-  )
-  const mockedEnsureAndAuthorizeCurrentUser = jest.mocked(ensureAndAuthorizeCurrentUser)
+  vi.mock("@/middlewares/jwt-middleware", () => ({
+    default: async (_req: Request, _res: Response, next: NextFunction) => next(),
+  }))
+
+  vi.mock("@/middlewares/authorization-middleware")
+  const mockedEnsureAndAuthorizeCurrentUser = vi.mocked(ensureAndAuthorizeCurrentUser)
   mockedEnsureAndAuthorizeCurrentUser.mockImplementation(
     async (req: AuthorizationRequest, res: Response, next: NextFunction) => {
       req.currentUser = newCurrentUser

@@ -1,5 +1,4 @@
 import { RoleTypes } from "@/models/role"
-import { DatasetEntry } from "@/models"
 import { DatasetEntriesPolicy } from "@/policies"
 import {
   accessGrantFactory,
@@ -37,7 +36,7 @@ describe("api/src/policies/dataset-entries-policy.ts", () => {
             datasetId: dataset.id,
             jsonData: { field1: "value1" },
           })
-          const scopedQuery = DatasetEntriesPolicy.applyScope(DatasetEntry, requestingUser)
+          const scopedQuery = DatasetEntriesPolicy.applyScope([], requestingUser)
 
           // Act
           const result = await scopedQuery.findAll()
@@ -94,7 +93,7 @@ describe("api/src/policies/dataset-entries-policy.ts", () => {
         })
 
         // Act
-        const scopedDatasetEntries = DatasetEntriesPolicy.applyScope(DatasetEntry, viewer)
+        const scopedDatasetEntries = DatasetEntriesPolicy.applyScope([], viewer)
         const results = await scopedDatasetEntries.findAll()
 
         // Assert
@@ -150,7 +149,7 @@ describe("api/src/policies/dataset-entries-policy.ts", () => {
         })
 
         // Act
-        const scopedDatasetEntries = DatasetEntriesPolicy.applyScope(DatasetEntry, viewer)
+        const scopedDatasetEntries = DatasetEntriesPolicy.applyScope([], viewer)
         const results = await scopedDatasetEntries.findAll()
 
         // Assert
