@@ -1,9 +1,16 @@
 import type { Migration } from "@/db/umzug"
-import { UserGroup } from "@/models"
 
 export const up: Migration = async ({ context: queryInterface }) => {
-  // https://stackoverflow.com/questions/6940646/mysql-how-to-remove-double-or-more-spaces-from-a-string
-  await queryInterface.sequelize.query(`UPDATE user_groups SET name = REPLACE(REPLACE(REPLACE(TRIM(name), ' ', '<>'), '><', ''), '<>', ' ');`);
+  await queryInterface.sequelize.transaction(async (transaction) => {
+    const [rows]: any[] = await queryInterface.sequelize.query('SELECT name from user_groups', { transaction });
+    for (const row of rows) {
+      const trimmedName = row.name.trim().replace(/\s+/g, " ")
+      await queryInterface.sequelize.query('UPDATE user_groups SET name = ? WHERE id = ?', {
+        replacements: [trimmedName, row.id],
+        transaction
+      });
+    }
+  });
 }
 
 export const down: Migration = async () => {
