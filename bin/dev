@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby
 
+require_relative './github_api'
+
 class DevHelper
   # Support dashes in command names
   COMMAND_TO_METHOD = {
-    "ts-node" => :ts_node
+    "ts-node" => :ts_node,
+    "branch-from" => :branch_from,
   }
   METHOD_TO_COMMAND = COMMAND_TO_METHOD.invert
 
@@ -95,12 +98,14 @@ class DevHelper
   end
 
   def test_api(*args, **kwargs)
+    reformat_project_relative_path_filter_for_vitest!(args, 'api/')
     run(*%w[test_api npm run test], *args, **kwargs)
   end
 
   alias test test_api
 
   def test_web(*args, **kwargs)
+    reformat_project_relative_path_filter_for_vitest!(args, 'web/')
     run(*%w[test_web npm run test], *args, **kwargs)
   end
 
@@ -161,6 +166,18 @@ class DevHelper
     compose(*%w[exec db], *args, **kwargs)
   end
 
+  ##
+  # Generates and checks out a new branch based on the Jira issue URL.
+  # Example:
+  #   dev branch-from https://github.com/icefoganalytics/internal-data-portal/issues/98
+  #
+  # Produces:
+  #   git checkout -b issue-98/switch-test-suite-from-jest-to-vitest
+  def branch_from(github_issue_url, *args, **kwargs)
+    branch_name = GithubApi.build_branch_name(github_issue_url)
+    system("git checkout -b #{branch_name}")
+  end
+
   def ownit(*args, **kwargs)
     file_or_directory = args[0]
     raise ScriptError, "Must provide a file or directory path." if file_or_directory.nil?
@@ -203,6 +220,7 @@ class DevHelper
 
   def take_over_needed?(file_or_directory)
     files_owned_by_others = system("find #{file_or_directory} -not -user #{user_id} -print -quit | grep -q .")
+    files_owned_by_others
   end
 
   def user_id
@@ -215,6 +233,24 @@ class DevHelper
     raise NotImplementedError, "Not implement for platform #{RUBY_PLATFORM}" unless RUBY_PLATFORM =~ /linux/
 
     `id -g`.strip
+  end
+
+  def reformat_project_relative_path_filter_for_vitest!(args, prefix)
+    if args.length.positive? && args[0].start_with?(prefix)
+      src_path_prefix = "#{prefix}src/"
+      test_path_regex = Regexp.escape(prefix)
+      src_path_regex = Regexp.escape(src_path_prefix)
+
+      if args[0].start_with?(src_path_prefix)
+        args[0] = args[0].gsub(%r{^#{src_path_regex}}, 'tests/')
+                         .gsub(%r{\.ts$}, '.test.ts')
+                         # TODO: handle other file types
+      else
+        args[0] = args[0].gsub(%r{^#{test_path_regex}}, '')
+      end
+
+      puts "Reformatted path filter from project relative to service relative for vitest."
+    end
   end
 end
 

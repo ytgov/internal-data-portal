@@ -1,5 +1,3 @@
-version: "3"
-
 x-default-environment: &default-environment
   TZ: "UTC"
   NODE_ENV: development
@@ -74,20 +72,20 @@ services:
       db:
         condition: service_healthy
 
-  # test_web:
-  #   build:
-  #     context: ./web
-  #     dockerfile: development.Dockerfile
-  #   command: /bin/true
-  #   environment:
-  #     <<: *default-environment
-  #     NODE_ENV: test
-  #   tty: true
-  #   volumes:
-  #     - ./web:/usr/src/web
+  test_web:
+    build:
+      context: ./web
+      dockerfile: development.Dockerfile
+    command: /bin/true
+    environment:
+      <<: *default-environment
+      NODE_ENV: test
+    tty: true
+    volumes:
+      - ./web:/usr/src/web
 
   db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04
     user: root
     environment:
       <<: *default-environment

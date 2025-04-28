@@ -1,5 +1,6 @@
 import { isNil } from "lodash"
 
+import acronymize from "@/utils/acronymize"
 import { User } from "@/models"
 
 import BaseService from "@/services/base-service"
@@ -34,10 +35,12 @@ export class SyncService extends BaseService {
       let userGroup2: UserGroup | null = null
       let userGroup3: UserGroup | null = null
       let userGroup4: UserGroup | null = null
+      const departmentAcronym = acronymize(department)
       const [userGroup1] = await UserGroup.findOrCreate({
         where: { name: department, type: UserGroupTypes.DEPARTMENT },
         defaults: {
           name: department,
+          acronym: departmentAcronym,
           type: UserGroupTypes.DEPARTMENT,
           order: DEFAULT_ORDER,
         },

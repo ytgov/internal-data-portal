@@ -1,7 +1,11 @@
 import { isEmpty, isNil } from "lodash"
 
 import db, { Role, User, UserGroup, UserGroupMembership } from "@/models"
-import { DEFAULT_ORDER, UNASSIGNED_USER_GROUP_NAME } from "@/models/user-groups"
+import {
+  DEFAULT_ORDER,
+  UNASSIGNED_USER_GROUP_ACRONYM,
+  UNASSIGNED_USER_GROUP_NAME,
+} from "@/models/user-groups"
 
 import { SyncService } from "@/services/users"
 import BaseService from "@/services/base-service"
@@ -122,6 +126,7 @@ export class CreateService extends BaseService {
       },
       defaults: {
         name: UNASSIGNED_USER_GROUP_NAME,
+        acronym: UNASSIGNED_USER_GROUP_ACRONYM,
         type: UserGroup.Types.DEPARTMENT,
         order: DEFAULT_ORDER,
       },

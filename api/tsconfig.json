@@ -25,7 +25,9 @@
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "incremental": true
+    "incremental": true,
+    "isolatedModules": true,
+    "useDefineForClassFields": true
   },
   "include": ["src/**/*"]
 }

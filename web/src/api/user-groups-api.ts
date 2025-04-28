@@ -11,6 +11,7 @@ export type UserGroup = {
   id: number
   parentId: number
   name: string
+  acronym: string
   type: UserGroupTypes
   order: number
   createdAt: string

@@ -1,6 +1,3 @@
-import request from "supertest"
-
-import app from "@/app"
 import { RoleTypes } from "@/models/role"
 import { DatasetField } from "@/models"
 
@@ -16,7 +13,7 @@ import {
   visualizationControlFactory,
 } from "@/factories"
 
-import { mockCurrentUser } from "@/support"
+import { mockCurrentUser, request } from "@/support"
 import { UserGroupTypes } from "@/models/user-groups"
 import { AccessTypes, GrantLevels } from "@/models/access-grant"
 
@@ -84,7 +81,7 @@ describe("api/src/controllers/dataset-entries-controller.ts", () => {
         })
 
         // Act
-        const response = await request(app)
+        const response = await request()
           .get("/api/dataset-entries")
           .query({
             filters: {
@@ -171,7 +168,7 @@ describe("api/src/controllers/dataset-entries-controller.ts", () => {
         })
 
         // Act
-        const response = await request(app)
+        const response = await request()
           .get("/api/dataset-entries")
           .query({
             filters: {
@@ -284,7 +281,7 @@ describe("api/src/controllers/dataset-entries-controller.ts", () => {
         })
 
         // Act
-        const response = await request(app)
+        const response = await request()
           .get("/api/dataset-entries")
           .query({
             filters: {

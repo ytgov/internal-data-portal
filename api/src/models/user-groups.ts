@@ -1,5 +1,4 @@
 import {
-  Model,
   DataTypes,
   InferAttributes,
   InferCreationAttributes,
@@ -24,6 +23,7 @@ import {
 
 import sequelize from "@/db/db-client"
 import UserGroupMembership from "@/models/user-group-membership"
+import BaseModel from "@/models/base-model"
 
 export enum UserGroupTypes {
   DEPARTMENT = "department",
@@ -33,9 +33,10 @@ export enum UserGroupTypes {
 }
 
 export const UNASSIGNED_USER_GROUP_NAME = "Unassigned"
+export const UNASSIGNED_USER_GROUP_ACRONYM = "U"
 export const DEFAULT_ORDER = -1
 
-export class UserGroup extends Model<
+export class UserGroup extends BaseModel<
   InferAttributes<UserGroup>,
   InferCreationAttributes<UserGroup>
 > {
@@ -43,8 +44,9 @@ export class UserGroup extends Model<
 
   declare id: CreationOptional<number>
   declare parentId: ForeignKey<UserGroup["id"]> | null
-  declare name: string
   declare type: string
+  declare name: string
+  declare acronym: string
   declare order: number
   declare lastDivisionDirectorySyncAt: Date | null
   declare createdAt: CreationOptional<Date>
@@ -273,6 +275,10 @@ UserGroup.init(
     },
     name: {
       type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    acronym: {
+      type: DataTypes.STRING(10),
       allowNull: false,
     },
     order: {

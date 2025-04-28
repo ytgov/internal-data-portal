@@ -1,4 +1,4 @@
-import { isNil } from "lodash"
+import { isEmpty, isNil } from "lodash"
 import {
   Association,
   BelongsToCreateAssociationMixin,
@@ -41,6 +41,7 @@ import {
   datasetHasApprovedAccessRequestFor,
   datasetIsAccessibleViaOpenAccessGrantBy,
   datasetsAccessibleViaAccessGrantsBy,
+  datasetsSearch,
   mostPermissiveAccessGrantFor,
 } from "@/models/datasets"
 import VisualizationControl from "@/models/visualization-control"
@@ -353,6 +354,23 @@ Dataset.init(
       },
     ],
     scopes: {
+      search(searchToken: string) {
+        if (isEmpty(searchToken)) {
+          return {}
+        }
+
+        return {
+          where: {
+            id: {
+              [Op.in]: datasetsSearch(),
+            },
+          },
+          replacements: {
+            searchTokenWildcard: `%${searchToken}%`,
+            searchToken,
+          },
+        }
+      },
       accessibleViaAccessGrantsBy(user: User) {
         return {
           where: {
