@@ -1,16 +1,55 @@
-import { DataTypes } from "sequelize"
+import { DataTypes, QueryTypes } from "sequelize"
 
 import type { Migration } from "@/db/umzug"
-import { UserGroup } from "@/models"
-import acronymize from "@/utils/acronymize"
 
 export const up: Migration = async ({ context: queryInterface }) => {
-  await UserGroup.findEach(async (userGroup) => {
-    const acronym = acronymize(userGroup.name)
-    await userGroup.update({
-      acronym,
-    })
-  })
+  const batchSize = 1000
+  let lastId = 0
+  let userGroups: { id: number; name: string }[]
+
+  do {
+    userGroups = await queryInterface.sequelize.query(
+      /* sql */ `
+        SELECT id, name FROM user_groups
+        WHERE id > :lastId
+        ORDER BY id ASC
+        LIMIT :limit
+      `,
+      {
+        replacements: {
+          limit: batchSize,
+          lastId,
+        },
+        type: QueryTypes.SELECT,
+      }
+    )
+
+    for (const userGroup of userGroups) {
+      let acronym = userGroup.name
+        .trim()
+        .replace(/\s+/g, " ")
+        .split(" ")
+        .filter((word) => word[0] === word[0]?.toUpperCase())
+        .map((word) => word[0])
+        .join("")
+      if (acronym === "") {
+        acronym = `ERROR#${userGroup.id}`
+      }
+
+      await queryInterface.sequelize.query(
+        /* sql */ `
+          UPDATE user_groups
+          SET acronym = :acronym
+          WHERE id = :id
+        `,
+        {
+          replacements: { acronym, id: userGroup.id },
+          type: QueryTypes.UPDATE,
+        }
+      )
+      lastId = userGroup.id
+    }
+  } while (userGroups.length === batchSize)
 
   await queryInterface.changeColumn("user_groups", "acronym", {
     type: DataTypes.STRING(10),
