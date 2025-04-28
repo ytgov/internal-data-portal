@@ -67,18 +67,6 @@ const nextRoleType = computed<RoleTypes | null>(() => {
 
 const scenarios = computed<Scenario[]>(() => [
   {
-    url: "/api/qa-scenarios/link-random-tags",
-    label: "Link Random Tags",
-  },
-  {
-    url: "/api/qa-scenarios/apply-random-access-grants",
-    label: "Apply Random Access Grants",
-  },
-  {
-    url: "/api/qa-scenarios/add-random-access-requests",
-    label: "Add Random Subscriptions (Access Requests)",
-  },
-  {
     url: "/api/qa-scenarios/cycle-user-role-type",
     label: `Cycle User Type From "${currentRoleType.value || "..."}" To "${
       nextRoleType.value || "..."
