@@ -154,13 +154,6 @@ router
   .patch(VisualizationControlsController.update)
 
 // TODO: might want to lock these to only run in non-production environments?
-router.route("/api/qa-scenarios/link-random-tags").post(QaScenarios.LinkRandomTagsController.create)
-router
-  .route("/api/qa-scenarios/apply-random-access-grants")
-  .post(QaScenarios.ApplyRandomAccessGrantsController.create)
-router
-  .route("/api/qa-scenarios/add-random-access-requests")
-  .post(QaScenarios.AddRandomAccessRequestsController.create)
 router
   .route("/api/qa-scenarios/cycle-user-role-type")
   .post(QaScenarios.CycleUserRoleTypeController.create)
