@@ -10,10 +10,9 @@ export const up: Migration = async ({ context: queryInterface }) => {
   do {
     userGroups = await queryInterface.sequelize.query(
       /* sql */ `
-        SELECT id, name FROM user_groups
+        SELECT TOP (:limit) id, name FROM user_groups
         WHERE id > :lastId
         ORDER BY id ASC
-        LIMIT :limit
       `,
       {
         replacements: {
