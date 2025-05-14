@@ -292,6 +292,9 @@ User.init(
         fields: ["auth0_subject"],
         name: "unique_users_auth0_subject",
         where: {
+          auth0_subject: {
+            [Op.not]: null,
+          },
           deleted_at: null,
         },
       },
